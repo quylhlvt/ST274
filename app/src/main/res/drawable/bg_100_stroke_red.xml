@@ -1,0 +1,18 @@
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<shape xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--    <corners android:radius="1000dp"/>-->
+<!--    <gradient-->
+<!--        android:startColor="@color/stroke_forcus_1"-->
+<!--        android:endColor="@color/stroke_forcus_2"-->
+<!--        android:angle="0"/>-->
+<!--</shape>-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+android:width="38dp"
+android:height="38dp"
+android:viewportWidth="38"
+android:viewportHeight="38">
+<path
+    android:strokeColor="#FF4A2711"
+    android:strokeWidth="2"
+    android:pathData="M1 19c0-9.94 8.06-18 18-18h0c9.94 0 18 8.06 18 18v0c0 9.94-8.06 18-18 18h0c-9.94 0-18-8.06-18-18z"/>
+</vector>

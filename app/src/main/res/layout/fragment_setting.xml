@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.setting.SettingFragment">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:elevation="-1dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/img_bg_home" />
+
+    <FrameLayout
+        android:id="@+id/layoutActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:elevation="2dp"
+        android:layout_marginHorizontal="20dp"
+        android:id="@+id/layoutTitleBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar">
+
+        <include
+            android:id="@+id/layoutTitle"
+            layout="@layout/layout_title_form" />
+    </FrameLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="-30dp"
+        android:paddingVertical="50dp"
+        android:elevation="1dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:background="@drawable/img_bg_setting"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/layoutTitleBar">
+
+        <!--            btnLang-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/btnLang"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/frame_bg_setting"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="10"
+            app:layout_constraintDimensionRatio="2.81:0.52"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <ImageView
+                android:id="@+id/ic_lang"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="9.5dp"
+                android:layout_marginBottom="14.5dp"
+                android:src="@drawable/ic_lang_set"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+                android:id="@+id/txt1"
+                style="@style/single_marquee"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="7dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/baloo2_extrabold"
+                android:gravity="center_vertical"
+                android:text="@string/language"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ic_lang"
+                app:outerStrokeColor="@color/app_color"
+                app:outerStrokeWidth="1.3dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/btnRate"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/frame_bg_setting"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="10"
+            app:layout_constraintDimensionRatio="2.81:0.52"
+            app:layout_constraintTop_toBottomOf="@+id/btnLang">
+
+
+            <ImageView
+                android:id="@+id/ic_rate"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="9.5dp"
+                android:layout_marginBottom="14.5dp"
+                android:src="@drawable/ic_rate_set"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+                android:id="@+id/txt2"
+                style="@style/single_marquee"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="7dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/baloo2_extrabold"
+                android:gravity="center_vertical"
+                android:text="@string/rate_us"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ic_rate"
+                app:outerStrokeColor="@color/app_color"
+                app:outerStrokeWidth="1.3dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/btnShare"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/frame_bg_setting"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="10"
+            app:layout_constraintDimensionRatio="2.81:0.52"
+            app:layout_constraintTop_toBottomOf="@+id/btnRate">
+
+
+            <ImageView
+                android:id="@+id/ic_share"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="9.5dp"
+                android:layout_marginBottom="14.5dp"
+                android:src="@drawable/ic_share_set"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+                android:id="@+id/txt3"
+
+                style="@style/single_marquee"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="7dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/baloo2_extrabold"
+                android:gravity="center_vertical"
+                android:text="@string/share_app"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ic_share"
+                app:outerStrokeColor="@color/app_color"
+                app:outerStrokeWidth="1.3dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/btnPolicy"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/frame_bg_setting"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="10"
+            app:layout_constraintDimensionRatio="2.81:0.52"
+            app:layout_constraintTop_toBottomOf="@+id/btnShare">
+
+
+            <ImageView
+                android:id="@+id/ic_policy"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="9.5dp"
+                android:layout_marginBottom="14.5dp"
+                android:src="@drawable/ic_policy_set"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+                android:id="@+id/txt4"
+                style="@style/single_marquee"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="7dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/baloo2_extrabold"
+                android:gravity="center_vertical"
+                android:text="@string/privacy_policy"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ic_policy"
+                app:outerStrokeColor="@color/app_color"
+                app:outerStrokeWidth="1.3dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

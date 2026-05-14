@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/img_bg_title"
+        app:layout_constraintDimensionRatio="3.2:0.68"
+        app:layout_constraintEnd_toEndOf="@+id/buttomTilte"
+        app:layout_constraintStart_toStartOf="@+id/buttomTilte"
+        app:layout_constraintTop_toTopOf="parent">
+        <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+            android:id="@+id/txtLang"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:outerStrokeColor="@color/app_color"
+            android:text="@string/language"
+            android:gravity="center"
+            app:outerStrokeWidth="1dp"
+            android:fontFamily="@font/baloo2_extrabold"
+            style="@style/single_marquee"
+            android:paddingHorizontal="40dp"
+            android:textSize="36dp"
+            android:shadowRadius="5"
+            android:shadowDy="-5"
+            android:shadowDx="5"
+            android:shadowColor="@color/app_color"
+            android:textColor="@color/app_color2"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttomTilte"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="-4dp"
+        app:layout_constraintDimensionRatio="3.2:0.73"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        android:background="@drawable/img_bg_bottom_title"
+     >
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

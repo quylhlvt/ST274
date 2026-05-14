@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.main.show.ShowFragment">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:elevation="-1dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_addbackground"
+        app:layout_constraintHeight_percent="0.56"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    
+
+    <FrameLayout
+        android:id="@+id/layoutActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar" />
+    </FrameLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="0dp">
+
+        <FrameLayout
+            android:id="@+id/rlCharacter"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginVertical="5dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toTopOf="@+id/frame_rando_all"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvPercent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:elevation="8dp"
+            android:fontFamily="@font/baloo2_bold"
+            android:text="0%"
+            android:textColor="@color/app_color10"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/layoutProgress"
+            app:layout_constraintStart_toStartOf="@+id/layoutProgress"
+            app:layout_constraintTop_toBottomOf="@+id/layoutProgress" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutProgress"
+            android:layout_width="31dp"
+            android:layout_height="0dp"
+            android:layout_marginVertical="15dp"
+            android:layout_marginEnd="13dp"
+            android:elevation="8dp"
+            app:layout_constraintDimensionRatio="0.31:2.09"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/rlCharacter">
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#334A2711"
+                android:layout_marginEnd="-2dp"
+                android:layout_marginBottom="-2dp"
+                app:layout_constraintBottom_toBottomOf="@+id/progressTrack"
+                app:layout_constraintEnd_toEndOf="@+id/progressTrack"
+                app:layout_constraintStart_toStartOf="@+id/progressTrack"
+                app:layout_constraintTop_toTopOf="@+id/progressTrack" />
+            <!-- 1. Track nền cam - elevation thấp nhất -->
+            <ImageView
+                android:id="@+id/progressTrack"
+                android:layout_width="12dp"
+                android:layout_height="0dp"
+                android:elevation="0dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/bg_progress_track"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <!-- 2. Fill tím rectangle - trượt từ dưới lên -->
+            <ImageView
+                android:id="@+id/progressFill"
+                android:layout_width="10dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="8dp"
+                android:elevation="1dp"
+                android:scaleType="fitXY"
+                android:scaleY="0"
+                android:src="@drawable/bg_progress_match"
+                app:layout_constraintBottom_toBottomOf="@id/progressTrack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/progressTrack" />
+
+            <!-- 3. Bottom cố định ở đáy - đè lên fill -->
+            <ImageView
+                android:id="@+id/progressTrackBottom"
+                android:layout_width="10dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:elevation="2dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_progress_track_bottom"
+                android:translationY="-2dp"
+                app:layout_constraintBottom_toBottomOf="@id/progressTrack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- 4. Sao - elevation cao nhất, bám đỉnh fill -->
+            <ImageView
+                android:id="@+id/imgStar"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:elevation="3dp"
+                android:src="@drawable/ic_star"
+                android:translationY="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/frame_rando_all"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/app_color6"
+            app:layout_constraintBottom_toTopOf="@+id/frameLayer"
+            app:layout_constraintDimensionRatio="3.6:0.8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <!-- Icon mở màu — click để hiện rcvColor -->
+            <ImageView
+                android:id="@+id/imgChangColor"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginVertical="12dp"
+                android:layout_marginStart="20dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ic_color_show"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Icon random -->
+            <ImageView
+                android:id="@+id/imgRandom"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginVertical="12dp"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/ic_ramdom_cus"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Container màu ở giữa — y hệt llColor trong Activity -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/llColor"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="10dp"
+                android:elevation="1dp"
+                app:layout_constraintBottom_toBottomOf="@+id/imgChangColor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imgChangColor"
+                app:layout_constraintTop_toTopOf="@+id/imgChangColor">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:cardBackgroundColor="@color/app_color4"
+                    app:cardCornerRadius="16dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/cardColor"
+                    app:layout_constraintEnd_toEndOf="@+id/cardColor"
+                    app:layout_constraintStart_toStartOf="@+id/cardColor"
+                    app:layout_constraintTop_toTopOf="@+id/cardColor"
+                    app:strokeColor="@color/app_color"
+                    app:strokeWidth="1.2dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="4dp"
+                        app:cardBackgroundColor="@color/app_color5"
+                        app:cardCornerRadius="16dp"
+                        app:strokeWidth="0dp" />
+
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardColor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:cardBackgroundColor="@color/transparent"
+                    app:cardCornerRadius="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeWidth="0dp">
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginVertical="8dp"
+                        android:layout_marginEnd="30dp">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rcvColor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginStart="12dp"
+                            android:clipToPadding="false"
+                            android:orientation="horizontal"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:itemCount="5"
+                            tools:listitem="@layout/item_color" />
+                    </RelativeLayout>
+
+                    <!-- imvEndColor — đóng llColor -->
+                    <ImageView
+                        android:id="@+id/end"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="8dp"
+                        android:adjustViewBounds="true"
+                        android:clickable="true"
+                        android:elevation="3dp"
+                        android:focusable="true"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/img_end_color" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <FrameLayout
+            android:id="@+id/frameLayer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/img_bg_layer"
+            app:layout_constraintBottom_toTopOf="@+id/rcvNav"
+            app:layout_constraintHeight_percent="0.3">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvPart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="1dp"
+                android:paddingHorizontal="12dp"
+                android:paddingTop="12dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="5"
+                tools:itemCount="40"
+                tools:listitem="@layout/item_layer" />
+        </FrameLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvNav"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_nav_custom"
+            android:clipToPadding="false"
+            android:elevation="1dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="5dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="3.6:0.68"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:listitem="@layout/item_bottom_custom" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialSmall"
+        android:layout_width="84dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        app:cardBackgroundColor="@color/app_color4"
+        app:cardCornerRadius="9.3dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toBottomOf="@id/layoutActionBar"
+        app:strokeColor="@color/app_color"
+        app:strokeWidth="0.9dp">
+
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/material3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="@color/transparent"
+            app:cardCornerRadius="9.3dp"
+            android:layout_marginBottom="4.4dp"
+            app:cardElevation="0dp">
+            <!--            imvImage-->
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imvImage2"
+                android:background="@drawable/bg_addbackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_permission" />
+
+        </androidx.cardview.widget.CardView>
+
+
+    </com.google.android.material.card.MaterialCardView>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:id="@+id/imgShowBig"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="#99000000"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialBig"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="20dp"
+            app:cardBackgroundColor="@color/app_color4"
+            app:cardCornerRadius="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="@color/app_color"
+            app:strokeWidth="2dp">
+
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/material2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cardBackgroundColor="@color/transparent"
+                    app:cardCornerRadius="24dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardElevation="0dp">
+                    <!--            imvImage-->
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imvImage"
+                        android:layout_width="match_parent"
+                        android:background="@drawable/bg_addbackground"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img_permission" />
+
+                </androidx.cardview.widget.CardView>
+
+
+        </com.google.android.material.card.MaterialCardView>
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/close"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_close_guide"
+            app:layout_constraintTop_toBottomOf="@+id/materialBig"
+            app:layout_constraintStart_toStartOf="@+id/materialBig"
+            app:layout_constraintEnd_toEndOf="@+id/materialBig"
+            android:layout_marginTop="20dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <FrameLayout
+        android:id="@+id/countDown"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:background="#99000000">
+            <TextView
+                android:id="@+id/tvCountDown"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="3"
+                android:textSize="50sp"
+                android:fontFamily="@font/baloo2_bold"
+                android:textColor="@color/app_color5"
+                />
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

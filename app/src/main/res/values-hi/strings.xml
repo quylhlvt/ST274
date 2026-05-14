@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- values-hi/strings.xml -->
+<resources>
+    <string name="app_name">Cat Avatar: Cat Maker</string>
+    <string name="next">आगे</string>
+    <string name="language">भाषा</string>
+    <string name="title_1">अपनी पसंद के अनुसार अलग-अलग स्टाइल बनाएं</string>
+    <string name="title_2">अपना परफेक्ट अवतार बनाएं</string>
+    <string name="title_3">विभिन्न आइटम्स का संग्रह</string>
+    <string name="not_select_lang">कृपया एक भाषा चुनें</string>
+    <string name="pony_maker">कैट मेकर</string>
+    <string name="trending_custom">ट्रेंडिंग कस्टम</string>
+    <string name="my_work">मेरा काम</string>
+
+    <string name="permission">अनुमति</string>
+    <string name="storage">स्टोरेज</string>
+    <string name="continue_per">जारी रखें</string>
+    <string name="notification">सूचना</string>
+    <string name="granted_notification">सूचना की अनुमति दी गई</string>
+    <string name="granted_storage">स्टोरेज की अनुमति दी गई</string>
+    <string name="allow">अनुमति दें</string>
+    <string name="to_access">आपके डिवाइस की फ़ोटो तक पहुँचने के लिए</string>
+    <string name="to_access_13">आपके डिवाइस की सूचनाओं तक पहुँचने के लिए</string>
+    <string name="go_to_setting_message">ऐप को इस अनुमति की आवश्यकता है</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="add_image">छवि जोड़ें</string>
+    <string name="text">टेक्स्ट</string>
+    <string name="type_your_content">अपना कंटेंट लिखें</string>
+    <string name="loading">लोड हो रहा है</string>
+    <string name="haven_t_saved_it_yet_do_you_want_to_exit">अभी तक सेव नहीं किया गया, क्या आप बाहर निकलना चाहते हैं?</string>
+    <string name="no">नहीं</string>
+    <string name="yes">हाँ</string>
+    <string name="null_edt">कृपया टेक्स्ट दर्ज करें</string>
+    <string name="done">हो गया</string>
+    <string name="choose_color">रंग चुनें</string>
+    <string name="do_you_want_to_reset_all">क्या आप सब कुछ रीसेट करना चाहते हैं?</string>
+    <string name="reset">रीसेट</string>
+    <string name="exit">बाहर निकलें</string>
+    <string name="rate_us">हमें रेट करें</string>
+    <string name="share_app">ऐप साझा करें</string>
+    <string name="image_has_been_saved_successfully">छवि सफलतापूर्वक सेव हो गई!</string>
+    <string name="download">डाउनलोड</string>
+    <string name="avatar">अवतार</string>
+    <string name="my_avatar">मेरा अवतार</string>
+    <string name="design">मेरा डिज़ाइन</string>
+    <string name="no_item_here">यहाँ कोई आइटम नहीं है</string>
+    <string name="add_to_whatsapp">WhatsApp में जोड़ें</string>
+    <string name="add_to_telegram">Telegram में जोड़ें</string>
+    <string name="share">साझा करें</string>
+    <string name="no_app_found_to_handle_this_action">इस क्रिया को संभालने के लिए कोई ऐप नहीं मिला</string>
+    <string name="download_success">%s एल्बम में सफलतापूर्वक डाउनलोड किया गया</string>
+    <string name="download_fail">डाउनलोड विफल, कृपया बाद में फिर से प्रयास करें!</string>
+    <string name="delete">हटाएं</string>
+    <string name="are_you_sure_want_to_delete_this_item">क्या आप इस आइटम को हटाना चाहते हैं?</string>
+    <string name="please_select_an_image">कृपया एक छवि चुनें</string>
+    <string name="limit_3_items">स्टिकर बनाने के लिए कम से कम 3 आइटम आवश्यक हैं</string>
+    <string name="limit_30_items">अधिकतम 30 आइटम ही जोड़े जा सकते हैं</string>
+    <string name="invalid_action_msg">ऐप इंस्टॉल नहीं है</string>
+    <string name="invalid_action">त्रुटि</string>
+    <string name="download_failed_please_try_again_later">डाउनलोड विफल, कृपया बाद में फिर से प्रयास करें!</string>
+    <string name="edit">संपादित करें</string>
+    <string name="rate">रेट करें</string>
+    <string name="privacy_policy"><![CDATA[गोपनीयता और नीति]]></string>
+
+    <string name="zero_star_title">क्या आपको यह ऐप पसंद है?</string>
+    <string name="zero_star">अपना अनुभव बताएं</string>
+
+    <string name="one_star_title">ओह नहीं =(</string>
+    <string name="one_star">कृपया हमें अपनी प्रतिक्रिया दें</string>
+
+    <string name="two_star_title">ओह नहीं =(</string>
+    <string name="two_star">कृपया हमें अपनी प्रतिक्रिया दें</string>
+
+    <string name="three_star_title">ओह नहीं =(</string>
+    <string name="three_star">कृपया हमें अपनी प्रतिक्रिया दें</string>
+
+    <string name="four_star_title">हम भी आपसे प्यार करते हैं =3</string>
+    <string name="four_star">आपकी प्रतिक्रिया के लिए धन्यवाद =3</string>
+
+    <string name="five_star_title">हम भी आपसे प्यार करते हैं =3</string>
+    <string name="five_star">आपकी प्रतिक्रिया के लिए धन्यवाद =3</string>
+
+    <string name="rate_us_0">आपने अभी तक रेट नहीं किया है!</string>
+    <string name="have_rated">हमारे ऐप को रेट करने के लिए धन्यवाद</string>
+    <string name="refresh">रीफ़्रेश</string>
+    <string name="hello_blank_fragment">नमस्ते खाली फ्रैगमेंट</string>
+    <string name="cosplay">वेशभूषा</string>
+    <string name="permission_camera_denied">इस सुविधा के लिए कैमरा अनुमति आवश्यक है</string>
+    <string name="cat_random">रैंडम बिल्ली</string>
+    <string name="random">रैंडम</string>
+    <string name="my_creation">मेरी रचना</string>
+    <string name="my_creation1">मेरी रचना</string>
+    <string name="category">श्रेणी</string>
+    <string name="image">छवि</string>
+    <string name="color">रंग</string>
+    <string name="successful">सफल</string>
+    <string name="context_guide_body">कॉसप्ले मोड में, खिलाड़ियों को एक संदर्भ छवि यादृच्छिक रूप से दी जाती है। आपका कार्य सही हेयरस्टाइल, कपड़े, रंग और एक्सेसरी चुनकर उस चरित्र को जितना हो सके उतना सटीक रूप से बनाना है। हर सही मिलान आपके प्रतिशत (%) को बढ़ाता है। आपका चरित्र जितना अधिक उस छवि जैसा दिखेगा, आपका अंतिम स्कोर उतना ही अधिक होगा। सर्वोत्तम परिणाम पाने के लिए छोटे-छोटे विवरणों पर ध्यान दें।</string>
+    <string name="try_again">फिर से प्रयास करें</string>
+    <string name="no_internet">इंटरनेट नहीं है</string>
+    <string name="internet">इंटरनेट</string>
+    <string name="please_connect_to_the_internet_to_download_more_data">अधिक डेटा डाउनलोड करने के लिए इंटरनेट से जुड़ें</string>
+    <string name="unstable_connection_please_check_your_network_connection">अस्थिर कनेक्शन, कृपया अपना नेटवर्क कनेक्शन जांचें</string>
+    <string name="ok">ठीक है</string>
+    <string name="please_wait_a_few_seconds_for_data_to_load">डेटा लोड होने के लिए कुछ सेकंड प्रतीक्षा करें।</string>
+    <string name="create_package_name">पैकेज नाम बनाएँ</string>
+    <string name="enter_your_package_name">अपना पैकेज नाम दर्ज करें</string>
+    <string name="please_enter_your_package_name">कृपया अपना पैकेज नाम दर्ज करें!</string>
+    <string name="this_action_may_contain_advertising">इस क्रिया में विज्ञापन हो सकते हैं</string>
+</resources>

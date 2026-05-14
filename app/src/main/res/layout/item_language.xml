@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp">
+
+    <!-- Container chính — flat ConstraintLayout, không lồng -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/flMain"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@drawable/frame_select_language"
+        android:elevation="2dp">
+
+        <ImageView
+            android:id="@+id/imvFlag"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_flag_english"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/btnRadio"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/ic_un_select_lang"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+            android:id="@+id/tvLang"
+            style="@style/single_marquee"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:fontFamily="@font/baloo2_extrabold"
+            android:gravity="start"
+            android:text="language"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imvFlag"
+            app:layout_constraintEnd_toStartOf="@+id/btnRadio"
+            app:layout_constraintStart_toEndOf="@+id/imvFlag"
+            app:layout_constraintTop_toTopOf="@+id/imvFlag"
+            app:outerStrokeColor="@color/app_color"
+            app:outerStrokeWidth="1.3dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Focus overlay — đặt trên cùng bằng FrameLayout -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/flFocus"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:elevation="1dp"
+        app:cardBackgroundColor="#40000000"
+        app:cardCornerRadius="16dp"
+        app:strokeWidth="0dp" />
+
+</FrameLayout>

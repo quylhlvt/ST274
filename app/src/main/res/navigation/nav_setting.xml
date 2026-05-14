@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_setting"
+    app:startDestination="@id/setting"
+    >
+    <fragment
+        android:id="@+id/setting"
+        android:name="com.oc.catemoji.catoc.ui.main.setting.SettingFragment"
+        tools:layout="@layout/fragment_setting"
+        android:label="My Setting" >
+        <action
+            android:id="@+id/action_setting_to_home"
+            app:destination="@id/language"
+            app:popUpTo="@id/language"
+             />
+        <action
+            android:id="@+id/action_setting_to_language"
+            app:destination="@id/language" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/language"
+        android:name="com.oc.catemoji.catoc.ui.language.LanguageFragment"
+        android:label="Language"
+        tools:layout="@layout/fragment_language" >
+        <action
+            android:id="@+id/action_language_to_home"
+            app:destination="@id/nav_main"
+            app:popUpTo="@id/nav_setting"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

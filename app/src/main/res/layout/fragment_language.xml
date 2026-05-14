@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.language.LanguageFragment">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="-30dp"
+        android:layout_marginHorizontal="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutTitleLang">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleLanguage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:elevation="1dp"
+            android:overScrollMode="never"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="45dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+            tools:listitem="@layout/item_language" />
+    </RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/imageBgLang"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:elevation="-1dp"
+        android:src="@drawable/img_bg_lang"
+        android:scaleType="fitXY"/>
+
+    <FrameLayout
+        android:id="@+id/layoutActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="5dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar" />
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:id="@+id/layoutTitleLang"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:elevation="1dp"
+        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar">
+
+        <include
+            android:id="@+id/layoutTitle"
+            layout="@layout/layout_title_form" />
+    </FrameLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

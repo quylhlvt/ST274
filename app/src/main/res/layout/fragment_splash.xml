@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.onboarding.splash.SplashFragment">
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/appCompatImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_bg_splash" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/appCompatImageView4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="60dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/img_title_splash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/progressWrapper"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipChildren="true"
+        app:layout_constraintDimensionRatio="3.2:0.28"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/bg_progress_track_splash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appCompatImageView4">
+
+        <!-- Fill xanh đầy 100% -->
+        <View
+            android:id="@+id/progressFill"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="3dp"
+            android:background="@drawable/bg_progress_fill" />
+
+        <!-- Container clip cho overlay + cap -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="3dp"
+            android:clipChildren="true"
+            android:clipToPadding="true">
+
+            <!-- Overlay tối -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="@color/transparent"
+                app:strokeWidth="0dp">
+                <View
+                    android:id="@+id/progressOverlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    android:layout_marginStart="18dp"
+                    android:background="@drawable/bg_progress_dark_overlay" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- capRight di chuyển ở START -->
+            <ImageView
+                android:id="@+id/progressCap"
+                android:layout_width="12dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="6dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_progress_cap_right" />
+        </FrameLayout>
+
+        <!-- capLeft cố định ở END -->
+        <ImageView
+            android:id="@+id/progressCapLeft"
+            android:layout_width="11dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginVertical="3dp"
+            android:layout_marginEnd="3dp"
+            android:scaleType="fitXY"/>
+
+    </FrameLayout>
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+        android:id="@+id/appCompatTextView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:fontFamily="@font/baloo2_bold"
+        android:gravity="center"
+        android:text="@string/this_action_may_contain_advertising"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:outerStrokeColor="@color/app_color"
+        app:outerStrokeWidth="1dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

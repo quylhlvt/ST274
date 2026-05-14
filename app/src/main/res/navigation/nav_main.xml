@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.oc.catemoji.catoc.ui.main.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_to_createPony"
+            app:destination="@id/createPony"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_home_to_quick"
+            app:destination="@id/quick"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_home_to_myPony"
+            app:destination="@id/myPony"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"
+            />
+        <action
+            android:id="@+id/action_home_to_cosplay"
+            app:destination="@id/cosplay"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_home_to_random"
+            app:destination="@id/random"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_home_to_web"
+            app:destination="@id/webViewFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/homeFragment" />
+
+        <action
+            android:id="@+id/action_home_to_setting"
+            app:destination="@id/nav_setting"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/createPony"
+        android:name="com.oc.catemoji.catoc.ui.main.createPony.ChoosePonyFragment"
+        android:label="Create Pony"
+        tools:layout="@layout/fragment_choose_pony">
+        <action
+            android:id="@+id/action_createPony_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_createPony_to_custom"
+            app:destination="@id/custom"
+            app:popUpTo="@id/createPony"
+            app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/quick"
+        android:name="com.oc.catemoji.catoc.ui.main.quick.QuickFragment"
+        android:label="Quick"
+        tools:layout="@layout/fragment_quick">
+        <action
+            android:id="@+id/action_quick_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_quick_to_custom"
+            app:destination="@id/custom"
+            app:popUpTo="@id/quick"
+            app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/myPony"
+        android:name="com.oc.catemoji.catoc.ui.main.myPony.MyPonyFragment"
+        android:label="My Pony"
+        tools:layout="@layout/fragment_my_pony">
+        <action
+            android:id="@+id/action_mypony_to_custom"
+            app:destination="@id/custom"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/myPony"
+            app:popUpToInclusive="false" />
+
+        <action
+            android:id="@+id/action_mypony_to_view"
+            app:destination="@id/viewFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/myPony"
+            app:popUpToInclusive="false" />
+
+        <action
+            android:id="@+id/action_my_pony_to_home"
+            app:destination="@id/homeFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/custom"
+        android:name="com.oc.catemoji.catoc.ui.main.customize.CustomizeFragment"
+        android:label="Custom"
+        tools:layout="@layout/fragment_customize">
+
+        <action
+            android:id="@+id/action_customizeFragment_to_addFragment"
+            app:destination="@id/addCharacterFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_custom_to_myPony"
+            app:destination="@id/myPony"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popUpTo="@id/myPony"
+            app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/addCharacterFragment"
+        android:name="com.oc.catemoji.catoc.ui.main.add_character.AddCharacterFragment"
+        android:label="fragment_add_character"
+        tools:layout="@layout/fragment_add_character">
+
+        <argument
+            android:name="imagePath"
+            android:defaultValue=""
+            app:argType="string" />
+        <action
+            android:id="@+id/action_addCharacterFragment_to_viewImageFragment"
+            app:destination="@id/viewFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/viewFragment"
+        android:name="com.oc.catemoji.catoc.ui.main.view.ViewFragment"
+        android:label="fragment_view"
+        tools:layout="@layout/fragment_view">
+
+        <argument
+            android:name="imagePath"
+            app:argType="string" />
+        <argument
+            android:name="imageType"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <argument
+            android:name="idEdit"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_view_to_myPony"
+            app:destination="@id/myPony"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left"
+            />
+
+        <!-- ✅ Thêm action này -->
+        <action
+            android:id="@+id/action_view_to_customize"
+            app:destination="@id/custom"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/viewFragment"
+            />
+
+    </fragment>
+    <fragment
+        android:id="@+id/cosplay"
+        android:name="com.oc.catemoji.catoc.ui.main.cosplay.CosplayFragment"
+        android:label="fragment_cosplay"
+        tools:layout="@layout/fragment_cosplay">
+
+        <action
+            android:id="@+id/action_cosplay_to_show"
+            app:destination="@id/show"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/show"
+        android:name="com.oc.catemoji.catoc.ui.main.show.ShowFragment"
+        android:label="fragment_show"
+        tools:layout="@layout/fragment_show">
+        <action
+            android:id="@+id/action_show_to_successCosplay"
+            app:destination="@id/successCosplay"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/successCosplay"
+        android:name="com.oc.catemoji.catoc.ui.main.successcosplay.SuccessCosplayFragment"
+        android:label="fragment_success_cosplay"
+        tools:layout="@layout/fragment_success_cosplay">
+        <action
+            android:id="@+id/action_successCosplay_to_home"
+            app:destination="@id/homeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_successCosplay_back_show"
+            app:destination="@id/show"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popUpTo="@id/successCosplay"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/random"
+        android:name="com.oc.catemoji.catoc.ui.main.random.RandomFragment"
+        android:label="fragment_random"
+        tools:layout="@layout/fragment_random">
+        <action
+            android:id="@+id/action_random_to_custom"
+            app:destination="@id/custom"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/webViewFragment"
+        android:name="com.oc.catemoji.catoc.ui.main.webview.WebViewFragment"
+        android:label="fragment_web_view"
+        tools:layout="@layout/fragment_web_view" />
+</navigation>

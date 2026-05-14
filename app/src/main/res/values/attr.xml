@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ==================== SHARED ATTRIBUTES ==================== -->
+    <!-- Khai báo các attributes dùng chung ở đây để tránh duplicate -->
+
+    <!-- Stroke attributes -->
+    <attr name="strokeWidth" format="dimension" />
+    <attr name="strokeColor" format="color" />
+    <attr name="strokeMiter" format="dimension" />
+    <attr name="strokeJoinStyle">
+        <enum name="miter" value="0" />
+        <enum name="bevel" value="1" />
+        <enum name="round" value="2" />
+    </attr>
+
+    <!-- Outer stroke attributes -->
+    <attr name="outerStrokeColor" format="color" />
+    <attr name="outerStrokeWidth" format="dimension" />
+    <attr name="outerStrokeJoinStyle">
+        <enum name="miter" value="0" />
+        <enum name="bevel" value="1" />
+        <enum name="round" value="2" />
+    </attr>
+
+    <!-- Inner stroke attributes -->
+    <attr name="innerStrokeColor" format="color" />
+    <attr name="innerStrokeWidth" format="dimension" />
+
+    <!-- Gradient attributes -->
+    <attr name="gradientStartColor" format="color" />
+    <attr name="gradientEndColor" format="color" />
+    <attr name="useGradient" format="boolean" />
+    <attr name="gradientOrientation">
+        <enum name="leftToRight" value="0" />
+        <enum name="topToBottom" value="1" />
+        <enum name="diagonal" value="2" />
+    </attr>
+
+    <!-- StickerView -->
+    <attr name="showIcons" format="boolean"/>
+    <attr name="showBorder" format="boolean"/>
+    <attr name="bringToFrontCurrentSticker" format="boolean"/>
+    <attr name="borderColor" format="color"/>
+    <attr name="borderAlpha" format="integer"/>
+
+    <!-- ==================== STICKER VIEW ==================== -->
+
+    <declare-styleable name="StickerView">
+        <attr name="showIcons"/>
+        <attr name="showBorder"/>
+        <attr name="bringToFrontCurrentSticker"/>
+        <attr name="borderColor"/>
+        <attr name="borderAlpha"/>
+    </declare-styleable>
+
+    <!-- ==================== OUTER STROKE TEXT VIEW ==================== -->
+    <declare-styleable name="OuterStrokeTextView">
+        <attr name="outerStrokeColor" />
+        <attr name="outerStrokeWidth" />
+        <attr name="outerStrokeJoinStyle" />
+    </declare-styleable>
+
+    <!-- ==================== CROP IMAGE VIEW ==================== -->
+    <declare-styleable name="CropImageView">
+        <attr name="cropGuidelines">
+            <enum name="off" value="0"/>
+            <enum name="onTouch" value="1"/>
+            <enum name="on" value="2"/>
+        </attr>
+        <attr name="cropScaleType">
+            <enum name="fitCenter" value="0"/>
+            <enum name="center" value="1"/>
+            <enum name="centerCrop" value="2"/>
+            <enum name="centerInside" value="3"/>
+        </attr>
+        <attr name="cropShape">
+            <enum name="rectangle" value="0"/>
+            <enum name="oval" value="1"/>
+            <enum name="rectangleVerticalOnly" value="2"/>
+            <enum name="rectangleHorizontalOnly" value="3"/>
+        </attr>
+        <attr name="cornerShape">
+            <enum name="rectangle" value="0"/>
+            <enum name="oval" value="1"/>
+        </attr>
+        <attr name="cropAutoZoomEnabled" format="boolean"/>
+        <attr name="cropMaxZoom" format="integer"/>
+        <attr name="cropMultiTouchEnabled" format="boolean"/>
+        <attr name="cropCenterMoveEnabled" format="boolean"/>
+        <attr name="cropFixAspectRatio" format="boolean"/>
+        <attr name="cropAspectRatioX" format="integer"/>
+        <attr name="cropAspectRatioY" format="integer"/>
+        <attr name="cropInitialCropWindowPaddingRatio" format="float"/>
+        <attr name="cropBorderLineThickness" format="dimension"/>
+        <attr name="cropBorderLineColor" format="color"/>
+        <attr name="cropBorderCornerThickness" format="dimension"/>
+        <attr name="cropBorderCornerOffset" format="dimension"/>
+        <attr name="cropBorderCornerLength" format="dimension"/>
+        <attr name="cropBorderCornerColor" format="color"/>
+        <attr name="cropGuidelinesThickness" format="dimension"/>
+        <attr name="cropGuidelinesColor" format="color"/>
+        <attr name="cropBackgroundColor" format="color"/>
+        <attr name="cropSnapRadius" format="dimension"/>
+        <attr name="cropTouchRadius" format="dimension"/>
+        <attr name="cropSaveBitmapToInstanceState" format="boolean"/>
+        <attr name="cropShowCropOverlay" format="boolean"/>
+        <attr name="cropShowProgressBar" format="boolean"/>
+        <attr name="cropMinCropWindowWidth" format="dimension"/>
+        <attr name="cropMinCropWindowHeight" format="dimension"/>
+        <attr name="cropMinCropResultWidthPX" format="float"/>
+        <attr name="cropMinCropResultHeightPX" format="float"/>
+        <attr name="cropMaxCropResultWidthPX" format="float"/>
+        <attr name="cropMaxCropResultHeightPX" format="float"/>
+        <attr name="cropFlipHorizontally" format="boolean"/>
+        <attr name="cropFlipVertically" format="boolean"/>
+        <attr name="cropCornerCircleFillColor" format="color"/>
+        <attr name="cropCornerRadius" format="dimension"/>
+        <attr name="cropperLabelTextSize" format="float"/>
+        <attr name="cropperLabelTextColor" format="color"/>
+        <attr name="cropperLabelText" format="string"/>
+        <attr name="cropShowLabel" format="boolean"/>
+    </declare-styleable>
+
+    <!-- ==================== STROKE TEXT VIEW ==================== -->
+    <declare-styleable name="StrokeTextView">
+        <attr name="strokeWidth" />
+        <attr name="strokeColor" />
+        <attr name="strokeMiter" />
+        <attr name="strokeJoinStyle" />
+        <attr name="gradientStartColor" />
+        <attr name="gradientEndColor" />
+        <attr name="useGradient" />
+        <attr name="gradientOrientation" />
+    </declare-styleable>
+
+    <!-- ==================== DOUBLE STROKE TEXT VIEW ==================== -->
+    <declare-styleable name="DoubleStrokeTextView">
+        <attr name="outerStrokeColor" />
+        <attr name="outerStrokeWidth" />
+        <attr name="innerStrokeColor" />
+        <attr name="innerStrokeWidth" />
+        <attr name="strokeJoinStyle" />
+        <attr name="strokeMiter" />
+    </declare-styleable>
+
+</resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "686372595627",
+    "project_id": "st229-cat-avatar-maker",
+    "storage_bucket": "st229-cat-avatar-maker.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686372595627:android:46bd001c2dae4f23d394ee",
+        "android_client_info": {
+          "package_name": "com.oc.catemoji.catoc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPlwX9lk6uDkQeEFNbXQeFGLv98GkU54M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- values-pt/strings.xml -->
+<resources>
+    <string name="app_name">Cat Avatar: Cat Maker</string>
+    <string name="next">Avançar</string>
+    <string name="language">Idioma</string>
+    <string name="title_1">Crie diferentes estilos como quiser</string>
+    <string name="title_2">Crie o seu avatar perfeito</string>
+    <string name="title_3">Coleção de vários itens</string>
+    <string name="not_select_lang">Por favor, selecione um idioma</string>
+    <string name="pony_maker">Criador de Gatos</string>
+    <string name="trending_custom">Personalizações em alta</string>
+    <string name="my_work">Meus trabalhos</string>
+
+    <string name="permission">Permissão</string>
+    <string name="storage">Armazenamento</string>
+    <string name="continue_per">Continuar</string>
+    <string name="notification">Notificação</string>
+    <string name="granted_notification">Permissão de notificação concedida</string>
+    <string name="granted_storage">Permissão de armazenamento concedida</string>
+    <string name="allow">Permitir</string>
+    <string name="to_access">para acessar fotos no seu dispositivo</string>
+    <string name="to_access_13">para acessar notificações no seu dispositivo</string>
+    <string name="go_to_setting_message">O aplicativo precisa desta permissão</string>
+    <string name="settings">Configurações</string>
+    <string name="cancel">Cancelar</string>
+    <string name="add_image">Adicionar imagem</string>
+    <string name="text">Texto</string>
+    <string name="type_your_content">Digite seu conteúdo</string>
+    <string name="loading">Carregando</string>
+    <string name="haven_t_saved_it_yet_do_you_want_to_exit">Ainda não foi salvo, deseja sair?</string>
+    <string name="no">Não</string>
+    <string name="yes">Sim</string>
+    <string name="null_edt">Por favor, insira um texto</string>
+    <string name="done">Concluído</string>
+    <string name="choose_color">Escolher cor</string>
+    <string name="do_you_want_to_reset_all">Deseja redefinir tudo?</string>
+    <string name="reset">Redefinir</string>
+    <string name="exit">Sair</string>
+    <string name="rate_us">Avalie-nos</string>
+    <string name="share_app">Compartilhar app</string>
+    <string name="image_has_been_saved_successfully">Imagem salva com sucesso!</string>
+    <string name="download">Baixar</string>
+    <string name="avatar">Avatar</string>
+    <string name="my_avatar">Meu avatar</string>
+    <string name="design">Meu design</string>
+    <string name="no_item_here">Nenhum item aqui</string>
+    <string name="add_to_whatsapp">Adicionar ao WhatsApp</string>
+    <string name="add_to_telegram">Adicionar ao Telegram</string>
+    <string name="share">Compartilhar</string>
+    <string name="no_app_found_to_handle_this_action">Nenhum aplicativo encontrado para esta ação</string>
+    <string name="download_success">Download realizado com sucesso no álbum %s</string>
+    <string name="download_fail">Falha no download, tente novamente mais tarde!</string>
+    <string name="delete">Excluir</string>
+    <string name="are_you_sure_want_to_delete_this_item">Tem certeza de que deseja excluir este item?</string>
+    <string name="please_select_an_image">Por favor, selecione uma imagem</string>
+    <string name="limit_3_items">Pelo menos 3 itens são necessários para criar um sticker</string>
+    <string name="limit_30_items">No máximo 30 itens podem ser adicionados</string>
+    <string name="invalid_action_msg">Aplicativo não instalado</string>
+    <string name="invalid_action">Erro</string>
+    <string name="download_failed_please_try_again_later">Falha no download, tente novamente mais tarde!</string>
+    <string name="edit">Editar</string>
+    <string name="rate">Avaliar</string>
+    <string name="privacy_policy"><![CDATA[Privacidade e Política]]></string>
+
+    <string name="zero_star_title">Você gosta do app?</string>
+    <string name="zero_star">Conte-nos sua experiência</string>
+
+    <string name="one_star_title">Ah não =(</string>
+    <string name="one_star">Por favor, envie seu feedback</string>
+
+    <string name="two_star_title">Ah não =(</string>
+    <string name="two_star">Por favor, envie seu feedback</string>
+
+    <string name="three_star_title">Ah não =(</string>
+    <string name="three_star">Por favor, envie seu feedback</string>
+
+    <string name="four_star_title">Nós também gostamos de você =3</string>
+    <string name="four_star">Obrigado pelo seu feedback =3</string>
+
+    <string name="five_star_title">Nós também gostamos de você =3</string>
+    <string name="five_star">Obrigado pelo seu feedback =3</string>
+
+    <string name="rate_us_0">Você ainda não avaliou!</string>
+    <string name="have_rated">Obrigado por avaliar nosso app</string>
+    <string name="refresh">Atualizar</string>
+    <string name="hello_blank_fragment">Olá fragmento vazio</string>
+    <string name="cosplay">Fantasia</string>
+    <string name="permission_camera_denied">Permissão de câmera necessária para usar este recurso</string>
+    <string name="cat_random">Gato aleatório</string>
+    <string name="random">Aleatório</string>
+    <string name="my_creation">Minha criação</string>
+    <string name="my_creation1">Minha criação</string>
+    <string name="category">Categoria</string>
+    <string name="image">Imagem</string>
+    <string name="color">Cor</string>
+    <string name="successful">Sucesso</string>
+    <string name="context_guide_body">No modo Fantasia, os jogadores recebem aleatoriamente uma imagem de referência. Sua tarefa é recriar o personagem com a maior precisão possível, escolhendo os penteados, roupas, cores e acessórios corretos. Cada acerto aumenta sua porcentagem (%). Quanto mais parecido seu personagem for com a imagem, maior será sua pontuação final. Preste atenção aos detalhes para obter o melhor resultado.</string>
+    <string name="try_again">Tentar novamente</string>
+    <string name="no_internet">Sem internet</string>
+    <string name="internet">Internet</string>
+    <string name="please_connect_to_the_internet_to_download_more_data">Conecte-se à internet para baixar mais dados</string>
+    <string name="unstable_connection_please_check_your_network_connection">Conexão instável, verifique sua conexão de rede</string>
+    <string name="ok">OK</string>
+    <string name="please_wait_a_few_seconds_for_data_to_load">Aguarde alguns segundos para carregar os dados.</string>
+    <string name="create_package_name">Criar nome do pacote</string>
+    <string name="enter_your_package_name">Digite o nome do pacote</string>
+    <string name="please_enter_your_package_name">Digite o nome do pacote!</string>
+    <string name="this_action_may_contain_advertising">Esta ação pode conter anúncios</string>
+</resources>

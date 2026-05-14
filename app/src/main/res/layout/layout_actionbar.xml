@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:background="@color/transparent">
+
+    <!--    btnActionBarLeft-->
+    <ImageView
+        android:id="@+id/btnActionBarLeft"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/back_app"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!--    cvLogo-->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvLogo"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="10dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="invisible"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!--        imvLogo-->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/logo_app" />
+    </androidx.cardview.widget.CardView>
+
+    <!--    tvStart-->
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+        android:id="@+id/tvStart"
+        style="@style/single_marquee"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:gravity="start|center_vertical"
+        android:text="@string/language"
+        android:textSize="28dp"
+        android:fontFamily="@font/baloo2_bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft"
+        app:outerStrokeColor="@color/app_color"
+        app:outerStrokeWidth="2dp"
+        android:shadowRadius="5"
+        android:shadowDy="-5"
+        android:shadowDx="5"
+        android:shadowColor="@color/app_color"
+        android:textColor="@color/app_color2"
+        />
+
+    <!--    tvCenter-->
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+        android:id="@+id/tvCenter"
+        style="@style/single_marquee"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
+        android:gravity="center"
+        android:text="@string/language"
+        android:textSize="28dp"
+        android:fontFamily="@font/baloo2_bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight"
+        app:layout_constraintStart_toEndOf="@+id/btnActionBarLeft"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft"
+        app:outerStrokeColor="@color/app_color"
+        app:outerStrokeWidth="2dp"
+        android:shadowRadius="5"
+        android:shadowDy="-5"
+        android:shadowDx="5"
+        android:shadowColor="@color/app_color"
+        android:textColor="@color/app_color2"/>
+
+    <!--    btnActionBarCenter-->
+    <ImageView
+        android:id="@+id/btnActionBarCenter"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/btnActionBarCenter1"
+        app:layout_constraintStart_toEndOf="@+id/btnActionBarLeft"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
+    <ImageView
+        android:id="@+id/btnActionBarCenter1"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/btnActionBarCenter2"
+        app:layout_constraintStart_toEndOf="@+id/btnActionBarCenter"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
+    <!--    btnActionBarCenter-->
+    <ImageView
+        android:id="@+id/btnActionBarCenter2"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight"
+        app:layout_constraintStart_toEndOf="@+id/btnActionBarCenter1"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
+
+    <!--    btnActionBarNextToRight-->
+    <ImageView
+        android:id="@+id/btnActionBarNextToRight"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="10dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight" />
+
+    <!--    btnActionBarRight-->
+    <ImageView
+        android:id="@+id/btnActionBarRight"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="13dp"
+        android:layout_marginBottom="10dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+ <ImageView
+        android:id="@+id/btnActionBarNextToRight1"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarRight1"
+     app:layout_constraintTop_toTopOf="@+id/btnActionBarRight1"
+
+        app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight1" />
+
+    <ImageView
+        android:id="@+id/btnActionBarRight1"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="13dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarRight"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarRight"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!--            btnActionBarRightText-->
+    <FrameLayout
+        android:id="@+id/btnActionBarRightText"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:visibility="gone"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/frame_select_language"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarRight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarRight">
+
+        <TextView
+            android:id="@+id/tvRightText"
+            style="@style/single_marquee"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/next"
+            android:textColor="@color/white"
+            android:textSize="16dp" />
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

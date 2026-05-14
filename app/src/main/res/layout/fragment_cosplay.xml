@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.cosplay.CosplayFragment">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:elevation="-1dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/img_bg_view" />
+
+    <FrameLayout
+        android:id="@+id/layoutActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar" />
+    </FrameLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/imgRandom"
+
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        app:cardBackgroundColor="@color/app_color4"
+        app:cardCornerRadius="24dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
+        app:strokeColor="@color/app_color"
+        app:strokeWidth="2dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="16dp"
+            >
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/material2"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:cardBackgroundColor="@color/transparent"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    >
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imvBg"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/bg_addbackground" />
+                    <!--            imvImage-->
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imvImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:src="@null" />
+
+                    <!--        sflShimmer-->
+                    <!--            <com.facebook.shimmer.ShimmerFrameLayout-->
+                    <!--                android:id="@+id/sflShimmer"-->
+                    <!--                android:layout_width="match_parent"-->
+                    <!--                android:layout_height="match_parent"-->
+                    <!--                app:shimmer_auto_start="true"-->
+                    <!--                app:shimmer_base_alpha="0.7"-->
+                    <!--                app:shimmer_direction="left_to_right"-->
+                    <!--                app:shimmer_duration="1800"-->
+                    <!--                app:shimmer_highlight_alpha="0.6"-->
+                    <!--                app:shimmer_shape="linear">-->
+                    <!--                &lt;!&ndash; View nền để shimmer quét qua &ndash;&gt;-->
+                    <!--                <View-->
+                    <!--                    android:layout_width="match_parent"-->
+                    <!--                    android:layout_height="match_parent"-->
+                    <!--                    android:background="#818181" />-->
+                    <!--            </com.facebook.shimmer.ShimmerFrameLayout>-->
+                </androidx.cardview.widget.CardView>
+
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <FrameLayout
+        android:id="@+id/random"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_cosplay"
+        app:layout_constraintDimensionRatio="4:1"
+        app:layout_constraintEnd_toStartOf="@+id/show"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgRandom"
+        app:strokeColor="@color/app_color2"
+        app:strokeWidth="1dp">
+
+        <TextView
+            android:id="@+id/txtRandom"
+            style="@style/single_marquee"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/baloo2_bold"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"
+            android:text="@string/random"
+            android:textColor="@color/app_color"
+            android:textSize="20sp"
+            app:strokeWidth="1dp" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/show"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_cosplay1"
+        app:layout_constraintDimensionRatio="4:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/random"
+        app:layout_constraintTop_toTopOf="@+id/random"
+        app:strokeColor="@color/app_color2"
+        app:strokeWidth="1dp">
+
+        <TextView
+            android:id="@+id/txtShow"
+            style="@style/single_marquee"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/baloo2_bold"
+            android:gravity="center"
+            android:text="@string/cosplay"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/app_color"
+            android:textSize="20sp"
+            app:strokeWidth="1dp" />
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/showGuide"
+        android:visibility="gone"
+        android:background="#99000000"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingHorizontal="20dp"
+            >
+
+            <ImageView
+                android:id="@+id/imageView5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:elevation="2dp"
+                android:src="@drawable/img_title_loading"
+                app:layout_constraintDimensionRatio="3.2:1.91"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="20dp" />
+
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-30dp"
+                android:background="@drawable/context_body"
+                app:layout_constraintTop_toBottomOf="@+id/imageView5"
+                tools:layout_editor_absoluteX="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="36dp"
+                    android:layout_marginVertical="40dp"
+                    android:fontFamily="@font/baloo2_bold"
+                    android:gravity="center"
+                    android:text="@string/context_guide_body"
+                    android:textColor="@color/app_color"
+                    android:textSize="15sp" />
+            </FrameLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/closeGuide"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_close_guide"
+                app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+                app:layout_constraintStart_toStartOf="@+id/frameLayout"
+                app:layout_constraintEnd_toEndOf="@+id/frameLayout"
+                android:layout_marginTop="12dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

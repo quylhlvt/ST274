@@ -1,0 +1,165 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.navigation.safe.args)
+    id("com.google.dagger.hilt.android")                // Hilt plugin
+    id("kotlin-kapt")
+    id ("com.google.gms.google-services")
+    id ("com.google.firebase.crashlytics")
+    id 'kotlin-parcelize'
+}
+
+android {
+    namespace 'com.oc.catemoji.catoc'
+    compileSdk {
+        version = release(36)
+    }
+
+    defaultConfig {
+        applicationId "com.oc.catemoji.catoc"
+        minSdk 24
+        targetSdk 36
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner= "androidx.test.runner.AndroidJUnitRunner"
+        def formattedDate = new Date().format('MM.dd.yyyy')
+        archivesBaseName = "ST229_Cat_Avatar_Cat_Maker_v${versionName}_${formattedDate}"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+        dataBinding true
+    }
+    bundle {
+        language {
+            enableSplit = false
+        }
+        density {
+            enableSplit = true
+        }
+        abi {
+            enableSplit = true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+}
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.fragment.ktx)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    //datastore
+    implementation "androidx.datastore:datastore-preferences:1.1.1"
+
+    //mmkv
+    implementation("com.tencent:mmkv:2.4.0")
+    // Navigation Component
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.3")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.3")
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.52")
+    kapt("com.google.dagger:hilt-compiler:2.52")
+    implementation "androidx.hilt:hilt-navigation-fragment:1.2.0"
+//coil
+    implementation("io.coil-kt:coil:2.4.0")
+
+// Retrofit + Gson
+    implementation 'com.squareup.retrofit2:converter-gson:3.0.0'
+    implementation "com.squareup.retrofit2:retrofit:3.0.0"
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.12.0"
+    // Gson
+    implementation 'com.google.code.gson:gson:2.13.2'
+    // review app
+    implementation("com.google.android.play:review-ktx:2.0.2")
+    // required to avoid crash on Android 12 API 31
+    implementation 'androidx.work:work-runtime-ktx:2.11.0'
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:5.0.5'
+    kapt "com.github.bumptech.glide:compiler:5.0.5"
+    // Blur Glide
+    implementation 'jp.wasabeef:glide-transformations:4.3.0'
+    // dots
+    implementation("com.tbuonomo:dotsindicator:5.1.0")
+    // CardView
+    implementation "androidx.cardview:cardview:1.0.0"
+    // rate
+    implementation 'com.github.ome450901:SimpleRatingBar:1.5.1'
+    // Lottie Animation
+    implementation 'com.airbnb.android:lottie:6.7.1'
+    // Shimmer
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+    // EventBus
+    implementation 'org.greenrobot:eventbus:3.3.1'
+    // kotlin coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
+
+
+    // Vát cạnh
+    implementation 'com.google.android.material:material:1.13.0'
+    // API
+    implementation retrofit_lib
+    implementation okhttp_lib
+    // Optional: Room + Kotlin Coroutines
+    implementation "androidx.room:room-ktx:2.6.1"
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.4"
+    // Fragment viewmodel
+    implementation "androidx.fragment:fragment-ktx:1.8.9"
+    // LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.9.4"
+    //Lifecycle runtime (nếu dùng lifecycleScope)
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.9.4"
+    // ExoPlayer
+    implementation 'androidx.media3:media3-exoplayer:1.8.0'
+    // UI PlayerView
+    implementation 'androidx.media3:media3-ui:1.8.0'
+    // swiperefreshlayout
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    //pick color
+    implementation 'com.github.Mohammad3125:KavehColorPicker:v1.0.0'
+
+    implementation platform('com.google.firebase:firebase-bom:31.1.1')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-messaging:23.3.1'
+    implementation 'com.google.firebase:firebase-config:21.5.0'
+//    //ads
+//    implementation 'com.github.LVTapp:AdsLibrary:1.5.2_beta5'
+//    implementation 'com.google.android.gms:play-services-ads:24.8.0'
+//    implementation 'com.google.ads.mediation:facebook:6.21.0.0'
+//    implementation 'com.google.ads.mediation:vungle:7.6.1.0'
+//    implementation 'com.google.ads.mediation:applovin:13.5.1.0'
+//    implementation 'com.google.ads.mediation:pangle:7.7.0.2.0'
+//    implementation 'com.google.ads.mediation:ironsource:9.1.0.0'
+//    implementation 'com.unity3d.ads:unity-ads:4.16.4'
+//    implementation 'com.google.ads.mediation:unity:4.16.4.0'
+//    implementation 'com.google.ads.mediation:mintegral:17.0.31.0'
+
+}
