@@ -228,7 +228,8 @@ class MainActivity : AppCompatActivity() , LoadingController{
 
         setContentView(R.layout.activity_main)
         Log.d("PERF2", "setContentView done: ${System.currentTimeMillis()}")
-
+        Admob.getInstance().setTimeLimitShowAds(30000)
+        Admob.getInstance().setTimeCountdownNativeCollab(15000)
         hideNavigation(true)        // ← sau setContentView, window đã sẵn sàng
         initSharedPreferences()
 //        applyLanguage()

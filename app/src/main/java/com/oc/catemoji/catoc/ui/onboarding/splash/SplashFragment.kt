@@ -58,8 +58,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
     // ── INIT ──────────────────────────────────────────────────────────────────
 
     override fun initView() {
-        Admob.getInstance().setTimeLimitShowAds(3000)
-        Admob.getInstance().setTimeCountdownNativeCollab(15000)
+
         // ✅ Warm up font — giữ nguyên, nhẹ
         ResourcesCompat.getFont(requireContext(), R.font.baloo2_extrabold)
 
