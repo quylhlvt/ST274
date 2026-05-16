@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.gone
+import com.oc.catemoji.catoc.core.extention.loadNativeCollabAds
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.policy
 import com.oc.catemoji.catoc.core.extention.popBack
@@ -17,6 +18,7 @@ import com.oc.catemoji.catoc.core.extention.select
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.core.extention.shareApp
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.extention.toLangFromSetting
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.core.helper.RateHelper
@@ -53,6 +55,9 @@ class SuccessCosplayFragment : BaseFragment<FragmentSuccessCosplayBinding, Succe
     ): FragmentSuccessCosplayBinding = FragmentSuccessCosplayBinding.inflate(inflater, container, false)
 
     override fun initView() {
+        loadNativeCollabAds(
+            getString(R.string.native_cl_cosplaySuccess), binding.flNativeCollab
+        )
         binding.apply {
             txtShow.isSelected = true
             setupActionBar()
@@ -118,12 +123,17 @@ class SuccessCosplayFragment : BaseFragment<FragmentSuccessCosplayBinding, Succe
 
     private fun FragmentSuccessCosplayBinding.setupActionBarListeners() {
         actionBar.btnActionBarRight.onClick {
-            findNavController().navigate(R.id.action_successCosplay_to_home)
+            showInter {
+                findNavController().navigate(R.id.action_successCosplay_to_home)
+
+            }
         }
     }
 
     private fun FragmentSuccessCosplayBinding.setupNavigationListeners() {
         btnTryAgain.onClick {
+            showInter {
+
             val cosplayEntry = runCatching {
                 findNavController().getBackStackEntry(R.id.cosplay)
             }.getOrNull()
@@ -136,7 +146,9 @@ class SuccessCosplayFragment : BaseFragment<FragmentSuccessCosplayBinding, Succe
 
             viewModelActivity.shouldRestartShow = true  // ← báo ShowFragment reset
             popBack()
-        }
+            }
+
+    }
     }
 
 

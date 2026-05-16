@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BackPressHandler
 import com.oc.catemoji.catoc.core.base.BaseFragment
@@ -56,6 +57,7 @@ class LanguageFragment : BaseFragment<FragmentLanguageBinding, LanguageViewModel
                 popBack()
             }
             else -> {
+                System.exit(0)
                 requireActivity().finish()
             }
         }
@@ -72,7 +74,6 @@ class LanguageFragment : BaseFragment<FragmentLanguageBinding, LanguageViewModel
         binding.recycleLanguage.apply {
             adapter = languageAdapter
             itemAnimator = null
-            background = ContextCompat.getDrawable(requireContext(), R.drawable.img_bg_rcy_lang)
         }
 
         val currentLang = SharedPreferencesManager.isLanguageKey()
@@ -116,7 +117,12 @@ class LanguageFragment : BaseFragment<FragmentLanguageBinding, LanguageViewModel
 
     override fun initView() {
         isFromSetting = findNavController().previousBackStackEntry?.destination?.id == R.id.setting
-
+        Admob.getInstance().loadNativeAd(
+            requireContext(),
+            getString(R.string.native_language),
+            binding.nativeAds,
+            R.layout.ads_native_big_btn_top
+        )
         binding.actionBar.apply {
             btnActionBarRight.gone()
             btnActionBarLeft.setImageResource(R.drawable.back_app)

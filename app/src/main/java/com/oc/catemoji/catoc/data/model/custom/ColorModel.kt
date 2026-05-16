@@ -1,7 +1,6 @@
 package com.oc.catemoji.catoc.data.model.custom
 
 import android.os.Parcelable
-import androidx.room.Index
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import okio.Path

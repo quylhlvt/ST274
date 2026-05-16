@@ -3,6 +3,7 @@ package com.oc.catemoji.catoc.ui.main.cosplay
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
@@ -23,11 +25,13 @@ import com.oc.catemoji.catoc.core.extention.popBack
 import com.oc.catemoji.catoc.core.extention.select
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.databinding.FragmentCosplayBinding
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeFragment
 import com.oc.catemoji.catoc.ui.main.random.RandomViewModel
 import com.oc.catemoji.catoc.ui.main.show.ShowFragment
+import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -58,7 +62,32 @@ class CosplayFragment : BaseFragment<FragmentCosplayBinding, CosplayViewModel>(
         )
     }
 
+    private fun initNativeCollab() {
+        Log.d(
+            "NativeCollab",
+            "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}"
+        )
+        Admob.getInstance().loadNativeCollapNotBanner(
+            requireContext(),
+            getString(R.string.native_cl_cosplayCustom),
+            binding.flNativeCollab
+        )
+    }
+
+    override fun onFragmentStart() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
+        initNativeCollab()
+    }
+
+    override fun onFragmentStop() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
+        binding.flNativeCollab.removeAllViews()
+    }
+
     override fun initView() {
+        initNativeCollab()
         binding.setupActionBar()
 
         // Chỉ randomize lần đầu, nếu chưa có item nào
@@ -79,10 +108,15 @@ class CosplayFragment : BaseFragment<FragmentCosplayBinding, CosplayViewModel>(
     override fun viewListener() {
         binding.apply {
 
-            actionBar.btnActionBarLeft.onClick { popBack() }
+            actionBar.btnActionBarLeft.onClick {
+                showInter {
+                    popBack()
+                }
+            }
 
             random.onClick {
-                val isOnline = isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
+                val isOnline =
+                    isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
                 viewModel.randomize(isOnline = isOnline)
             }
             actionBar.btnActionBarRight.onClick {
@@ -94,8 +128,10 @@ class CosplayFragment : BaseFragment<FragmentCosplayBinding, CosplayViewModel>(
             show.onClick {
                 val item = viewModel.randomItem.value ?: return@onClick
 
-                val isOnline = isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
-                val templateId = viewModelActivity.templates.value.getOrNull(item.templateIndex)?.id ?: ""
+                val isOnline =
+                    isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
+                val templateId =
+                    viewModelActivity.templates.value.getOrNull(item.templateIndex)?.id ?: ""
                 if (templateId.startsWith("online_") && !isOnline) {
                     showUnstableNetworkDialog()
                     return@onClick
@@ -124,7 +160,8 @@ class CosplayFragment : BaseFragment<FragmentCosplayBinding, CosplayViewModel>(
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isDataReady.collect { ready ->
                 if (ready && viewModel.randomItem.value == null) {
-                    val isOnline = isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
+                    val isOnline =
+                        isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
                     viewModel.randomize(isOnline = isOnline)
                 }
             }

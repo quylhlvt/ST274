@@ -23,9 +23,9 @@
         android:id="@+id/frame_layout_continue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="140dp"
+        android:layout_marginBottom="2dp"
         android:layout_marginHorizontal="10dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toTopOf="@+id/native_ads">
 
         <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
             android:id="@+id/dotsIndicator"
@@ -48,5 +48,14 @@
             android:layout_gravity="end"
             app:layout_constraintBottom_toBottomOf="parent" />
 
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/native_ads"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include layout="@layout/ads_native_medium_btn_bottom_shimmer" />
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

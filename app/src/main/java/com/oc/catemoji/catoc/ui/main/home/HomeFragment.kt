@@ -1,7 +1,9 @@
 package com.oc.catemoji.catoc.ui.main.home
 
 import android.Manifest
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +23,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.base.BackPressHandler
@@ -31,10 +34,12 @@ import com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
 import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.extention.toSettingFromHome
 import com.oc.catemoji.catoc.core.helper.RateHelper
 import com.oc.catemoji.catoc.core.helper.RateHelper.showRateDialog
 import com.oc.catemoji.catoc.databinding.FragmentHomeBinding
+import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import com.oc.catemoji.catoc.utils.state.RateState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -53,12 +58,29 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): FragmentHomeBinding = FragmentHomeBinding.inflate(inflater, container, false)
 
+    private fun initNativeCollab() {
+        Log.d("NativeCollab", "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}")
+        Admob.getInstance().loadNativeCollapNotBanner(requireContext(), getString(R.string.native_cl_home), binding.flNativeCollab)
+    }
     override fun initView() {
+        Log.d("NativeCollab", "▶️ initView")
+        Admob.getInstance().loadInterAll(requireContext(), getString(R.string.inter_all))
+        initNativeCollab()
         binding.actionBar.apply {
             setImageActionBar(btnActionBarRight, R.drawable.ic_settings)
         }
     }
+    override fun onFragmentStart() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
+        initNativeCollab()
+    }
 
+    override fun onFragmentStop() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
+        binding.flNativeCollab.removeAllViews()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("PERF2", "HomeFragment onViewCreated: ${System.currentTimeMillis()}")
@@ -75,7 +97,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(
                     findNavController().navigate(R.id.action_home_to_createPony)
             }
             btnMyAlbum.onClick {
+                showInter {
                     findNavController().navigate(R.id.action_home_to_myPony)
+                }
+
             }
             btnRandom.onClick(1000) {
                     findNavController().navigate(R.id.action_home_to_random)

@@ -78,6 +78,7 @@
 
             <!-- Icon random -->
             <ImageView
+                android:visibility="invisible"
                 android:id="@+id/imgRandom"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -216,4 +217,10 @@
             tools:listitem="@layout/item_bottom_custom" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.oc.catemoji.catoc.utils.BlockableFrameLayout
+        android:id="@+id/flNativeCollab"
+        android:elevation="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

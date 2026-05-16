@@ -236,7 +236,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginHorizontal="103dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="85dp"
         android:background="@drawable/bg_cosplay1"
         app:layout_constraintDimensionRatio="1.54:0.44"
         app:layout_constraintEnd_toEndOf="parent"
@@ -259,4 +259,12 @@
             app:strokeWidth="1dp" />
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/flNativeCollab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <include layout="@layout/ads_shimmer_collap_native" />
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

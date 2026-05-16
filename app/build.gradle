@@ -2,8 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.navigation.safe.args)
-    id("com.google.dagger.hilt.android")                // Hilt plugin
-    id("kotlin-kapt")
+    id 'dagger.hilt.android.plugin'
+    alias(libs.plugins.kotlin.kapt)
+
     id ("com.google.gms.google-services")
     id ("com.google.firebase.crashlytics")
     id 'kotlin-parcelize'
@@ -70,94 +71,101 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.fragment.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    //datastore
-    implementation "androidx.datastore:datastore-preferences:1.1.1"
 
-    //mmkv
-    implementation("com.tencent:mmkv:2.4.0")
     // Navigation Component
-    implementation("androidx.navigation:navigation-fragment-ktx:2.8.3")
-    implementation("androidx.navigation:navigation-ui-ktx:2.8.3")
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.52")
-    kapt("com.google.dagger:hilt-compiler:2.52")
-    implementation "androidx.hilt:hilt-navigation-fragment:1.2.0"
-//coil
-    implementation("io.coil-kt:coil:2.4.0")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
 
-// Retrofit + Gson
+    // Coil
+    implementation("io.coil-kt:coil:2.7.0")
+
+    // Review app
+    implementation("com.google.android.play:review-ktx:2.0.2")
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    kapt("com.github.bumptech.glide:compiler:4.15.1")
+    implementation("jp.wasabeef:glide-transformations:4.3.0")
+
+    // UI Components
+    implementation("com.tbuonomo:dotsindicator:5.1.0")
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
+    implementation("com.airbnb.android:lottie:6.7.1")
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+
+    // EventBus
+    implementation("org.greenrobot:eventbus:3.3.1")
+
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+
+    // Gson & Retrofit
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.google.code.gson:gson:2.11.0")
+
+    // Lifecycle
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
+    implementation("androidx.fragment:fragment-ktx:1.8.9")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
+
+    // ExoPlayer
+    implementation("androidx.media3:media3-exoplayer:1.5.0")
+    implementation("androidx.media3:media3-ui:1.5.0")
+
+    // SwipeRefreshLayout
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    // Color Picker
+    implementation("com.github.Mohammad3125:KavehColorPicker:v1.0.0")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-config-ktx")
+
+    // Ads - QUAN TRỌNG: Sử dụng version tương thích
+    implementation("com.github.LVTapp:AdsLibrary:1.5.5")
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
+
+    // Ad Mediation - Downgrade để tương thích với Kotlin mới
+    implementation("com.google.ads.mediation:facebook:6.17.0.0")
+    implementation("com.google.ads.mediation:applovin:13.0.1.0")
+    implementation("com.google.ads.mediation:ironsource:8.4.0.0")
+    implementation("com.unity3d.ads:unity-ads:4.12.3")
+    implementation("com.google.ads.mediation:unity:4.12.3.0")
+    implementation("com.google.ads.mediation:pangle:7.8.5.2.0")
+    implementation("com.google.ads.mediation:mintegral:16.5.91.1")
+    implementation 'com.google.ads.mediation:pangle:7.8.5.2.0'
+    //datastore
+    implementation "androidx.datastore:datastore-preferences:1.1.1"
+//mmkv
+    implementation("com.tencent:mmkv:2.4.0")
     implementation 'com.squareup.retrofit2:converter-gson:3.0.0'
     implementation "com.squareup.retrofit2:retrofit:3.0.0"
     implementation "com.squareup.okhttp3:okhttp:4.12.0"
     implementation "com.squareup.okhttp3:logging-interceptor:4.12.0"
-    // Gson
-    implementation 'com.google.code.gson:gson:2.13.2'
-    // review app
-    implementation("com.google.android.play:review-ktx:2.0.2")
-    // required to avoid crash on Android 12 API 31
-    implementation 'androidx.work:work-runtime-ktx:2.11.0'
-    // Glide
-    implementation 'com.github.bumptech.glide:glide:5.0.5'
-    kapt "com.github.bumptech.glide:compiler:5.0.5"
-    // Blur Glide
-    implementation 'jp.wasabeef:glide-transformations:4.3.0'
-    // dots
-    implementation("com.tbuonomo:dotsindicator:5.1.0")
-    // CardView
-    implementation "androidx.cardview:cardview:1.0.0"
-    // rate
-    implementation 'com.github.ome450901:SimpleRatingBar:1.5.1'
-    // Lottie Animation
-    implementation 'com.airbnb.android:lottie:6.7.1'
-    // Shimmer
-    implementation 'com.facebook.shimmer:shimmer:0.5.0'
-    // EventBus
-    implementation 'org.greenrobot:eventbus:3.3.1'
-    // kotlin coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
+}
 
-
-    // Vát cạnh
-    implementation 'com.google.android.material:material:1.13.0'
-    // API
-    implementation retrofit_lib
-    implementation okhttp_lib
-    // Optional: Room + Kotlin Coroutines
-    implementation "androidx.room:room-ktx:2.6.1"
-    // ViewModel
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.4"
-    // Fragment viewmodel
-    implementation "androidx.fragment:fragment-ktx:1.8.9"
-    // LiveData
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.9.4"
-    //Lifecycle runtime (nếu dùng lifecycleScope)
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.9.4"
-    // ExoPlayer
-    implementation 'androidx.media3:media3-exoplayer:1.8.0'
-    // UI PlayerView
-    implementation 'androidx.media3:media3-ui:1.8.0'
-    // swiperefreshlayout
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    //pick color
-    implementation 'com.github.Mohammad3125:KavehColorPicker:v1.0.0'
-
-    implementation platform('com.google.firebase:firebase-bom:31.1.1')
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-messaging:23.3.1'
-    implementation 'com.google.firebase:firebase-config:21.5.0'
-//    //ads
-    implementation 'com.github.LVTapp:AdsLibrary:1.5.5'
-    implementation 'com.google.android.gms:play-services-ads:24.9.0'
-    implementation 'com.google.ads.mediation:facebook:6.21.0.0'
-    implementation 'com.google.ads.mediation:applovin:13.5.1.0'
-    implementation 'com.google.ads.mediation:ironsource:9.2.0.0'
-    implementation 'com.unity3d.ads:unity-ads:4.16.5'
-    implementation 'com.google.ads.mediation:unity:4.16.5.0'
-    implementation 'com.google.ads.mediation:mintegral:17.0.41.0'
-
+configurations.all {
+    resolutionStrategy {
+        force "androidx.room:room-ktx:2.6.1"
+        force "androidx.room:room-runtime:2.6.1"
+        force "androidx.room:room-common:2.6.1"
+        force "androidx.sqlite:sqlite:2.4.0"
+        force "androidx.sqlite:sqlite-framework:2.4.0"
+    }
 }

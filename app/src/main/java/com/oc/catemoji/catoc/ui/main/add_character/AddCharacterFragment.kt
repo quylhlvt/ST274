@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BackPressHandler
 import com.oc.catemoji.catoc.core.base.BaseFragment
@@ -45,6 +47,7 @@ import com.oc.catemoji.catoc.core.extention.loadImage
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setFont
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.core.helper.BitmapHelper
 import com.oc.catemoji.catoc.databinding.FragmentAddCharacterBinding
@@ -57,6 +60,7 @@ import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionViewModel
 import com.oc.catemoji.catoc.utils.DataLocal
 import com.oc.catemoji.catoc.utils.key.ValueKey
 import com.oc.catemoji.catoc.data.datalocal.manager.CharacterImageManager
+import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -137,7 +141,20 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): FragmentAddCharacterBinding = FragmentAddCharacterBinding.inflate(inflater, container, false)
+    private fun initNativeCollab() {
+        Admob.getInstance().loadNativeCollapNotBanner(requireContext(), getString(R.string.native_cl_bg), binding.flNativeCollab)
+    }
+    override fun onFragmentStart() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
+        initNativeCollab()
+    }
 
+    override fun onFragmentStop() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
+        binding.flNativeCollab.removeAllViews()
+    }
     // ── Observe ───────────────────────────────────────────────────────────────
     override fun observeData() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -171,7 +188,11 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
             // Action bar
             actionBar.btnActionBarLeft.onClick { confirmExit() }
             actionBar.btnActionBarCenter1.onClick { confirmReset() }
-            actionBar.btnActionBarRight.onClick { handleSave() }
+            actionBar.btnActionBarRight.onClick {
+                showInter {
+                    handleSave()
+                }
+            }
 
             // Background tabs
             lnlBackground.btnBackgroundImage.onClick {
@@ -204,10 +225,18 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
 
             // EditText
             lnlText.edtText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     tvGetText.text = s.toString()
                 }
+
                 override fun afterTextChanged(s: Editable?) {}
             })
 
@@ -250,6 +279,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
 
     // ── Init ──────────────────────────────────────────────────────────────────
     override fun initView() {
+        initNativeCollab()
         binding.lnlBackground.btnBackgroundColorTv.isSelected = true
         binding.lnlBackground.btnBackgroundImageTv.isSelected = true
         requireActivity().hideNavigation(true)
@@ -322,6 +352,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
             binding.flFunction.translationY = (-170).dp(requireContext()).toFloat()
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         keyboardLayoutListener?.let {
@@ -329,19 +360,23 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
         }
         keyboardLayoutListener = null
     }
+
     private fun onKeyboardClose() {
         // ✅ Android 9-: ignore nếu speech dialog đang mở
         // vì GlobalLayoutListener fire false-close khi dialog transition
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q
-            && viewModel.isSpeechDialogOpen) return
+            && viewModel.isSpeechDialogOpen
+        ) return
 
         isKeyboardOpen = false
         binding.flFunction.translationY = 0f
     }
+
     // ĐỔI TÊN + ĐỔI bottomMargin → topMargin
     private fun setFlFunctionTopMargin(margin: Int) {
         (binding.flFunction.layoutParams as ViewGroup.MarginLayoutParams).topMargin = margin
     }
+
     /**
      * Đóng keyboard và reset view.
      * Dùng ở mọi nơi cần dismiss keyboard — backpress, click ngoài, done text, tab switch.
@@ -353,9 +388,10 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
         // Reset view ngay lập tức, không đợi layout change
         setFlFunctionTopMargin(0)
     }
-    private fun clearFocus( check: Boolean =false) {
+
+    private fun clearFocus(check: Boolean = false) {
         if (!check)
-        binding.drawView.hideSelect()
+            binding.drawView.hideSelect()
         hideSoftKeyboard()
         setFlFunctionTopMargin(0)
         lifecycleScope.launch {
@@ -363,6 +399,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
             binding.lnlText.edtText.clearFocus()
         }
     }
+
     // ── Data ──────────────────────────────────────────────────────────────────
     private fun initActionBar() {
         binding.actionBar.apply {
@@ -451,6 +488,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                 binding.imvBackground.setBackgroundColor(requireContext().getColor(R.color.transparent))
                 loadImage(requireContext(), imagePath, binding.imvBackground)
             }
+
             savedColor != null -> {
                 binding.imvBackground.setImageBitmap(null)
                 binding.imvBackground.setBackgroundColor(savedColor)
@@ -477,10 +515,17 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                         viewModel.addDrawView(draw)
                     }
                 }
+
                 override fun onClickedDraw(draw: Draw) {}
-                override fun onDeletedDraw(draw: Draw) { viewModel.deleteDrawView(draw) }
+                override fun onDeletedDraw(draw: Draw) {
+                    viewModel.deleteDrawView(draw)
+                }
+
                 override fun onDragFinishedDraw(draw: Draw) {}
-                override fun onTouchedDownDraw(draw: Draw) { viewModel.updateCurrentCurrentDraw(draw) }
+                override fun onTouchedDownDraw(draw: Draw) {
+                    viewModel.updateCurrentCurrentDraw(draw)
+                }
+
                 override fun onZoomFinishedDraw(draw: Draw) {}
                 override fun onFlippedDraw(draw: Draw) {}
                 override fun onDoubleTappedDraw(draw: Draw) {}
@@ -523,6 +568,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                     requireActivity().hideNavigation(true)
                     onDone?.invoke()
                 }
+
                 override fun onLoadCleared(placeholder: android.graphics.drawable.Drawable?) {}
                 override fun onLoadFailed(errorDrawable: android.graphics.drawable.Drawable?) {
                     showToast("Don't Download sticker")
@@ -543,6 +589,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                     lnlBackground.btnBackgroundColor.setBackgroundResource(R.drawable.img_bg_color_addcharacter)
                     backgroundImageAdapter.submitList(viewModel.backgroundImageList)
                 }
+
                 ValueKey.COLOR_BACKGROUND -> {
                     requireActivity().hideNavigation(true)
                     lnlBackground.rcvBackgroundImage.gone()
@@ -751,7 +798,10 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
             showLoadingSafe()
             try {
                 val bitmap = binding.flSave.drawToBitmap()
-                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(java.util.Date())
+                val timestamp = SimpleDateFormat(
+                    "yyyyMMdd_HHmmss",
+                    Locale.getDefault()
+                ).format(java.util.Date())
                 val designId = "design_$timestamp"
 
                 val savedImagePath = withContext(Dispatchers.IO) {

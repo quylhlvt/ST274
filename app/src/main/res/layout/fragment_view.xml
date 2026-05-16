@@ -33,14 +33,15 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="30dp"
         app:cardBackgroundColor="@color/app_color4"
         app:cardCornerRadius="24dp"
-        android:layout_marginTop="180dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
+        app:layout_constraintBottom_toTopOf="@+id/lnlBottom"
         app:strokeColor="@color/app_color"
         app:strokeWidth="2dp">
 
@@ -122,12 +123,11 @@
     <TextView
         style="@style/single_marquee"
         android:id="@+id/tvSuccess"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/baloo2_bold"
         android:gravity="center"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="3dp"
         android:text="@string/image_has_been_saved_successfully"
         android:textColor="@color/app_color"
         android:textSize="18sp"
@@ -139,11 +139,12 @@
         android:id="@+id/lnlBottom"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="20dp"
         app:layout_constraintDimensionRatio="3.2:0.44"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/tvSuccess">
+        app:layout_constraintBottom_toTopOf="@+id/native_ads"
+        android:orientation="horizontal">
 
         <!--        btnBottomLeft-->
         <com.google.android.material.card.MaterialCardView
@@ -221,4 +222,21 @@
         <!--        btnBottomRight-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <FrameLayout
+        android:visibility="gone"
+        android:id="@+id/native_ads"
+        android:elevation="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include layout="@layout/ads_native_big_btn_top_shimmer" />
+    </FrameLayout>
+    <com.oc.catemoji.catoc.utils.BlockableFrameLayout
+        android:id="@+id/flNativeCollab"
+        android:elevation="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.oc.catemoji.catoc.ui.main.random
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
@@ -23,9 +25,11 @@ import com.oc.catemoji.catoc.core.extention.popBack
 import com.oc.catemoji.catoc.core.extention.select
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.databinding.FragmentRandomBinding
 import com.oc.catemoji.catoc.ui.main.cosplay.CosplayViewModel
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeFragment
+import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -63,7 +67,32 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
         savedInstanceState: Bundle?
     ): FragmentRandomBinding = FragmentRandomBinding.inflate(inflater, container, false)
 
+    private fun initNativeCollab() {
+        Log.d(
+            "NativeCollab",
+            "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}"
+        )
+        Admob.getInstance().loadNativeCollapNotBanner(
+            requireContext(),
+            getString(R.string.native_cl_randon),
+            binding.flNativeCollab
+        )
+    }
+
+    override fun onFragmentStart() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
+        initNativeCollab()
+    }
+
+    override fun onFragmentStop() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
+        binding.flNativeCollab.removeAllViews()
+    }
+
     override fun initView() {
+        initNativeCollab()
         binding.setupActionBar()
     }
 
@@ -79,17 +108,23 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
     override fun viewListener() {
         binding.apply {
             actionBar.btnActionBarLeft.onClick {
-                popBack()
+                    popBack()
             }
             random.onClick {
-                val isOnline = isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
-                viewModel.randomize(isOnline = isOnline)
+                showInter {
+                    val isOnline =
+                        isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
+                    viewModel.randomize(isOnline = isOnline)
+                }
+
             }
             actionBar.btnActionBarRight.onClick {
                 val item = viewModel.randomItem.value ?: return@onClick
 
-                val isOnline = isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
-                val templateId = viewModelActivity.templates.value.getOrNull(item.templateIndex)?.id ?: ""
+                val isOnline =
+                    isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
+                val templateId =
+                    viewModelActivity.templates.value.getOrNull(item.templateIndex)?.id ?: ""
                 if (templateId.startsWith("online_") && !isOnline) {
                     showUnstableNetworkDialog()
                     return@onClick
@@ -109,7 +144,8 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isDataReady.collect { ready ->
                 if (ready && viewModel.randomItem.value == null) {
-                    val isOnline = isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
+                    val isOnline =
+                        isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
                     viewModel.randomize(isOnline = isOnline)
                 }
             }

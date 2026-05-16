@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.base.BackPressHandler
@@ -32,9 +34,11 @@ import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.saveToFile
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.data.model.custom.BodyPartModel
 import com.oc.catemoji.catoc.data.model.custom.SelectionIndex
 import com.oc.catemoji.catoc.databinding.FragmentCustomizeBinding
+import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -74,6 +78,23 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         savedInstanceState: Bundle?
     ): FragmentCustomizeBinding = FragmentCustomizeBinding.inflate(inflater, container, false)
 
+    private fun initNativeCollab() {
+        Log.d("NativeCollab", "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}")
+        Admob.getInstance().loadNativeCollapNotBanner(requireContext(), getString(R.string.native_cl_custom), binding.flNativeCollab)
+    }
+
+    override fun onFragmentStart() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
+        initNativeCollab()
+    }
+
+    override fun onFragmentStop() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
+        binding.flNativeCollab.removeAllViews()
+    }
+
     // ── INIT ──────────────────────────────────────────────────────────────────
     private fun isOnlineTemplate(): Boolean {
         val templateIndex = arguments?.getInt(ARG_TEMPLATE_INDEX, 0) ?: 0
@@ -92,13 +113,17 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             !isInternetAvailable(requireContext()) -> {
                 showUnstableNetworkDialog(); true
             }
+
             !isNetworkConnected(requireContext()) -> {
                 showUnstableNetworkDialog(); true
             }
+
             else -> false
         }
     }
+
     override fun initView() {
+        initNativeCollab()
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
             setImageActionBar(btnActionBarCenter, R.drawable.ic_reset_all_custom)
@@ -147,9 +172,11 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                     isFlipped = isFlipped
                 )
             }
+
             savedSelections != null -> {
                 viewModel.initWithSelections(resolvedIndex, savedSelections)
             }
+
             else -> {
                 viewModel.initNew(resolvedIndex)
             }
@@ -175,7 +202,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                 when (type) {
                     "none" -> viewModel.selectNone()
                     "dice" -> viewModel.selectDiceCurrent()
-                    else   -> viewModel.selectPath(idx)
+                    else -> viewModel.selectPath(idx)
                 }
             }
         }
@@ -197,18 +224,28 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                 llColor.alpha = 0f
                 llColor.animate().alpha(1f).setDuration(200).start()
             }
-            imgRandom.onClick {
-                if (!checkOnlineNetworkOrShowDialog()) viewModel.randomizeAll()
-            }
+//            imgRandom.onClick {
+//                if (!checkOnlineNetworkOrShowDialog()) viewModel.randomizeAll()
+//            }
             actionBar.btnActionBarCenter.setOnClickListener {
                 showConfirmDialog(
                     title = getString(R.string.reset),
                     message = getString(R.string.do_you_want_to_reset_all),
-                    onYes = { arrShowColor.fill(true); viewModel.resetAll() }
+                    onYes = {
+                        showInter {
+                            arrShowColor.fill(true);
+                            viewModel.resetAll()
+                        }
+                    }
                 )
             }
             actionBar.btnActionBarCenter2.setOnClickListener { viewModel.toggleFlip() }
-            actionBar.btnActionBarRight.setOnClickListener { if (canSave) performSave() }
+            actionBar.btnActionBarRight.setOnClickListener {
+                if (canSave)
+                    showInter {
+                        performSave()
+                    }
+            }
             actionBar.btnActionBarLeft.setOnClickListener { confirmExit() }
         }
     }
@@ -457,9 +494,10 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         showLoadingSafe()
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val bitmap = withContext(Dispatchers.Default) {  // ✅ Đổi sang Default thay vì gọi trực tiếp
-                renderLayersToBitmap()
-            }
+            val bitmap =
+                withContext(Dispatchers.Default) {  // ✅ Đổi sang Default thay vì gọi trực tiếp
+                    renderLayersToBitmap()
+                }
             if (bitmap == null) {
                 setSaveEnabled(true)
                 hideLoadingSafe()
@@ -504,6 +542,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             }
         }
     }
+
     private fun renderLayersToBitmap(): Bitmap? {
         val root = binding.rlCharacter
         if (root.width == 0 || root.height == 0) return null
@@ -530,23 +569,28 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
     // ── BASE OVERRIDES ────────────────────────────────────────────────────────
 
     override fun bindViewModel() {}
+
     //--------------------------------Backpress
     override fun onBackPressed(): Boolean {
         confirmExit()
-       return true
+        return true
     }
+
     // ── COMPANION ─────────────────────────────────────────────────────────────
     private fun confirmExit() {
         showConfirmDialog(
             message = getString(R.string.haven_t_saved_it_yet_do_you_want_to_exit),
             title = getString(R.string.exit),
             onYes = {
-                hideLoadingSafe()
-                findNavController().navigateUp()
+                showInter {
+                    hideLoadingSafe()
+                    findNavController().navigateUp()
+                }
             },
             onNo = { hideLoadingSafe() }
         )
     }
+
     companion object {
         const val ARG_TEMPLATE_INDEX = "template_index"
         const val ARG_TEMPLATE_ID = "template_id"

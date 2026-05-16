@@ -1,4 +1,3 @@
-
 package com.oc.catemoji.catoc.ui.onboarding.splash
 
 import android.animation.Animator
@@ -43,22 +42,23 @@ import kotlinx.coroutines.withTimeoutOrNull
 class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
     FragmentSplashBinding::inflate,
     SplashViewModel::class.java
-) , BackPressHandler {
+), BackPressHandler {
     private val mainViewModel: ViewModelActivity by activityViewModels()
     var interCallBack: InterCallback? = null
     private var progressAnimator: ValueAnimator? = null
     private var currentOverlayFraction = 1f
     private var hasNavigated = false
+    private var adReady = false
 
     companion object {
-        private const val MIN_SPLASH_MS  = 2_000L
+        private const val MIN_SPLASH_MS = 2_000L
         private const val API_TIMEOUT_MS = 8_000L
     }
 
     // ── INIT ──────────────────────────────────────────────────────────────────
 
     override fun initView() {
-        Admob.getInstance().setTimeLimitShowAds(30000)
+        Admob.getInstance().setTimeLimitShowAds(3000)
         Admob.getInstance().setTimeCountdownNativeCollab(15000)
         // ✅ Warm up font — giữ nguyên, nhẹ
         ResourcesCompat.getFont(requireContext(), R.font.baloo2_extrabold)
@@ -82,10 +82,9 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
         interCallBack = object : InterCallback() {
             override fun onNextAction() {
                 super.onNextAction()
-                lifecycleScope.launch {
-                    viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-                        goToHome()
-                    }
+                adReady = true
+                if (isAdded && !isDetached && !isRemoving) {
+                    lifecycleScope.launch { completeProgress { goToHome() } }
                 }
             }
         }
@@ -94,6 +93,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
             requireActivity(), getString(R.string.inter_splash), 30000, 3000, interCallBack
         )
     }
+
     private fun checkAndClearDataIfNewVersion() {
         val context = requireContext()
         val currentVersion = context.packageManager
@@ -120,6 +120,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
             }
         }
     }
+
     override fun viewListener() {}
 
     override fun observeData() {
@@ -141,7 +142,18 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.readyToNavigate.collect {
-                    completeProgress { goToHome() }
+                    if (!isNetworkAvailable()) {
+                        completeProgress { goToHome() }
+                    } else {
+                        // Có mạng → đợi ad tối đa 30s rồi tự navigate
+                        withTimeoutOrNull(30_000L) {
+                            // Đợi adReady = true từ interCallBack.onNextAction()
+                            while (!adReady) delay(100)
+                        }
+                        if (!hasNavigated) {
+                            completeProgress { goToHome() }
+                        }
+                    }
                 }
             }
         }
@@ -161,6 +173,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
     private fun startFakeProgress() {
         animateOverlayTo(targetFraction = 0.2f, duration = MIN_SPLASH_MS)
     }
+
     private fun animateOverlayTo(
         targetFraction: Float,
         duration: Long,
@@ -168,12 +181,14 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
     ) {
         progressAnimator?.cancel()
 
-        val overlay   = binding.progressOverlay
-        val capRight  = binding.progressCap
+        val overlay = binding.progressOverlay
+        val capRight = binding.progressCap
         val container = binding.progressWrapper
 
         val containerWidth = container.width
-        if (containerWidth <= 0) { onEnd?.invoke(); return }
+        if (containerWidth <= 0) {
+            onEnd?.invoke(); return
+        }
 
         // Offset bù cho capRight margin (10dp start) + độ rộng cap (11dp)
         val density = resources.displayMetrics.density
@@ -181,19 +196,22 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
 
         progressAnimator = ValueAnimator.ofFloat(currentOverlayFraction, targetFraction).apply {
             this.duration = duration
-            interpolator  = DecelerateInterpolator()
+            interpolator = DecelerateInterpolator()
 
             addUpdateListener { anim ->
                 val fraction = anim.animatedValue as Float
                 currentOverlayFraction = fraction
 
                 val density = resources.displayMetrics.density
-                val total   = container.width.toFloat()
+                val total = container.width.toFloat()
 
                 // overlay.left = marginStart = 18dp (vị trí gốc của overlay trong container clip)
                 // fraction=1 → overlay dịch trái về x=0 → translateX = -overlay.left
                 // fraction=0 → overlay dịch phải ra ngoài → translateX = total - overlay.left
-                val overlayLeft = overlay.left.toFloat() - dpToPx(requireContext(),18)  // lấy trực tiếp từ view, không cần tính dp
+                val overlayLeft = overlay.left.toFloat() - dpToPx(
+                    requireContext(),
+                    18
+                )  // lấy trực tiếp từ view, không cần tính dp
 
                 val translateX = (total - overlayLeft) * (1f - fraction) - overlayLeft * fraction
                 // rút gọn: translateX = (total - overlayLeft) * (1f - fraction) - overlayLeft * fraction
@@ -208,7 +226,10 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
             }
 
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) { onEnd?.invoke() }
+                override fun onAnimationEnd(animation: Animator) {
+                    onEnd?.invoke()
+                }
+
                 override fun onAnimationCancel(animation: Animator) {}
             })
 
@@ -229,7 +250,9 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
         if (!isAdded || isDetached || isRemoving) return
         hasNavigated = true
 
-        if (!isLanuageScreen()) { toLanguage(); return }
+        if (!isLanuageScreen()) {
+            toLanguage(); return
+        }
         toIntro()
     }
 
@@ -245,7 +268,9 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
             @Suppress("DEPRECATION")
             cm.activeNetworkInfo?.isConnected == true
         }
-    } catch (e: Exception) { false }
+    } catch (e: Exception) {
+        false
+    }
 
     // ── LIFECYCLE ─────────────────────────────────────────────────────────────
     override fun onPause() {
@@ -258,7 +283,13 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
         super.onResume()
         // Chạy tiếp từ chỗ dừng
         progressAnimator?.resume()
+        // Ad đã xong trong lúc màn tắt → navigate khi mở lại
+        if (adReady && !hasNavigated) {
+            adReady = false
+            lifecycleScope.launch { completeProgress { goToHome() } }
+        }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         progressAnimator?.cancel()

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
@@ -34,6 +36,7 @@ import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.popBack
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.data.model.custom.BodyPartModel
 import com.oc.catemoji.catoc.data.model.custom.SelectionIndex
@@ -41,6 +44,7 @@ import com.oc.catemoji.catoc.databinding.FragmentShowBinding
 import com.oc.catemoji.catoc.ui.main.customize.ColorAdapter
 import com.oc.catemoji.catoc.ui.main.customize.NavAdapter
 import com.oc.catemoji.catoc.ui.main.customize.PartAdapter
+import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
@@ -91,8 +95,31 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
         }
     }
     // ── INIT ──────────────────────────────────────────────────────────────────
+    private fun initNativeCollab() {
+        Log.d(
+            "NativeCollab",
+            "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}"
+        )
+        Admob.getInstance().loadNativeCollapNotBanner(
+            requireContext(),
+            getString(R.string.native_cl_cosplaySuccess),
+            binding.flNativeCollab
+        )
+    }
 
+    override fun onFragmentStart() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
+        initNativeCollab()
+    }
+
+    override fun onFragmentStop() {
+        if (!isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
+        binding.flNativeCollab.removeAllViews()
+    }
     override fun initView() {
+        initNativeCollab()
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
             setImageActionBar(btnActionBarRight, R.drawable.next_app)
@@ -243,8 +270,12 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
 
     override fun viewListener() {
         binding.apply {
-            actionBar.btnActionBarLeft.onClick { popBack() }
-            actionBar.btnActionBarRight.onClick { navigateToSuccess() }
+            actionBar.btnActionBarLeft.onClick {showInter {
+                popBack()
+            }  }
+            actionBar.btnActionBarRight.onClick { showInter {
+                navigateToSuccess()
+            }}
 
             materialSmall.onClick { imgShowBig.visible() }
             close.onClick { imgShowBig.gone() }

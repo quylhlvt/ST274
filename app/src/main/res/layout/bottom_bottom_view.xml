@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:includeFontPadding="false"
-        android:padding="16dp"
+        android:paddingHorizontal="16dp"
         android:fontFamily="@font/baloo2_bold"
         android:textColor="@color/app_color"
         android:textSize="16sp"

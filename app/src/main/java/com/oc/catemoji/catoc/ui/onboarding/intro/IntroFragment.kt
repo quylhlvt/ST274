@@ -11,13 +11,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BackPressHandler
 import com.oc.catemoji.catoc.core.base.BaseFragment
+import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.toHome
 import com.oc.catemoji.catoc.core.extention.toIntro
 import com.oc.catemoji.catoc.core.extention.toPermission
+import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager.isPermissionScreen
 import com.oc.catemoji.catoc.databinding.FragmentIntroBinding
 import com.oc.catemoji.catoc.databinding.FragmentPermissionBinding
@@ -42,17 +45,17 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
             viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
         }
 
-//        binding.viewPager2.registerOnPageChangeCallback(object :
-//            ViewPager2.OnPageChangeCallback() {
-//            override fun onPageSelected(position: Int) {
-//                super.onPageSelected(position)
-//                if (position == 1) {
-//                    binding.nativeAds.gone()
-//                } else {
-//                    binding.nativeAds.visible()
-//                }
-//            }
-//        })
+        binding.viewPager2.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                if (position == 1) {
+                    binding.nativeAds.gone()
+                } else {
+                    binding.nativeAds.visible()
+                }
+            }
+        })
     }
 
 
@@ -63,9 +66,17 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
     ): FragmentIntroBinding = FragmentIntroBinding.inflate(inflater, container, false)
 
     override fun initView() {
+        Admob.getInstance().loadNativeAll(requireContext(), getString(R.string.native_all))
+        Admob.getInstance().loadNativeAd(
+            requireContext(),
+            getString(R.string.native_intro),
+            binding.nativeAds,
+            R.layout.ads_native_medium_btn_bottom
+        )
         binding.viewPager2.adapter = introAdapter
         binding.dotsIndicator.attachTo(binding.viewPager2)
         setOnChangeViewPager2()
+
 //        binding.textView.text = "Home Fragment"
 //        binding.btnTest.setOnClickListener {
 //            showSnackbar("Xin chào từ Home!")
@@ -115,6 +126,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
 
     override fun onBackPressed(): Boolean {
         requireActivity().finish()
+        System.exit(0)
         return  true
     }
 }

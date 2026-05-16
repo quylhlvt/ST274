@@ -34,6 +34,7 @@ import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
 import com.oc.catemoji.catoc.databinding.DialogbaseBinding
 import com.google.android.material.snackbar.Snackbar
+import com.lvt.ads.util.Admob
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -44,6 +45,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>(
     private val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> VB,
     private val viewModelClass: Class<VM>
 ) : Fragment() {
+    private var isFirstStart = true
 
     private lateinit var _binding: VB
     protected val binding: VB get() = _binding
@@ -83,7 +85,8 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>(
         setupPreViews()
         return binding.root
     }
-
+    open fun onFragmentStart() {}
+    open fun onFragmentStop() {}
 //    override fun onConfigurationChanged(newConfig: Configuration) {
 //        super.onConfigurationChanged(newConfig)
 //
@@ -147,7 +150,11 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>(
 
     override fun onStart() {
         super.onStart()
-
+        if (isFirstStart) {
+            isFirstStart = false
+        } else {
+            onFragmentStart()
+        }
         Log.v(TAG, "onStart: $this")
     }
 
@@ -163,11 +170,13 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>(
 
     override fun onStop() {
         super.onStop()
+        onFragmentStop()
         Log.v(TAG, "onStop: $this")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        isFirstStart = true
         Log.v(TAG, "onDestroyView: $this")
         _navController = null
     }

@@ -1,7 +1,6 @@
 package com.oc.catemoji.catoc.data.model.custom
 
 import android.os.Parcelable
-import androidx.room.Index
 import kotlinx.parcelize.Parcelize
 import kotlin.text.toIntOrNull
 
