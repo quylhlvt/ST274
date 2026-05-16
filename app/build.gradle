@@ -151,15 +151,13 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:23.3.1'
     implementation 'com.google.firebase:firebase-config:21.5.0'
 //    //ads
-//    implementation 'com.github.LVTapp:AdsLibrary:1.5.2_beta5'
-//    implementation 'com.google.android.gms:play-services-ads:24.8.0'
-//    implementation 'com.google.ads.mediation:facebook:6.21.0.0'
-//    implementation 'com.google.ads.mediation:vungle:7.6.1.0'
-//    implementation 'com.google.ads.mediation:applovin:13.5.1.0'
-//    implementation 'com.google.ads.mediation:pangle:7.7.0.2.0'
-//    implementation 'com.google.ads.mediation:ironsource:9.1.0.0'
-//    implementation 'com.unity3d.ads:unity-ads:4.16.4'
-//    implementation 'com.google.ads.mediation:unity:4.16.4.0'
-//    implementation 'com.google.ads.mediation:mintegral:17.0.31.0'
+    implementation 'com.github.LVTapp:AdsLibrary:1.5.5'
+    implementation 'com.google.android.gms:play-services-ads:24.9.0'
+    implementation 'com.google.ads.mediation:facebook:6.21.0.0'
+    implementation 'com.google.ads.mediation:applovin:13.5.1.0'
+    implementation 'com.google.ads.mediation:ironsource:9.2.0.0'
+    implementation 'com.unity3d.ads:unity-ads:4.16.5'
+    implementation 'com.google.ads.mediation:unity:4.16.5.0'
+    implementation 'com.google.ads.mediation:mintegral:17.0.41.0'
 
 }

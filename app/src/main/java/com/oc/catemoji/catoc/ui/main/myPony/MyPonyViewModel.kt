@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
@@ -361,11 +362,14 @@ class MyPonyViewModel @Inject constructor(
     fun addToTelegram(context: Context, paths: ArrayList<String>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Xóa cache cũ
-                context.cacheDir.listFiles { f -> f.name.startsWith("tg_sticker_") }
-                    ?.forEach { it.delete() }
+                val telegramPackages = listOf(
+                    "org.telegram.messenger",
+                    "org.telegram.messenger.web",
+                    "org.telegram.plus"
+                )
 
                 val uriList = ArrayList<Uri>()
+
                 paths.forEachIndexed { index, path ->
                     val file = File(path)
                     if (!file.exists()) return@forEachIndexed
@@ -374,28 +378,44 @@ class MyPonyViewModel @Inject constructor(
                     val resized = Bitmap.createScaledBitmap(bmp, 512, 512, true)
                     bmp.recycle()
 
-                    // Telegram yêu cầu PNG
-                    val outFile = File(context.cacheDir, "tg_sticker_$index.png")
-                    FileOutputStream(outFile).use { out ->
-                        resized.compress(Bitmap.CompressFormat.PNG, 100, out)
+                    val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        val values = android.content.ContentValues().apply {
+                            put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, "tg_sticker_$index.png")
+                            put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/png")
+                            put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, "Pictures/TelegramStickers")
+                            put(android.provider.MediaStore.Images.Media.IS_PENDING, 1)
+                        }
+                        val resolver = context.contentResolver
+                        val mediaUri = resolver.insert(
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
+                        ) ?: return@forEachIndexed
+                        resolver.openOutputStream(mediaUri)?.use { out ->
+                            resized.compress(Bitmap.CompressFormat.PNG, 100, out)
+                        }
+                        resolver.update(mediaUri, android.content.ContentValues().apply {
+                            put(android.provider.MediaStore.Images.Media.IS_PENDING, 0)
+                        }, null, null)
+                        mediaUri
+                    } else {
+                        val cacheDir = context.externalCacheDir ?: context.cacheDir
+                        val outFile = File(cacheDir, "tg_sticker_$index.png")
+                        FileOutputStream(outFile).use { out ->
+                            resized.compress(Bitmap.CompressFormat.PNG, 100, out)
+                        }
+                        FileProvider.getUriForFile(
+                            context, "${context.packageName}.provider", outFile
+                        ).also { uri ->
+                            telegramPackages.forEach { pkg ->
+                                runCatching {
+                                    context.grantUriPermission(pkg, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                            }
+                        }
                     }
-                    resized.recycle()
 
-                    val uri = FileProvider.getUriForFile(
-                        context, "${context.packageName}.provider", outFile
-                    )
-                    // Grant cho Telegram chính và Telegram X
-                    context.grantUriPermission(
-                        "org.telegram.messenger",
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                    context.grantUriPermission(
-                        "org.telegram.messenger.web",
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
+                    resized.recycle()
                     uriList.add(uri)
+                    Log.d(TAG, "✅ tg_sticker_$index → $uri")
                 }
 
                 if (uriList.isNotEmpty()) {

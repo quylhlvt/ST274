@@ -20,6 +20,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.lvt.ads.callback.InterCallback
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.base.BackPressHandler
@@ -43,7 +45,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
     SplashViewModel::class.java
 ) , BackPressHandler {
     private val mainViewModel: ViewModelActivity by activityViewModels()
-
+    var interCallBack: InterCallback? = null
     private var progressAnimator: ValueAnimator? = null
     private var currentOverlayFraction = 1f
     private var hasNavigated = false
@@ -56,6 +58,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
     // ── INIT ──────────────────────────────────────────────────────────────────
 
     override fun initView() {
+        Admob.getInstance().setTimeLimitShowAds(30000)
+        Admob.getInstance().setTimeCountdownNativeCollab(15000)
         // ✅ Warm up font — giữ nguyên, nhẹ
         ResourcesCompat.getFont(requireContext(), R.font.baloo2_extrabold)
 
@@ -75,6 +79,20 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
                 R.layout.fragment_home, null
             ) { _, _, _ -> }
         }
+        interCallBack = object : InterCallback() {
+            override fun onNextAction() {
+                super.onNextAction()
+                lifecycleScope.launch {
+                    viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                        goToHome()
+                    }
+                }
+            }
+        }
+
+        Admob.getInstance().loadSplashInterAds(
+            requireActivity(), getString(R.string.inter_splash), 30000, 3000, interCallBack
+        )
     }
     private fun checkAndClearDataIfNewVersion() {
         val context = requireContext()

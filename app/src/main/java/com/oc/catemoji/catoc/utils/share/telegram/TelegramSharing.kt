@@ -8,7 +8,6 @@ import android.widget.Toast
 import com.oc.catemoji.catoc.R
 
 object TelegramSharing {
-
     fun importToTelegram(context: Context, uriList: List<Uri>) {
         if (uriList.isEmpty()) return
 
