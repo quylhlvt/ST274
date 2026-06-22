@@ -35,6 +35,8 @@ import com.oc.catemoji.catoc.core.custom.DrawableDraw
 import com.oc.catemoji.catoc.core.custom.listener.listenerdraw.OnDrawListener
 import com.oc.catemoji.catoc.core.dialog.ChooseColorDialog
 import com.oc.catemoji.catoc.core.dialog.DialogSpeech
+import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
+import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.checkPermissions
 import com.oc.catemoji.catoc.core.extention.dp
 import com.oc.catemoji.catoc.core.extention.dpToPx
@@ -60,10 +62,12 @@ import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionViewModel
 import com.oc.catemoji.catoc.utils.DataLocal
 import com.oc.catemoji.catoc.utils.key.ValueKey
 import com.oc.catemoji.catoc.data.datalocal.manager.CharacterImageManager
+import com.oc.catemoji.catoc.ui.main.add_character.adapter.SpeechAdapter
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -91,7 +95,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     private val backgroundImageAdapter by lazy { BackgroundImageAdapter() }
     private val backgroundColorAdapter by lazy { BackgroundColorAdapter() }
     private val stickerAdapter by lazy { StickerAdapter() }
-    private val speechAdapter by lazy { StickerAdapter() }
+    private val speechAdapter by lazy { SpeechAdapter() }
     private val textFontAdapter by lazy { TextFontAdapter(requireContext()) }
     private val textColorAdapter by lazy { TextColorAdapter() }
 
@@ -141,9 +145,15 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): FragmentAddCharacterBinding = FragmentAddCharacterBinding.inflate(inflater, container, false)
+
     private fun initNativeCollab() {
-        Admob.getInstance().loadNativeCollapNotBanner(requireContext(), getString(R.string.native_cl_bg), binding.flNativeCollab)
+        Admob.getInstance().loadNativeCollapNotBanner(
+            requireContext(),
+            getString(R.string.native_cl_bg),
+            binding.flNativeCollab
+        )
     }
+
     override fun onFragmentStart() {
         if (!isAdded || isDetached) return
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
@@ -155,6 +165,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
         binding.flNativeCollab.removeAllViews()
     }
+
     // ── Observe ───────────────────────────────────────────────────────────────
     override fun observeData() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -176,11 +187,52 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                         path?.let { loadImage(requireContext(), it, binding.imvBackground) }
                     }
                 }
+                launch {
+                    viewModelActivity.backgrounds.collectLatest { bgs ->
+                        if (bgs.isNotEmpty()) {
+                            viewModel.loadDataFromMainViewModel(
+                                bgs,
+                                viewModelActivity.stickers.value,
+                                viewModelActivity.speechs.value
+                            )
+                            backgroundImageAdapter.submitList(viewModel.backgroundImageList)
+                            stickerAdapter.submitList(viewModel.stickerList, true)
+                        }
+                    }
+                }
+                launch {
+                    viewModelActivity.bgStickerReady.collect { ready ->
+                        if (!ready || !viewModel.isInitialized) return@collect
+                        viewModel.loadDataFromQuantity(
+                            bgQuantity = viewModelActivity.bgQuantity,
+                            stickerQuantity = viewModelActivity.stickerQuantity,
+                            bgBaseUrl = viewModelActivity.bgBaseUrl,
+                            speeches = viewModelActivity.speechs.value
+                        )
+                        backgroundImageAdapter.submitList(viewModel.backgroundImageList)
+                        stickerAdapter.submitList(viewModel.stickerList, true)
+                        speechAdapter.submitList(viewModel.speechList)
+                    }
+                }
             }
         }
     }
 
     override fun bindViewModel() {}
+    private fun checkOnlineNetworkOrShowDialog(): Boolean {
+
+        return when {
+            !isInternetAvailable(requireContext()) -> {
+                showUnstableNetworkDialog(); true
+            }
+
+            !isNetworkConnected(requireContext()) -> {
+                showUnstableNetworkDialog(); true
+            }
+
+            else -> false
+        }
+    }
 
     // ── Listeners ─────────────────────────────────────────────────────────────
     override fun viewListener() {
@@ -258,13 +310,20 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
             // Adapters
             backgroundImageAdapter.onAddImageClick = { launchImagePicker() }
             backgroundImageAdapter.onBackgroundImageClick = { path, position ->
-                handleSetBackgroundImage(path, position)
+                if (!checkOnlineNetworkOrShowDialog()) {
+                    handleSetBackgroundImage(path, position)
+                }
             }
             backgroundColorAdapter.onChooseColorClick = { handleChooseColor() }
             backgroundColorAdapter.onBackgroundColorClick = { color, position ->
                 handleSetBackgroundColor(color, position)
             }
-            stickerAdapter.onItemClick = { path -> addDrawable(path) }
+            stickerAdapter.onItemClick = { path ->
+                if (!checkOnlineNetworkOrShowDialog()) {
+                    stickerAdapter.selectItem(stickerAdapter.items.indexOfFirst { it.path == path })
+                    addDrawable(path)
+                }
+            }
             speechAdapter.onItemClick = { path -> handleSpeech(path) }
             textFontAdapter.onTextFontClick = { font, position -> handleFontClick(font, position) }
             textColorAdapter.onChooseColorClick = { handleChooseColor(isTextColor = true) }
@@ -279,14 +338,13 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
 
     // ── Init ──────────────────────────────────────────────────────────────────
     override fun initView() {
+
         initNativeCollab()
         binding.lnlBackground.btnBackgroundColorTv.isSelected = true
         binding.lnlBackground.btnBackgroundImageTv.isSelected = true
         requireActivity().hideNavigation(true)
-
         setupKeyboardListener()
         binding.tvGetText.setTextColor(requireContext().getColor(R.color.black))
-
         initRcv()
         initDrawView()
 
@@ -300,7 +358,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
 
     }
 
-    // ── Keyboard ──────────────────────────────────────────────────────────────
+    // ── Keyboard ─────────────────────────────────────────────────────a─────────
 
     /**
      * Source of truth duy nhất cho keyboard state và flFunction position.
@@ -433,30 +491,27 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     }
 
     private fun initData() {
-        viewModel.loadDataFromMainViewModel(
-            viewModelActivity.backgrounds.value,
-            viewModelActivity.stickers.value,
-            viewModelActivity.speechs.value
+        // ✅ Luôn load từ số lượng, kể cả offline (dùng số lượng đã cache trong ViewModel)
+        viewModel.loadDataFromQuantity(
+            bgQuantity = viewModelActivity.bgQuantity,
+            stickerQuantity = viewModelActivity.stickerQuantity,
+            bgBaseUrl = viewModelActivity.bgBaseUrl,
+            speeches = viewModelActivity.speechs.value
         )
         submitAllAdapters()
         viewModel.setTypeNavigation(ValueKey.BACKGROUND_NAVIGATION)
         viewModel.setTypeBackground(ValueKey.IMAGE_BACKGROUND)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            // ✅ Ưu tiên dùng bitmap từ CustomizeFragment nếu có
             val customizeBitmap = viewModelActivity.customizeBitmap
             if (customizeBitmap != null && !customizeBitmap.isRecycled) {
                 binding.drawView.addDraw(
                     viewModel.loadDrawableEmoji(customizeBitmap, isCharacter = true)
                 )
-                viewModelActivity.customizeBitmap = null // clear sau khi dùng
-                binding.drawView.post {
-                    hideLoadingSafe()
-                }
+                viewModelActivity.customizeBitmap = null
+                hideLoadingSafe()
             } else if (imagepath.isNotEmpty()) {
-                addDrawable(imagepath, isCharacter = true) {
-                    hideLoadingSafe()
-                }
+                addDrawable(imagepath, isCharacter = true) { hideLoadingSafe() }
             } else {
                 hideLoadingSafe()
             }

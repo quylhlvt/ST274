@@ -133,6 +133,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>(
                             viewModelActivity.fetchOnlineTemplates()
                         }
                     }
+                viewModelActivity.loadBackgroundsAndStickers()
             }
         }
     }

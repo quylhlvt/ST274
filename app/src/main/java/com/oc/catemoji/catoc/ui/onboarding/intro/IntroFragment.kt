@@ -40,25 +40,34 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
     lateinit var introAdapter: IntroAdapter
 
     override fun viewListener() {
-        binding.btnNextPager.root.onClick(200) {
+        binding.btnNextPager.btnNext.onClick(200) {
+            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
+            viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
+        }
+         binding.btnNextPager.tvButton.onClick(200) {
             android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
             viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
         }
 
-        binding.viewPager2.registerOnPageChangeCallback(object :
-            ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                if (position == 1) {
-                    binding.nativeAds.gone()
-                } else {
-                    binding.nativeAds.visible()
+        binding.apply {
+           viewPager2.registerOnPageChangeCallback(object :
+                ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    if (position == 0) {
+                        btnNextPager.btnNext.visible()
+                        btnNextPager.tvButton.gone()
+                        nativeAds.gone()
+                    } else {
+                        btnNextPager.btnNext.gone()
+                        btnNextPager.tvButton.visible()
+                        nativeAds.visible()
+                    }
                 }
-            }
-        })
+            })
+        }
+
     }
-
-
     override fun inflateBinding(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -66,6 +75,8 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
     ): FragmentIntroBinding = FragmentIntroBinding.inflate(inflater, container, false)
 
     override fun initView() {
+        binding.viewPager2.adapter = introAdapter
+        binding.viewPager2.isUserInputEnabled = false
         Admob.getInstance().loadNativeAll(requireContext(), getString(R.string.native_all))
         Admob.getInstance().loadNativeAd(
             requireContext(),

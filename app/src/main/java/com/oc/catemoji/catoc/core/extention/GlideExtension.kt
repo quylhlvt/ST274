@@ -60,7 +60,6 @@ fun loadImage(
         .load(path)
         .apply(softwareOptions)  // ✅
         .placeholder(shimmerDrawable)
-        .error(shimmerDrawable)
         .into(imageView)
 }
 fun loadImage(
@@ -68,9 +67,12 @@ fun loadImage(
     path: Int,
     imageView: ImageView,
 ) {
+    val shimmerDrawable = ShimmerDrawable().apply { setShimmer(DataLocal.shimmer) }
+
     Glide.with(viewGroup)
         .load(path)
         .apply(softwareOptions)
+        .placeholder(shimmerDrawable)
         .diskCacheStrategy(DiskCacheStrategy.RESOURCE) // ✅ luôn cache
         .override(96, 96)                              // ✅ size nhỏ hơn cho flag icons
         .into(imageView)
@@ -105,9 +107,12 @@ fun loadImage(
     onShowLoading: (() -> Unit)? = null,
     onDismissLoading: (() -> Unit)? = null
 ) {
+    val shimmerDrawable = ShimmerDrawable().apply { setShimmer(DataLocal.shimmer) }
+
     onShowLoading?.invoke()
     Glide.with(imageView.context)
         .load(path)
+        .placeholder(shimmerDrawable)
         .apply(softwareOptions)  // ✅
         .listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(

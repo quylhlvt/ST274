@@ -14,6 +14,9 @@ import com.oc.catemoji.catoc.data.usecase.GetCatalogueUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -45,6 +48,15 @@ class ViewModelActivity @Inject constructor(
     val myDesignPaths:        StateFlow<List<String>>      = appDataManager.myDesignPaths
     val isLoading:            StateFlow<Boolean>           = appDataManager.isLoading
     val error:                StateFlow<String?>           = appDataManager.error
+    private val _bgStickerFailed = MutableStateFlow(false)
+    val bgStickerFailed: StateFlow<Boolean> = _bgStickerFailed.asStateFlow()
+    private val _bgStickerReady = MutableStateFlow(false)
+    val bgStickerReady: StateFlow<Boolean> = _bgStickerReady.asStateFlow()
+    private val _bgLoading = MutableStateFlow(false)
+    var bgQuantity: Int = 0
+    var stickerQuantity: Int = 0
+    val bgBaseUrl = "https://lvtglobal.tech/public/app/ST229_CatAvatarCatMaker/bg"
+
     var cosplayBitmap: Bitmap? = null
     var userResultBitmap: Bitmap? = null
     var customizeBitmap: Bitmap? = null
@@ -72,7 +84,65 @@ class ViewModelActivity @Inject constructor(
         Log.d("PERF2", "ViewModelActivity created: ${System.currentTimeMillis()}")
         loadInitialData()
     }
+    private suspend fun loadUrlList(baseUrl: String, ext: String): List<String> {
+        val results = java.util.Collections.synchronizedMap(mutableMapOf<Int, String>())
+        var shouldStop = false
+        var start = 1
 
+        while (!shouldStop) {
+            val end = start + 9
+            coroutineScope {
+                (start..end).map { i ->
+                    async(Dispatchers.IO) {
+                        if (shouldStop) return@async
+                        val url = "$baseUrl$i.$ext"
+                        try {
+                            val connection = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+                            connection.requestMethod = "HEAD"
+                            connection.connectTimeout = 5000
+                            connection.readTimeout = 5000
+                            val code = connection.responseCode
+                            connection.disconnect()
+                            if (code == 403 || code == 404) shouldStop = true
+                            else results[i] = url
+                        } catch (e: Exception) {
+                            shouldStop = true
+                        }
+                    }
+                }.awaitAll()
+            }
+            start += 10
+        }
+        return results.toSortedMap().values.toList()
+    }
+    // ✅ Fix — gọi đúng hàm đã có
+    fun preloadBackgroundsAndStickers() {
+        if (_bgStickerReady.value) return
+        loadBackgroundsAndStickers() // ← hàm này đã có trong ViewModelActivity
+    }
+
+    fun loadBackgroundsAndStickers() {
+        if (_bgLoading.value) return
+        if (_bgStickerReady.value && !_bgStickerFailed.value) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            _bgLoading.value = true
+            _bgStickerReady.value = false
+            try {
+                val json = java.net.URL("$bgBaseUrl/bg.json").readText()
+                val jsonObj = org.json.JSONObject(json)
+                bgQuantity = jsonObj.getJSONArray("Background").getJSONObject(0).getInt("quantity") // ✅ update biến
+                stickerQuantity = jsonObj.getJSONArray("Sticker").getJSONObject(0).getInt("quantity") // ✅ update biến
+                _bgStickerFailed.value = false
+                _bgStickerReady.value = true // ✅ fragment collect → update adapter
+            } catch (e: Exception) {
+                Log.e("ViewModelActivity", "❌ ${e.message}")
+                _bgStickerFailed.value = true
+            } finally {
+                _bgLoading.value = false
+            }
+        }
+    }
     private fun loadInitialData() {
         viewModelScope.launch {
             try {
@@ -90,7 +160,8 @@ class ViewModelActivity @Inject constructor(
                 // ✅ Bước 2: Fetch online SAU KHI local đã ổn định
                 // Gọi trực tiếp, KHÔNG launch(IO) riêng → tránh race condition
                 fetchOnlineTemplatesInternal()
-
+                launch { loadBackgroundsAndStickers() }
+                launch { observeNetworkForRetry() }
                 Log.d("ViewModelActivity", "📦 After online fetch — customized: ${appDataManager.customizedCharacters.value.size}")
             } catch (e: Exception) {
                 Log.e("ViewModelActivity", "❌ Init error: ${e.message}", e)
@@ -103,6 +174,15 @@ class ViewModelActivity @Inject constructor(
      * Gọi từ mọi nơi đều an toàn — guard đảm bảo chỉ 1 request chạy tại 1 thời điểm.
      * BaseFragment gọi khi vào màn + có mạng + chưa có online data.
      */
+    private suspend fun observeNetworkForRetry() {
+        networkOnline.collect { isOnline ->
+            if (isOnline && _bgStickerFailed.value && !_bgLoading.value) {
+                Log.d("ViewModelActivity", "🔄 Network restored, retrying...")
+                _bgStickerFailed.value = false
+                loadBackgroundsAndStickers()
+            }
+        }
+    }
     private suspend fun fetchOnlineTemplatesInternal() {
         if (_isFetchingOnline.value) {
             Log.d("ViewModelActivity", "⏭️ Already fetching, skip")

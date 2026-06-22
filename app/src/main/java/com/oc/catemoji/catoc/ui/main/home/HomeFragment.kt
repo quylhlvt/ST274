@@ -94,7 +94,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(
     override fun viewListener() {
         binding.apply {
             btnCreate.onClick {
-                    findNavController().navigate(R.id.action_home_to_createPony)
+                navigateWithCheck(R.id.action_home_to_createPony)
             }
             btnMyAlbum.onClick {
                 showInter {
@@ -103,15 +103,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(
 
             }
             btnRandom.onClick(1000) {
-                    findNavController().navigate(R.id.action_home_to_random)
+                navigateWithCheck(R.id.action_home_to_random)
             }
             btnCosPlay.onClick(1000) {
-                    findNavController().navigate(R.id.action_home_to_cosplay)
+                navigateWithCheck(R.id.action_home_to_cosplay)
             }
             actionBar.btnActionBarRight.onClick { toSettingFromHome() }
         }
     }
+    private fun navigateWithCheck(destination: Int) {
+        val hasNetwork = isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
+        val hasData = viewModelActivity.templates.value.isNotEmpty() // ← bỏ dấu !
 
+        when {
+            !hasNetwork -> showUnstableNetworkDialog()
+            !hasData -> showLoadingDataDialog()
+            else -> findNavController().navigate(destination)
+        }
+    }
     override fun observeData() {
         binding.root.post {
             Log.d("PERF2", "HomeFragment first frame: ${System.currentTimeMillis()}")

@@ -86,6 +86,7 @@ class AddCharacterViewModel @Inject constructor(
         speeches: List<String>
     ) {
         backgroundImageList.clear()
+        backgroundImageList.add(SelectedAddModel(path = "")) // ← giữ item pick từ gallery
         backgroundImageList.addAll(backgrounds.map { SelectedAddModel(path = it) })
 
         backgroundColorList.clear()
@@ -105,7 +106,16 @@ class AddCharacterViewModel @Inject constructor(
         textColorList.addAll(DataLocal.getTextColorDefault(context))
         textColorList.getOrNull(1)?.isSelected = true
     }
-
+    fun loadDataFromQuantity(
+        bgQuantity: Int,
+        stickerQuantity: Int,
+        bgBaseUrl: String,
+        speeches: List<String>
+    ) {
+        val bgs = (1..bgQuantity).map { "$bgBaseUrl/Background/$it.png" }
+        val stickers = (1..stickerQuantity).map { "$bgBaseUrl/Sticker/$it.png" }
+        loadDataFromMainViewModel(bgs, stickers, speeches)
+    }
     // ========== Selection helpers ==========
 
     suspend fun updateBackgroundImageSelected(position: Int) {

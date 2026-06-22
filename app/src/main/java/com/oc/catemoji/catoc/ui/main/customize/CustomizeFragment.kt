@@ -239,8 +239,11 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                     }
                 )
             }
-            actionBar.btnActionBarCenter2.setOnClickListener { viewModel.toggleFlip() }
-            actionBar.btnActionBarRight.setOnClickListener {
+            actionBar.btnActionBarCenter2.onClick { viewModel.toggleFlip() }
+            actionBar.btnActionBarRight.onClick {
+                if (!canSave) return@onClick
+                if (!isAdded || isDetached || view == null) return@onClick
+                if (checkOnlineNetworkOrShowDialog()) return@onClick
                 if (canSave)
                     showInter {
                         performSave()

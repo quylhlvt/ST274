@@ -91,7 +91,10 @@ class AppDataManager @Inject constructor(
         }.getOrNull()
     }
     // ── INIT ─────────────────────────────────────────────────────────────────
-
+    fun updateBackgroundsAndStickers(bgs: List<String>, stickers: List<String>) {
+        _backgrounds.value = bgs
+        _stickers.value = stickers
+    }
     suspend fun loadInitialData() {
         Log.d("PERF2", "loadInitialData START: ${System.currentTimeMillis()}")
         if (isDataLoaded) { Log.d(TAG, "⚠️ Already loaded, skip"); return }
@@ -457,13 +460,10 @@ class AppDataManager @Inject constructor(
     // ── ASSETS ────────────────────────────────────────────────────────────────
 
     private suspend fun loadBackgrounds() {
-        runCatching {
-            val files = context.assets.list("bg") ?: emptyArray()
-            _backgrounds.value = listOf("") + files
-                .sortedBy { it.substringBeforeLast(".").toIntOrNull() ?: 0 }
-                .map { "$ASSET_PREFIX/bg/$it" }
-        }.onFailure { Log.e(TAG, "❌ loadBackgrounds", it) }
+        // ← Bỏ load từ assets, để rỗng chờ URL online
+        _backgrounds.value = emptyList()
     }
+
 
     private suspend fun loadBackgroundTexts() {
         runCatching {
@@ -473,10 +473,8 @@ class AppDataManager @Inject constructor(
     }
 
     private suspend fun loadStickers() {
-        runCatching {
-            _stickers.value = (context.assets.list("sticker") ?: emptyArray())
-                .map { "$ASSET_PREFIX/sticker/$it" }
-        }.onFailure { Log.e(TAG, "❌ loadStickers", it) }
+        // ← Bỏ load từ assets, để rỗng chờ URL online
+        _stickers.value = emptyList()
     }
 
     private suspend fun loadSpeechs() {

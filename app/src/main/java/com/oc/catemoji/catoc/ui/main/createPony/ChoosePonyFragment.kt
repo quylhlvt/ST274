@@ -31,6 +31,8 @@ import com.oc.catemoji.catoc.ui.main.customize.CustomizeFragment.Companion.ARG_T
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -145,35 +147,41 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
                         mainViewModel.isFetchingOnlineFlow
                     ) { templates, isFetching -> Pair(templates, isFetching) }
                         .collect { (templates, isFetching) ->
-                            // ✅ Lọc theo trạng thái mạng
                             val hasInternet = withContext(Dispatchers.IO) {
                                 isInternetAvailable(requireContext())
                             }
-                            val filteredTemplates = if (hasInternet) {
-                                templates // có mạng → show tất cả
-                            } else {
-                                templates.filter { !it.id.startsWith("online_") } // mất mạng → chỉ offline
-                            }
 
-                            adapter.submitList(filteredTemplates)
+                            if (hasInternet && templates.isNotEmpty()) {
+                                viewModel.updateFilteredTemplates(templates, true)
+                                adapter.submitList(templates)
+                            } else if (!hasInternet) {
+                                // ✅ offline: dùng cache, không filter bỏ online_
+                                val cached = viewModel.filteredTemplates.value
+                                val toShow = cached.ifEmpty { templates.filter { !it.id.startsWith("online_") } }
+                                adapter.submitList(toShow)
+                            }
 
                             if (isFirstLoad && !isFetching) {
                                 isFirstLoad = false
-                                if (filteredTemplates.size <= 1) showNoInternetDialog()
+                                if (adapter.items.isEmpty()) showNoInternetDialog()
                             }
                         }
                 }
 
                 launch {
-                    mainViewModel.templates.collect { templates ->
-                        val hasOnline = templates.any { it.id.startsWith("online_") }
-                        if (!hasOnline && !mainViewModel.isFetchingOnlineFlow.value) {
-                            val hasInternet = withContext(Dispatchers.IO) {
-                                isInternetAvailable(requireContext())
+                    viewModel.networkAvailable
+                        .drop(1) // bỏ emit initial
+                        .filter { it } // chỉ khi available
+                        .collect {
+                            val templates = mainViewModel.templates.value
+                            viewModel.updateFilteredTemplates(templates, true)
+                            adapter.submitList(viewModel.filteredTemplates.value)
+
+                            val hasOnline = templates.any { it.id.startsWith("online_") }
+                            if (!hasOnline && !mainViewModel.isFetchingOnlineFlow.value) {
+                                mainViewModel.fetchOnlineTemplates()
                             }
-                            if (hasInternet) mainViewModel.fetchOnlineTemplates()
                         }
-                    }
                 }
 
                 launch {
@@ -187,25 +195,9 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
 
     override fun onResume() {
         super.onResume()
-        viewLifecycleOwner.lifecycleScope.launch {
-            val hasInternet = withContext(Dispatchers.IO) {
-                isInternetAvailable(requireContext())
-            }
-            val templates = mainViewModel.templates.value
-            val filtered = if (hasInternet) {
-                templates
-            } else {
-                templates.filter { !it.id.startsWith("online_") }
-            }
-            adapter.submitList(filtered)
-
-            // Fetch online nếu có mạng mà chưa có data online
-            if (hasInternet) {
-                val hasOnline = templates.any { it.id.startsWith("online_") }
-                if (!hasOnline && !mainViewModel.isFetchingOnlineFlow.value) {
-                    mainViewModel.fetchOnlineTemplates()
-                }
-            }
+        if (adapter.items.isEmpty()) {
+            val cached = viewModel.filteredTemplates.value
+            if (cached.isNotEmpty()) adapter.submitList(cached)
         }
     }
 

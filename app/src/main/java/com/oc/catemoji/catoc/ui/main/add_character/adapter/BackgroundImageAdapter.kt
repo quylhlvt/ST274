@@ -1,7 +1,11 @@
 package com.oc.catemoji.catoc.ui.main.add_character.adapter
 
+import android.net.Uri
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.facebook.shimmer.ShimmerDrawable
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseAdapter
 import com.oc.catemoji.catoc.core.extention.gone
@@ -12,6 +16,8 @@ import com.oc.catemoji.catoc.core.extention.select
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.data.model.addcharacter.SelectedAddModel
 import com.oc.catemoji.catoc.databinding.ItemBackgroundImageBinding
+import com.oc.catemoji.catoc.utils.DataLocal
+import com.oc.catemoji.catoc.utils.DataLocal.shimmer
 
 
 class BackgroundImageAdapter : BaseAdapter<SelectedAddModel, ItemBackgroundImageBinding>(
@@ -22,6 +28,8 @@ class BackgroundImageAdapter : BaseAdapter<SelectedAddModel, ItemBackgroundImage
     var currentSelected = -1
 
     override fun onBind(binding: ItemBackgroundImageBinding, item: SelectedAddModel, position: Int) {
+        val shimmerDrawable = ShimmerDrawable().apply { setShimmer(shimmer) }
+
         val context = binding.root.context
         binding.apply {
             if (currentSelected == position) {
@@ -48,7 +56,15 @@ class BackgroundImageAdapter : BaseAdapter<SelectedAddModel, ItemBackgroundImage
                 imvImage.visible()
                 if (imvImage.tag != item.path) {
                     imvImage.tag = item.path
-                    imvImage.loadFromAsset(item.path)
+
+                    Glide.with(binding.root)
+                        .load(Uri.parse(item.path))
+                        .override(120, 120)                           // ← QUAN TRỌNG NHẤT
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)     // ← cache, scroll lại không decode
+                        .centerCrop()
+                        .placeholder(shimmerDrawable)
+                        .into(binding.imvImage)
+//                    imvImage.loadFromAsset(item.path)
                 }
                 imvImage.onClick { onBackgroundImageClick(item.path, position) }
             }
