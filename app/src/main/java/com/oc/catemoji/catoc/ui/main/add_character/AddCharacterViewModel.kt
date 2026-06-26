@@ -27,7 +27,7 @@ class AddCharacterViewModel @Inject constructor(
     // ========== Init guard ==========
     var isInitialized = false
     var isRestoringDraws = false
-
+    var hasLoadedData = false
     // ========== Adapter Lists ==========
     var backgroundImageList: ArrayList<SelectedAddModel> = arrayListOf()
     var backgroundColorList: ArrayList<SelectedAddModel> = arrayListOf()

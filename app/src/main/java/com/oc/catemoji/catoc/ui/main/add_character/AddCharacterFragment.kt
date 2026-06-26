@@ -188,30 +188,40 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                     }
                 }
                 launch {
-                    viewModelActivity.backgrounds.collectLatest { bgs ->
-                        if (bgs.isNotEmpty()) {
-                            viewModel.loadDataFromMainViewModel(
-                                bgs,
-                                viewModelActivity.stickers.value,
-                                viewModelActivity.speechs.value
-                            )
-                            backgroundImageAdapter.submitList(viewModel.backgroundImageList)
-                            stickerAdapter.submitList(viewModel.stickerList, true)
-                        }
-                    }
-                }
-                launch {
                     viewModelActivity.bgStickerReady.collect { ready ->
                         if (!ready || !viewModel.isInitialized) return@collect
-                        viewModel.loadDataFromQuantity(
-                            bgQuantity = viewModelActivity.bgQuantity,
-                            stickerQuantity = viewModelActivity.stickerQuantity,
-                            bgBaseUrl = viewModelActivity.bgBaseUrl,
-                            speeches = viewModelActivity.speechs.value
-                        )
+                        Log.d("DEBUG_STICKER", "bgStickerReady=$ready, isInitialized=${viewModel.isInitialized}, hasLoadedData=${viewModel.hasLoadedData}, stickerSize=${viewModel.stickerList.size}")
+                        // ✅ Chỉ load lại nếu chưa có data
+                        if (!viewModel.hasLoadedData) {
+                            viewModel.loadDataFromQuantity(
+                                bgQuantity = viewModelActivity.bgQuantity,
+                                stickerQuantity = viewModelActivity.stickerQuantity,
+                                bgBaseUrl = viewModelActivity.bgBaseUrl,
+                                speeches = viewModelActivity.speechs.value
+                            )
+                            viewModel.hasLoadedData = true
+                        }
+                        Log.d("DEBUG_STICKER", "after submit stickerSize=${viewModel.stickerList.size}")
                         backgroundImageAdapter.submitList(viewModel.backgroundImageList)
                         stickerAdapter.submitList(viewModel.stickerList, true)
                         speechAdapter.submitList(viewModel.speechList)
+                    }
+                }
+                launch {
+                    viewModelActivity.backgrounds.collectLatest { bgs ->
+                        if (bgs.isNotEmpty()) {
+                            // ✅ Chỉ load lại nếu chưa có data
+                            if (!viewModel.hasLoadedData) {
+                                viewModel.loadDataFromMainViewModel(
+                                    bgs,
+                                    viewModelActivity.stickers.value,
+                                    viewModelActivity.speechs.value
+                                )
+                                viewModel.hasLoadedData = true
+                            }
+                            backgroundImageAdapter.submitList(viewModel.backgroundImageList)
+                            stickerAdapter.submitList(viewModel.stickerList, true)
+                        }
                     }
                 }
             }
@@ -528,7 +538,17 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     }
 
     private fun restoreUIState() {
-        submitAllAdapters()
+        Log.d("DEBUG_STICKER", "restoreUIState stickerSize=${viewModel.stickerList.size}, hasLoadedData=${viewModel.hasLoadedData}")
+
+        // ✅ Chỉ submit adapter nếu có data, không submit list rỗng
+        if (viewModel.stickerList.isNotEmpty()) {
+            submitAllAdapters()
+        } else {
+            // Submit các list khác không phụ thuộc network
+            backgroundColorAdapter.submitList(viewModel.backgroundColorList, true)
+            textFontAdapter.submitListReset(viewModel.textFontList)
+            textColorAdapter.submitListReset(viewModel.textColorList)
+        }
 
         val currentNav = viewModel.typeNavigation.value
         if (currentNav != -1) setupTypeNavigation(currentNav)
@@ -543,7 +563,6 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                 binding.imvBackground.setBackgroundColor(requireContext().getColor(R.color.transparent))
                 loadImage(requireContext(), imagePath, binding.imvBackground)
             }
-
             savedColor != null -> {
                 binding.imvBackground.setImageBitmap(null)
                 binding.imvBackground.setBackgroundColor(savedColor)
@@ -686,12 +705,22 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
             message = getString(R.string.do_you_want_to_reset_all),
             title = getString(R.string.reset),
             onYes = {
+                Log.d("DEBUG_STICKER", "RESET called")
+                viewModel.hasLoadedData = false
                 showLoadingSafe()
-                viewModel.loadDataFromMainViewModel(
-                    viewModelActivity.backgrounds.value,
-                    viewModelActivity.stickers.value,
-                    viewModelActivity.speechs.value
+
+                // ✅ Dùng loadDataFromQuantity thay vì loadDataFromMainViewModel
+                // vì backgrounds.value có thể rỗng
+                viewModel.loadDataFromQuantity(
+                    bgQuantity = viewModelActivity.bgQuantity,
+                    stickerQuantity = viewModelActivity.stickerQuantity,
+                    bgBaseUrl = viewModelActivity.bgBaseUrl,
+                    speeches = viewModelActivity.speechs.value
                 )
+                viewModel.hasLoadedData = true  // ✅ Set true ngay sau khi load
+
+                submitAllAdapters()  // ✅ Submit ngay sau khi có data
+
                 viewModel.resetDraw()
                 viewModel.setBackgroundImage(null)
                 viewModel.savedBackgroundColor = null
@@ -702,12 +731,9 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                 backgroundColorAdapter.clearSelection()
                 hideLoadingSafe()
 
-                // ✅ Ưu tiên bitmap đã cache, fallback về imagepath
                 val cachedBitmap = viewModelActivity.customizeBitmap
                 if (cachedBitmap != null && !cachedBitmap.isRecycled) {
-                    binding.drawView.addDraw(
-                        viewModel.loadDrawableEmoji(cachedBitmap, isCharacter = true)
-                    )
+                    binding.drawView.addDraw(viewModel.loadDrawableEmoji(cachedBitmap, isCharacter = true))
                     hideLoadingSafe()
                 } else if (imagepath.isNotEmpty()) {
                     addDrawable(imagepath, isCharacter = true)

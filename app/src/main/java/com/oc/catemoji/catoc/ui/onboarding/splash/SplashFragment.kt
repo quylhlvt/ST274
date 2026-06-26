@@ -7,12 +7,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
-import android.widget.FrameLayout
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
@@ -25,7 +23,6 @@ import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.base.BackPressHandler
 import com.oc.catemoji.catoc.core.base.BaseFragment
-import com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
 import com.oc.catemoji.catoc.core.extention.dpToPx
 import com.oc.catemoji.catoc.core.extention.toIntro
 import com.oc.catemoji.catoc.core.extention.toLanguage
@@ -55,29 +52,12 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
         private const val API_TIMEOUT_MS = 8_000L
     }
 
-    // ── INIT ──────────────────────────────────────────────────────────────────
 
     override fun initView() {
-
-        // ✅ Warm up font — giữ nguyên, nhẹ
         ResourcesCompat.getFont(requireContext(), R.font.baloo2_extrabold)
-
-        // ✅ Bỏ OuterStrokeShadownTextView warm up — không cần thiết
-        // val dummyView = OuterStrokeShadownTextView(requireContext())
-
-        // ✅ Bỏ AsyncLayoutInflater ở đây — inflate fragment_home quá nặng
-        // AsyncLayoutInflater(requireContext()).inflate(R.layout.fragment_home, null) { _, _, _ -> }
 
         checkAndClearDataIfNewVersion()
 
-        binding.progressWrapper.post {
-            startFakeProgress()
-
-            // ✅ Preload fragment_home SAU khi splash đã hiển thị xong
-            AsyncLayoutInflater(requireContext()).inflate(
-                R.layout.fragment_home, null
-            ) { _, _, _ -> }
-        }
         interCallBack = object : InterCallback() {
             override fun onNextAction() {
                 super.onNextAction()
@@ -100,18 +80,12 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
         val savedVersion = sharedPreferences.getVersionCode()
 
         if (savedVersion != currentVersion) {
-            // ✅ Xóa MMKV
             MMKV.defaultMMKV().clearAll()
-
-            // ✅ Xóa SharedPreferences (giữ lại language)
             sharedPreferences.clearAll()
-
-            // ✅ Xóa file cache
             context.filesDir.deleteRecursively()
             context.cacheDir.deleteRecursively()
             context.externalCacheDir?.deleteRecursively()
 
-            // ✅ Set lại version SAU khi clear
             sharedPreferences.setVersionCode(currentVersion)
 
             viewLifecycleOwner.lifecycleScope.launch {
@@ -123,30 +97,13 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
     override fun viewListener() {}
 
     override fun observeData() {
-        // Launch trên background, không block main thread
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.startSplashTimer(
-                hasOnlineTemplates = mainViewModel.templates.value.any { it.id.startsWith("online_") },
-                waitForOnline = {
-                    mainViewModel.templates.first { list ->
-                        list.any { it.id.startsWith("online_") }
-                    }
-                },
-                waitForImages = {
-                    mainViewModel.imagesReady.first { it }  // ✅ chờ true
-                }
-            )
-        }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.readyToNavigate.collect {
                     if (!isNetworkAvailable()) {
                         completeProgress { goToHome() }
                     } else {
-                        // Có mạng → đợi ad tối đa 30s rồi tự navigate
                         withTimeoutOrNull(30_000L) {
-                            // Đợi adReady = true từ interCallBack.onNextAction()
                             while (!adReady) delay(100)
                         }
                         if (!hasNavigated) {
@@ -166,9 +123,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
         savedInstanceState: Bundle?
     ): FragmentSplashBinding = FragmentSplashBinding.inflate(inflater, container, false)
 
-    // ── PROGRESS ──────────────────────────────────────────────────────────────
 
-    // Giả lập 80% progress trong MIN_SPLASH_MS, dừng chờ data
     private fun startFakeProgress() {
         animateOverlayTo(targetFraction = 0.2f, duration = MIN_SPLASH_MS)
     }
@@ -189,10 +144,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
             onEnd?.invoke(); return
         }
 
-        // Offset bù cho capRight margin (10dp start) + độ rộng cap (11dp)
-        val density = resources.displayMetrics.density
-        val capOffset = (10 + 11) * density  // marginStart + width của capRight
-
         progressAnimator = ValueAnimator.ofFloat(currentOverlayFraction, targetFraction).apply {
             this.duration = duration
             interpolator = DecelerateInterpolator()
@@ -201,23 +152,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
                 val fraction = anim.animatedValue as Float
                 currentOverlayFraction = fraction
 
-                val density = resources.displayMetrics.density
                 val total = container.width.toFloat()
-
-                // overlay.left = marginStart = 18dp (vị trí gốc của overlay trong container clip)
-                // fraction=1 → overlay dịch trái về x=0 → translateX = -overlay.left
-                // fraction=0 → overlay dịch phải ra ngoài → translateX = total - overlay.left
-                val overlayLeft = overlay.left.toFloat() - dpToPx(
-                    requireContext(),
-                    18
-                )  // lấy trực tiếp từ view, không cần tính dp
-
-                val translateX = (total - overlayLeft) * (1f - fraction) - overlayLeft * fraction
-                // rút gọn: translateX = (total - overlayLeft) * (1f - fraction) - overlayLeft * fraction
-                //        = total*(1-f) - overlayLeft*(1-f) - overlayLeft*f
-                //        = total*(1-f) - overlayLeft
-
-                // Đơn giản hơn:
+                val overlayLeft = overlay.left.toFloat() - dpToPx(requireContext(), 18)
                 val tx = total * (1f - fraction) - overlayLeft
 
                 overlay.translationX = tx
@@ -242,7 +178,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
             onDone()
         })
     }
-    // ── NAVIGATE ──────────────────────────────────────────────────────────────
+
 
     private fun goToHome() {
         if (hasNavigated) return
@@ -255,7 +191,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
         toIntro()
     }
 
-    // ── NETWORK ───────────────────────────────────────────────────────────────
 
     private fun isNetworkAvailable(): Boolean = try {
         val cm = requireContext().getSystemService(ConnectivityManager::class.java)
@@ -271,21 +206,56 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
         false
     }
 
-    // ── LIFECYCLE ─────────────────────────────────────────────────────────────
     override fun onPause() {
         super.onPause()
-        // Dừng animator, giữ nguyên currentOverlayFraction
         progressAnimator?.pause()
     }
 
     override fun onResume() {
         super.onResume()
-        // Chạy tiếp từ chỗ dừng
         progressAnimator?.resume()
-        // Ad đã xong trong lúc màn tắt → navigate khi mở lại
+
         if (adReady && !hasNavigated) {
             adReady = false
             lifecycleScope.launch { completeProgress { goToHome() } }
+            return
+        }
+
+        binding.progressWrapper.post {
+            if (!isAdded || isDetached) return@post
+
+            startFakeProgress()
+
+            // ✅ Chờ frame đầu tiên thực sự được render ra màn hình
+            binding.root.viewTreeObserver.addOnPreDrawListener(object :
+                android.view.ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    binding.root.viewTreeObserver.removeOnPreDrawListener(this)
+
+                    // Frame đầu tiên đã sẵn sàng render → bắt đầu đếm giờ
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        viewModel.startSplashTimer(
+                            hasOnlineTemplates = mainViewModel.templates.value.any {
+                                it.id.startsWith("online_")
+                            },
+                            waitForOnline = {
+                                mainViewModel.templates.first { list ->
+                                    list.any { it.id.startsWith("online_") }
+                                }
+                            },
+                            waitForImages = {
+                                mainViewModel.imagesReady.first { it }
+                            }
+                        )
+                    }
+
+                    AsyncLayoutInflater(requireContext()).inflate(
+                        R.layout.fragment_home, null
+                    ) { _, _, _ -> }
+
+                    return true  // ✅ true = cho phép draw bình thường
+                }
+            })
         }
     }
 

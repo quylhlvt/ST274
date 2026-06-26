@@ -29,35 +29,46 @@
         app:dotsSpacing="3dp"
         app:dotsWidthFactor="2.5"
         app:progressMode="false"
-        app:layout_constraintBottom_toTopOf="@+id/frame_layout_continue"
+        app:layout_constraintBottom_toTopOf="@+id/native_ads"
         app:layout_constraintStart_toStartOf="parent"
         app:selectedDotColor="@color/app_color" />
+<!--    <ImageView-->
+<!--        android:id="@+id/btnNextPager"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:layout_marginTop="52dp"-->
+<!--        android:layout_marginEnd="22dp"-->
+<!--        android:src="@drawable/img_next_intro"/>-->
     <FrameLayout
         android:id="@+id/frame_layout_continue"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:layout_marginHorizontal="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/native_ads">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="52dp"
+      android:layout_marginEnd="22dp"
+            android:src="@drawable/img_next_intro">
 
-        <include
-            android:id="@+id/btnNextPager"
-            layout="@layout/bottom_bottom_view"
+            <include
+                android:id="@+id/btnNextPager"
+                layout="@layout/bottom_bottom_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:layout_gravity="end"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/native_ads"
             android:layout_width="match_parent"
+            android:visibility="gone"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:layout_gravity="end"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-    </FrameLayout>
-    <FrameLayout
-        android:id="@+id/native_ads"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <include layout="@layout/ads_native_medium_btn_bottom_shimmer" />
-    </FrameLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <include layout="@layout/ads_native_medium_btn_bottom_shimmer" />
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

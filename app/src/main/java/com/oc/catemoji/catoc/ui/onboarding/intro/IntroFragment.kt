@@ -40,27 +40,23 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
     lateinit var introAdapter: IntroAdapter
 
     override fun viewListener() {
-        binding.btnNextPager.btnNext.onClick(200) {
+        binding.btnNextPager.tvButton.onClick(200) {
             android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
             viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
         }
-         binding.btnNextPager.tvButton.onClick(200) {
-            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
-            viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
-        }
+//         binding.btnNextPager.tvButton.onClick(200) {
+//            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
+//            viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
+//        }
 
         binding.apply {
            viewPager2.registerOnPageChangeCallback(object :
                 ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
-                    if (position == 0) {
-                        btnNextPager.btnNext.visible()
-                        btnNextPager.tvButton.gone()
+                    if (position == 1) {
                         nativeAds.gone()
                     } else {
-                        btnNextPager.btnNext.gone()
-                        btnNextPager.tvButton.visible()
                         nativeAds.visible()
                     }
                 }
@@ -76,8 +72,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
 
     override fun initView() {
         binding.viewPager2.adapter = introAdapter
-        binding.viewPager2.isUserInputEnabled = false
-        Admob.getInstance().loadNativeAll(requireContext(), getString(R.string.native_all))
+//        binding.viewPager2.isUserInputEnabled = false
         Admob.getInstance().loadNativeAd(
             requireContext(),
             getString(R.string.native_intro),

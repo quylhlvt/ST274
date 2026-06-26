@@ -117,6 +117,12 @@ class CosplayFragment : BaseFragment<FragmentCosplayBinding, CosplayViewModel>(
             random.onClick {
                 val isOnline =
                     isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
+
+                if (!isOnline) {
+                    showUnstableNetworkDialog()
+                    return@onClick
+                }
+
                 viewModel.randomize(isOnline = isOnline)
             }
             actionBar.btnActionBarRight.onClick {

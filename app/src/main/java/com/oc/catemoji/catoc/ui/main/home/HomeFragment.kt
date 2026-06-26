@@ -63,6 +63,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(
         Admob.getInstance().loadNativeCollapNotBanner(requireContext(), getString(R.string.native_cl_home), binding.flNativeCollab)
     }
     override fun initView() {
+        Admob.getInstance().loadNativeAll(requireContext(), getString(R.string.native_all))
         Log.d("NativeCollab", "▶️ initView")
         Admob.getInstance().loadInterAll(requireContext(), getString(R.string.inter_all))
         initNativeCollab()

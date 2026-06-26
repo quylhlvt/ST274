@@ -111,16 +111,18 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
                     popBack()
             }
             random.onClick {
+                val isOnline =
+                    isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
+                if (!isOnline) {
+                    showUnstableNetworkDialog()
+                    return@onClick
+                }
                 showInter {
-                    val isOnline =
-                        isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
                     viewModel.randomize(isOnline = isOnline)
                 }
-
             }
             actionBar.btnActionBarRight.onClick {
                 val item = viewModel.randomItem.value ?: return@onClick
-
                 val isOnline =
                     isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
                 val templateId =
@@ -129,7 +131,6 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
                     showUnstableNetworkDialog()
                     return@onClick
                 }
-
                 val args = CustomizeFragment.newArgs(
                     templateIndex = item.templateIndex,
                     isEdit = false,
