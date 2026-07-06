@@ -23,8 +23,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.base.BaseFragment
@@ -86,12 +86,23 @@ class ChoosePonyViewModel @Inject constructor(
     }
 
     fun updateFilteredTemplates(templates: List<CustomModel>, hasInternet: Boolean) {
-        if (hasInternet && templates.isNotEmpty()) {
-            saveToCache(templates) // ✅ lưu toàn bộ kể cả online_
-            _filteredTemplates.value = templates
-        } else if (!hasInternet) {
-            // ✅ offline: dùng cache đã lưu, không filter
-            if (_filteredTemplates.value.isEmpty()) loadFromCache()
+        if (!hasInternet) {
+            val offlineList = templates
+                .filterNot { it.id.startsWith("online_") }
+                .sortedBy { it.level }
+
+            if (offlineList.isNotEmpty()) {
+                _filteredTemplates.value = offlineList
+            } else if (_filteredTemplates.value.isEmpty()) {
+                loadFromCache()
+            }
+            return
+        }
+
+        if (templates.isNotEmpty()) {
+            val sorted = templates.sortedBy { it.level }
+            _filteredTemplates.value = sorted
+            saveToCache(sorted)
         }
     }
 
@@ -112,7 +123,7 @@ class ChoosePonyViewModel @Inject constructor(
                 val type = object : TypeToken<List<CustomModel>>() {}.type
                 val list = gson.fromJson<List<CustomModel>>(cacheFile.readText(), type) ?: emptyList()
                 Log.d("DEBUG_PONY", "loaded ${list.size} from cache")
-                _filteredTemplates.value = list
+                _filteredTemplates.value = list.sortedBy { it.level }
             } catch (e: Exception) {
                 Log.e("DEBUG_PONY", "load cache failed: ${e.message}")
             }

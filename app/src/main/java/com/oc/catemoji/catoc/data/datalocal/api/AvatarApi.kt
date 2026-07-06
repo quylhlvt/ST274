@@ -105,7 +105,8 @@ object ApiTemplateMapper {
                     avatar     = "${base}${conn}$key/avatar.png",
                     listPath   = ArrayList(bodyParts),
                     selections = arrayListOf(),
-                    updatedAt  = System.currentTimeMillis()
+                    updatedAt  = System.currentTimeMillis(),
+                    level      = list.firstOrNull()?.levelInt ?: Int.MAX_VALUE
                 )
             }
     }

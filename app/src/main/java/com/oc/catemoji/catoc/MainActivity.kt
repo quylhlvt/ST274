@@ -13,10 +13,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.core.base.BackPressHandler
 import com.oc.catemoji.catoc.core.extention.gone
@@ -40,12 +42,14 @@ interface LoadingController {
         title: String? = null,
         onOk: (() -> Unit)? = null
     )
+    fun hideGlobalDialog()
 }
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() , LoadingController{
     private var globalLoadingDialog: Dialog? = null
     private var globalConfirmDialog: Dialog? = null
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun showGlobalLoading() {
         if (globalLoadingDialog?.isShowing == true) return
@@ -77,6 +81,14 @@ class MainActivity : AppCompatActivity() , LoadingController{
                 dialog.findViewById<View>(R.id.btnNo)?.gone()
             }
             globalConfirmDialog?.show()
+            hideNavigation(true)
+        }
+    }
+
+    override fun hideGlobalDialog() {
+        runOnUiThread {
+            globalConfirmDialog?.dismiss()
+            globalConfirmDialog = null
             hideNavigation(true)
         }
     }
@@ -238,7 +250,22 @@ class MainActivity : AppCompatActivity() , LoadingController{
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        navController.addOnDestinationChangedListener { _, destination,_  ->
+            val screenName = destination.label?.toString() ?: resources.getResourceEntryName(destination.id)
+            val screenClass = if (destination is FragmentNavigator.Destination) {
+                destination.className.substringAfterLast(".")
+            } else {
+                screenName
+            }
+            Log.d("SCREEN", "$screenName - $screenClass")
+            val bundle = Bundle().apply {
+                putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+                putString(FirebaseAnalytics.Param.SCREEN_CLASS, screenClass)
+            }
 
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle)
+        }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val currentFragment = navHostFragment.childFragmentManager.primaryNavigationFragment

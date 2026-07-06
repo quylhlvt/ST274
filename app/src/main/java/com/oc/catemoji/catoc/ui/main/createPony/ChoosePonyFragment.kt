@@ -66,6 +66,8 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
         binding.flNativeCollab.removeAllViews()
     }
     override fun initView() {
+        // Dialog ở Home do Activity giữ nên phải đóng khi Category đã được tạo.
+        hideGlobalDialogSafe()
         initNativeCollab()
         setImageActionBar(binding.actionBar.btnActionBarLeft, R.drawable.back_app)
         setTextActionBar(
@@ -74,10 +76,11 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
         )
 
         adapter = ChoosePonyAdapter { character, position ->
-            val number = character.id.filter { it.isDigit() }
-            logEvent("click_item_${number}", character.avatar)
-            Log.d("logevent","click_item_${number}- ${character.avatar}" )
-            if (character.id.startsWith("online_")) {
+            val dataName = character.id
+                .removePrefix("online_")
+                .removePrefix("template_")
+            logEvent("click_item_$dataName", character.avatar)
+            Log.d("logevent", "click_item_$dataName - ${character.avatar}")
                 if (!isInternetAvailable(requireContext())) {
                     showUnstableNetworkDialog(); return@ChoosePonyAdapter
                 }
@@ -90,14 +93,6 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
                         navigateToCustomize(character, position)
                     }
                 }
-            } else {
-                // ✅ Offline item — verify data tồn tại trước khi navigate
-                val safeIndex = mainViewModel.templates.value.indexOfFirst { it.id == character.id }
-                if (safeIndex < 0) {
-                    showToast(getString(R.string.download_failed_please_try_again_later)); return@ChoosePonyAdapter
-                }
-                showInter { navigateToCustomize(character, safeIndex)}
-            }
 
 
         }
@@ -151,15 +146,7 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
                                 isInternetAvailable(requireContext())
                             }
 
-                            if (hasInternet && templates.isNotEmpty()) {
-                                viewModel.updateFilteredTemplates(templates, true)
-                                adapter.submitList(templates)
-                            } else if (!hasInternet) {
-                                // ✅ offline: dùng cache, không filter bỏ online_
-                                val cached = viewModel.filteredTemplates.value
-                                val toShow = cached.ifEmpty { templates.filter { !it.id.startsWith("online_") } }
-                                adapter.submitList(toShow)
-                            }
+                            viewModel.updateFilteredTemplates(templates, hasInternet)
 
                             if (isFirstLoad && !isFetching) {
                                 isFirstLoad = false
@@ -185,6 +172,12 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
                 }
 
                 launch {
+                    viewModel.filteredTemplates.collect { list ->
+                        if (list.isNotEmpty()) adapter.submitList(list)
+                    }
+                }
+
+                launch {
                     mainViewModel.error.collect { error ->
                         error?.let { showSnackbar(it) }
                     }
@@ -195,10 +188,8 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
 
     override fun onResume() {
         super.onResume()
-        if (adapter.items.isEmpty()) {
-            val cached = viewModel.filteredTemplates.value
-            if (cached.isNotEmpty()) adapter.submitList(cached)
-        }
+        val cached = viewModel.filteredTemplates.value
+        if (cached.isNotEmpty()) adapter.submitList(cached)
     }
 
     override fun bindViewModel() {}

@@ -53,7 +53,8 @@ data class CustomModel(
     val imageSave:  String                     = "",
     val isFlipped:  Boolean                    = false,
     val createdAt:  Long                       = 0L,
-    val updatedAt:  Long                       = System.currentTimeMillis()
+    val updatedAt:  Long                       = System.currentTimeMillis(),
+    val level:      Int                        = 0
 ) : Parcelable {
     val bodyPartCount: Int get() = listPath.size
     fun isTemplate() = id.startsWith("template_") || id.startsWith("online_")

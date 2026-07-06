@@ -61,6 +61,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
 
     private val layerViews = arrayListOf<AppCompatImageView>()
     private val navToLayerIndex = mutableMapOf<String, Int>()
+    private val layerDrawableCache = mutableMapOf<String, Drawable.ConstantState>()
 
     private val adapterNav by lazy { NavAdapter() }
     private val adapterColor by lazy { ColorAdapter() }
@@ -224,10 +225,11 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                 llColor.alpha = 0f
                 llColor.animate().alpha(1f).setDuration(200).start()
             }
-//            imgRandom.onClick {
-//                if (!checkOnlineNetworkOrShowDialog()) viewModel.randomizeAll()
-//            }
+            imgRandom.onClick {
+                if (!checkOnlineNetworkOrShowDialog()) viewModel.randomizeAll()
+            }
             actionBar.btnActionBarCenter.setOnClickListener {
+                if (!checkOnlineNetworkOrShowDialog()){
                 showConfirmDialog(
                     title = getString(R.string.reset),
                     message = getString(R.string.do_you_want_to_reset_all),
@@ -238,7 +240,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                         }
                     }
                 )
-            }
+            }}
             actionBar.btnActionBarCenter2.onClick { viewModel.toggleFlip() }
             actionBar.btnActionBarRight.onClick {
                 if (!canSave) return@onClick
@@ -349,6 +351,16 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             setSaveEnabled(false)
         }
 
+        // Fragment vẫn nằm trong back stack khi mở AddCharacter. Dùng lại drawable
+        // đã hiển thị để không phụ thuộc mạng khi quay về Custom.
+        if (!isInternetAvailable(requireContext())) {
+            layerDrawableCache[path]?.newDrawable(resources)?.mutate()?.let { cached ->
+                view.setImageDrawable(cached)
+                onLoadFinished()
+                return
+            }
+        }
+
         Glide.with(binding.rlCharacter)
             .load(path)
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -369,6 +381,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                     target: Target<Drawable>?, dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
+                    resource?.constantState?.let { layerDrawableCache[path] = it }
                     onLoadFinished(); return false
                 }
             })

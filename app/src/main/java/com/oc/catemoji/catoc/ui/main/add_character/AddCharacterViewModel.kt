@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import com.oc.catemoji.catoc.core.custom.Draw
 import com.oc.catemoji.catoc.core.custom.DrawableDraw
 import com.oc.catemoji.catoc.data.model.addcharacter.SelectedAddModel
@@ -21,13 +22,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddCharacterViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     // ========== Init guard ==========
     var isInitialized = false
     var isRestoringDraws = false
     var hasLoadedData = false
+    var isPickingImage = false
     // ========== Adapter Lists ==========
     var backgroundImageList: ArrayList<SelectedAddModel> = arrayListOf()
     var backgroundColorList: ArrayList<SelectedAddModel> = arrayListOf()
@@ -45,10 +48,17 @@ class AddCharacterViewModel @Inject constructor(
     val typeBackground: StateFlow<Int> = _typeBackground.asStateFlow()
 
     // ========== Background ==========
-    private val _backgroundImagePath = MutableStateFlow<String?>(null)
+    private val _backgroundImagePath = MutableStateFlow(
+        savedStateHandle.get<String>(KEY_BACKGROUND_IMAGE_PATH)
+    )
     val backgroundImagePath: StateFlow<String?> = _backgroundImagePath.asStateFlow()
 
-    var savedBackgroundColor: Int? = null
+    var savedBackgroundColor: Int?
+        get() = savedStateHandle.get<Int>(KEY_BACKGROUND_COLOR)
+        set(value) {
+            if (value == null) savedStateHandle.remove<Int>(KEY_BACKGROUND_COLOR)
+            else savedStateHandle[KEY_BACKGROUND_COLOR] = value
+        }
 
     // ========== Tab state ==========
     // Chỉ dùng để biết tab nào đang active — KHÔNG dùng để control layout
@@ -61,6 +71,10 @@ class AddCharacterViewModel @Inject constructor(
 
     // ========== Misc ==========
     var pathDefault = ""
+
+    init {
+        restoreCachedLists()
+    }
 
     // ========== Navigation setters ==========
 
@@ -76,6 +90,8 @@ class AddCharacterViewModel @Inject constructor(
 
     fun setBackgroundImage(path: String?) {
         _backgroundImagePath.value = path
+        if (path == null) savedStateHandle.remove<String>(KEY_BACKGROUND_IMAGE_PATH)
+        else savedStateHandle[KEY_BACKGROUND_IMAGE_PATH] = path
     }
 
     // ========== Data loading ==========
@@ -85,6 +101,11 @@ class AddCharacterViewModel @Inject constructor(
         stickers: List<String>,
         speeches: List<String>
     ) {
+        // Giữ nguyên các list và trạng thái selected khi Fragment tạm dừng
+        // (ví dụ lúc mở Photo Picker).
+        if (hasLoadedData) return
+        if (backgrounds.isEmpty() || stickers.isEmpty() || speeches.isEmpty()) return
+
         backgroundImageList.clear()
         backgroundImageList.add(SelectedAddModel(path = "")) // ← giữ item pick từ gallery
         backgroundImageList.addAll(backgrounds.map { SelectedAddModel(path = it) })
@@ -105,6 +126,9 @@ class AddCharacterViewModel @Inject constructor(
         textColorList.clear()
         textColorList.addAll(DataLocal.getTextColorDefault(context))
         textColorList.getOrNull(1)?.isSelected = true
+
+        hasLoadedData = true
+        cacheLists()
     }
     fun loadDataFromQuantity(
         bgQuantity: Int,
@@ -127,6 +151,7 @@ class AddCharacterViewModel @Inject constructor(
                 model.isSelected = index == position
             }
         }
+        savedStateHandle[KEY_SELECTED_BACKGROUND] = position
     }
 
     suspend fun updateBackgroundColorSelected(position: Int) {
@@ -138,6 +163,7 @@ class AddCharacterViewModel @Inject constructor(
                 model.isSelected = index == position
             }
         }
+        savedStateHandle[KEY_SELECTED_BACKGROUND] = -1
     }
 
     fun updateTextFontSelected(position: Int) {
@@ -176,6 +202,7 @@ class AddCharacterViewModel @Inject constructor(
 
     fun resetDraw() {
         drawViewList.clear()
+        hasLoadedData = false
         currentDraw = null
     }
 
@@ -208,7 +235,61 @@ class AddCharacterViewModel @Inject constructor(
         textFontList.clear()
         textColorList.clear()
         drawViewList.clear()
+        hasLoadedData = false
+        isInitialized = false
         currentDraw = null
         pathDefault = ""
+        isPickingImage = false
+        setBackgroundImage(null)
+        savedBackgroundColor = null
+        savedStateHandle.remove<ArrayList<String>>(KEY_BACKGROUND_PATHS)
+        savedStateHandle.remove<ArrayList<String>>(KEY_STICKER_PATHS)
+        savedStateHandle.remove<ArrayList<String>>(KEY_SPEECH_PATHS)
+        savedStateHandle.remove<Int>(KEY_SELECTED_BACKGROUND)
+        savedStateHandle.remove<String>(KEY_BACKGROUND_IMAGE_PATH)
+        savedStateHandle.remove<Int>(KEY_BACKGROUND_COLOR)
+    }
+
+    private fun cacheLists() {
+        savedStateHandle[KEY_BACKGROUND_PATHS] =
+            ArrayList(backgroundImageList.map { it.path })
+        savedStateHandle[KEY_STICKER_PATHS] =
+            ArrayList(stickerList.map { it.path })
+        savedStateHandle[KEY_SPEECH_PATHS] =
+            ArrayList(speechList.map { it.path })
+    }
+
+    private fun restoreCachedLists() {
+        val backgrounds = savedStateHandle
+            .get<ArrayList<String>>(KEY_BACKGROUND_PATHS)
+            .orEmpty()
+        val stickers = savedStateHandle
+            .get<ArrayList<String>>(KEY_STICKER_PATHS)
+            .orEmpty()
+        val speeches = savedStateHandle
+            .get<ArrayList<String>>(KEY_SPEECH_PATHS)
+            .orEmpty()
+
+        if (backgrounds.isEmpty() || stickers.isEmpty() || speeches.isEmpty()) return
+
+        val selectedBackground = savedStateHandle.get<Int>(KEY_SELECTED_BACKGROUND) ?: -1
+        backgroundImageList.addAll(backgrounds.mapIndexed { index, path ->
+            SelectedAddModel(path = path, isSelected = index == selectedBackground)
+        })
+        stickerList.addAll(stickers.map { SelectedAddModel(path = it) })
+        speechList.addAll(speeches.map { SelectedAddModel(path = it) })
+        backgroundColorList.addAll(DataLocal.getBackgroundColorDefault(context))
+        textFontList.addAll(DataLocal.getTextFontDefault())
+        textColorList.addAll(DataLocal.getTextColorDefault(context))
+        hasLoadedData = true
+    }
+
+    private companion object {
+        const val KEY_BACKGROUND_PATHS = "add_character_background_paths"
+        const val KEY_STICKER_PATHS = "add_character_sticker_paths"
+        const val KEY_SPEECH_PATHS = "add_character_speech_paths"
+        const val KEY_SELECTED_BACKGROUND = "add_character_selected_background"
+        const val KEY_BACKGROUND_IMAGE_PATH = "add_character_background_image_path"
+        const val KEY_BACKGROUND_COLOR = "add_character_background_color"
     }
 }

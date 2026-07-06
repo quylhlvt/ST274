@@ -1,6 +1,7 @@
 package com.oc.catemoji.catoc.ui.main.customize
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.oc.catemoji.catoc.data.datalocal.manager.AppDataManager
 import com.oc.catemoji.catoc.data.model.custom.BodyPartModel
@@ -53,7 +54,8 @@ data class CustomizeState(
 
 @HiltViewModel
 class CustomizeViewModel @Inject constructor(
-    private val appDataManager: AppDataManager
+    private val appDataManager: AppDataManager,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var editingCustomizedId: String? = null
 
@@ -70,11 +72,13 @@ class CustomizeViewModel @Inject constructor(
         editingCustomizedId = null
         val template = appDataManager.getCharacterByIndex(templateIndex) ?: return
         val sorted   = sortBodyParts(template.listPath)
+        val draft = restoreDraft(template.id, sorted)
         _state.value = CustomizeState(
             template        = template,
             listData        = sorted,
-            selections      = buildDefaultSelections(sorted),
-            currentNavIndex = 0,
+            selections      = draft?.selections ?: buildDefaultSelections(sorted),
+            currentNavIndex = draft?.currentNavIndex ?: 0,
+            isFlipped       = draft?.isFlipped ?: false,
             isLoading       = true
         )
     }
@@ -136,8 +140,14 @@ class CustomizeViewModel @Inject constructor(
 
     // ── SELECTIONS ────────────────────────────────────────────────────────────
 
-    fun selectNav(navIndex: Int)   = _state.update { it.copy(currentNavIndex = navIndex) }
-    fun toggleFlip()               = _state.update { it.copy(isFlipped = !it.isFlipped) }
+    fun selectNav(navIndex: Int) {
+        _state.update { it.copy(currentNavIndex = navIndex) }
+        saveDraft()
+    }
+    fun toggleFlip() {
+        _state.update { it.copy(isFlipped = !it.isFlipped) }
+        saveDraft()
+    }
 
     fun selectColor(colorIndex: Int) {
         updateSelection { state, old ->
@@ -178,14 +188,18 @@ class CustomizeViewModel @Inject constructor(
             SelectionIndex(i, colorIdx, pathIdx)
         }
         _state.update { it.copy(selections = newSelections, randomCount = it.randomCount + 1) }
+        saveDraft()
     }
 
-    fun resetAll() = _state.update {
-        it.copy(
-            selections = buildDefaultSelections(it.listData),
-            isFlipped = false,        // ← reset flip
-            currentNavIndex = 0       // ← reset về nav đầu
-        )
+    fun resetAll() {
+        _state.update {
+            it.copy(
+                selections = buildDefaultSelections(it.listData),
+                isFlipped = false,
+                currentNavIndex = 0
+            )
+        }
+        saveDraft()
     }
 
     // ── PATH RESOLUTION ───────────────────────────────────────────────────────
@@ -267,5 +281,42 @@ class CustomizeViewModel @Inject constructor(
             }
             state.copy(selections = updated)
         }
+        saveDraft()
+    }
+
+    private data class Draft(
+        val selections: List<SelectionIndex>,
+        val currentNavIndex: Int,
+        val isFlipped: Boolean
+    )
+
+    private fun saveDraft() {
+        val state = _state.value
+        val templateId = state.template?.id ?: return
+        savedStateHandle[KEY_DRAFT_TEMPLATE_ID] = templateId
+        savedStateHandle[KEY_DRAFT_SELECTIONS] = ArrayList(state.selections)
+        savedStateHandle[KEY_DRAFT_NAV_INDEX] = state.currentNavIndex
+        savedStateHandle[KEY_DRAFT_FLIPPED] = state.isFlipped
+    }
+
+    private fun restoreDraft(templateId: String, parts: List<BodyPartModel>): Draft? {
+        if (savedStateHandle.get<String>(KEY_DRAFT_TEMPLATE_ID) != templateId) return null
+        val selections = savedStateHandle
+            .get<ArrayList<SelectionIndex>>(KEY_DRAFT_SELECTIONS)
+            ?.let { clampSelections(parts, it) }
+            ?: return null
+        return Draft(
+            selections = selections,
+            currentNavIndex = savedStateHandle.get<Int>(KEY_DRAFT_NAV_INDEX)
+                ?.coerceIn(0, maxOf(0, parts.lastIndex)) ?: 0,
+            isFlipped = savedStateHandle.get<Boolean>(KEY_DRAFT_FLIPPED) ?: false
+        )
+    }
+
+    private companion object {
+        const val KEY_DRAFT_TEMPLATE_ID = "customize_template_id"
+        const val KEY_DRAFT_SELECTIONS = "customize_selections"
+        const val KEY_DRAFT_NAV_INDEX = "customize_nav_index"
+        const val KEY_DRAFT_FLIPPED = "customize_flipped"
     }
 }

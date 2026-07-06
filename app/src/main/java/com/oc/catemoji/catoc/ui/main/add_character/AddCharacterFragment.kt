@@ -1,7 +1,6 @@
 package com.oc.catemoji.catoc.ui.main.add_character
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -15,6 +14,7 @@ import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -79,13 +79,10 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     FragmentAddCharacterBinding::inflate,
     AddCharacterViewModel::class.java
 ), BackPressHandler {
-
     @Inject
     lateinit var imageManager: CharacterImageManager
-
     private val permissionViewModel: PermissionViewModel by viewModels()
     private var keyboardLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
-
     // ── Keyboard state ──────────────────────────────────────────────────────
     // Source of truth duy nhất: layout change listener đo thực tế
     // KHÔNG dùng boolean flag nào trong ViewModel để control layout
@@ -119,25 +116,23 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
 
     // ── Launchers ─────────────────────────────────────────────────────────────
     private val imagePickerLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val uri = result.data?.data ?: return@registerForActivityResult
-                requireContext().contentResolver.takePersistableUriPermission(
-                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
-                handleSetBackgroundImage(uri.toString(), 0)
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            viewModel.isPickingImage = false
+            binding.flNativeCollab.visible()
+            hideLoadingSafe()
+
+            if (uri != null) {
+                runCatching {
+                    requireContext().contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                }
+                handleSetBackgroundImage(uri.toString(), -1)
+            } else {
+                restoreUIState()
             }
         }
-
-
-//    private fun launchImagePicker() {
-//        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-//            addCategory(Intent.CATEGORY_OPENABLE)
-//            type = "image/*"
-//            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
-//        }
-//        imagePickerLauncher.launch(intent)
-//    }
 
     // ── Inflate ───────────────────────────────────────────────────────────────
     override fun inflateBinding(
@@ -156,12 +151,14 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
 
     override fun onFragmentStart() {
         if (!isAdded || isDetached) return
+        if (viewModel.isPickingImage) return
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
         initNativeCollab()
     }
 
     override fun onFragmentStop() {
         if (!isAdded || isDetached) return
+        if (viewModel.isPickingImage) return
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
         binding.flNativeCollab.removeAllViews()
     }
@@ -199,7 +196,6 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                                 bgBaseUrl = viewModelActivity.bgBaseUrl,
                                 speeches = viewModelActivity.speechs.value
                             )
-                            viewModel.hasLoadedData = true
                         }
                         Log.d("DEBUG_STICKER", "after submit stickerSize=${viewModel.stickerList.size}")
                         backgroundImageAdapter.submitList(viewModel.backgroundImageList)
@@ -217,7 +213,6 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                                     viewModelActivity.stickers.value,
                                     viewModelActivity.speechs.value
                                 )
-                                viewModel.hasLoadedData = true
                             }
                             backgroundImageAdapter.submitList(viewModel.backgroundImageList)
                             stickerAdapter.submitList(viewModel.stickerList, true)
@@ -518,7 +513,6 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                 binding.drawView.addDraw(
                     viewModel.loadDrawableEmoji(customizeBitmap, isCharacter = true)
                 )
-                viewModelActivity.customizeBitmap = null
                 hideLoadingSafe()
             } else if (imagepath.isNotEmpty()) {
                 addDrawable(imagepath, isCharacter = true) { hideLoadingSafe() }
@@ -717,7 +711,6 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                     bgBaseUrl = viewModelActivity.bgBaseUrl,
                     speeches = viewModelActivity.speechs.value
                 )
-                viewModel.hasLoadedData = true  // ✅ Set true ngay sau khi load
 
                 submitAllAdapters()  // ✅ Submit ngay sau khi có data
 
@@ -773,12 +766,26 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
 
 
     private fun launchImagePicker() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "image/*"
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+        viewModel.isPickingImage = true
+        showLoadingSafe()
+
+        binding.root.post {
+            if (!isAdded || isDetached) {
+                viewModel.isPickingImage = false
+                hideLoadingSafe()
+                return@post
+            }
+
+            runCatching {
+                imagePickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }.onFailure {
+                viewModel.isPickingImage = false
+                hideLoadingSafe()
+                restoreUIState()
+            }
         }
-        imagePickerLauncher.launch(intent)
     }
 
     private fun handleChooseColor(isTextColor: Boolean = false) {
