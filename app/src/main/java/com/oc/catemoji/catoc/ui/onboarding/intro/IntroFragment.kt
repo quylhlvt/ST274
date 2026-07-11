@@ -54,7 +54,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
                 ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
-                    if (position == 1) {
+                    if (position == 0) {
                         nativeAds.gone()
                     } else {
                         nativeAds.visible()

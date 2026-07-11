@@ -119,18 +119,17 @@ object ApiTemplateMapper {
         val colors        = arrayListOf<ColorModel>()
         val listThumbPath = arrayListOf<String>()
         val qty           = x10.quantityInt
-        val halfQty       = maxOf(1, qty / 2)
 
         if (x10.colorArray.isEmpty()) {
-            for (i in 1..halfQty) {
+            for (i in 1..qty) {
                 listThumbPath.add("${base}${conn}${x10.position}/${x10.parts}/thumb_$i.png")
             }
-            val realPaths = (1..halfQty).map { i ->
+            val realPaths = (1..qty).map { i ->
                 "${base}${conn}${x10.position}/${x10.parts}/$i.png"
             }
             colors.add(ColorModel("", ArrayList(realPaths)))
         } else {
-            for (i in 1..halfQty * 2 + 1) {
+            for (i in 1..qty) {
                 listThumbPath.add("${base}${conn}${x10.position}/${x10.parts}/thumb_$i.png")
             }
             x10.colorArray.split(",").forEach { color ->

@@ -107,4 +107,6 @@
     <string name="enter_your_package_name">Masukkan nama paket</string>
     <string name="please_enter_your_package_name">Masukkan nama paket!</string>
     <string name="this_action_may_contain_advertising">Tindakan ini mungkin mengandung iklan</string>
+    <string name="error">Pemberitahuan</string>
+    <string name="errorcontent">Karakter ini telah dihapus dan tidak dapat diedit.</string>
 </resources>

@@ -268,7 +268,7 @@ class AppDataManager @Inject constructor(
                             val sorted = listSinglePath.sortedBy {
                                 it.substringAfterLast("/").substringBeforeLast(".").toIntOrNull() ?: 0
                             }
-                            val half  = sorted.size / 2
+                            val half  = sorted.size
                             val real  = ArrayList(sorted.subList(0, half))
                             val thumb = ArrayList(sorted.subList(half, sorted.size))
                             listThumbPath.addAll(thumb)

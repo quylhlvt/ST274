@@ -15,6 +15,7 @@ import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
+import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.checkPermissions
 import com.oc.catemoji.catoc.core.extention.dp
 import com.oc.catemoji.catoc.core.extention.goToSettings
@@ -40,6 +41,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
     FragmentViewBinding::inflate,
     ViewViewModel::class.java
 ) {
+    private var isWaitingDataDialogShown = false
     private val storageHelper = PermissionRequestHelper()
     private var hasNativeCollab = false
 
@@ -184,7 +186,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                 1 -> {
                     actionBar.btnActionBarRight.onClick { confirmDelete() }
                     actionBar.btnActionBarNextToRight.onClick {
-                        showInter {
+                        if (ensureEditItemExists()) {
                             navigateToEdit()
                         }
                     }
@@ -273,15 +275,24 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
     }
 
     private fun navigateToEdit() {
-        if (idEdit.isEmpty() || imageType != 1) return
+        if (idEdit.isEmpty() || imageType != 1) {
+            showEditItemNotFoundDialog()
+            return
+        }
 
         val customized = viewModelActivity.customizedCharacters.value
             .firstOrNull { it.id == idEdit }
-            ?: run { showToast("Character not found"); return }
+            ?: run {
+                showEditItemNotFoundDialog()
+                return
+            }
 
         val templateIndex = viewModelActivity.getTemplateIndexForCustomized(idEdit)
             .takeIf { it >= 0 }
-            ?: run { showUnstableNetworkDialog(); return }  // ✅ không tìm thấy template → có thể do chưa load online
+            ?: run {
+                showEditDataUnavailableDialog()
+                return
+            }  // ✅ không tìm thấy template → có thể do chưa load online
 
         val template = viewModelActivity.templates.value.getOrNull(templateIndex)
 
@@ -290,7 +301,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
             val onlineTemplateCount = viewModelActivity.templates.value
                 .count { it.id.startsWith("online_") }
             if (!isInternetAvailable(requireContext()) || onlineTemplateCount < 2) {
-                showUnstableNetworkDialog()
+                showEditDataUnavailableDialog()
                 return
             }
         }
@@ -302,7 +313,44 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
             savedSelections = customized.selections.toCleanSelections(),
             isFlipped = customized.isFlipped
         )
-        findNavController().safeNavigate(R.id.action_view_to_customize, args)
+        showInter {
+            findNavController().safeNavigate(R.id.action_view_to_customize, args)
+        }
+    }
+
+    private fun ensureEditItemExists(): Boolean {
+        val exists = idEdit.isNotBlank() &&
+            imageType == 1 &&
+            viewModelActivity.customizedCharacters.value.any { it.id == idEdit }
+        if (!exists) showEditItemNotFoundDialog()
+        return exists
+    }
+
+    private fun showEditDataUnavailableDialog() {
+        if (isInternetAvailable(requireContext()) && viewModelActivity.hasCompleteOnlineCatalogue()) {
+            showEditItemNotFoundDialog()
+            return
+        }
+
+        if (!isInternetAvailable(requireContext()) || !isNetworkConnected(requireContext())) {
+            showUnstableNetworkDialog()
+            return
+        }
+
+        if (!viewModelActivity.isFetchingOnlineFlow.value) {
+            viewModelActivity.fetchOnlineTemplates()
+        }
+        if (!isWaitingDataDialogShown) {
+            isWaitingDataDialogShown = true
+            showLoadingDataDialog { isWaitingDataDialogShown = false }
+        }
+    }
+
+    private fun showEditItemNotFoundDialog() {
+        showOkDialog(
+            title = getString(R.string.error),
+            message = getString(R.string.errorcontent)
+        )
     }
 
     private fun showToast(msg: String) =

@@ -70,6 +70,8 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
     private val pendingLoads = AtomicInteger(0)
     private var canSave = false
     private var hasTriggeredReInit = false
+    private var shouldScrollPartToSelection = true
+    private var lastNavIndex = RecyclerView.NO_POSITION
 
     // ── INFLATE ───────────────────────────────────────────────────────────────
 
@@ -193,7 +195,10 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
     // ── ACTIONS ───────────────────────────────────────────────────────────────
     override fun viewListener() {
         adapterNav.onClick = {
-            if (!checkOnlineNetworkOrShowDialog()) viewModel.selectNav(it)
+            if (!checkOnlineNetworkOrShowDialog()) {
+                shouldScrollPartToSelection = true
+                viewModel.selectNav(it)
+            }
         }
         adapterColor.onClick = {
             if (!checkOnlineNetworkOrShowDialog()) viewModel.selectColor(it)
@@ -201,9 +206,19 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         adapterPart.onClick = { idx, type ->
             if (!checkOnlineNetworkOrShowDialog()) {
                 when (type) {
-                    "none" -> viewModel.selectNone()
-                    "dice" -> viewModel.selectDiceCurrent()
-                    else -> viewModel.selectPath(idx)
+                    "none" -> {
+                        shouldScrollPartToSelection = false
+                        viewModel.selectNone()
+                    }
+                    "dice" -> {
+                        shouldScrollPartToSelection = true
+                        viewModel.selectDiceCurrent()
+                    }
+
+                    else -> {
+                        shouldScrollPartToSelection = false
+                        viewModel.selectPath(idx)
+                    }
                 }
             }
         }
@@ -226,7 +241,10 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                 llColor.animate().alpha(1f).setDuration(200).start()
             }
             imgRandom.onClick {
-                if (!checkOnlineNetworkOrShowDialog()) viewModel.randomizeAll()
+                if (!checkOnlineNetworkOrShowDialog()) {
+                    shouldScrollPartToSelection = true
+                    viewModel.randomizeAll()
+                }
             }
             actionBar.btnActionBarCenter.setOnClickListener {
                 if (!checkOnlineNetworkOrShowDialog()){
@@ -236,6 +254,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                     onYes = {
                         showInter {
                             arrShowColor.fill(true);
+                            shouldScrollPartToSelection = true
                             viewModel.resetAll()
                         }
                     }
@@ -441,6 +460,9 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
     // ── ADAPTERS ──────────────────────────────────────────────────────────────
 
     private fun updateAdapters(state: CustomizeState) {
+        val navChanged = lastNavIndex != state.currentNavIndex
+        if (navChanged) lastNavIndex = state.currentNavIndex
+
         adapterNav.setPos(state.currentNavIndex)
         adapterNav.submitList(state.listData)
         binding.imgChangColor.isVisible = state.hasMultipleColors
@@ -485,9 +507,12 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
 
         val targetPartIndex = state.currentPathIndex.coerceAtLeast(0)
         adapterPart.submitList(state.currentPaths)
-        binding.rcvPart.post {
-            binding.rcvPart.smoothScrollToPosition(targetPartIndex)
+        if (shouldScrollPartToSelection || navChanged) {
+            binding.rcvPart.post {
+                binding.rcvPart.smoothScrollToPosition(targetPartIndex)
+            }
         }
+        shouldScrollPartToSelection = false
     }
 
     private fun buildThumbList(bp: BodyPartModel?, paths: List<String>): List<String> {

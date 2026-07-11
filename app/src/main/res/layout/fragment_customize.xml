@@ -78,7 +78,7 @@
 
             <!-- Icon random -->
             <ImageView
-                android:visibility="visible"
+                android:visibility="invisible"
                 android:id="@+id/imgRandom"
                 android:layout_width="0dp"
                 android:layout_height="0dp"

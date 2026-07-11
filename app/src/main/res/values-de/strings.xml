@@ -107,4 +107,6 @@
     <string name="enter_your_package_name">Paketnamen eingeben</string>
     <string name="please_enter_your_package_name">Bitte gib deinen Paketnamen ein!</string>
     <string name="this_action_may_contain_advertising">Diese Aktion kann Werbung enthalten</string>
+    <string name="error">Hinweis</string>
+    <string name="errorcontent">Diese Figur wurde entfernt und kann nicht bearbeitet werden.</string>
 </resources>

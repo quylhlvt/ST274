@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.dialog.CreateNameDialog
+import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.checkPermissions
 import com.oc.catemoji.catoc.core.extention.goToSettings
@@ -48,6 +49,7 @@ import java.io.File
 class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyViewModel>(
     FragmentMyPonyBinding::inflate, MyPonyViewModel::class.java
 ) {
+    private var isWaitingDataDialogShown = false
     private val storageHelper = PermissionRequestHelper()
 
     private lateinit var myAvatarAdapter: MyAvatarAdapter
@@ -166,7 +168,7 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
             onLongClick = { position -> handleLongClick(position, true) }
             onItemTick = { position -> toggleSelection(position, true) }
             onEditClick = { idEdit ->
-                showInter {
+                if (ensureEditItemExists(idEdit)) {
                     navigateToEdit(idEdit)
                 }
             }
@@ -456,13 +458,24 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
      * Nếu project có field templateId trong CustomModel thì dùng trực tiếp field đó thay thế.
      */
     private fun navigateToEdit(idEdit: String) {
+        if (idEdit.isEmpty()) {
+            showEditItemNotFoundDialog()
+            return
+        }
+
         val customized =
             viewModelActivity.customizedCharacters.value.firstOrNull { it.id == idEdit }
-                ?: run { showToast("Character not found"); return }
+                ?: run {
+                    showEditItemNotFoundDialog()
+                    return
+                }
 
         val templateIndex =
             viewModelActivity.getTemplateIndexForCustomized(idEdit).takeIf { it >= 0 }
-                ?: run { showUnstableNetworkDialog(); return }
+                ?: run {
+                    showEditDataUnavailableDialog()
+                    return
+                }
 
         val template = viewModelActivity.templates.value.getOrNull(templateIndex)
 
@@ -471,7 +484,7 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
             val onlineTemplateCount =
                 viewModelActivity.templates.value.count { it.id.startsWith("online_") }
             if (!isNetworkConnected(requireContext()) || onlineTemplateCount < 2) {
-                showUnstableNetworkDialog()
+                showEditDataUnavailableDialog()
                 return
             }
         }
@@ -483,7 +496,43 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
             savedSelections = customized.selections.toCleanSelections(),
             isFlipped = customized.isFlipped
         )
-        findNavController().navigate(R.id.action_mypony_to_custom, args)
+        showInter {
+            findNavController().navigate(R.id.action_mypony_to_custom, args)
+        }
+    }
+
+    private fun ensureEditItemExists(idEdit: String): Boolean {
+        val exists = idEdit.isNotBlank() &&
+            viewModelActivity.customizedCharacters.value.any { it.id == idEdit }
+        if (!exists) showEditItemNotFoundDialog()
+        return exists
+    }
+
+    private fun showEditDataUnavailableDialog() {
+        if (isInternetAvailable(requireContext()) && viewModelActivity.hasCompleteOnlineCatalogue()) {
+            showEditItemNotFoundDialog()
+            return
+        }
+
+        if (!isInternetAvailable(requireContext()) || !isNetworkConnected(requireContext())) {
+            showUnstableNetworkDialog()
+            return
+        }
+
+        if (!viewModelActivity.isFetchingOnlineFlow.value) {
+            viewModelActivity.fetchOnlineTemplates()
+        }
+        if (!isWaitingDataDialogShown) {
+            isWaitingDataDialogShown = true
+            showLoadingDataDialog { isWaitingDataDialogShown = false }
+        }
+    }
+
+    private fun showEditItemNotFoundDialog() {
+        showOkDialog(
+            title = getString(R.string.error),
+            message = getString(R.string.errorcontent)
+        )
     }
 
     // ── ACTIONS ───────────────────────────────────────────────────────────────

@@ -107,4 +107,6 @@
     <string name="enter_your_package_name">Ingresa el nombre del paquete</string>
     <string name="please_enter_your_package_name">¡Por favor ingresa el nombre del paquete!</string>
     <string name="this_action_may_contain_advertising">Esta acción puede contener anuncios</string>
+    <string name="error">Aviso</string>
+    <string name="errorcontent">Este personaje ha sido eliminado y no se puede editar.</string>
 </resources>

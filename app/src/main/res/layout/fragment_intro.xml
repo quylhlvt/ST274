@@ -5,13 +5,15 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.onboarding.intro.IntroFragment">
+
     <ImageView
+        android:id="@+id/imageView6"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/img_bg_lang"
-        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
         android:elevation="-1dp"
-        android:adjustViewBounds="true"/>
+        android:scaleType="fitXY"
+        android:src="@drawable/img_bg_lang" />
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager2"
         android:layout_width="match_parent"
@@ -45,22 +47,21 @@
         android:id="@+id/frame_layout_continue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="52dp"
-      android:layout_marginEnd="22dp"
-            android:src="@drawable/img_next_intro">
+        android:layout_marginEnd="22dp"
+        android:src="@drawable/img_next_intro"
+        app:layout_constraintBottom_toTopOf="@+id/native_ads"
+        app:layout_constraintEnd_toEndOf="parent">
 
-            <include
-                android:id="@+id/btnNextPager"
-                layout="@layout/bottom_bottom_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_gravity="end"
-                app:layout_constraintBottom_toBottomOf="parent" />
+        <include
+            android:id="@+id/btnNextPager"
+            layout="@layout/bottom_bottom_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-        </FrameLayout>
+    </FrameLayout>
         <FrameLayout
             android:id="@+id/native_ads"
             android:layout_width="match_parent"

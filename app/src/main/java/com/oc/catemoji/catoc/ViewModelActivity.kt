@@ -72,6 +72,7 @@ class ViewModelActivity @Inject constructor(
     // Guard chống gọi fetch trùng từ nhiều fragment
     private val _isFetchingOnline = MutableStateFlow(false)
     val isFetchingOnlineFlow: StateFlow<Boolean> = _isFetchingOnline.asStateFlow()
+    private val _hasFetchedOnlineCatalogue = MutableStateFlow(false)
     private val _imagesReady = MutableStateFlow(false)
     val imagesReady: StateFlow<Boolean> = _imagesReady.asStateFlow()
 
@@ -194,6 +195,7 @@ class ViewModelActivity @Inject constructor(
             val result = getCatalogueUseCase()
             if (result.isSuccess) {
                 val newTemplates = result.getOrNull() ?: return
+                _hasFetchedOnlineCatalogue.value = true
                 appDataManager.saveApiCache(newTemplates)
                 appDataManager.mergeApiTemplates(newTemplates)
                 prefetchTemplateImages(newTemplates)
@@ -212,6 +214,10 @@ class ViewModelActivity @Inject constructor(
     fun fetchOnlineTemplates() {
         viewModelScope.launch(Dispatchers.IO){ fetchOnlineTemplatesInternal() }
     }
+
+    fun hasCompleteOnlineCatalogue(): Boolean =
+        !_isFetchingOnline.value &&
+            (_hasFetchedOnlineCatalogue.value || templates.value.any { it.id.startsWith("online_") })
 
     fun forceReloadAll() {
         viewModelScope.launch { appDataManager.forceReloadAll() }

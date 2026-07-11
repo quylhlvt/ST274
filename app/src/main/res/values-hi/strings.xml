@@ -107,4 +107,6 @@
     <string name="enter_your_package_name">अपना पैकेज नाम दर्ज करें</string>
     <string name="please_enter_your_package_name">कृपया अपना पैकेज नाम दर्ज करें!</string>
     <string name="this_action_may_contain_advertising">इस क्रिया में विज्ञापन हो सकते हैं</string>
+    <string name="error">सूचना</string>
+    <string name="errorcontent">यह पात्र हटा दिया गया है और इसे संपादित नहीं किया जा सकता।</string>
 </resources>
