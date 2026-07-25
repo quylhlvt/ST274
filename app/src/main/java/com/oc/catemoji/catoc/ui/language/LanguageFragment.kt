@@ -21,6 +21,7 @@ import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.popBack
+import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.core.extention.toHomeFromLanguage
 import com.oc.catemoji.catoc.core.extention.toIntroFromLanguage
 import com.oc.catemoji.catoc.core.extention.toSettingFromLang
@@ -66,9 +67,7 @@ class LanguageFragment : BaseFragment<FragmentLanguageBinding, LanguageViewModel
     override fun setupPreViews() {
 
         val isFirst = !SharedPreferencesManager.isLanuageScreen()
-        if (!isFirst) {
-            binding.imageBgLang.setImageResource(R.drawable.img_bg_home)
-        }
+     
 
 
         binding.recycleLanguage.apply {
@@ -88,13 +87,11 @@ class LanguageFragment : BaseFragment<FragmentLanguageBinding, LanguageViewModel
     private fun updateActionBar(isFirst: Boolean) {
         binding.apply {
             if (isFirst) {
-                actionBar.btnActionBarRight.invisible()
+                setTextActionBar(actionBar.tvStart, getString(R.string.language))
                 actionBar.btnActionBarRight.setImageResource(R.drawable.select_language)
             } else {
                 actionBar.btnActionBarLeft.visible()
-                actionBar.btnActionBarRight.setImageResource(R.drawable.select_language)
-                // ❌ Xóa Glide — dùng setImageResource trực tiếp
-                imageBgLang.setImageResource(R.drawable.img_bg_home)
+                setTextActionBar(actionBar.tvCenter, getString(R.string.language))
             }
         }
     }
@@ -127,7 +124,6 @@ class LanguageFragment : BaseFragment<FragmentLanguageBinding, LanguageViewModel
             btnActionBarRight.gone()
             btnActionBarLeft.setImageResource(R.drawable.back_app)
         }
-        binding.layoutTitle.txtLang.isSelected = true
 
         // ✅ Bỏ initRcv() — đã làm trong setupPreViews
         updateActionBar(viewModel.isFirstLanguage.value)

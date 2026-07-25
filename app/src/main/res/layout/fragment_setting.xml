@@ -4,15 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/img_bg_lang"
     tools:context=".ui.main.setting.SettingFragment">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:elevation="-1dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/img_bg_home" />
+
 
     <FrameLayout
         android:id="@+id/layoutActionBar"

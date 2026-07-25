@@ -18,14 +18,7 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/homeFragment" />
-        <action
-            android:id="@+id/action_home_to_quick"
-            app:destination="@id/quick"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/homeFragment" />
+
         <action
             android:id="@+id/action_home_to_myPony"
             app:destination="@id/myPony"
@@ -52,14 +45,7 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/homeFragment" />
-        <action
-            android:id="@+id/action_home_to_web"
-            app:destination="@id/webViewFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/homeFragment" />
+
 
         <action
             android:id="@+id/action_home_to_setting"
@@ -87,22 +73,22 @@
             app:popUpTo="@id/createPony"
             app:popUpToInclusive="false" />
     </fragment>
-    <fragment
-        android:id="@+id/quick"
-        android:name="com.oc.catemoji.catoc.ui.main.quick.QuickFragment"
-        android:label="Quick"
-        tools:layout="@layout/fragment_quick">
-        <action
-            android:id="@+id/action_quick_to_home"
-            app:destination="@id/homeFragment"
-            app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_quick_to_custom"
-            app:destination="@id/custom"
-            app:popUpTo="@id/quick"
-            app:popUpToInclusive="false" />
-    </fragment>
+<!--    <fragment-->
+<!--        android:id="@+id/quick"-->
+<!--        android:name="com.oc.catemoji.catoc.ui.main.quick.QuickFragment"-->
+<!--        android:label="Quick"-->
+<!--        tools:layout="@layout/fragment_quick">-->
+<!--        <action-->
+<!--            android:id="@+id/action_quick_to_home"-->
+<!--            app:destination="@id/homeFragment"-->
+<!--            app:popUpTo="@id/homeFragment"-->
+<!--            app:popUpToInclusive="true" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_quick_to_custom"-->
+<!--            app:destination="@id/custom"-->
+<!--            app:popUpTo="@id/quick"-->
+<!--            app:popUpToInclusive="false" />-->
+<!--    </fragment>-->
     <fragment
         android:id="@+id/myPony"
         android:name="com.oc.catemoji.catoc.ui.main.myPony.MyPonyFragment"
@@ -286,9 +272,5 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
-    <fragment
-        android:id="@+id/webViewFragment"
-        android:name="com.oc.catemoji.catoc.ui.main.webview.WebViewFragment"
-        android:label="fragment_web_view"
-        tools:layout="@layout/fragment_web_view" />
+
 </navigation>

@@ -139,18 +139,24 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
                 launch {
                     kotlinx.coroutines.flow.combine(
                         mainViewModel.templates,
-                        mainViewModel.isFetchingOnlineFlow
-                    ) { templates, isFetching -> Pair(templates, isFetching) }
-                        .collect { (templates, isFetching) ->
+                        mainViewModel.isFetchingOnlineFlow,
+                        viewModel.cacheLoaded
+                    ) { templates, isFetching, cacheLoaded ->
+                        Triple(templates, isFetching, cacheLoaded)
+                    }
+                        .collect { (templates, isFetching, cacheLoaded) ->
                             val hasInternet = withContext(Dispatchers.IO) {
                                 isInternetAvailable(requireContext())
                             }
 
                             viewModel.updateFilteredTemplates(templates, hasInternet)
 
-                            if (isFirstLoad && !isFetching) {
+                            if (isFirstLoad && !isFetching && cacheLoaded) {
                                 isFirstLoad = false
-                                if (adapter.items.isEmpty()) showNoInternetDialog()
+                                val hasData = viewModel.filteredTemplates.value.isNotEmpty() ||
+                                    templates.isNotEmpty() ||
+                                    adapter.items.isNotEmpty()
+                                if (!hasData && !hasInternet) showNoInternetDialog()
                             }
                         }
                 }

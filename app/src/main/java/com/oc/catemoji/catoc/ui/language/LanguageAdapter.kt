@@ -26,11 +26,17 @@ class LanguageAdapter (val context: Context) : BaseAdapter<LanguageModel, ItemLa
             tvLang.text = item.name
 
             // ✅ setImageResource cho radio button
-            btnRadio.setImageResource(
-                if (item.activate) R.drawable.ic_select_lang else R.drawable.ic_un_select_lang
-            )
+            if (item.activate){
+                btnRadio.setImageResource(
+                    R.drawable.ic_select_lang)
+                bgLang.setImageResource(R.drawable.frame_select_language)
+            }else{
+                btnRadio.setImageResource(
+                    R.drawable.ic_un_select_lang)
+                bgLang.setImageResource(R.drawable.frame_unselect_language)
+            }
+            bgLang
 
-            if (item.activate) flFocus.visible() else flFocus.invisible()
 
             root.onClick { onItemClick.invoke(item.code) }
         }

@@ -192,15 +192,10 @@ class MainActivity : AppCompatActivity() , LoadingController{
         )
 
         val bgResIds = listOf(
-            R.drawable.img_bg_home,
             R.drawable.img_title_home,
             R.drawable.img_bg_lang,
             R.drawable.img_bg_home1,
-            R.drawable.img_bg_rcy_lang,
-            R.drawable.img_avatar1,
-            R.drawable.img_avatar2,
-            R.drawable.img_avatar3,
-            R.drawable.img_avatar4,
+            R.drawable.img_bg_rcy_lang
         )
 
         val total = flagResIds.size + bgResIds.size

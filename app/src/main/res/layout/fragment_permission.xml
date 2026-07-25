@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.onboarding.permission.PermissionFragment">
+
     <FrameLayout
         android:id="@+id/layoutActionBar"
         android:layout_width="match_parent"
@@ -20,21 +21,21 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/img_bg_lang"
-        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
         android:elevation="-1dp"
-        android:adjustViewBounds="true"/>
+        android:scaleType="fitXY"
+        android:src="@drawable/img_bg_lang" />
 
     <ImageView
         android:id="@+id/imgPermission"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginHorizontal="55dp"
-        app:layout_constraintDimensionRatio="2.5:3.32"
+        android:layout_marginBottom="20dp"
         android:adjustViewBounds="true"
         android:src="@drawable/img_permission"
-        android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@+id/txtPermission"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar" />
@@ -44,10 +45,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:gravity="center"
         android:fontFamily="@font/baloo2_bold"
-        android:textSize="16sp"
+        android:gravity="center"
         android:textColor="@color/app_color"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -71,21 +72,36 @@
                 android:id="@+id/btnStorage"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_margin="1dp"
-                android:background="@drawable/bg_frame_permission">
+                android:layout_margin="1dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginTop="3dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/bg_frame_permission_shadown" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/bg_frame_permission" />
 
                 <TextView
+                    style="@style/single_marquee"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="7dp"
                     android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/baloo2_bold"
                     android:gravity="center_vertical"
-                    style="@style/single_marquee"
                     android:text="@string/storage"
                     android:textColor="@color/app_color"
-                    android:fontFamily="@font/baloo2_bold"
                     android:textSize="20sp" />
 
                 <ImageView
@@ -95,8 +111,8 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginTop="8.5dp"
-                    android:layout_marginBottom="11.5dp"
                     android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="11.5dp"
                     android:src="@drawable/switch_off" />
             </RelativeLayout>
 
@@ -105,19 +121,34 @@
                 android:id="@+id/btnNotification"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_frame_permission">
+                android:layout_marginTop="16dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginTop="3dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/bg_frame_permission_shadown" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/bg_frame_permission" />
 
                 <TextView
+                    style="@style/single_marquee"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="7dp"
                     android:layout_marginBottom="10dp"
-                    android:gravity="center_vertical"
-                    style="@style/single_marquee"
                     android:fontFamily="@font/baloo2_bold"
+                    android:gravity="center_vertical"
                     android:text="@string/notification"
                     android:textColor="@color/app_color"
                     android:textSize="20sp" />
@@ -129,28 +160,30 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginTop="8.5dp"
-                    android:layout_marginBottom="11.5dp"
                     android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="11.5dp"
                     android:src="@drawable/switch_off" />
             </RelativeLayout>
 
         </LinearLayout>
 
     </ScrollView>
+
     <TextView
         android:id="@+id/tvContinue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
         android:layout_marginBottom="10dp"
-        android:gravity="center"
         android:fontFamily="@font/baloo2_bold"
+        android:gravity="center"
         android:text="@string/continue_per"
         android:textColor="@color/app_color"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/native_ads"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
     <FrameLayout
         android:id="@+id/native_ads"
         android:layout_width="match_parent"

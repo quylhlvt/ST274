@@ -46,6 +46,7 @@ fun setTextActionBar(textView: TextView, text: String) {
     textView.isSelected = true
 }
 
+
 fun View.visible() {
     visibility = View.VISIBLE
 }

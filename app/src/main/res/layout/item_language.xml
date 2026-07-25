@@ -11,14 +11,28 @@
         android:id="@+id/flMain"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/frame_select_language"
         android:elevation="2dp">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/bg_frame_permission_shadown" />
 
+        <ImageView
+            android:id="@+id/bgLang"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="3dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/frame_select_language" />
         <ImageView
             android:id="@+id/imvFlag"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             android:src="@drawable/ic_flag_english"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -28,23 +42,24 @@
             android:id="@+id/btnRadio"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_margin="8dp"
-            android:src="@drawable/ic_un_select_lang"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_select_lang"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvLang"
             style="@style/single_marquee"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            android:fontFamily="@font/baloo2_extrabold"
+            android:fontFamily="@font/baloo2_bold"
             android:gravity="start"
-            android:text="language"
-            android:textColor="@color/white"
-            android:textSize="18dp"
+            android:text="@string/language"
+            android:textColor="@color/app_color"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/imvFlag"
             app:layout_constraintEnd_toStartOf="@+id/btnRadio"
             app:layout_constraintStart_toEndOf="@+id/imvFlag"
@@ -54,14 +69,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Focus overlay — đặt trên cùng bằng FrameLayout -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/flFocus"
-        android:layout_width="match_parent"
-        android:layout_height="34dp"
-        android:elevation="1dp"
-        app:cardBackgroundColor="#40000000"
-        app:cardCornerRadius="16dp"
-        app:strokeWidth="0dp" />
+
 
 </FrameLayout>

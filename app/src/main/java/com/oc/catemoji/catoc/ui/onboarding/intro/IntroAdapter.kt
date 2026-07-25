@@ -42,19 +42,19 @@ class PagerIntroViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(pager: IntroModel) {
         binding.run {
-            if (adapterPosition == 0) {
-                // Page 0 — hiện 2 dòng, không marquee
-                tvContent.maxLines = 2
-                tvContent.ellipsize = null
-                tvContent.isSelected = false
-                tvContent.isSingleLine = false
-            } else {
+//            if (adapterPosition == 0) {
+//                // Page 0 — hiện 2 dòng, không marquee
+//                tvContent.maxLines = 2
+//                tvContent.ellipsize = null
+//                tvContent.isSelected = false
+//                tvContent.isSingleLine = false
+//            } else {
                 // Page 1, 2 — chạy chữ marquee
                 tvContent.maxLines = 1
                 tvContent.isSingleLine = true
                 tvContent.ellipsize = android.text.TextUtils.TruncateAt.MARQUEE
                 tvContent.isSelected = true
-            }
+//            }
             tvContent.text = root.context.strings(pager.content)
             loadImage(root, pager.image, imvImage, false)
         }

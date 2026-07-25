@@ -60,22 +60,27 @@ class ChoosePonyViewModel @Inject constructor(
     private val _networkAvailable = MutableStateFlow(false)
     val networkAvailable: StateFlow<Boolean> = _networkAvailable.asStateFlow()
 
+    private val _cacheLoaded = MutableStateFlow(false)
+    val cacheLoaded: StateFlow<Boolean> = _cacheLoaded.asStateFlow()
+
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
-            _networkAvailable.value = true
+            _networkAvailable.value = isValidatedNetwork(network)
+        }
+        override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
+            _networkAvailable.value = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
         }
         override fun onLost(network: Network) {
-            _networkAvailable.value = false
+            _networkAvailable.value = isCurrentNetworkValidated()
         }
     }
 
     init {
-        _networkAvailable.value = connectivityManager.activeNetwork
-            ?.let { connectivityManager.getNetworkCapabilities(it) }
-            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        _networkAvailable.value = isCurrentNetworkValidated()
 
         val request = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
@@ -83,6 +88,17 @@ class ChoosePonyViewModel @Inject constructor(
         connectivityManager.registerNetworkCallback(request, networkCallback)
 
         if (_filteredTemplates.value.isEmpty()) loadFromCache()
+    }
+
+    private fun isCurrentNetworkValidated(): Boolean {
+        val network = connectivityManager.activeNetwork ?: return false
+        return isValidatedNetwork(network)
+    }
+
+    private fun isValidatedNetwork(network: Network): Boolean {
+        val caps = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
     }
 
     fun updateFilteredTemplates(templates: List<CustomModel>, hasInternet: Boolean) {
@@ -93,6 +109,7 @@ class ChoosePonyViewModel @Inject constructor(
 
             if (offlineList.isNotEmpty()) {
                 _filteredTemplates.value = offlineList
+                _cacheLoaded.value = true
             } else if (_filteredTemplates.value.isEmpty()) {
                 loadFromCache()
             }
@@ -102,6 +119,7 @@ class ChoosePonyViewModel @Inject constructor(
         if (templates.isNotEmpty()) {
             val sorted = templates.sortedBy { it.level }
             _filteredTemplates.value = sorted
+            _cacheLoaded.value = true
             saveToCache(sorted)
         }
     }
@@ -126,6 +144,8 @@ class ChoosePonyViewModel @Inject constructor(
                 _filteredTemplates.value = list.sortedBy { it.level }
             } catch (e: Exception) {
                 Log.e("DEBUG_PONY", "load cache failed: ${e.message}")
+            } finally {
+                _cacheLoaded.value = true
             }
         }
     }

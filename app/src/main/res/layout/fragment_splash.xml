@@ -5,6 +5,24 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.onboarding.splash.SplashFragment">
+    <View
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="0.17"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <View
+        android:id="@+id/view2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/appCompatImageView"
         android:layout_width="match_parent"
@@ -16,23 +34,21 @@
         android:id="@+id/appCompatImageView4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="60dp"
         android:adjustViewBounds="true"
         android:src="@drawable/img_title_splash"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <FrameLayout
         android:id="@+id/progressWrapper"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipChildren="true"
-        app:layout_constraintDimensionRatio="3.2:0.28"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="30dp"
         android:background="@drawable/bg_progress_track_splash"
+        android:clipChildren="true"
+        app:layout_constraintBottom_toBottomOf="@+id/view2"
+        app:layout_constraintDimensionRatio="3.2:0.24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appCompatImageView4">
@@ -42,14 +58,14 @@
             android:id="@+id/progressFill"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="3dp"
+            android:layout_margin="2dp"
             android:background="@drawable/bg_progress_fill" />
 
         <!-- Container clip cho overlay + cap -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="3dp"
+            android:layout_margin="2dp"
             android:clipChildren="true"
             android:clipToPadding="true">
 
@@ -57,9 +73,10 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:cardCornerRadius="20dp"
                 app:cardBackgroundColor="@color/transparent"
+                app:cardCornerRadius="12dp"
                 app:strokeWidth="0dp">
+
                 <View
                     android:id="@+id/progressOverlay"
                     android:layout_width="match_parent"
@@ -87,22 +104,33 @@
             android:layout_width="11dp"
             android:layout_height="match_parent"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginVertical="3dp"
-            android:layout_marginEnd="3dp"
-            android:scaleType="fitXY"/>
+            android:layout_marginVertical="2dp"
+            android:layout_marginEnd="2dp"
+            android:scaleType="fitXY" />
 
     </FrameLayout>
-    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+
+    <ImageView
+        android:id="@+id/imageAvatar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/image_splash"
+        app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView"
+        app:layout_constraintDimensionRatio="3.6:4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintTop_toBottomOf="@+id/view2" />
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/appCompatTextView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:fontFamily="@font/baloo2_bold"
+        android:fontFamily="@font/roboto_regular"
         android:gravity="center"
         android:text="@string/this_action_may_contain_advertising"
-        android:textColor="@color/white"
-        android:textSize="15sp"
+        android:textColor="@color/black2"
+        android:textSize="16sp"
         app:outerStrokeColor="@color/app_color"
         app:outerStrokeWidth="1dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/imageAvatar" />
 </androidx.constraintlayout.widget.ConstraintLayout>
