@@ -5,42 +5,26 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/yellow2"
     tools:context=".ui.main.add_character.AddCharacterFragment">
 
-    <!--    flGetText-->
-    <FrameLayout
-        android:id="@+id/flGetText"
+    <!-- Hidden renderer used to turn the entered text into a bitmap. -->
+    <TextView
+        android:id="@+id/tvGetText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="48dp"
-        android:paddingHorizontal="5dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="5dp"
+        android:background="@color/transparent"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:maxLength="30"
+        android:text=""
+        android:textSize="40sp"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <!--        tvGetText-->
-        <TextView
-            android:id="@+id/tvGetText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@color/transparent"
-            android:clickable="false"
-            android:focusable="false"
-            android:gravity="center"
-            android:maxLength="30"
-            android:text=""
-            android:textSize="40sp" />
-    </FrameLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/img_bg_custom" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!--    flActionBar-->
     <FrameLayout
@@ -52,7 +36,7 @@
 
         <include
             android:id="@+id/actionBar"
-            layout="@layout/layout_actionbar" />
+            layout="@layout/layout_actionbar1" />
     </FrameLayout>
 
     <Space
@@ -64,16 +48,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/flActionBar" />
-<ImageView
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:scaleType="fitXY"
-    android:adjustViewBounds="true"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    android:src="@drawable/bg_addbackground"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toBottomOf="@+id/flSpce"/>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/flSave"
         android:layout_width="match_parent"
@@ -104,7 +78,6 @@
         android:background="@drawable/img_bg_layer"
         android:elevation="3dp"
         android:layerType="hardware"
-        android:paddingTop="10dp"
         app:layout_constraintBottom_toTopOf="@+id/lnlBottom"
         app:layout_constraintTop_toBottomOf="@+id/flSpce">
 
@@ -129,8 +102,8 @@
                 android:id="@+id/rcvSticker"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="4.5dp"
-                android:paddingHorizontal="7.5dp"
+                android:layout_marginTop="16dp"
+                android:paddingHorizontal="12dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="5"
                 tools:listitem="@layout/item_sticker" />
@@ -150,10 +123,10 @@
                 android:id="@+id/rcvSpeech"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="4.5dp"
-                android:paddingHorizontal="7.5dp"
+                android:layout_marginTop="16dp"
+                android:paddingHorizontal="12dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="5"
+                app:spanCount="4"
                 tools:listitem="@layout/item_sticker" />
         </LinearLayout>
 
@@ -166,7 +139,7 @@
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/app_color6"
+        android:background="#D05F5A"
         app:layout_constraintBottom_toBottomOf="@+id/lnlBottom"
         app:layout_constraintEnd_toEndOf="@+id/lnlBottom"
         app:layout_constraintStart_toStartOf="@+id/lnlBottom"

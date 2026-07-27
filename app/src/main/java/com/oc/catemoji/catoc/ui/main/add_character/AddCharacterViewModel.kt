@@ -94,6 +94,14 @@ class AddCharacterViewModel @Inject constructor(
         else savedStateHandle[KEY_BACKGROUND_IMAGE_PATH] = path
     }
 
+    fun selectNoneBackground() {
+        backgroundImageList.forEachIndexed { index, item ->
+            item.isSelected = index == 1
+        }
+        backgroundColorList.forEach { it.isSelected = false }
+        savedStateHandle[KEY_SELECTED_BACKGROUND] = 1
+    }
+
     // ========== Data loading ==========
 
     fun loadDataFromMainViewModel(
@@ -107,8 +115,11 @@ class AddCharacterViewModel @Inject constructor(
         if (backgrounds.isEmpty() || stickers.isEmpty() || speeches.isEmpty()) return
 
         backgroundImageList.clear()
-        backgroundImageList.add(SelectedAddModel(path = "")) // ← giữ item pick từ gallery
+        val shouldSelectNone = backgroundImagePath.value == null && savedBackgroundColor == null
+        backgroundImageList.add(SelectedAddModel(path = "")) // gallery
+        backgroundImageList.add(SelectedAddModel(path = "", isSelected = shouldSelectNone)) // none
         backgroundImageList.addAll(backgrounds.map { SelectedAddModel(path = it) })
+        if (shouldSelectNone) savedStateHandle[KEY_SELECTED_BACKGROUND] = 1
 
         backgroundColorList.clear()
         backgroundColorList.addAll(DataLocal.getBackgroundColorDefault(context))
@@ -272,7 +283,8 @@ class AddCharacterViewModel @Inject constructor(
 
         if (backgrounds.isEmpty() || stickers.isEmpty() || speeches.isEmpty()) return
 
-        val selectedBackground = savedStateHandle.get<Int>(KEY_SELECTED_BACKGROUND) ?: -1
+        val selectedBackground = savedStateHandle.get<Int>(KEY_SELECTED_BACKGROUND)
+            ?: if (backgroundImagePath.value == null && savedBackgroundColor == null) 1 else -1
         backgroundImageList.addAll(backgrounds.mapIndexed { index, path ->
             SelectedAddModel(path = path, isSelected = index == selectedBackground)
         })

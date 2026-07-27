@@ -8,6 +8,8 @@ import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setFont
 import com.oc.catemoji.catoc.data.model.addcharacter.SelectedAddModel
 import com.oc.catemoji.catoc.databinding.ItemFontBinding
+import kotlin.collections.addAll
+import kotlin.text.clear
 
 
 class TextFontAdapter(val context: Context) : BaseAdapter<SelectedAddModel, ItemFontBinding>(ItemFontBinding::inflate) {
@@ -20,9 +22,6 @@ class TextFontAdapter(val context: Context) : BaseAdapter<SelectedAddModel, Item
             vFocus.setBackgroundResource(res)
 
             tvFont.setFont(item.color)
-            val (color, elevation) = if (item.isSelected) R.color.app_color to 6f else R.color.app_color9 to 0f
-            tvFont.setTextColor(context.getColor(color))
-            cvMain.cardElevation = elevation
             root.onClick { onTextFontClick.invoke(item.color, position) }
         }
     }

@@ -16,6 +16,7 @@ import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BackPressHandler
 import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.gone
+import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.toHome
 import com.oc.catemoji.catoc.core.extention.toIntro
@@ -44,6 +45,11 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
             android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
             viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
         }
+        binding.btnContinue.onClick(200) {
+            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
+            viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
+        }
+
 //         binding.btnNextPager.tvButton.onClick(200) {
 //            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
 //            viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
@@ -54,11 +60,21 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
                 ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
-                    if (position == 0) {
+                    btnContinue.gone()
+                    if (position == 1) {
+                        btnNextPager.tvButton.visible()
                         nativeAds.gone()
                     } else {
+                        if (position ==2){
+                            btnContinue.visible()
+                            btnNextPager.tvButton.invisible()
+                        }else{
+
+                            btnNextPager.tvButton.visible()
+                        }
                         nativeAds.visible()
                     }
+
                 }
             })
         }

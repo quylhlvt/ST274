@@ -1,5 +1,6 @@
 package com.oc.catemoji.catoc.ui.main.view
 
+import android.content.ClipData
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -65,10 +66,16 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
             loadImage(requireContext(), imagePath, imvImage)
             txtRight.isSelected = true
             txtLeft.isSelected = true
+            txtLeft2.isSelected = true
+            txtRight2.isSelected = true
+            txtLeft3.isSelected = true
+            txtRight3.isSelected = true
 
             when (imageType) {
                 // ── Type 0: Từ AddCharacter — success screen ──────────────────
                 0 -> {
+                    linearView.gone()
+                    lnlBottom.visible()
                     lnlBottom.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                         bottomMargin = 5.dp(requireContext())
                     }
@@ -93,25 +100,25 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                 }
                 // ── Type 1: Avatar từ MyPony ──────────────────────────────────
                 1 -> {
-                    lnlBottom.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        bottomMargin = 200.dp(requireContext())
-                    }
+                    linearView.visible()
+                    lnlBottom.gone()
+                    tvSuccess.gone()
                     hasNativeCollab = true
                     nativeAds.gone()
                     initNativeCollab()
-                    txtLeft.text = getString(R.string.share)
+                    txtLeft3.text = getString(R.string.share)
                     setImageActionBar(actionBar.btnActionBarRight, R.drawable.ic_delete)
                     setImageActionBar(actionBar.btnActionBarNextToRight, R.drawable.ic_edit1)
                 }
                 // ── Type 2: Design từ MyPony ──────────────────────────────────
                 2 -> {
-                    lnlBottom.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        bottomMargin = 200.dp(requireContext())
-                    }
+                    linearView.visible()
+                    lnlBottom.gone()
+                    tvSuccess.gone()
                     hasNativeCollab = true
                     nativeAds.gone()
                     initNativeCollab()
-                    txtLeft.text = getString(R.string.share)
+                    txtLeft3.text = getString(R.string.share)
                     setImageActionBar(actionBar.btnActionBarRight, R.drawable.ic_delete)
                 }
             }
@@ -190,15 +197,19 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                             navigateToEdit()
                         }
                     }
-                    btnBottomLeft.onClick { shareImage() }
-                    btnBottomRight.onClick { downloadImage() }
+                    btnBottomLeft2.onClick { shareToStory(FACEBOOK_PACKAGE, FACEBOOK_STORY_ACTION) }
+                    btnBottomRight2.onClick { shareToStory(INSTAGRAM_PACKAGE, INSTAGRAM_STORY_ACTION) }
+                    btnBottomLeft3.onClick { shareImage() }
+                    btnBottomRight3.onClick { downloadImage() }
                 }
 
                 // ── Type 2: Design từ MyPony ──────────────────────────────────
                 2 -> {
                     actionBar.btnActionBarRight.onClick { confirmDelete() }
-                    btnBottomLeft.onClick { shareImage() }
-                    btnBottomRight.onClick { downloadImage() }
+                    btnBottomLeft2.onClick { shareToStory(FACEBOOK_PACKAGE, FACEBOOK_STORY_ACTION) }
+                    btnBottomRight2.onClick { shareToStory(INSTAGRAM_PACKAGE, INSTAGRAM_STORY_ACTION) }
+                    btnBottomLeft3.onClick { shareImage() }
+                    btnBottomRight3.onClick { downloadImage() }
                 }
             }
         }
@@ -218,6 +229,41 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
         }
         startActivity(android.content.Intent.createChooser(intent, getString(R.string.share)))
     }
+
+    private fun shareToStory(packageName: String, action: String) {
+        if (imagePath.isEmpty()) return
+
+        val uri = FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.provider",
+            File(imagePath)
+        )
+        val intent = Intent(action).apply {
+            setDataAndType(uri, "image/*")
+            setPackage(packageName)
+            clipData = ClipData.newRawUri("story_image", uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        requireContext().grantUriPermission(
+            packageName,
+            uri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION
+        )
+
+        try {
+            startActivity(intent)
+        } catch (_: android.content.ActivityNotFoundException) {
+            showToast(
+                if (packageName == FACEBOOK_PACKAGE) {
+                    getString(R.string.facebook_story_not_supported)
+                } else {
+                    getString(R.string.instagram_story_not_supported)
+                }
+            )
+        }
+    }
+
 // ViewFragment.kt
 
     // Thêm vào ViewFragment
@@ -324,6 +370,13 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
             viewModelActivity.customizedCharacters.value.any { it.id == idEdit }
         if (!exists) showEditItemNotFoundDialog()
         return exists
+    }
+
+    companion object {
+        private const val FACEBOOK_PACKAGE = "com.facebook.katana"
+        private const val FACEBOOK_STORY_ACTION = "com.facebook.stories.ADD_TO_STORY"
+        private const val INSTAGRAM_PACKAGE = "com.instagram.android"
+        private const val INSTAGRAM_STORY_ACTION = "com.instagram.share.ADD_TO_STORY"
     }
 
     private fun showEditDataUnavailableDialog() {

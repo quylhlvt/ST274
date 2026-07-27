@@ -16,6 +16,14 @@ data class SelectionIndex(
     val pathIndex:     Int = 0
 ) : Parcelable
 
+@Parcelize
+data class LayerTransform(
+    val scale: Float = 1f,
+    val translationX: Float = 0f,
+    val translationY: Float = 0f,
+    val rotation: Float = 0f
+) : Parcelable
+
 // ─────────────────────────────────────────────
 //  ColorModel
 // ─────────────────────────────────────────────
@@ -52,6 +60,7 @@ data class CustomModel(
     val selections: ArrayList<SelectionIndex>  = arrayListOf(),
     val imageSave:  String                     = "",
     val isFlipped:  Boolean                    = false,
+    val layerTransforms: Map<Int, LayerTransform> = emptyMap(),
     val createdAt:  Long                       = 0L,
     val updatedAt:  Long                       = System.currentTimeMillis(),
     val level:      Int                        = 0

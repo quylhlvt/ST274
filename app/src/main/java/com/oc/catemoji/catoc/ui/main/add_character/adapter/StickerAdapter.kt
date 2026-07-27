@@ -21,24 +21,11 @@ class StickerAdapter : BaseAdapter<SelectedAddModel, ItemStickerBinding>(ItemSti
         val shimmerDrawable = ShimmerDrawable().apply { setShimmer(DataLocal.shimmer) }
 
         binding.apply {
-            if (currentSelected == position) {
-                shadown.visible()
-                materialParent.apply {
-                    strokeColor = ContextCompat.getColor(context, R.color.app_color)
-                    setCardBackgroundColor(ContextCompat.getColor(context, R.color.app_color4))
-                }
-            } else {
-                shadown.gone()
-                materialParent.apply {
-                    strokeColor = ContextCompat.getColor(context, R.color.app_color7)
-                    setCardBackgroundColor(ContextCompat.getColor(context, R.color.app_color8))
-                }
-            }
             Glide.with(binding.root)
                 .load(item.path)
                 .override(256, 256)
                 .placeholder(shimmerDrawable)
-                .into(imageView)
+                .into(imvImage)
 //            loadImage(root, item.path, imageView)
             root.onClick {
                 // ← was missing entirely

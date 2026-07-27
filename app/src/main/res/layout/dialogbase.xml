@@ -140,7 +140,7 @@
                             style="@style/single_marquee"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@drawable/bg_select_dialog1"
+                            android:background="@drawable/bg_select_dialog"
                             android:fontFamily="@font/baloo2_bold"
                             android:gravity="center"
                             android:text="@string/no"

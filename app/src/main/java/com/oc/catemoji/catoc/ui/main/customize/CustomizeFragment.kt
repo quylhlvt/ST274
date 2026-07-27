@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -33,14 +34,19 @@ import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailabl
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.saveToFile
+import com.oc.catemoji.catoc.core.extention.setFrameActionBar
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.showInter
+import com.oc.catemoji.catoc.core.extention.showRewardAds1
 import com.oc.catemoji.catoc.data.model.custom.BodyPartModel
+import com.oc.catemoji.catoc.data.model.custom.LayerTransform
 import com.oc.catemoji.catoc.data.model.custom.SelectionIndex
 import com.oc.catemoji.catoc.databinding.FragmentCustomizeBinding
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -52,6 +58,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
     CustomizeViewModel::class.java
 ), BackPressHandler {
     private val arrShowColor = mutableListOf<Boolean>()
+    private var isScaleActive = false
 
     private var isColorVisible = true
 
@@ -98,6 +105,11 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         binding.flNativeCollab.removeAllViews()
     }
 
+    override fun onDestroyView() {
+        isScaleActive = false
+        super.onDestroyView()
+    }
+
     // ── INIT ──────────────────────────────────────────────────────────────────
     private fun isOnlineTemplate(): Boolean {
         val templateIndex = arguments?.getInt(ARG_TEMPLATE_INDEX, 0) ?: 0
@@ -127,11 +139,14 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
 
     override fun initView() {
         initNativeCollab()
+        binding.txtReset.isSelected = true
+        binding.txtSize.isSelected = true
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
             setImageActionBar(btnActionBarCenter, R.drawable.ic_reset_all_custom)
             setImageActionBar(btnActionBarCenter2, R.drawable.ic_flip_all_custom)
-            setImageActionBar(btnActionBarRight, R.drawable.next_app)
+            setFrameActionBar(btnActionBarRightText,tvRightText,getString(R.string.next ))
+
         }
         setupAdapters()
 
@@ -194,6 +209,42 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
 
     // ── ACTIONS ───────────────────────────────────────────────────────────────
     override fun viewListener() {
+        binding.imgScale.onClick {
+            if (viewModel.resolvePathAt(viewModel.state.value.currentNavIndex) == null) {
+                return@onClick
+            }
+            isScaleActive = !isScaleActive
+            updateScalePanel()
+        }
+        binding.ratioPlus.onClickAndHold {
+            changeCurrentTransform { it.copy(scale = it.scale + SCALE_STEP) }
+        }
+        binding.ratioMinus.onClickAndHold {
+            changeCurrentTransform { it.copy(scale = it.scale - SCALE_STEP) }
+        }
+        binding.ratioRight.onClickAndHold {
+            changeCurrentTransform { it.copy(rotation = normalizeRotation(it.rotation + ROTATION_STEP)) }
+        }
+        binding.ratioLeft.onClickAndHold {
+            changeCurrentTransform { it.copy(rotation = normalizeRotation(it.rotation - ROTATION_STEP)) }
+        }
+        binding.transitionLeft.onClickAndHold {
+            changeCurrentTransform { it.copy(translationX = it.translationX - TRANSLATION_STEP) }
+        }
+        binding.transitionRight.onClickAndHold {
+            changeCurrentTransform { it.copy(translationX = it.translationX + TRANSLATION_STEP) }
+        }
+        binding.transitionTop.onClickAndHold {
+            changeCurrentTransform { it.copy(translationY = it.translationY - TRANSLATION_STEP) }
+        }
+        binding.transitionBottom.onClickAndHold {
+            changeCurrentTransform { it.copy(translationY = it.translationY + TRANSLATION_STEP) }
+        }
+        binding.btnResetScale.onClick {
+            viewModel.resetTransform(viewModel.state.value.currentNavIndex)
+            applyTransformsToAllLayers()
+            syncTransformControls()
+        }
         adapterNav.onClick = {
             if (!checkOnlineNetworkOrShowDialog()) {
                 shouldScrollPartToSelection = true
@@ -224,13 +275,13 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         }
 
         binding.apply {
-            end.onClick {
-                val navPos = viewModel.state.value.currentNavIndex
-                if (navPos < arrShowColor.size) arrShowColor[navPos] = false
-                llColor.animate().alpha(0f).setDuration(200).withEndAction {
-                    llColor.visibility = View.INVISIBLE
-                }.start()
-            }
+//            end.onClick {
+//                val navPos = viewModel.state.value.currentNavIndex
+//                if (navPos < arrShowColor.size) arrShowColor[navPos] = false
+//                llColor.animate().alpha(0f).setDuration(200).withEndAction {
+//                    llColor.visibility = View.INVISIBLE
+//                }.start()
+//            }
             imgChangColor.onClick {
                 val navPos = viewModel.state.value.currentNavIndex
                 if (!viewModel.state.value.hasMultipleColors) return@onClick
@@ -242,8 +293,22 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             }
             imgRandom.onClick {
                 if (!checkOnlineNetworkOrShowDialog()) {
-                    shouldScrollPartToSelection = true
-                    viewModel.randomizeAll()
+                    if (viewModel.state.value.randomCount == 0) {
+                        randomizeAllParts()
+                    } else {
+                        showConfirmDialog(
+                            title = getString(R.string.random_cat),
+                            message = getString(R.string.watch_ad_to_randomize_cat),
+                            noText = getString(R.string.watch_ad),
+                            yesText = getString(R.string.cancel),
+                            onNo = {
+                                showRewardAds1(
+                                onRewardSuccess = { randomizeAllParts()},
+                                onAdClosed = {})
+                            },
+                        onYes = {}
+                        )
+                    }
                 }
             }
             actionBar.btnActionBarCenter.setOnClickListener {
@@ -256,12 +321,14 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                             arrShowColor.fill(true);
                             shouldScrollPartToSelection = true
                             viewModel.resetAll()
+                            applyTransformsToAllLayers(viewModel.state.value)
+                            syncTransformControls()
                         }
                     }
                 )
             }}
             actionBar.btnActionBarCenter2.onClick { viewModel.toggleFlip() }
-            actionBar.btnActionBarRight.onClick {
+            actionBar.btnActionBarRightText.onClick {
                 if (!canSave) return@onClick
                 if (!isAdded || isDetached || view == null) return@onClick
                 if (checkOnlineNetworkOrShowDialog()) return@onClick
@@ -272,6 +339,12 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             }
             actionBar.btnActionBarLeft.setOnClickListener { confirmExit() }
         }
+    }
+
+    private fun randomizeAllParts() {
+        if (!isAdded || isDetached || view == null) return
+        shouldScrollPartToSelection = true
+        viewModel.randomizeAll()
     }
 
     // ── OBSERVE ───────────────────────────────────────────────────────────────
@@ -293,8 +366,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                     }
                     renderLayers(state)
                     updateAdapters(state)
-                    val scale = if (state.isFlipped) -1f else 1f
-                    layerViews.forEach { it.scaleX = scale }
+                    applyTransformsToAllLayers(state)
                 }
             }
         }
@@ -321,6 +393,101 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             layerViews.add(iv)
             navToLayerIndex[bp.nav] = layerIdx
         }
+    }
+
+    private fun applyTransformsToAllLayers(state: CustomizeState = viewModel.state.value) {
+        state.listData.forEachIndexed { navIndex, bodyPart ->
+            val layerIndex = navToLayerIndex[bodyPart.nav] ?: return@forEachIndexed
+            val imageView = layerViews.getOrNull(layerIndex) ?: return@forEachIndexed
+            val transform = viewModel.getTransform(navIndex)
+            imageView.scaleX = transform.scale * if (state.isFlipped) -1f else 1f
+            imageView.scaleY = transform.scale
+            imageView.translationX = transform.translationX
+            imageView.translationY = transform.translationY
+            imageView.rotation = transform.rotation
+        }
+    }
+
+    private fun changeCurrentTransform(block: (LayerTransform) -> LayerTransform) {
+        val navIndex = viewModel.state.value.currentNavIndex
+        if (viewModel.resolvePathAt(navIndex) == null) return
+        val requested = block(viewModel.getTransform(navIndex))
+        val maxX = binding.rlCharacter.width / 2f
+        val maxY = binding.rlCharacter.height / 2f
+        viewModel.updateTransform(
+            navIndex,
+            requested.copy(
+                scale = requested.scale.coerceIn(MIN_LAYER_SCALE, MAX_LAYER_SCALE),
+                translationX = requested.translationX.coerceIn(-maxX, maxX),
+                translationY = requested.translationY.coerceIn(-maxY, maxY)
+            )
+        )
+        applyTransformsToAllLayers()
+        syncTransformControls()
+    }
+
+    private fun normalizeRotation(value: Float): Float = when {
+        value >= 360f -> value - 360f
+        value <= -360f -> value + 360f
+        else -> value
+    }
+
+    private fun syncTransformControls() {
+        val navIndex = viewModel.state.value.currentNavIndex
+        val hasVisibleLayer = viewModel.resolvePathAt(navIndex) != null
+
+        // INVISIBLE keeps the color row layout stable, while hiding Scale for "none".
+        binding.imgScale.visibility = if (hasVisibleLayer) View.VISIBLE else View.INVISIBLE
+        if (!hasVisibleLayer) isScaleActive = false
+        updateScalePanel()
+
+        val transform = viewModel.getTransform(navIndex)
+        binding.btnResetScale.isEnabled = hasVisibleLayer && !viewModel.isTransformDefault(navIndex)
+        binding.btnResetScale.alpha = if (binding.btnResetScale.isEnabled) 1f else DISABLED_CONTROL_ALPHA
+
+        setTransformControlEnabled(binding.ratioPlus, hasVisibleLayer && transform.scale < MAX_LAYER_SCALE)
+        setTransformControlEnabled(binding.ratioMinus, hasVisibleLayer && transform.scale > MIN_LAYER_SCALE)
+        setTransformControlEnabled(binding.ratioLeft, hasVisibleLayer)
+        setTransformControlEnabled(binding.ratioRight, hasVisibleLayer)
+
+        val maxTranslationX = binding.rlCharacter.width / 2f
+        val maxTranslationY = binding.rlCharacter.height / 2f
+        if (maxTranslationX <= 0f || maxTranslationY <= 0f) {
+            setTransformControlEnabled(binding.transitionLeft, hasVisibleLayer)
+            setTransformControlEnabled(binding.transitionRight, hasVisibleLayer)
+            setTransformControlEnabled(binding.transitionTop, hasVisibleLayer)
+            setTransformControlEnabled(binding.transitionBottom, hasVisibleLayer)
+        } else {
+            setTransformControlEnabled(
+                binding.transitionLeft,
+                hasVisibleLayer && transform.translationX > -maxTranslationX
+            )
+            setTransformControlEnabled(
+                binding.transitionRight,
+                hasVisibleLayer && transform.translationX < maxTranslationX
+            )
+            setTransformControlEnabled(
+                binding.transitionTop,
+                hasVisibleLayer && transform.translationY > -maxTranslationY
+            )
+            setTransformControlEnabled(
+                binding.transitionBottom,
+                hasVisibleLayer && transform.translationY < maxTranslationY
+            )
+        }
+    }
+
+    private fun updateScalePanel() {
+        binding.imgScale.setImageResource(
+            if (isScaleActive) R.drawable.ic_scale_cus_selected else R.drawable.ic_scale_cus
+        )
+        binding.frameScale.visibility =
+            if (isScaleActive && binding.imgScale.visibility == View.VISIBLE) View.VISIBLE else View.GONE
+    }
+
+    private fun setTransformControlEnabled(view: View, enabled: Boolean) {
+        view.isEnabled = enabled
+        view.alpha = if (enabled) 1f else DISABLED_CONTROL_ALPHA
     }
 
     // Reset pendingLoads mỗi khi bắt đầu render lại
@@ -358,7 +525,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         pathsToLoad.forEach { (view, path, _) ->
             view.tag = path
             view.visibility = View.VISIBLE
-            view.scaleX = if (viewModel.state.value.isFlipped) -1f else 1f
+            applyTransformsToAllLayers()
             loadImageIntoView(view, path, skipCount = true) // skipCount vì đã set ở trên
         }
     }
@@ -442,8 +609,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             buildLayerViews(state.listData)
             renderLayers(state)
             updateAdapters(state)
-            val scale = if (state.isFlipped) -1f else 1f
-            layerViews.forEach { it.scaleX = scale }
+            applyTransformsToAllLayers(state)
         } else {
             // ✅ Force re-render để reload ảnh bị mất khỏi memory
             layerViews.forEach { it.tag = null }
@@ -453,8 +619,8 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
 
     private fun setSaveEnabled(enabled: Boolean) {
         canSave = enabled
-        binding.actionBar.btnActionBarRight.alpha = if (enabled) 1f else 0.5f
-        binding.actionBar.btnActionBarRight.isEnabled = enabled
+        binding.actionBar.btnActionBarRightText.alpha = if (enabled) 1f else 0.5f
+        binding.actionBar.btnActionBarRightText.isEnabled = enabled
     }
 
     // ── ADAPTERS ──────────────────────────────────────────────────────────────
@@ -513,6 +679,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             }
         }
         shouldScrollPartToSelection = false
+        syncTransformControls()
     }
 
     private fun buildThumbList(bp: BodyPartModel?, paths: List<String>): List<String> {
@@ -535,10 +702,8 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         showLoadingSafe()
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val bitmap =
-                withContext(Dispatchers.Default) {  // ✅ Đổi sang Default thay vì gọi trực tiếp
-                    renderLayersToBitmap()
-                }
+            // Android Views must be read and drawn on the main thread.
+            val bitmap = renderLayersToBitmap()
             if (bitmap == null) {
                 setSaveEnabled(true)
                 hideLoadingSafe()
@@ -561,7 +726,8 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                     character = template,
                     selections = selections,
                     imageSave = savedPath,
-                    isFlipped = viewModel.state.value.isFlipped
+                    isFlipped = viewModel.state.value.isFlipped,
+                    layerTransforms = viewModel.layerTransforms.value
                 )
             }
 
@@ -591,21 +757,79 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         val bitmap = Bitmap.createBitmap(root.width, root.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        layerViews.forEach { iv ->
-            if (iv.visibility != View.VISIBLE) return@forEach
+        layerViews.forEachIndexed { layerIndex, iv ->
+            if (iv.visibility != View.VISIBLE) return@forEachIndexed
+
+            val navIndex = navToLayerIndex.entries
+                .firstOrNull { it.value == layerIndex }
+                ?.key
+                ?.let { nav -> viewModel.state.value.listData.indexOfFirst { it.nav == nav } }
+                ?.takeIf { it >= 0 }
+                ?: return@forEachIndexed
+            val transform = viewModel.getTransform(navIndex)
 
             canvas.save()
-            if (iv.scaleX < 0) {
-                canvas.scale(-1f, 1f, root.width / 2f, 0f)
-            }
+            canvas.translate(
+                root.width / 2f + transform.translationX,
+                root.height / 2f + transform.translationY
+            )
+            canvas.scale(
+                transform.scale * if (viewModel.state.value.isFlipped) -1f else 1f,
+                transform.scale
+            )
+            canvas.rotate(transform.rotation)
+            canvas.translate(-root.width / 2f, -root.height / 2f)
 
-            // ✅ Vẽ trực tiếp từ ImageView — giữ đúng transform matrix của FIT_CENTER
+            val oldScaleX = iv.scaleX
+            val oldScaleY = iv.scaleY
+            val oldTranslationX = iv.translationX
+            val oldTranslationY = iv.translationY
+            val oldRotation = iv.rotation
+            iv.scaleX = 1f
+            iv.scaleY = 1f
+            iv.translationX = 0f
+            iv.translationY = 0f
+            iv.rotation = 0f
             iv.draw(canvas)
+            iv.scaleX = oldScaleX
+            iv.scaleY = oldScaleY
+            iv.translationX = oldTranslationX
+            iv.translationY = oldTranslationY
+            iv.rotation = oldRotation
 
             canvas.restore()
         }
 
         return bitmap
+    }
+
+    private fun View.onClickAndHold(action: () -> Unit) {
+        var repeatJob: Job? = null
+        setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    if (!isEnabled) return@setOnTouchListener true
+                    action()
+                    repeatJob = viewLifecycleOwner.lifecycleScope.launch {
+                        delay(400)
+                        while (isEnabled) {
+                            action()
+                            delay(80)
+                        }
+                    }
+                    true
+                }
+
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    repeatJob?.cancel()
+                    repeatJob = null
+                    performClick()
+                    true
+                }
+
+                else -> false
+            }
+        }
     }
     // ── BASE OVERRIDES ────────────────────────────────────────────────────────
 
@@ -633,6 +857,12 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
     }
 
     companion object {
+        private const val MIN_LAYER_SCALE = 0.3f
+        private const val MAX_LAYER_SCALE = 2f
+        private const val SCALE_STEP = 0.05f
+        private const val ROTATION_STEP = 5f
+        private const val TRANSLATION_STEP = 20f
+        private const val DISABLED_CONTROL_ALPHA = 0.4f
         const val ARG_TEMPLATE_INDEX = "template_index"
         const val ARG_TEMPLATE_ID = "template_id"
         const val ARG_IS_EDIT = "is_edit"

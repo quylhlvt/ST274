@@ -66,30 +66,32 @@
     <string name="zero_star_title">Do you like the app?</string>
     <string name="zero_star">Let us know your experience</string>
 
-    <string name="one_star_title">Oh, no =((</string>
+    <string name="one_star_title">Oh, no !</string>
     <string name="one_star">Please give us some feedback</string>
 
-    <string name="two_star_title">Oh, no =((</string>
+    <string name="two_star_title">Oh, no !</string>
     <string name="two_star">Please give us some feedback</string>
 
-    <string name="three_star_title">Oh, no =((</string>
+    <string name="three_star_title">Oh, no !</string>
     <string name="three_star">Please give us some feedback</string>
 
-    <string name="four_star_title">We love you too =3</string>
-    <string name="four_star">Thanks for your feedback =3</string>
+    <string name="four_star_title">We love you too !</string>
+    <string name="four_star">Thanks for your feedback</string>
 
-    <string name="five_star_title">We love you too =3</string>
-    <string name="five_star">Thanks for your feedback =3</string>
+    <string name="five_star_title">We love you too !</string>
+    <string name="five_star">Thanks for your feedback</string>
 
     <string name="rate_us_0">You have not rated it yet!</string>
     <string name="have_rated">Thank you for rate our app</string>
     <string name="refresh">Refesh</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="cosplay">Cosplay</string>
     <string name="permission_camera_denied">Cần quyền camera để sử dụng tính năng này</string>
     <string name="cat_random">Cat Random</string>
     <string name="random">Random</string>
+    <string name="random_cat">Random Cat</string>
+    <string name="watch_ad">Watch Ad</string>
+    <string name="watch_ad_to_randomize_cat">Watch an ad to randomize your cat.</string>
     <string name="my_creation">My Creation</string>
     <string name="my_creation1">My creation</string>
     <string name="category">Category</string>
@@ -108,4 +110,12 @@
     <string name="enter_your_package_name">Enter your package name</string>
     <string name="please_enter_your_package_name">Please enter your package name!</string>
     <string name="this_action_may_contain_advertising">This action can contain ads</string>
+    <string name="save">Save</string>
+    <string name="size">Size</string>
+    <string name="please_watch_full_ads">Please Watch Full Ads</string>
+    <string name="load_ads_fail">Load Ads Fail</string>
+    <string name="facebook_story">Facebook Story</string>
+    <string name="instagram_story">Instagram Story</string>
+    <string name="facebook_story_not_supported">Facebook Story is not supported on this device</string>
+    <string name="instagram_story_not_supported">Instagram Story is not supported on this device</string>
 </resources>

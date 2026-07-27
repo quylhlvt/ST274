@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -35,7 +34,9 @@ interface LoadingController {
         message: String,
         title: String? = null,
         onYes: () -> Unit,
-        onNo: (() -> Unit)? = null
+        onNo: (() -> Unit)? = null,
+        yesText: String? = null,
+        noText: String? = null
     )
     fun showGlobalOkDialog(
         message: String,
@@ -71,13 +72,13 @@ class MainActivity : AppCompatActivity() , LoadingController{
                 title = title,
                 showButtons = true,
                 cancelable = true,
+                yesText = getString(R.string.ok),
                 onYes = {
                     globalConfirmDialog?.dismiss()
                     globalConfirmDialog = null
                     onOk?.invoke()
                 }
             ).also { dialog ->
-                dialog.findViewById<TextView>(R.id.txtYes)?.text = getString(R.string.ok)
                 dialog.findViewById<View>(R.id.btnNo)?.gone()
             }
             globalConfirmDialog?.show()
@@ -108,7 +109,9 @@ class MainActivity : AppCompatActivity() , LoadingController{
         message: String,
         title: String?,
         onYes: () -> Unit,
-        onNo: (() -> Unit)?
+        onNo: (() -> Unit)?,
+        yesText: String?,
+        noText: String?
     ) {
         runOnUiThread {
             globalConfirmDialog?.dismiss()
@@ -117,6 +120,8 @@ class MainActivity : AppCompatActivity() , LoadingController{
                 title = title,
                 showButtons = true,
                 cancelable = true,
+                yesText = yesText,
+                noText = noText,
                 onYes = {
                     globalConfirmDialog?.dismiss()
                     globalConfirmDialog = null
@@ -139,6 +144,8 @@ class MainActivity : AppCompatActivity() , LoadingController{
         title: String? = null,
         showButtons: Boolean = false,
         cancelable: Boolean = false,
+        yesText: String? = null,
+        noText: String? = null,
         onYes: (() -> Unit)? = null,
         onNo: (() -> Unit)? = null
     ): Dialog {
@@ -147,6 +154,8 @@ class MainActivity : AppCompatActivity() , LoadingController{
             setContentView(binding.root)
             binding.txtYes.isSelected = true
             binding.txtNo.isSelected = true
+            binding.txtYes.text = yesText ?: getString(R.string.yes)
+            binding.txtNo.text = noText ?: getString(R.string.no)
             title?.let { binding.txtTitle.text = it }
             binding.txtContent.text = message
 

@@ -12,6 +12,7 @@ data class CustomizedCharacterDto(
     val selections: ArrayList<SelectionIndex> = arrayListOf(),
     val imageSave:  String                    = "",  // path ảnh render đã lưu
     val isFlipped:  Boolean                   = false,
+    val layerTransforms: Map<Int, LayerTransform> = emptyMap(),
     val updatedAt:  Long                      = System.currentTimeMillis(),
     val createdAt:  Long                      = System.currentTimeMillis() // ← THÊM
 
@@ -25,6 +26,7 @@ fun CustomModel.toDto() = CustomizedCharacterDto(
     selections = ArrayList(selections),
     imageSave  = imageSave,
     isFlipped  = isFlipped,
+    layerTransforms = layerTransforms,
     updatedAt  = updatedAt,
     createdAt  = createdAt
 )
@@ -37,6 +39,7 @@ fun CustomizedCharacterDto.toModel(templateListPath: ArrayList<BodyPartModel> = 
     selections = ArrayList(selections),
     imageSave  = imageSave,
     isFlipped  = isFlipped,
+    layerTransforms = layerTransforms,
     updatedAt  = updatedAt,
     createdAt  = createdAt
 )

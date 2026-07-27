@@ -120,10 +120,10 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
             setTextActionBar(tvCenter, getString(R.string.my_creation1))
-            setImageActionBar(btnActionBarNextToRight1, R.drawable.ic_delete_all)
-            setImageActionBar(btnActionBarRight1, R.drawable.ic_select_all)
-            btnActionBarNextToRight1.invisible()
-            btnActionBarRight1.invisible()
+            setImageActionBar(btnActionBarNextToRight, R.drawable.ic_delete_all)
+            setImageActionBar(btnActionBarRight, R.drawable.ic_select_all)
+            btnActionBarNextToRight.invisible()
+            btnActionBarRight.invisible()
         }
     }
 
@@ -199,8 +199,8 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
             btnTelegram.onClick { handleTelegramShare() }
             btnDownload.onClick { handleDownload() }
             btnShare.onClick { handleShare() }
-            actionBar.btnActionBarRight1.onClick { handleSelectAll() }
-            actionBar.btnActionBarNextToRight1.onClick { handleDeleteSelected() }  // ✅ thêm
+            actionBar.btnActionBarRight.onClick { handleSelectAll() }
+            actionBar.btnActionBarNextToRight.onClick { handleDeleteSelected() }  // ✅ thêm
 
         }
     }
@@ -312,15 +312,15 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
 
         binding.actionBar.apply {
             if (hasSelection) {
-                btnActionBarNextToRight1.visible()
-                btnActionBarRight1.visible()
+                btnActionBarNextToRight.visible()
+                btnActionBarRight.visible()
 
-                btnActionBarRight1.setImageResource(
+                btnActionBarRight.setImageResource(
                     if (allSelected) R.drawable.ic_select_all else R.drawable.ic_not_select_all
                 )
             } else {
-                btnActionBarNextToRight1.invisible()
-                btnActionBarRight1.invisible()
+                btnActionBarNextToRight.invisible()
+                btnActionBarRight.invisible()
 
             }
         }

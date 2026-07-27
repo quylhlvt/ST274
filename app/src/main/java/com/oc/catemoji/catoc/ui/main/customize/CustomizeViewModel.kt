@@ -7,6 +7,7 @@ import com.oc.catemoji.catoc.data.datalocal.manager.AppDataManager
 import com.oc.catemoji.catoc.data.model.custom.BodyPartModel
 import com.oc.catemoji.catoc.data.model.custom.ColorModel
 import com.oc.catemoji.catoc.data.model.custom.CustomModel
+import com.oc.catemoji.catoc.data.model.custom.LayerTransform
 import com.oc.catemoji.catoc.data.model.custom.SelectionIndex
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,6 +63,21 @@ class CustomizeViewModel @Inject constructor(
     private val _state = MutableStateFlow(CustomizeState())
     val state: StateFlow<CustomizeState> = _state.asStateFlow()
     private var isInitialized = false
+    private val _layerTransforms = MutableStateFlow<Map<Int, LayerTransform>>(emptyMap())
+    val layerTransforms: StateFlow<Map<Int, LayerTransform>> = _layerTransforms.asStateFlow()
+
+    fun getTransform(navIndex: Int): LayerTransform =
+        _layerTransforms.value[navIndex] ?: LayerTransform()
+
+    fun updateTransform(navIndex: Int, transform: LayerTransform) {
+        _layerTransforms.update { it + (navIndex to transform) }
+    }
+
+    fun resetTransform(navIndex: Int) {
+        _layerTransforms.update { it - navIndex }
+    }
+
+    fun isTransformDefault(navIndex: Int): Boolean = getTransform(navIndex) == LayerTransform()
 
     // ── INIT ──────────────────────────────────────────────────────────────────
 
@@ -126,6 +142,8 @@ class CustomizeViewModel @Inject constructor(
         if (_state.value.listData.isNotEmpty()) return
         editingCustomizedId = customizedId
         val template = appDataManager.getCharacterByIndex(templateIndex) ?: return
+        _layerTransforms.value =
+            appDataManager.getCharacterById(customizedId)?.layerTransforms.orEmpty()
         val sorted   = sortBodyParts(template.listPath)
         _state.value = CustomizeState(
             template        = template,
@@ -192,6 +210,7 @@ class CustomizeViewModel @Inject constructor(
     }
 
     fun resetAll() {
+        _layerTransforms.value = emptyMap()
         _state.update {
             it.copy(
                 selections = buildDefaultSelections(it.listData),
@@ -240,9 +259,10 @@ class CustomizeViewModel @Inject constructor(
                 selections = ArrayList(state.selections),
                 imageSave  = renderedImagePath,
                 isFlipped  = state.isFlipped,
+                layerTransforms = _layerTransforms.value,
                 updatedAt  = System.currentTimeMillis()
             )
-            ?: template  // tạo mới từ template
+            ?: template.copy(layerTransforms = _layerTransforms.value)
 
         return characterToSave to state.selections
     }

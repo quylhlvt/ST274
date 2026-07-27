@@ -86,9 +86,9 @@ class RateDialog(private val activity: Activity) : DialogFragment() {
                 0 -> setView(R.string.zero_star_title, R.string.zero_star)
                 1 -> setView(R.string.one_star_title, R.string.four_star)
                 2 -> setView(R.string.two_star_title, R.string.four_star)
-                3 -> setView(R.string.three_star_title, R.string.three_star)
+                3 -> setView(R.string.three_star_title, R.string.four_star)
                 4 -> setView(R.string.four_star_title, R.string.four_star)
-                5 -> setView(R.string.five_star_title, R.string.five_star)
+                5 -> setView(R.string.five_star_title, R.string.four_star)
             }
         }
     }

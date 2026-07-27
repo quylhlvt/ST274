@@ -3,6 +3,7 @@ package com.oc.catemoji.catoc.ui.main.add_character
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -48,6 +49,7 @@ import com.oc.catemoji.catoc.core.extention.hideSoftKeyboard
 import com.oc.catemoji.catoc.core.extention.loadImage
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setFont
+import com.oc.catemoji.catoc.core.extention.setFrameActionBar
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.extention.visible
@@ -66,6 +68,7 @@ import com.oc.catemoji.catoc.ui.main.add_character.adapter.SpeechAdapter
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -87,6 +90,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     // Source of truth duy nhất: layout change listener đo thực tế
     // KHÔNG dùng boolean flag nào trong ViewModel để control layout
     private var isKeyboardOpen = false
+    private var characterLoadJob: Job? = null
 
     // ── Adapters ─────────────────────────────────────────────────────────────
     private val backgroundImageAdapter by lazy { BackgroundImageAdapter() }
@@ -199,6 +203,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                         }
                         Log.d("DEBUG_STICKER", "after submit stickerSize=${viewModel.stickerList.size}")
                         backgroundImageAdapter.submitList(viewModel.backgroundImageList)
+                        syncBackgroundSelection()
                         stickerAdapter.submitList(viewModel.stickerList, true)
                         speechAdapter.submitList(viewModel.speechList)
                     }
@@ -215,6 +220,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                                 )
                             }
                             backgroundImageAdapter.submitList(viewModel.backgroundImageList)
+                            syncBackgroundSelection()
                             stickerAdapter.submitList(viewModel.stickerList, true)
                         }
                     }
@@ -245,7 +251,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
             // Action bar
             actionBar.btnActionBarLeft.onClick { confirmExit() }
             actionBar.btnActionBarCenter1.onClick { confirmReset() }
-            actionBar.btnActionBarRight.onClick {
+            actionBar.btnActionBarRightText.onClick {
                 showInter {
                     handleSave()
                 }
@@ -314,6 +320,23 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
 
             // Adapters
             backgroundImageAdapter.onAddImageClick = { launchImagePicker() }
+            backgroundImageAdapter.onNoneImageClick = { position ->
+                viewModel.setBackgroundImage(null)
+                viewModel.savedBackgroundColor = null
+                Glide.with(requireContext()).clear(binding.imvBackground)
+                binding.imvBackground.setImageDrawable(null)
+                binding.imvBackground.setBackgroundColor(
+                    requireContext().getColor(R.color.transparent)
+                )
+
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.updateBackgroundImageSelected(position)
+                    withContext(Dispatchers.Main) {
+                        backgroundColorAdapter.clearSelection()
+                        backgroundImageAdapter.selectItem(position)
+                    }
+                }
+            }
             backgroundImageAdapter.onBackgroundImageClick = { path, position ->
                 if (!checkOnlineNetworkOrShowDialog()) {
                     handleSetBackgroundImage(path, position)
@@ -329,7 +352,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                     addDrawable(path)
                 }
             }
-            speechAdapter.onItemClick = { path -> handleSpeech(path) }
+            speechAdapter.onItemClick = { path, _ -> handleSpeech(path) }
             textFontAdapter.onTextFontClick = { font, position -> handleFontClick(font, position) }
             textColorAdapter.onChooseColorClick = { handleChooseColor(isTextColor = true) }
             textColorAdapter.onTextColorClick = { color, position ->
@@ -343,8 +366,6 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
 
     // ── Init ──────────────────────────────────────────────────────────────────
     override fun initView() {
-
-        initNativeCollab()
         binding.lnlBackground.btnBackgroundColorTv.isSelected = true
         binding.lnlBackground.btnBackgroundImageTv.isSelected = true
         requireActivity().hideNavigation(true)
@@ -354,13 +375,32 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
         initDrawView()
 
         if (!viewModel.isInitialized) {
+            initNativeCollab()
             initData()
             viewModel.isInitialized = true
+            ensureCharacterVisible()
         } else {
             hideLoadingSafe()
-            restoreUIState()
+            // Khi quay lại từ màn success, ưu tiên render frame đầu tiên trước.
+            // Restore canvas/list và native ad sau để transition không bị khựng.
+            binding.root.post {
+                if (!isAdded || view == null) return@post
+                restoreUIState()
+                ensureCharacterVisible()
+            }
+            binding.root.postDelayed({
+                if (!isAdded || view == null) return@postDelayed
+                initNativeCollab()
+            }, 350L)
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // An ad/external activity can interrupt the first load. Retrying is safe
+        // because the ViewModel list is the source of truth and prevents duplicates.
+        binding.root.post { ensureCharacterVisible() }
     }
 
     // ── Keyboard ─────────────────────────────────────────────────────a─────────
@@ -417,6 +457,8 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     }
 
     override fun onDestroyView() {
+        characterLoadJob?.cancel()
+        characterLoadJob = null
         super.onDestroyView()
         keyboardLayoutListener?.let {
             binding.root.viewTreeObserver.removeOnGlobalLayoutListener(it)
@@ -468,7 +510,9 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
             setImageActionBar(btnActionBarCenter1, R.drawable.ic_reset_all_custom)
-            setImageActionBar(btnActionBarRight, R.drawable.next_app)
+//            setImageActionBar(btnActionBarRight, R.drawable.next_app)
+            setFrameActionBar(btnActionBarRightText,tvRightText,getString(R.string.save ))
+
         }
     }
 
@@ -507,28 +551,83 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
         viewModel.setTypeNavigation(ValueKey.BACKGROUND_NAVIGATION)
         viewModel.setTypeBackground(ValueKey.IMAGE_BACKGROUND)
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            val customizeBitmap = viewModelActivity.customizeBitmap
-            if (customizeBitmap != null && !customizeBitmap.isRecycled) {
-                binding.drawView.addDraw(
-                    viewModel.loadDrawableEmoji(customizeBitmap, isCharacter = true)
-                )
-                hideLoadingSafe()
-            } else if (imagepath.isNotEmpty()) {
-                addDrawable(imagepath, isCharacter = true) { hideLoadingSafe() }
+        ensureCharacterVisible()
+    }
+
+    private fun ensureCharacterVisible() {
+        if (!isAdded || view == null) return
+        if (viewModel.drawViewList.any { it.isCharacter }) {
+            hideLoadingSafe()
+            return
+        }
+        if (characterLoadJob?.isActive == true) return
+
+        characterLoadJob = viewLifecycleOwner.lifecycleScope.launch {
+            // imagePath is durable across ads, view recreation and process recreation.
+            val fileBitmap = if (imagepath.isNotEmpty()) {
+                withContext(Dispatchers.IO) {
+                    runCatching { BitmapFactory.decodeFile(imagepath) }.getOrNull()
+                }
             } else {
-                hideLoadingSafe()
+                null
             }
+            val cachedBitmap = viewModelActivity.customizeBitmap
+                ?.takeUnless { it.isRecycled }
+            val bitmap = fileBitmap ?: cachedBitmap
+
+            if (bitmap != null &&
+                viewModel.drawViewList.none { it.isCharacter } &&
+                isAdded &&
+                view != null
+            ) {
+                binding.drawView.addDraw(
+                    viewModel.loadDrawableEmoji(bitmap, isCharacter = true)
+                )
+            }
+            hideLoadingSafe()
         }
     }
 
     private fun submitAllAdapters() {
         backgroundImageAdapter.submitList(viewModel.backgroundImageList)
         backgroundColorAdapter.submitList(viewModel.backgroundColorList, true)
+        syncBackgroundSelection()
         stickerAdapter.submitList(viewModel.stickerList, true)
         speechAdapter.submitList(viewModel.speechList)
         textFontAdapter.submitListReset(viewModel.textFontList)
         textColorAdapter.submitListReset(viewModel.textColorList)
+    }
+
+    private fun syncBackgroundSelection() {
+        val selectedImage = viewModel.backgroundImageList.indexOfFirst { it.isSelected }
+        val selectedColor = viewModel.backgroundColorList.indexOfFirst {
+            it.isSelected || (
+                viewModel.savedBackgroundColor != null &&
+                    it.color == viewModel.savedBackgroundColor
+                )
+        }
+
+        when {
+            selectedImage >= 0 -> {
+                backgroundImageAdapter.selectItem(selectedImage)
+                backgroundColorAdapter.clearSelection()
+            }
+            selectedColor >= 0 -> {
+                backgroundImageAdapter.clearSelection()
+                backgroundColorAdapter.selectItem(selectedColor)
+            }
+            viewModel.backgroundImagePath.value == null &&
+                viewModel.savedBackgroundColor == null &&
+                viewModel.backgroundImageList.size > 1 -> {
+                viewModel.backgroundImageList[1].isSelected = true
+                backgroundImageAdapter.selectItem(1)
+                backgroundColorAdapter.clearSelection()
+            }
+            else -> {
+                backgroundImageAdapter.clearSelection()
+                backgroundColorAdapter.clearSelection()
+            }
+        }
     }
 
     private fun restoreUIState() {
@@ -655,7 +754,14 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                     lnlBackground.rcvBackgroundColor.gone()
                     lnlBackground.btnBackgroundImage.setBackgroundResource(R.drawable.img_bg_image_addcharacter)
                     lnlBackground.btnBackgroundColor.setBackgroundResource(R.drawable.img_bg_color_addcharacter)
+                    lnlBackground.btnBackgroundImageTv.setTextColor(
+                        requireContext().getColor(R.color.app_color)
+                    )
+                    lnlBackground.btnBackgroundColorTv.setTextColor(
+                        requireContext().getColor(R.color.origin2)
+                    )
                     backgroundImageAdapter.submitList(viewModel.backgroundImageList)
+                    syncBackgroundSelection()
                 }
 
                 ValueKey.COLOR_BACKGROUND -> {
@@ -664,6 +770,12 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                     lnlBackground.rcvBackgroundColor.visible()
                     lnlBackground.btnBackgroundColor.setBackgroundResource(R.drawable.img_bg_image_addcharacter)
                     lnlBackground.btnBackgroundImage.setBackgroundResource(R.drawable.img_bg_color_addcharacter)
+                    lnlBackground.btnBackgroundColorTv.setTextColor(
+                        requireContext().getColor(R.color.app_color)
+                    )
+                    lnlBackground.btnBackgroundImageTv.setTextColor(
+                        requireContext().getColor(R.color.origin2)
+                    )
                     backgroundColorAdapter.submitList(viewModel.backgroundColorList)
                 }
             }
@@ -720,7 +832,8 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                 binding.drawView.removeAllDraw()
                 binding.imvBackground.setImageBitmap(null)
                 binding.imvBackground.setBackgroundColor(requireContext().getColor(R.color.transparent))
-                backgroundImageAdapter.clearSelection()
+                viewModel.selectNoneBackground()
+                backgroundImageAdapter.selectItem(1)
                 backgroundColorAdapter.clearSelection()
                 hideLoadingSafe()
 

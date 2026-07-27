@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.oc.catemoji.catoc.data.datalocal.manager.AppDataManager
 import com.oc.catemoji.catoc.data.model.custom.CustomModel
+import com.oc.catemoji.catoc.data.model.custom.LayerTransform
 import com.oc.catemoji.catoc.data.model.custom.SelectionIndex
 import com.oc.catemoji.catoc.data.usecase.GetCatalogueUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -283,7 +284,8 @@ class ViewModelActivity @Inject constructor(
         character:  CustomModel,
         selections: List<SelectionIndex>,
         imageSave:  String  = "",
-        isFlipped:  Boolean = false
+        isFlipped:  Boolean = false,
+        layerTransforms: Map<Int, LayerTransform> = emptyMap()
     ) {
         viewModelScope.launch {
             val toSave = if (isTemplate(character.id)) {
@@ -293,6 +295,7 @@ class ViewModelActivity @Inject constructor(
                     selections = ArrayList(selections),
                     imageSave  = imageSave,
                     isFlipped  = isFlipped,
+                    layerTransforms = layerTransforms,
                     createdAt  = System.currentTimeMillis(),
                     updatedAt  = System.currentTimeMillis()
                     // ✅ KHÔNG set listPath — giữ nguyên từ template
@@ -302,6 +305,7 @@ class ViewModelActivity @Inject constructor(
                     selections = ArrayList(selections),
                     imageSave  = imageSave,
                     isFlipped  = isFlipped,
+                    layerTransforms = layerTransforms,
                     updatedAt  = System.currentTimeMillis()
                     // ✅ KHÔNG set listPath
                 )

@@ -70,7 +70,7 @@
             android:layout_height="match_parent"
             android:layout_margin="3.5dp"
             android:visibility="invisible"
-            android:background="@drawable/bg_10_stroke_linear_color" />
+            android:background="@drawable/bg_4_stroke_linear_color" />
 
     </FrameLayout>
 

@@ -18,19 +18,19 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/cvMain"
             android:layout_margin="3dp"
+            android:elevation="0dp"
+            app:cardElevation="0dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:cardBackgroundColor="@color/transparent"
+            app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="1000dp"
-
-            app:cardElevation="3dp">
+            >
             <!--        vFocus-->
 
-  <View
+            <View
                 android:id="@+id/vFocus"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_100_stroker_appcolor" />
+                android:layout_height="match_parent"/>
 
             <!--        tvFont-->
             <TextView
@@ -39,6 +39,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="Aa"
+                android:textColor="#1F1F1F"
                 android:textSize="18sp" />
         </androidx.cardview.widget.CardView>
 

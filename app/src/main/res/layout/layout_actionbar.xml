@@ -13,7 +13,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="10dp"
         android:src="@drawable/back_app"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -25,7 +24,6 @@
         android:layout_height="36dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="10dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:visibility="invisible"
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp"
@@ -53,7 +51,7 @@
         android:fontFamily="@font/baloo2_extrabold"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
-        app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight"
+        app:layout_constraintEnd_toStartOf="@+id/contrainSelect"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft"
         app:outerStrokeColor="@color/app_color"
@@ -67,15 +65,15 @@
         style="@style/single_marquee"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="25dp"
         android:gravity="center"
         android:text="@string/language"
         android:textSize="28sp"
         android:fontFamily="@font/baloo2_extrabold"
         android:visibility="gone"
+        android:layout_marginHorizontal="-10dp"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
-        app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight"
-        app:layout_constraintStart_toEndOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/contrainSelect"
+        app:layout_constraintStart_toEndOf="@+id/contrainSelect1"
         app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft"
         app:outerStrokeColor="@color/app_color"
         app:outerStrokeWidth="1.5dp"
@@ -83,10 +81,19 @@
 
     <!--    btnActionBarCenter-->
     <ImageView
+        android:id="@+id/btnActionCenter"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
+    <!--    btnActionBarCenter-->
+    <ImageView
         android:id="@+id/btnActionBarCenter"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toStartOf="@+id/btnActionBarCenter1"
@@ -96,7 +103,6 @@
         android:id="@+id/btnActionBarCenter1"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toStartOf="@+id/btnActionBarCenter2"
@@ -107,81 +113,119 @@
         android:id="@+id/btnActionBarCenter2"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
-        app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight"
+        app:layout_constraintEnd_toStartOf="@+id/btnEnd"
         app:layout_constraintStart_toEndOf="@+id/btnActionBarCenter1"
         app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
-
-    <!--    btnActionBarNextToRight-->
     <ImageView
-        android:id="@+id/btnActionBarNextToRight"
+        android:id="@+id/btnEnd"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="10dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight" />
-
-    <!--    btnActionBarRight-->
-    <ImageView
-        android:id="@+id/btnActionBarRight"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="10dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-    <ImageView
-        android:id="@+id/btnActionBarNextToRight1"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarRight1"
-        app:layout_constraintTop_toTopOf="@+id/btnActionBarRight1"
-
-        app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight1" />
-
-    <ImageView
-        android:id="@+id/btnActionBarRight1"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
         android:layout_marginEnd="13dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginBottom="10dp"
         android:visibility="invisible"
-        app:layout_constraintTop_toTopOf="@+id/btnActionBarRight"
-        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarRight"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contrainSelect1"
+        android:layout_width="wrap_content"
+        android:background="@null"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+        <ImageView
 
-    <!--            btnActionBarRightText-->
-    <FrameLayout
-        android:id="@+id/btnActionBarRightText"
-        android:layout_width="70dp"
-        android:layout_height="30dp"
-        android:visibility="gone"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/frame_select_language"
-        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarRight"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnActionBarRight">
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight1" />
 
-        <TextView
-            android:id="@+id/tvRightText"
-            style="@style/single_marquee"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="@string/next"
-            android:textColor="@color/white"
-            android:textSize="16dp" />
-    </FrameLayout>
+        <!--    btnActionBarRight-->
+
+        <ImageView
+            android:id="@+id/btnActionBarRight1"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!--    btnActionBarNextToRight-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contrainSelect"
+        android:layout_width="wrap_content"
+        android:background="@null"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/btnActionBarNextToRight"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight" />
+
+        <!--    btnActionBarRight-->
+
+        <ImageView
+            android:id="@+id/btnActionBarRight"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!--            btnActionBarRightText-->
+        <FrameLayout
+            android:id="@+id/btnActionBarRightText"
+            android:layout_width="64dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/btnActionBarRight"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btnActionBarRight">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/btnAction"
+                android:layout_width="64dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/frame_save_custom"
+                android:scaleType="fitXY" />
+            <TextView
+                android:id="@+id/tvRightText"
+                style="@style/single_marquee"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="2dp"
+                android:fontFamily="@font/baloo2_bold"
+                android:gravity="center"
+                android:text="@string/next"
+                android:textColor="@color/app_color"
+                android:textSize="16sp"
+                android:clickable="false"
+                android:focusable="false"
+                />
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

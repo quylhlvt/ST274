@@ -6,8 +6,8 @@
 
     <!-- Gradient trái → phải -->
     <gradient
-        android:startColor="@color/app_color5"
-        android:endColor="@color/app_color5"
+        android:startColor="#FFD18D"
+        android:endColor="#FFD18D"
         android:angle="0"/>
-    <stroke android:color="@color/app_color" android:width="1.5dp"/>
+    <stroke android:color="@color/app_color" android:width="3dp"/>
 </shape>

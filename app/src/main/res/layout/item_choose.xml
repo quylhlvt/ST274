@@ -5,79 +5,65 @@
     android:layout_height="wrap_content"
     android:background="@color/transparent"
     android:layout_marginHorizontal="8dp"
-
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="16dp"
     >
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:strokeColor="@color/app_color"
-        app:strokeWidth="1.6dp"
-        app:cardCornerRadius="24dp"
-        app:cardBackgroundColor="@color/app_color4"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintDimensionRatio="1:1">
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="10dp"
-
-       >
-
-
-
-    <FrameLayout
-        android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.card.MaterialCardView
+
+        <ImageView
+            android:elevation="1dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:cardCornerRadius="24dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/frame_shadown_category" />
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            app:cardElevation="2dp"
+            android:elevation="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="3dp"
+            android:layout_marginEnd="3dp"
+            app:cardCornerRadius="10dp"
+            app:cardBackgroundColor="@color/app_color"
             app:strokeWidth="0dp"
-            app:strokeColor="#FFF5FE"
-            app:cardBackgroundColor="@color/transparent"
-            android:outlineAmbientShadowColor="#E8C0F5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-           >
-
-            <!--            imvImage-->
-            <ImageView
-                android:id="@+id/imvImage"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/img_permission" />
+                app:cardBackgroundColor="@color/transparent"
+                app:cardCornerRadius="7dp"
+                app:strokeColor="@color/app_color"
+                app:strokeWidth="0dp"
+                >
 
-            <com.facebook.shimmer.ShimmerFrameLayout
-                android:id="@+id/sflShimmer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:shimmer_auto_start="true"
-                app:shimmer_base_alpha="0.7"
-                app:shimmer_direction="left_to_right"
-                app:shimmer_duration="1800"
-                app:shimmer_highlight_alpha="0.6"
-                app:shimmer_shape="linear">
-
-                <View
+                <!--            imvImage-->
+                <ImageView
+                    android:id="@+id/imvImage"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#818181" />
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_permission" />
 
-            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
         </com.google.android.material.card.MaterialCardView>
-
-    </FrameLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

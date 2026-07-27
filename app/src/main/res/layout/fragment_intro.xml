@@ -18,14 +18,30 @@
         android:id="@+id/viewPager2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toTopOf="@+id/dotsIndicator"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/btnContinue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/baloo2_bold"
+        android:paddingHorizontal="6dp"
+        android:layout_marginEnd="10dp"
+        android:text="@string/continue_per"
+        android:textColor="@color/app_color"
+        android:textSize="16sp"
+        android:visibility="gone"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
     <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
         android:id="@+id/dotsIndicator"
         android:layout_width="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_height="wrap_content"
-        app:dotsColor="@color/app_color3"
+        app:dotsColor="#A6A6A6"
         app:dotsCornerRadius="8dp"
         app:dotsSize="8dp"
         app:dotsSpacing="3dp"
@@ -47,7 +63,6 @@
         android:id="@+id/frame_layout_continue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="22dp"
         android:src="@drawable/img_next_intro"
         app:layout_constraintBottom_toTopOf="@+id/native_ads"
         app:layout_constraintEnd_toEndOf="parent">

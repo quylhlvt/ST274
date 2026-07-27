@@ -15,8 +15,8 @@
 
         <ImageView
             android:id="@+id/btnDoneText"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="end|center_vertical"
             android:layout_marginEnd="16dp"
             android:src="@drawable/ic_done_1" />
@@ -38,7 +38,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:text="@string/text"
                 android:fontFamily="@font/baloo2_bold"
-                android:textColor="@color/app_color9"
+                android:textColor="@color/app_color"
                 android:textSize="16sp" />
 
             <EditText
@@ -66,7 +66,7 @@
                 android:layout_marginTop="12dp"
                 android:text="Font"
                 android:fontFamily="@font/baloo2_bold"
-                android:textColor="@color/app_color9"
+                android:textColor="@color/app_color"
                 android:textSize="16sp"/>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -86,7 +86,7 @@
                 android:layout_marginTop="12dp"
                 android:text="@string/color"
                 android:fontFamily="@font/baloo2_bold"
-                android:textColor="@color/app_color9"
+                android:textColor="@color/app_color"
                 android:textSize="16sp" />
 
             <androidx.recyclerview.widget.RecyclerView

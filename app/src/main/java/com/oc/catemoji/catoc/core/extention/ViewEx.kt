@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.FontRes
@@ -39,6 +40,13 @@ fun setImageActionBar(imageView: ImageView, res: Int) {
     imageView.setImageResource(res)
     imageView.visible()
 }
+fun setFrameActionBar(frame: FrameLayout, tv: TextView, text: String) {
+    tv.isSelected =true
+    frame.visible()
+    tv.setText(text)
+
+}
+
 
 fun setTextActionBar(textView: TextView, text: String) {
     textView.text = text

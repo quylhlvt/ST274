@@ -245,14 +245,18 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>(
         message: String,
         title: String? = null,
         onYes: () -> Unit,
-        onNo: (() -> Unit)? = null
+        onNo: (() -> Unit)? = null,
+        yesText: String? = null,
+        noText: String? = null
     ) {
         if (!isAdded || activity == null) return
         loadingController?.showGlobalConfirmDialog(
             message = message,
             title = title,
             onYes = onYes,
-            onNo = onNo
+            onNo = onNo,
+            yesText = yesText,
+            noText = noText
         )
     }
     fun showNoInternetDialog(onOk: (() -> Unit)? = null) {

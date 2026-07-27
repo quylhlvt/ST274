@@ -1,57 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginBottom="8dp"
     android:layout_height="wrap_content">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/shadown"
-        android:layout_width="0dp"
-        android:visibility="gone"
-        android:layout_height="0dp"
-        app:layout_constraintCircleRadius="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="6:9"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:strokeWidth="0dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="4dp"
-        app:cardBackgroundColor="#664A2711"
-        android:layout_marginBottom="3dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-    <com.google.android.material.card.MaterialCardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/materialParent"
-        android:layout_marginHorizontal="5dp"
-        android:layout_marginBottom="5dp"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintCircleRadius="16dp"
-        app:cardBackgroundColor="@color/app_color8"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="6:9"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:strokeColor="@color/app_color7"
-        app:strokeWidth="1.6dp"
+        app:cardElevation="0dp"
+        android:elevation="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/materialChildent"
+
+
+        <ImageView
+            android:id="@+id/imvImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="6dp"
-            app:layout_constraintCircleRadius="16dp"
-            app:cardBackgroundColor="@color/app_color9"
-            app:strokeWidth="0dp">
+            android:scaleType="centerInside"
+            />
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:background="@color/white"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter" />
+    </androidx.cardview.widget.CardView>
 
-        </com.google.android.material.card.MaterialCardView>
 
-    </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

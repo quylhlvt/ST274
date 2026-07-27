@@ -25,20 +25,16 @@ class BackgroundColorAdapter : BaseAdapter<SelectedAddModel, ItemBackgroundColor
 
         binding.apply {
             // ← chỉ dùng currentSelected, không dùng item.isSelected
-                if (currentSelected == position) {
-                    shadown.visible()
-                    materialParent.apply {    strokeColor = ContextCompat.getColor(context, R.color.app_color)
-                    setCardBackgroundColor(
-                        ContextCompat.getColor(context, R.color.app_color4)
-                    )}
-                } else {
-                    shadown.gone()
-                    materialParent.apply { strokeColor = ContextCompat.getColor(context, R.color.app_color7)
-                    setCardBackgroundColor(
-                        ContextCompat.getColor(context, R.color.app_color8)
-                    )
-                // tắt elevation mặc định để dùng custom shadow
-                }
+            if (currentSelected == position) {
+                materialForcus.visible()
+                materialParent.setCardBackgroundColor(
+                    ContextCompat.getColor(context, R.color.app_color4)
+                )
+            } else {
+                materialForcus.gone()
+                materialParent.setCardBackgroundColor(
+                    ContextCompat.getColor(context, R.color.app_color8)
+                )
             }
 
             if (position == 0) {
