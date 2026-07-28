@@ -56,26 +56,6 @@
                 app:outerStrokeColor="@color/app_color"
                 app:outerStrokeWidth="1dp" />
 
-            <RelativeLayout
-                android:id="@+id/top"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-
-                <ImageView
-                    android:id="@+id/btnClose"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_close_1"
-                    android:visibility="invisible"
-                    app:tint="#1F2F4F" />
-            </RelativeLayout>
 
             <ir.kotlin.kavehcolorpicker.KavehColorPicker
                 android:id="@+id/colorPickerView"
@@ -86,41 +66,84 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
-            <LinearLayout
-                android:layout_width="274dp"
-                android:layout_height="133dp"
-                android:layout_marginHorizontal="44dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
                 android:gravity="center"
                 android:orientation="vertical"
+                android:paddingBottom="18dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/colorPickerView">
 
                 <ir.kotlin.kavehcolorpicker.KavehHueSlider
                     android:id="@+id/hueSlider"
+                    android:layout_marginHorizontal="20dp"
+                    app:layout_constraintTop_toTopOf="parent"
                     android:layout_width="match_parent"
                     android:layout_height="24dp" />
 
                 <!--                btnDone-->
-                <RelativeLayout
-                    android:id="@+id/btnDone"
-                    android:layout_width="135dp"
-                    android:layout_height="44dp"
+                <LinearLayout
+                    android:id="@+id/llBottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:weightSum="280"
                     android:layout_marginTop="16dp"
-                    android:layout_marginBottom="38dp"
-                    android:background="@drawable/bg_cosplay1">
+                    app:layout_constraintDimensionRatio="2.8:0.44"
+                    app:layout_constraintTop_toBottomOf="@+id/hueSlider">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:fontFamily="@font/baloo2_bold"
-                        android:gravity="center"
-                        android:text="@string/done"
-                        android:textColor="@color/app_color"
-                        android:textSize="20sp" />
-                </RelativeLayout>
-            </LinearLayout>
+                    <FrameLayout
+                        android:id="@+id/btnCancel"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="132"
+                        android:background="@drawable/bg_frame_mycreation">
+
+                        <TextView
+                            android:id="@+id/tvCancel"
+                            style="@style/single_marquee"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_marginHorizontal="4dp"
+                            android:fontFamily="@font/baloo2_bold"
+                            android:gravity="center"
+                            android:text="@string/cancel"
+                            android:textColor="@color/app_color"
+                            android:textSize="20sp" />
+                    </FrameLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="18" />
+
+                    <FrameLayout
+                        android:id="@+id/btnDone"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="132"
+                        android:background="@drawable/bg_frame_mycreation">
+
+                        <TextView
+                            android:id="@+id/tvDone"
+                            style="@style/single_marquee"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_marginHorizontal="4dp"
+                            android:fontFamily="@font/baloo2_bold"
+                            android:gravity="center"
+                            android:text="@string/done"
+                            android:textColor="@color/app_color"
+                            android:textSize="20sp" />
+                    </FrameLayout>
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

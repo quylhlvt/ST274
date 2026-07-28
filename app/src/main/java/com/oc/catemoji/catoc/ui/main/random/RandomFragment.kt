@@ -98,9 +98,9 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
 
     private fun FragmentRandomBinding.setupActionBar() {
         actionBar.apply {
-            tvCenter.select()
+            txtShow.select()
+            tvEdit.select()
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
-            setImageActionBar(btnActionBarRight, R.drawable.next_app)
             setTextActionBar(tvCenter, getString(R.string.random))
         }
     }
@@ -121,7 +121,7 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
                     viewModel.randomize(isOnline = isOnline)
                 }
             }
-            actionBar.btnActionBarRight.onClick {
+            btnEdit.onClick {
                 val item = viewModel.randomItem.value ?: return@onClick
                 val isOnline =
                     isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())

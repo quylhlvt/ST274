@@ -3,15 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@drawable/img_bg_lang"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.main.myPony.MyPonyFragment">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/img_bg_view" />
     <!-- layoutActionBar -->
     <FrameLayout
         android:id="@+id/layoutActionBar"
@@ -37,33 +33,33 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:weightSum="320">
+            android:weightSum="328">
 
             <!--            btnMyAvatar-->
             <FrameLayout
-                android:id="@+id/btnMyAvatar"
+                android:id="@+id/btnMyDesign"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="154">
+                android:layout_weight="156">
 
                 <!--                imvFocusMyAvatar-->
                 <ImageView
-                    android:id="@+id/imvFocusMyAvatar"
+                    android:id="@+id/imvFocusMyDesign"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="fitXY"
-                    android:src="@drawable/bg_btn_type_selected" />
+                    android:src="@drawable/bg_btn_type_unselected" />
 
                 <!--                tvMyAvatar-->
                 <TextView
-                    android:id="@+id/tvMyAvatar"
+                    android:id="@+id/tvMyDesign"
                     style="@style/single_marquee"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginVertical="1dp"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
-                    android:text="@string/my_avatar"
+                    android:text="@string/design"
                     android:textColor="@color/app_color"
                     android:textSize="20sp" />
 
@@ -72,33 +68,34 @@
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="12" />
+                android:layout_weight="16" />
 
             <!--            btnMyDesign-->
             <FrameLayout
-                android:id="@+id/btnMyDesign"
+                android:id="@+id/btnMyAvatar"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="154">
+                android:layout_weight="156">
 
                 <!--                imvFocusMyDesign-->
                 <ImageView
-                    android:id="@+id/imvFocusMyDesign"
+                    android:id="@+id/imvFocusMyAvatar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginVertical="1dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/bg_btn_type_unselected" />
+                    android:src="@drawable/bg_btn_type_selected" />
 
                 <!--                tvMyDesign-->
                 <TextView
-                    android:id="@+id/tvMyDesign"
+                    android:id="@+id/tvMyAvatar"
+
                     style="@style/single_marquee"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
-                    android:text="@string/design"
+                    android:text="@string/my_avatar"
                     android:textColor="@color/app_color"
                     android:textSize="20sp" />
 
@@ -120,7 +117,7 @@
         android:id="@+id/recycleAvatar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="10dp"
+        android:layout_marginHorizontal="8dp"
         android:layout_marginTop="5dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -133,7 +130,7 @@
         android:id="@+id/recycleDesign"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="10dp"
+        android:layout_marginHorizontal="8dp"
         android:layout_marginTop="5dp"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -164,7 +161,7 @@
         android:id="@+id/lnlBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
+        android:paddingBottom="20dp"
         android:orientation="vertical"
         android:background="@drawable/bg_mycreation"
         android:paddingHorizontal="16dp"
@@ -179,57 +176,86 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            android:weightSum="320"
+            android:weightSum="328"
             android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/llBottom"
-            app:layout_constraintDimensionRatio="3.2:0.44">
+            app:layout_constraintDimensionRatio="3.28:0.44">
 
-            <FrameLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/btnWhatsapp"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="154"
+                android:layout_weight="156"
                 android:background="@drawable/bg_btn_whatsapp">
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginBottom="16dp"
+                    android:src="@drawable/ic_whatsapp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
 
                 <TextView
                     android:id="@+id/tvWhatApp"
                     style="@style/single_marquee"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_marginHorizontal="4dp"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
+                    android:paddingBottom="2dp"
                     android:text="@string/add_to_whatsapp"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
-            </FrameLayout>
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="12" />
+                android:layout_weight="16" />
 
-            <FrameLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/btnTelegram"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="154"
+                android:layout_weight="156"
                 android:background="@drawable/bg_btn_telegram">
-
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginBottom="16dp"
+                    android:src="@drawable/ic_whatsapp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
                 <TextView
                     android:id="@+id/tvTelegram"
                     style="@style/single_marquee"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView2"
                     android:layout_marginHorizontal="4dp"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
                     android:text="@string/add_to_telegram"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
-            </FrameLayout>
+                    android:textSize="16sp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -238,16 +264,16 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            android:weightSum="320"
-            app:layout_constraintDimensionRatio="3.2:0.44"
+            android:weightSum="328"
+            app:layout_constraintDimensionRatio="3.28:0.48"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <FrameLayout
                 android:id="@+id/btnShare"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="154"
-                android:background="@drawable/bg_cosplay">
+                android:layout_weight="156"
+                android:background="@drawable/bg_frame_mycreation">
 
                 <TextView
                     android:id="@+id/tvShare"
@@ -266,14 +292,14 @@
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="12" />
+                android:layout_weight="16" />
 
             <FrameLayout
                 android:id="@+id/btnDownload"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="154"
-                android:background="@drawable/bg_cosplay">
+                android:layout_weight="156"
+                android:background="@drawable/bg_frame_mycreation">
 
                 <TextView
                     android:id="@+id/tvDownload"

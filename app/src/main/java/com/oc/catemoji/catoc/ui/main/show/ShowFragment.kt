@@ -69,6 +69,9 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
     private val pendingLoads = AtomicInteger(0)
     private var timerJob: Job? = null
     private val totalSeconds = 5 * 60
+    private var remainingSeconds = totalSeconds
+    private var countDownJob: Job? = null
+    private var hasFinishedCountDown = false
     // ── INFLATE ───────────────────────────────────────────────────────────────
 
     override fun inflateBinding(
@@ -111,9 +114,21 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
         if (!isAdded || isDetached) return
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
         initNativeCollab()
+
+        when {
+            hasFinishedCountDown && remainingSeconds > 0 && timerJob?.isActive != true -> {
+                startTimer()
+            }
+            !hasFinishedCountDown && countDownJob?.isActive != true -> {
+                startCountDown()
+            }
+        }
     }
 
     override fun onFragmentStop() {
+        timerJob?.cancel()
+        countDownJob?.cancel()
+        binding.tvCountDown.animate().cancel()
         if (!isAdded || isDetached) return
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
         binding.flNativeCollab.removeAllViews()
@@ -122,8 +137,8 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
         initNativeCollab()
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
-            setImageActionBar(btnActionBarRight, R.drawable.next_app)
-            setTextActionBar( tvCenter, "05:00" )
+//            setImageActionBar(btnActionBarRight, R.drawable.next_app)
+            setTextActionBar( tvCenter, "05:00 " )
         }
         setupAdapters()
         readArgsAndInit()
@@ -139,24 +154,24 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
     }
     private fun startTimer() {
         timerJob?.cancel()
-        var remainingSeconds = totalSeconds
         timerJob = viewLifecycleOwner.lifecycleScope.launch {
             while (remainingSeconds > 0) {
                 val minutes = remainingSeconds / 60
                 val seconds = remainingSeconds % 60
                 binding.actionBar.tvCenter.text =
-                    String.format("%02d:%02d", minutes, seconds)
+                    String.format("%02d:%02d ", minutes, seconds)
                 kotlinx.coroutines.delay(1000)
                 remainingSeconds--
             }
             // Hết giờ → navigate
-            binding.actionBar.tvCenter.text = "00:00"
+            binding.actionBar.tvCenter.text = "00:00 "
             if (isAdded && !isDetached) {
                 navigateToSuccess()
             }
         }
     }
     private fun startCountDown() {
+        countDownJob?.cancel()
         binding.actionBar.btnActionBarLeft.isEnabled = false
         binding.actionBar.btnActionBarRight.isEnabled = false
         val colors = listOf(
@@ -167,7 +182,7 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
 
         binding.countDown.visibility = View.VISIBLE
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        countDownJob = viewLifecycleOwner.lifecycleScope.launch {
             for (count in 3 downTo 1) {
                 val colorIndex = 3 - count
                 binding.tvCountDown.setTextColor(colors[colorIndex])
@@ -209,6 +224,7 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
             binding.tvCountDown.alpha = 1f
             binding.tvCountDown.scaleX = 1f
             binding.tvCountDown.scaleY = 1f
+            hasFinishedCountDown = true
             startTimer()
         }
     }
@@ -279,14 +295,6 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
 
             materialSmall.onClick { imgShowBig.visible() }
             close.onClick { imgShowBig.gone() }
-
-            end.onClick {
-                val navPos = viewModel.state.value.currentNavIndex
-                if (navPos < arrShowColor.size) arrShowColor[navPos] = false
-                llColor.animate().alpha(0f).setDuration(200).withEndAction {
-                    llColor.visibility = View.INVISIBLE
-                }.start()
-            }
 
             // ── Random ────────────────────────────────────────────────────────────
             imgRandom.onClick {
@@ -525,7 +533,7 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
         // Animate progress fill (scaleY từ 0→1 theo %)
         binding.progressTrack.post {
             val trackH = binding.progressTrack.height.toFloat()
-            val marginPx = 5 * resources.displayMetrics.density
+            val marginPx = 11 * resources.displayMetrics.density
             val fillH = trackH - marginPx
             val scale = percent / 100f
 
@@ -567,6 +575,9 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
 
             // Reset hoàn toàn
             timerJob?.cancel()
+            countDownJob?.cancel()
+            remainingSeconds = totalSeconds
+            hasFinishedCountDown = false
             viewModel.reset()
             hasTriggeredReInit = false
 
@@ -586,7 +597,7 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
             }
 
             // Restart
-            binding.actionBar.tvCenter.text = "05:00"
+            binding.actionBar.tvCenter.text = "05:00 "
             startCountDown()
             readArgsAndInit()
             return
@@ -615,6 +626,7 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
     override fun onDestroyView() {
         super.onDestroyView()
         timerJob?.cancel()
+        countDownJob?.cancel()
     }
     override fun bindViewModel() {}
 

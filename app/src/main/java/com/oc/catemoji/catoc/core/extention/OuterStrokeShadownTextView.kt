@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.oc.catemoji.catoc.R
 import ir.kotlin.kavehcolorpicker.dp
+import kotlin.text.toInt
 
 
 class OuterStrokeShadownTextView : AppCompatTextView {
@@ -14,8 +15,8 @@ class OuterStrokeShadownTextView : AppCompatTextView {
     private var outerStrokeWidth = 0f
     private var outerStrokeColor: Int = Color.WHITE
     private var outerStrokeJoin: Join = Join.ROUND
-    private var strokeMiter = 5f
-    private var extraPadding = 0
+    private var strokeMiter = 3f
+    private var extraPadding = 5
     private var isDrawingStroke = false
 
     constructor(context: Context) : super(context) { init(null) }
@@ -37,13 +38,10 @@ class OuterStrokeShadownTextView : AppCompatTextView {
             a.recycle()
         }
         if (outerStrokeWidth > 0f) {
-            extraPadding = (outerStrokeWidth * dp(2)).toInt()
+            extraPadding = (outerStrokeWidth * 2.dp(context)).toInt()
         }
     }
-    fun setOuterStrokeColor(color: Int) {
-        outerStrokeColor = color
-        invalidate()
-    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         if (extraPadding > 0) {
@@ -51,8 +49,7 @@ class OuterStrokeShadownTextView : AppCompatTextView {
             extraPadding = 0
         }
         if (outerStrokeWidth > 0f) {
-            // ✅ Bỏ post{} để set ngay lập tức
-            setLayerType(LAYER_TYPE_SOFTWARE, null)
+            post { setLayerType(LAYER_TYPE_SOFTWARE, null) }
         }
     }
 

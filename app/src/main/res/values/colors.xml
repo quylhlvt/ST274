@@ -64,4 +64,6 @@
     <color name="native_text_color">#70364B</color>
     <color name="yellow2">#FDF6DB</color>
     <color name="origin2">#FF9900</color>
+    <color name="shawdown2">#33000000</color>
+    <color name="shadown_black2">#4D000000</color>
 </resources>

@@ -31,6 +31,20 @@
         app:layout_constraintBottom_toTopOf="@+id/lnlBottom"
         android:background="@drawable/bg_addbackground"
         android:src="@drawable/img_permission" />
+    <ImageView
+        android:id="@+id/imvImage2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="28dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
+        app:layout_constraintBottom_toTopOf="@+id/linearView"
+        android:background="@drawable/bg_addbackground"
+        android:src="@drawable/img_permission" />
 
 
     <!--    btnEdit-->
@@ -130,7 +144,7 @@
         app:layout_constraintDimensionRatio="3.28:1.04"
         android:layout_width="match_parent"
         android:visibility="gone"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@+id/native_ads"
 
         android:weightSum="104"

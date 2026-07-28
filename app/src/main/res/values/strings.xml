@@ -40,7 +40,7 @@
     <string name="image_has_been_saved_successfully">Image has been saved successfully!</string>
     <string name="download">Download</string>
     <string name="avatar">Avatar</string>
-    <string name="my_avatar">My Avatar</string>
+    <string name="my_avatar">My Cat</string>
     <string name="design">My Design</string>
     <string name="no_item_here">No Item Here</string>
     <string name="add_to_whatsapp">Add To WhatsApp</string>
@@ -91,7 +91,7 @@
     <string name="random">Random</string>
     <string name="random_cat">Random Cat</string>
     <string name="watch_ad">Watch Ad</string>
-    <string name="watch_ad_to_randomize_cat">Watch an ad to randomize your cat.</string>
+    <string name="watch_ad_to_randomize_cat">Watch a short ad to generate a random cat.</string>
     <string name="my_creation">My Creation</string>
     <string name="my_creation1">My creation</string>
     <string name="category">Category</string>

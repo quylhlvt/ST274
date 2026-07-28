@@ -4,79 +4,87 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/transparent"
-    android:layout_marginHorizontal="6dp"
-    android:layout_marginBottom="12dp">
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginBottom="16dp">
 
-    <com.google.android.material.card.MaterialCardView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:strokeColor="@color/app_color"
-        app:strokeWidth="1.6dp"
-        app:cardCornerRadius="24dp"
+        app:strokeWidth="0dp"
         app:cardBackgroundColor="@color/app_color4"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintDimensionRatio="1:1">
+<com.google.android.material.card.MaterialCardView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="3dp"
+    android:layout_marginStart="3dp"
+    app:cardCornerRadius="10dp"
+    app:cardBackgroundColor="@color/shawdown2"/>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.material.card.MaterialCardView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:strokeWidth="0dp"
+    app:cardCornerRadius="10dp"
+    android:layout_marginBottom="3dp"
+    app:cardBackgroundColor="@color/app_color"
+    android:layout_marginEnd="3dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="3dp"
+        app:cardCornerRadius="7dp"
+        app:cardBackgroundColor="@color/transparent"
+        app:strokeWidth="0dp"
+        app:strokeColor="@color/app_color">
+
+        <ImageView
+            android:id="@+id/imvImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="10dp">
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_permission" />
+        <View
+            android:id="@+id/shadownForcus"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/shadown_black2"
+            android:visibility="gone" />
+        <ImageView
+            android:id="@+id/btnDelete"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="end"
+            android:layout_margin="3dp"
+            android:src="@drawable/ic_delete" />
 
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+        <!--        btnEdit-->
+        <ImageView
+            android:id="@+id/btnEdit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:cardCornerRadius="24dp"
-                    app:strokeWidth="0dp"
-                    app:strokeColor="#FFF5FE"
-                    app:cardBackgroundColor="@color/transparent"
-                    android:outlineAmbientShadowColor="#E8C0F5">
+            android:layout_margin="3dp"
+            android:src="@drawable/ic_edit" />
 
-                    <ImageView
-                        android:id="@+id/imvImage"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/img_permission" />
+        <!--        btnSelect-->
+        <ImageView
+            android:id="@+id/btnSelect"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="3dp"
+            android:layout_gravity="end"
+            android:src="@drawable/ic_not_select"
+            android:visibility="gone" />
 
-                    <ImageView
-                        android:id="@+id/btnDelete"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="end"
-                        android:layout_margin="12dp"
-                        android:src="@drawable/ic_delete" />
-
-                    <!--        btnEdit-->
-                    <ImageView
-                        android:id="@+id/btnEdit"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-
-                        android:layout_margin="12dp"
-                        android:src="@drawable/ic_edit" />
-
-                    <!--        btnSelect-->
-                    <ImageView
-                        android:id="@+id/btnSelect"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_margin="12dp"
-                        android:src="@drawable/ic_not_select"
-                        android:visibility="gone" />
-
-                </com.google.android.material.card.MaterialCardView>
-
-            </FrameLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
+</com.google.android.material.card.MaterialCardView>
+
+
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

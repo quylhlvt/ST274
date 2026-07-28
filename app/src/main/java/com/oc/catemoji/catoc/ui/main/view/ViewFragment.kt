@@ -63,7 +63,6 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
         currentImagePath = imagePath
         binding.apply {
             setImageActionBar(actionBar.btnActionBarLeft, R.drawable.back_app)
-            loadImage(requireContext(), imagePath, imvImage)
             txtRight.isSelected = true
             txtLeft.isSelected = true
             txtLeft2.isSelected = true
@@ -74,6 +73,9 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
             when (imageType) {
                 // ── Type 0: Từ AddCharacter — success screen ──────────────────
                 0 -> {
+                    imvImage.visible()
+                    imvImage2.gone()
+                    loadImage(requireContext(), imagePath, imvImage)
                     linearView.gone()
                     lnlBottom.visible()
                     lnlBottom.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -100,6 +102,9 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                 }
                 // ── Type 1: Avatar từ MyPony ──────────────────────────────────
                 1 -> {
+                    imvImage.gone()
+                    imvImage2.visible()
+                    loadImage(requireContext(), imagePath, imvImage2)
                     linearView.visible()
                     lnlBottom.gone()
                     tvSuccess.gone()
@@ -112,6 +117,9 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                 }
                 // ── Type 2: Design từ MyPony ──────────────────────────────────
                 2 -> {
+                    imvImage.gone()
+                    imvImage2.visible()
+                    loadImage(requireContext(), imagePath, imvImage2)
                     linearView.visible()
                     lnlBottom.gone()
                     tvSuccess.gone()
@@ -417,7 +425,8 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
             ?.observe(viewLifecycleOwner) { newPath ->
                 if (newPath.isNullOrEmpty()) return@observe
                 currentImagePath = newPath
-                loadImage(requireContext(), currentImagePath, binding.imvImage)
+                val targetImage = if (imageType == 0) binding.imvImage else binding.imvImage2
+                loadImage(requireContext(), currentImagePath, targetImage)
             }
     }
 

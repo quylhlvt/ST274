@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:background="@color/transparent">
+
+    <!--    btnActionBarLeft-->
+    <ImageView
+        android:id="@+id/btnActionBarLeft"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/back_app"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!--    cvLogo-->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvLogo"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!--        imvLogo-->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/logo_app" />
+    </androidx.cardview.widget.CardView>
+
+    <!--    tvStart-->
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+        android:id="@+id/tvStart"
+        style="@style/single_marquee"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:gravity="start|center_vertical"
+        android:text="@string/language"
+        android:textSize="28sp"
+        android:fontFamily="@font/baloo2_extrabold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/contrainSelect"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft"
+        app:outerStrokeColor="@color/app_color"
+        app:outerStrokeWidth="1.5dp"
+        android:textColor="@color/app_color2"
+        />
+
+    <!--    tvCenter-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:minWidth="124dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/contrainSelect"
+        app:layout_constraintStart_toEndOf="@+id/contrainSelect1"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft">
+
+        <ImageView
+            android:id="@+id/clock"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/clock"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintEnd_toStartOf="@+id/tvCenter" />
+
+        <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+            android:id="@+id/tvCenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="none"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:scrollHorizontally="false"
+            android:singleLine="true"
+            android:includeFontPadding="true"
+            android:gravity="center"
+            android:text="10:00"
+            android:textSize="24sp"
+            android:fontFamily="@font/baloo2_extrabold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/clock"
+            app:layout_constraintTop_toTopOf="parent"
+            app:outerStrokeColor="@color/app_color"
+            app:outerStrokeWidth="1.5dp"
+            android:textColor="@color/app_color2"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    
+
+    <!--    btnActionBarCenter-->
+    <ImageView
+        android:id="@+id/btnActionCenter"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
+    <!--    btnActionBarCenter-->
+    <ImageView
+        android:id="@+id/btnActionBarCenter"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/btnActionBarCenter1"
+        app:layout_constraintStart_toEndOf="@+id/btnActionBarLeft"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
+    <ImageView
+        android:id="@+id/btnActionBarCenter1"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/btnActionBarCenter2"
+        app:layout_constraintStart_toEndOf="@+id/btnActionBarCenter"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
+    <!--    btnActionBarCenter-->
+    <ImageView
+        android:id="@+id/btnActionBarCenter2"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
+        app:layout_constraintEnd_toStartOf="@+id/btnEnd"
+        app:layout_constraintStart_toEndOf="@+id/btnActionBarCenter1"
+        app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
+    <ImageView
+        android:id="@+id/btnEnd"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="13dp"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contrainSelect1"
+        android:layout_width="wrap_content"
+        android:background="@null"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+        <ImageView
+
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight1" />
+
+        <!--    btnActionBarRight-->
+
+        <ImageView
+            android:id="@+id/btnActionBarRight1"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!--    btnActionBarNextToRight-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contrainSelect"
+        android:layout_width="wrap_content"
+        android:background="@null"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/btnActionBarNextToRight"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight" />
+
+        <!--    btnActionBarRight-->
+
+        <ImageView
+            android:id="@+id/btnActionBarRight"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!--            btnActionBarRightText-->
+        <FrameLayout
+            android:id="@+id/btnActionBarRightText"
+            android:layout_width="64dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/btnActionBarRight"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btnActionBarRight">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/btnAction"
+                android:layout_width="64dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/frame_save_custom"
+                android:scaleType="fitXY" />
+            <TextView
+                android:id="@+id/tvRightText"
+                style="@style/single_marquee"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="2dp"
+                android:fontFamily="@font/baloo2_bold"
+                android:gravity="center"
+                android:text="@string/next"
+                android:textColor="@color/app_color"
+                android:textSize="16sp"
+                android:clickable="false"
+                android:focusable="false"
+                />
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

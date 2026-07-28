@@ -10,7 +10,7 @@ import com.oc.catemoji.catoc.databinding.DialogColorPickerBinding
 
 class ChooseColorDialog(context: Context) : BaseDialog<DialogColorPickerBinding>(context,maxWidth = true, maxHeight = false) {
     override val layoutId: Int = R.layout.dialog_color_picker
-    override val isCancelOnTouchOutside: Boolean =true
+    override val isCancelOnTouchOutside: Boolean =false
     override val isCancelableByBack: Boolean = false
 
     var onDoneEvent: ((Int) -> Unit) = {}
@@ -29,7 +29,7 @@ class ChooseColorDialog(context: Context) : BaseDialog<DialogColorPickerBinding>
     override fun initAction() {
         binding.apply {
             colorPickerView.setOnColorChangedListener { color = it }
-            btnClose.onClick { onCloseEvent.invoke() }
+            btnCancel.onClick { onCloseEvent.invoke() }
             btnDone.onClick { onDoneEvent.invoke(color) }
         }
     }
