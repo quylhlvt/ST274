@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/yellow2"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.main.show.ShowFragment">
 
 
@@ -18,6 +18,7 @@
             android:id="@+id/actionBar"
             layout="@layout/layout_actionbar2" />
     </FrameLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
@@ -52,11 +53,10 @@
             android:text="0%"
             android:textColor="#6B2E00"
             android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="@+id/layoutProgress"
-            app:layout_constraintStart_toStartOf="@+id/layoutProgress"
-
             app:layout_constraintBottom_toBottomOf="@+id/frame_rando_all"
-            />
+            app:layout_constraintEnd_toEndOf="@+id/layoutProgress"
+
+            app:layout_constraintStart_toStartOf="@+id/layoutProgress" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutProgress"
@@ -88,10 +88,10 @@
                 android:id="@+id/progressFill"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginHorizontal="3dp"
                 android:layout_marginBottom="10dp"
                 android:elevation="1dp"
                 android:scaleType="fitXY"
-                android:layout_marginHorizontal="3dp"
                 android:scaleY="0"
                 android:src="@drawable/bg_progress_match"
                 app:layout_constraintBottom_toBottomOf="@id/progressTrack"
@@ -104,10 +104,10 @@
                 android:id="@+id/progressTrackBottom"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="3dp"
                 android:adjustViewBounds="true"
                 android:elevation="2dp"
                 android:scaleType="fitXY"
-                android:layout_marginHorizontal="3dp"
                 android:src="@drawable/ic_progress_track_bottom"
                 android:translationY="-3dp"
                 app:layout_constraintBottom_toBottomOf="@id/progressTrack"
@@ -168,8 +168,8 @@
                 android:id="@+id/imgRandom"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:visibility="gone"
                 android:src="@drawable/ic_ramdom_cus"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toStartOf="parent"
@@ -303,17 +303,18 @@
             tools:listitem="@layout/item_bottom_custom" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/materialSmall"
         android:layout_width="80dp"
         android:layout_height="0dp"
-        android:layout_marginTop="-39dp"
         android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="-40dp"
         app:cardBackgroundColor="@color/transparent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintTop_toBottomOf="@id/layoutActionBar"
-       >
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutActionBar">
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -321,13 +322,15 @@
             android:layout_marginTop="2dp"
             app:cardBackgroundColor="@color/shawdown2"
             app:cardCornerRadius="10dp" />
+
         <FrameLayout
-            android:elevation="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginEnd="2dp"
             android:layout_marginBottom="2dp"
-            android:layout_width="match_parent"
-            android:foreground="@drawable/img_forgound_show"
-            android:layout_height="match_parent"/>
+            android:elevation="5dp"
+            android:foreground="@drawable/img_forgound_show" />
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -351,21 +354,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
+                    android:background="@color/white"
                     android:src="@drawable/img_permission" />
 
 
             </com.google.android.material.card.MaterialCardView>
         </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
         android:id="@+id/imgShowBig"
-        android:visibility="gone
-"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#66000000"
         android:clickable="true"
         android:focusable="true"
-        android:background="#66000000"
-        android:layout_height="match_parent">
+        android:visibility="gone">
 
         <FrameLayout
             android:id="@+id/materialBig"
@@ -374,97 +378,350 @@
             android:layout_marginHorizontal="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-          >
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
 
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="6dp"
+                app:cardBackgroundColor="@color/shawdown2"
+                app:cardCornerRadius="10dp"
+                app:strokeWidth="0dp" />
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="6dp"
+                android:elevation="5dp"
+                android:foreground="@drawable/img_forgound_random" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="6dp"
+                app:cardBackgroundColor="@color/app_color"
+                app:cardCornerRadius="10dp"
+                app:strokeWidth="0dp">
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="6dp"
-                    app:strokeWidth="0dp"
-                    app:cardBackgroundColor="@color/shawdown2"
-                    app:cardCornerRadius="10dp" />
-
-                <FrameLayout
-                    android:elevation="5dp"
-                    android:layout_width="match_parent"
-                    android:layout_marginEnd="6dp"
-                    android:layout_marginBottom="6dp"
-                    android:foreground="@drawable/img_forgound_random"
-                    android:layout_height="match_parent"/>
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="6dp"
-                    android:layout_marginBottom="6dp"
-                    app:cardBackgroundColor="@color/app_color"
-                    app:cardCornerRadius="10dp"
+                    android:layout_margin="6dp"
+                    app:cardBackgroundColor="@color/transparent"
+                    app:cardCornerRadius="7dp"
+                    app:strokeColor="@color/app_color"
                     app:strokeWidth="0dp">
 
-                    <com.google.android.material.card.MaterialCardView
+                    <ImageView
+                        android:id="@+id/imvImage"
+                        android:background="@color/white"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_margin="6dp"
-                        app:cardBackgroundColor="@color/transparent"
-                        app:cardCornerRadius="7dp"
-                        app:strokeColor="@color/app_color"
-                        app:strokeWidth="0dp">
-
-                        <ImageView
-                            android:id="@+id/imvImage"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/img_permission" />
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img_permission" />
 
 
-                    </com.google.android.material.card.MaterialCardView>
                 </com.google.android.material.card.MaterialCardView>
+            </com.google.android.material.card.MaterialCardView>
 
 
-
-            </FrameLayout>
+        </FrameLayout>
 
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/close"
             android:layout_width="36dp"
             android:layout_height="36dp"
+            android:layout_marginTop="20dp"
             android:src="@drawable/ic_close_guide"
-            app:layout_constraintTop_toBottomOf="@+id/materialBig"
-            app:layout_constraintStart_toStartOf="@+id/materialBig"
             app:layout_constraintEnd_toEndOf="@+id/materialBig"
-            android:layout_marginTop="20dp" />
+            app:layout_constraintStart_toStartOf="@+id/materialBig"
+            app:layout_constraintTop_toBottomOf="@+id/materialBig" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <FrameLayout
         android:id="@+id/countDown"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#99000000"
+        android:clickable="true"
+        android:elevation="101dp"
         android:focusable="true"
-        android:visibility="gone"
-        android:background="#99000000">
-            <TextView
-                android:id="@+id/tvCountDown"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:text="3"
-                android:textSize="50sp"
-                android:fontFamily="@font/baloo2_bold"
-                android:textColor="@color/app_color5"
-                />
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvCountDown"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/baloo2_bold"
+            android:gravity="center"
+            android:text="3"
+            android:textColor="@color/app_color5"
+            android:textSize="50sp" />
     </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/win"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:clickable="true"
+        android:elevation="30dp"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="22dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+<ImageView
+    android:id="@+id/imgTopBodyWin"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:elevation="2dp"
+    android:src="@drawable/img_top_body_win"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintDimensionRatio="3.2:1.91"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:id="@+id/bodyWin"
+                android:layout_marginTop="-20dp"
+                android:background="@drawable/bg_win_img"
+                app:layout_constraintBottom_toTopOf="@+id/btnNext"
+                app:layout_constraintDimensionRatio="3.2:3.68"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/imgTopBodyWin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/txtTitle"
+                    style="@style/single_marquee"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="30dp"
+                    android:fontFamily="@font/baloo2_bold"
+                    android:gravity="center"
+                    android:text="@string/your_cosplay_score"
+                    android:textColor="@color/app_color"
+                    android:textSize="20sp"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="30dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="30dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="2.6:2.5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtTitle">
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:id="@+id/view1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintDimensionRatio="1.53:2.49"/>
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:id="@+id/view2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintDimensionRatio="1.53:2.49"/>
+                    <FrameLayout
+                        android:id="@+id/frameImage1"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+
+                        android:elevation="2dp"
+                        app:layout_constraintEnd_toEndOf="@+id/view1"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="6dp"
+                            android:layout_marginTop="6dp"
+                            app:cardBackgroundColor="@color/shawdown2"
+                            app:cardCornerRadius="10dp"
+                            app:strokeWidth="0dp" />
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="3dp"
+                            android:layout_marginBottom="3dp"
+                            android:elevation="5dp"
+                            android:foreground="@drawable/img_forgound_random" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="3dp"
+                            android:layout_marginBottom="3dp"
+                            app:cardBackgroundColor="@color/app_color"
+                            app:cardCornerRadius="10dp"
+                            app:strokeWidth="0dp">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="3dp"
+                                app:cardBackgroundColor="@color/transparent"
+                                app:cardCornerRadius="7dp"
+                                app:strokeColor="@color/app_color"
+                                app:strokeWidth="0dp">
+
+                                <ImageView
+                                    android:id="@+id/imvImage3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:background="@color/white"
+                                    android:src="@drawable/img_permission" />
+
+
+                            </com.google.android.material.card.MaterialCardView>
+                        </com.google.android.material.card.MaterialCardView>
+
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/frameImage2"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:elevation="2dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/view2"
+                        >
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="6dp"
+                            android:layout_marginTop="6dp"
+                            app:cardBackgroundColor="@color/shawdown2"
+                            app:cardCornerRadius="10dp"
+                            app:strokeWidth="0dp" />
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="3dp"
+                            android:layout_marginBottom="3dp"
+                            android:elevation="5dp"
+                            android:foreground="@drawable/img_forgound_random" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="3dp"
+                            android:layout_marginBottom="3dp"
+                            app:cardBackgroundColor="@color/app_color"
+                            app:cardCornerRadius="10dp"
+                            app:strokeWidth="0dp">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="3dp"
+                                app:cardBackgroundColor="@color/transparent"
+                                app:cardCornerRadius="7dp"
+                                app:strokeColor="@color/app_color"
+                                app:strokeWidth="0dp">
+
+                                <ImageView
+                                    android:id="@+id/imvImage4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:background="@color/white"
+                                    android:src="@drawable/img_permission" />
+
+
+                            </com.google.android.material.card.MaterialCardView>
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginHorizontal="70dp"
+                        android:background="@drawable/img_vs"
+                        android:elevation="3dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintDimensionRatio="1.46:0.42"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/txtTitle2"
+                            style="@style/single_marquee"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:fontFamily="@font/baloo2_bold"
+                            android:gravity="center"
+                            android:text="@string/match"
+                            android:textColor="@color/app_color"
+                            android:textSize="20sp" />
+                    </FrameLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <FrameLayout
+                android:id="@+id/btnNext"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="102dp"
+                android:background="@drawable/bg_cosplay1"
+                app:layout_constraintDimensionRatio="1.56:0.48"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:strokeColor="@color/app_color2"
+                app:strokeWidth="1dp">
+
+                <TextView
+                    android:id="@+id/txtNext"
+                    style="@style/single_marquee"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/baloo2_bold"
+                    android:gravity="center"
+                    android:text="@string/next"
+                    android:textColor="@color/app_color"
+                    android:textSize="20sp"
+                    app:strokeWidth="1dp" />
+            </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.oc.catemoji.catoc.utils.BlockableFrameLayout
         android:id="@+id/flNativeCollab"
-        android:elevation="100dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="100dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,7 +31,13 @@
             android:layout_marginBottom="3dp"
             app:cardBackgroundColor="@color/app_color"
             android:layout_marginEnd="3dp">
-
+            <FrameLayout
+                android:elevation="5dp"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="6dp"
+                android:foreground="@drawable/img_forgound_random"
+                android:layout_height="match_parent"/>
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -46,6 +52,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
+                    android:background="@color/white"
                     android:src="@drawable/img_permission" />
                 <View
                     android:id="@+id/shadownForcus"

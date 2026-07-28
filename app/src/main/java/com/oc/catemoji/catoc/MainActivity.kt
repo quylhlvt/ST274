@@ -242,15 +242,17 @@ class MainActivity : AppCompatActivity() , LoadingController{
         super.onCreate(savedInstanceState)
         Log.d("PERF2", "super.onCreate done: ${System.currentTimeMillis()}")
 
+        // Áp dụng edge-to-edge trước khi inflate layout để tránh vùng trống quanh
+        // status bar/tai thỏ xuất hiện trong frame đầu tiên.
+        hideNavigation(true)
         setContentView(R.layout.activity_main)
         Log.d("PERF2", "setContentView done: ${System.currentTimeMillis()}")
+        Admob.getInstance().setOpenShowAllAds(false)
         Admob.getInstance().setTimeLimitShowAds(30000)
         Admob.getInstance().setTimeCountdownNativeCollab(15000)
-        hideNavigation(true)        // ← sau setContentView, window đã sẵn sàng
         initSharedPreferences()
 //        applyLanguage()
         Admob.getInstance().loadInterAll(this, getString(R.string.inter_all))
-
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
@@ -339,5 +341,23 @@ class MainActivity : AppCompatActivity() , LoadingController{
     override fun onResume() {
         super.onResume()
         hideNavigation(true)
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            // onResume có thể được gọi trước khi màn xin quyền của Facebook đóng hẳn.
+            // Chỉ ẩn lại system bars khi app thực sự lấy lại window focus.
+            hideNavigation(true)
+            window.decorView.postDelayed({
+                if (hasWindowFocus()) {
+                    hideNavigation(true)
+                }
+            }, SYSTEM_BAR_RESTORE_DELAY_MS)
+        }
+    }
+
+    companion object {
+        private const val SYSTEM_BAR_RESTORE_DELAY_MS = 300L
     }
 }

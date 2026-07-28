@@ -54,13 +54,10 @@
                     android:layout_marginHorizontal="20dp"
                     android:fontFamily="@font/baloo2_extrabold"
                     android:gravity="center"
-                    android:shadowColor="@color/app_color"
-                    android:shadowDx="5"
-                    android:shadowDy="-5"
-                    android:shadowRadius="5"
+
                     android:text="@string/loading"
                     android:textColor="@color/app_color2"
-                    android:textSize="28dp"
+                    android:textSize="28sp"
                     app:outerStrokeColor="@color/app_color"
                     app:layout_constraintTop_toTopOf="parent"
                     app:outerStrokeWidth="1dp" />
@@ -74,7 +71,7 @@
                     android:gravity="center"
                     android:text="@string/haven_t_saved_it_yet_do_you_want_to_exit"
                     android:textColor="@color/app_color"
-                    android:textSize="18dp"
+                    android:textSize="18sp"
                     app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
 
                 <com.airbnb.lottie.LottieAnimationView

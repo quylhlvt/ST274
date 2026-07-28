@@ -40,10 +40,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
+            <FrameLayout
+                android:elevation="5dp"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="6dp"
+                android:foreground="@drawable/img_forgound_category"
+                android:layout_height="match_parent"/>
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="3dp"
                 app:cardBackgroundColor="@color/transparent"
                 app:cardCornerRadius="7dp"
                 app:strokeColor="@color/app_color"

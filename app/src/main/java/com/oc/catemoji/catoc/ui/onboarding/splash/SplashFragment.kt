@@ -62,9 +62,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
             override fun onNextAction() {
                 super.onNextAction()
                 adReady = true
-                if (isAdded && !isDetached && !isRemoving) {
-                    lifecycleScope.launch { completeProgress { goToHome() } }
-                }
             }
         }
 
@@ -214,12 +211,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
     override fun onResume() {
         super.onResume()
         progressAnimator?.resume()
-
-        if (adReady && !hasNavigated) {
-            adReady = false
-            lifecycleScope.launch { completeProgress { goToHome() } }
-            return
-        }
 
         binding.progressWrapper.post {
             if (!isAdded || isDetached) return@post

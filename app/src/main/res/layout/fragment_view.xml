@@ -18,33 +18,128 @@
             android:id="@+id/actionBar"
             layout="@layout/layout_actionbar" />
     </FrameLayout>
-    <ImageView
-        android:id="@+id/imvImage"
+
+    <FrameLayout
+        android:id="@+id/frame"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="centerCrop"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="28dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
         app:layout_constraintBottom_toTopOf="@+id/lnlBottom"
-        android:background="@drawable/bg_addbackground"
-        android:src="@drawable/img_permission" />
-    <ImageView
-        android:id="@+id/imvImage2"
+        android:src="@drawable/img_permission" >
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="6dp"
+            app:strokeWidth="0dp"
+            android:layout_marginTop="6dp"
+            app:cardBackgroundColor="@color/shawdown2"
+            app:cardCornerRadius="10dp" />
+
+        <FrameLayout
+            android:elevation="5dp"
+            android:layout_width="match_parent"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="6dp"
+            android:foreground="@drawable/img_forgound_random"
+            android:layout_height="match_parent"/>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="6dp"
+            app:cardBackgroundColor="@color/app_color"
+            app:cardCornerRadius="10dp"
+            app:strokeWidth="0dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="6dp"
+                app:cardBackgroundColor="@color/transparent"
+                app:cardCornerRadius="7dp"
+                app:strokeColor="@color/app_color"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:id="@+id/imvImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_permission" />
+
+
+            </com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.card.MaterialCardView>
+
+
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/frame2"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
         android:scaleType="centerCrop"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="28dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
         app:layout_constraintBottom_toTopOf="@+id/linearView"
-        android:background="@drawable/bg_addbackground"
-        android:src="@drawable/img_permission" />
+        android:src="@drawable/img_permission" >
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="6dp"
+            app:strokeWidth="0dp"
+            android:layout_marginTop="6dp"
+            app:cardBackgroundColor="@color/shawdown2"
+            app:cardCornerRadius="10dp" />
+
+        <FrameLayout
+            android:elevation="5dp"
+            android:layout_width="match_parent"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="6dp"
+            android:foreground="@drawable/img_forgound_random"
+            android:layout_height="match_parent"/>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="6dp"
+            app:cardBackgroundColor="@color/app_color"
+            app:cardCornerRadius="10dp"
+            app:strokeWidth="0dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="6dp"
+                app:cardBackgroundColor="@color/transparent"
+                app:cardCornerRadius="7dp"
+                app:strokeColor="@color/app_color"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:id="@+id/imvImage2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="@color/white"
+                    android:src="@drawable/img_permission" />
+
+
+            </com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
 
 
     <!--    btnEdit-->
@@ -71,7 +166,7 @@
         android:text="@string/image_has_been_saved_successfully"
         android:textColor="@color/app_color"
         android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@+id/imvImage" />
+        app:layout_constraintTop_toBottomOf="@+id/frame" />
 
 
     <!--    lnlBottom-->
@@ -328,7 +423,9 @@
     </FrameLayout>
     <com.oc.catemoji.catoc.utils.BlockableFrameLayout
         android:id="@+id/flNativeCollab"
-        android:elevation="100dp"
+        android:visibility="gone"
+        android:clickable="false"
+        android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />

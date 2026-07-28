@@ -67,22 +67,20 @@ class SuccessCosplayFragment : BaseFragment<FragmentSuccessCosplayBinding, Succe
             }
 
             // imvImage3 = ảnh cosplay gốc
-            val cosplayBitmap = viewModelActivity.cosplayBitmap
-            if (cosplayBitmap != null && !cosplayBitmap.isRecycled) {
-              imvImage3.setImageBitmap(cosplayBitmap)
-            }
+
 
             val percent = viewModelActivity.cosplayPercent
-            binding.tvMatchPercent.text = "$percent%"
+            binding.tvMatchPercent.text = "$percent/100"
             updateProgressBar(percent)
         }
     }
     private fun updateProgressBar(percent: Int) {
         binding.progressTrack.post {
+            val safePercent = percent.coerceIn(0, 100)
             val trackW = binding.progressTrack.width.toFloat()
-            val fillMarginStartPx = 7 * resources.displayMetrics.density // margin 7dp từ XML
+            val fillMarginStartPx = 11 * resources.displayMetrics.density
             val fillW = trackW - fillMarginStartPx
-            val targetScale = percent / 100f
+            val targetScale = safePercent / 100f
             val adjustedScale = targetScale * fillW / trackW
 
             binding.progressFill.pivotX = 0f
@@ -91,7 +89,16 @@ class SuccessCosplayFragment : BaseFragment<FragmentSuccessCosplayBinding, Succe
             binding.progressFill.scaleY = 1f
 
             val starW = binding.imgStar.width.toFloat()
-            binding.imgStar.translationX = fillMarginStartPx + fillW * targetScale - starW / 2f
+            val starTranslationX =
+                fillMarginStartPx + fillW * targetScale - starW / 2f
+            binding.imgStar.translationX = starTranslationX
+
+            // Dùng tọa độ thực tế trong constrainStar thay vì giả định hai view
+            // có cùng gốc, vì layoutProgress có thể bị ConstraintLayout dịch vị trí.
+            val starCenterInParent =
+                binding.layoutProgress.x + binding.imgStar.x + starW / 2f
+            binding.tvMatchPercent.x =
+                starCenterInParent - binding.tvMatchPercent.width / 2f
         }
     }
     private fun FragmentSuccessCosplayBinding.setupActionBar() {
@@ -103,7 +110,7 @@ class SuccessCosplayFragment : BaseFragment<FragmentSuccessCosplayBinding, Succe
             )
             setTextActionBar(
                 tvCenter,
-                getString(R.string.successful)
+                getString(R.string.successfully)
             )
         }
     }

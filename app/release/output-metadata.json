@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.oc.catemoji.catoc",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 8,
+      "versionName": "1.0.7",
+      "outputFile": "ST229_Cat_Avatar_Cat_Maker_v1.0.7_07.28.2026-release.apk"
+    }
+  ],
+  "elementType": "File",
+  "baselineProfiles": [
+    {
+      "minApi": 28,
+      "maxApi": 30,
+      "baselineProfiles": [
+        "baselineProfiles/1/ST229_Cat_Avatar_Cat_Maker_v1.0.7_07.28.2026-release.dm"
+      ]
+    },
+    {
+      "minApi": 31,
+      "maxApi": 2147483647,
+      "baselineProfiles": [
+        "baselineProfiles/0/ST229_Cat_Avatar_Cat_Maker_v1.0.7_07.28.2026-release.dm"
+      ]
+    }
+  ],
+  "minSdkVersionForDexing": 24
+}

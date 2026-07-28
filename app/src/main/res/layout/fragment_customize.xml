@@ -212,7 +212,7 @@
             android:paddingVertical="5dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="3.6:0.68"
+            app:layout_constraintDimensionRatio="3.6:0.60"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:listitem="@layout/item_bottom_custom" />

@@ -63,7 +63,12 @@ class CosplayViewModel @Inject constructor(
 
             if (filtered.isEmpty()) return@launch
 
-            val template = filtered.random()
+            // Tránh random lại đúng nhân vật vừa hiển thị khi vẫn còn lựa chọn khác.
+            val previousTemplateId = _randomItem.value?.template?.id
+            val templatePool = filtered
+                .filterNot { it.id == previousTemplateId }
+                .ifEmpty { filtered }
+            val template = templatePool.random()
             // ✅ Lấy index từ allTemplates, không phải filtered
             val realIndex = allTemplates.indexOf(template)
 
@@ -87,9 +92,16 @@ class CosplayViewModel @Inject constructor(
             val colorIdx = (0 until colorCount).random()
             val color    = bp.listPath[colorIdx]
             val paths    = color.listPath
-            val limited  = if (paths.size > 6) paths.subList(0, paths.size / 2) else paths
-            val validIdx = limited.indices.filter { limited[it] != "none" && limited[it] != "dice" }
-            val pathIdx  = if (validIdx.isNotEmpty()) validIdx.random() else limited.indices.random()
+            // Random trên TOÀN BỘ data. Code cũ cắt nửa sau khi size > 6,
+            // khiến rất nhiều item không bao giờ có cơ hội xuất hiện.
+            val validIdx = paths.indices.filter {
+                paths[it] != "none" && paths[it] != "dice"
+            }
+            val pathIdx = when {
+                validIdx.isNotEmpty() -> validIdx.random()
+                paths.isNotEmpty() -> paths.indices.random()
+                else -> 0
+            }
             list.add(SelectionIndex(bpIdx, colorIdx, pathIdx))
         }
         return list

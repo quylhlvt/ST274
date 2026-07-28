@@ -61,7 +61,7 @@
     <color name="colorPrimary">#4A2711</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="native_text_color_btn">#FFFFFF</color>
-    <color name="native_text_color">#70364B</color>
+    <color name="native_text_color">#4A2711</color>
     <color name="yellow2">#FDF6DB</color>
     <color name="origin2">#FF9900</color>
     <color name="shawdown2">#33000000</color>

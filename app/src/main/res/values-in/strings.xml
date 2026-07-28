@@ -9,8 +9,6 @@
     <string name="title_3">Koleksi berbagai item</string>
     <string name="not_select_lang">Silakan pilih bahasa</string>
     <string name="pony_maker">Pembuat Kucing</string>
-    <string name="trending_custom">Kustom Populer</string>
-    <string name="my_work">Karya Saya</string>
 
     <string name="permission">Izin</string>
     <string name="storage">Penyimpanan</string>
@@ -41,7 +39,6 @@
     <string name="share_app">Bagikan Aplikasi</string>
     <string name="image_has_been_saved_successfully">Gambar berhasil disimpan!</string>
     <string name="download">Unduh</string>
-    <string name="avatar">Avatar</string>
     <string name="my_avatar">Avatar Saya</string>
     <string name="design">Desain Saya</string>
     <string name="no_item_here">Tidak ada item di sini</string>
@@ -50,7 +47,6 @@
     <string name="share">Bagikan</string>
     <string name="no_app_found_to_handle_this_action">Tidak ada aplikasi yang ditemukan untuk tindakan ini</string>
     <string name="download_success">Berhasil diunduh ke album %s</string>
-    <string name="download_fail">Gagal mengunduh, silakan coba lagi nanti!</string>
     <string name="delete">Hapus</string>
     <string name="are_you_sure_want_to_delete_this_item">Apakah Anda yakin ingin menghapus item ini?</string>
     <string name="please_select_an_image">Silakan pilih gambar</string>
@@ -67,26 +63,20 @@
     <string name="zero_star">Beri tahu kami pengalaman Anda</string>
 
     <string name="one_star_title">Oh tidak =(</string>
-    <string name="one_star">Silakan beri kami masukan</string>
 
     <string name="two_star_title">Oh tidak =(</string>
-    <string name="two_star">Silakan beri kami masukan</string>
 
     <string name="three_star_title">Oh tidak =(</string>
-    <string name="three_star">Silakan beri kami masukan</string>
 
     <string name="four_star_title">Kami juga menyukaimu =3</string>
     <string name="four_star">Terima kasih atas masukan Anda =3</string>
 
     <string name="five_star_title">Kami juga menyukaimu =3</string>
-    <string name="five_star">Terima kasih atas masukan Anda =3</string>
 
     <string name="rate_us_0">Anda belum memberi nilai!</string>
     <string name="have_rated">Terima kasih telah memberi nilai aplikasi kami</string>
     <string name="refresh">Muat Ulang</string>
-    <string name="hello_blank_fragment">Halo fragmen kosong</string>
     <string name="cosplay">Bermain Peran</string>
-    <string name="permission_camera_denied">Izin kamera diperlukan untuk menggunakan fitur ini</string>
     <string name="cat_random">Kucing Acak</string>
     <string name="random">Acak</string>
     <string name="my_creation">Kreasi Saya</string>
@@ -109,4 +99,18 @@
     <string name="this_action_may_contain_advertising">Tindakan ini mungkin mengandung iklan</string>
     <string name="error">Pemberitahuan</string>
     <string name="errorcontent">Karakter ini telah dihapus dan tidak dapat diedit.</string>
+    <string name="random_cat">Kucing Acak</string>
+    <string name="watch_ad">Tonton Iklan</string>
+    <string name="watch_ad_to_randomize_cat">Tonton iklan singkat untuk membuat kucing acak.</string>
+    <string name="successfully">Berhasil</string>
+    <string name="save">Simpan</string>
+    <string name="size">Ukuran</string>
+    <string name="please_watch_full_ads">Harap tonton iklan sampai selesai</string>
+    <string name="load_ads_fail">Gagal memuat iklan</string>
+    <string name="facebook_story">Facebook</string>
+    <string name="instagram_story">Instagram</string>
+    <string name="facebook_story_not_supported">Cerita Facebook tidak didukung di perangkat ini</string>
+    <string name="instagram_story_not_supported">Cerita Instagram tidak didukung di perangkat ini</string>
+    <string name="your_cosplay_score">Skor Cosplay Anda</string>
+    <string name="match">Kecocokan</string>
 </resources>

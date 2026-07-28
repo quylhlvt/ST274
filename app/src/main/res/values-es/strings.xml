@@ -9,8 +9,6 @@
     <string name="title_3">Colección de diversos elementos</string>
     <string name="not_select_lang">Por favor selecciona un idioma</string>
     <string name="pony_maker">Creador de gatos</string>
-    <string name="trending_custom">Personalizaciones populares</string>
-    <string name="my_work">Mi trabajo</string>
 
     <string name="permission">Permiso</string>
     <string name="storage">Almacenamiento</string>
@@ -41,7 +39,6 @@
     <string name="share_app">Compartir app</string>
     <string name="image_has_been_saved_successfully">¡La imagen se ha guardado con éxito!</string>
     <string name="download">Descargar</string>
-    <string name="avatar">Avatar</string>
     <string name="my_avatar">Mi avatar</string>
     <string name="design">Mi diseño</string>
     <string name="no_item_here">No hay elementos aquí</string>
@@ -50,7 +47,6 @@
     <string name="share">Compartir</string>
     <string name="no_app_found_to_handle_this_action">No se encontró ninguna aplicación para realizar esta acción</string>
     <string name="download_success">Descarga exitosa en el álbum %s</string>
-    <string name="download_fail">Error al descargar, inténtalo de nuevo más tarde</string>
     <string name="delete">Eliminar</string>
     <string name="are_you_sure_want_to_delete_this_item">¿Estás seguro de que quieres eliminar este elemento?</string>
     <string name="please_select_an_image">Por favor selecciona una imagen</string>
@@ -67,26 +63,20 @@
     <string name="zero_star">Cuéntanos tu experiencia</string>
 
     <string name="one_star_title">Oh no =(</string>
-    <string name="one_star">Por favor danos tu opinión</string>
 
     <string name="two_star_title">Oh no =(</string>
-    <string name="two_star">Por favor danos tu opinión</string>
 
     <string name="three_star_title">Oh no =(</string>
-    <string name="three_star">Por favor danos tu opinión</string>
 
     <string name="four_star_title">Te queremos también =3</string>
     <string name="four_star">Gracias por tu opinión =3</string>
 
     <string name="five_star_title">Te queremos también =3</string>
-    <string name="five_star">Gracias por tu opinión =3</string>
 
     <string name="rate_us_0">¡Aún no has calificado!</string>
     <string name="have_rated">Gracias por calificar nuestra app</string>
     <string name="refresh">Actualizar</string>
-    <string name="hello_blank_fragment">Hola fragmento vacío</string>
     <string name="cosplay">Disfraz</string>
-    <string name="permission_camera_denied">Se necesita permiso de cámara para usar esta función</string>
     <string name="cat_random">Gato aleatorio</string>
     <string name="random">Aleatorio</string>
     <string name="my_creation">Mi creación</string>
@@ -109,4 +99,18 @@
     <string name="this_action_may_contain_advertising">Esta acción puede contener anuncios</string>
     <string name="error">Aviso</string>
     <string name="errorcontent">Este personaje ha sido eliminado y no se puede editar.</string>
+    <string name="random_cat">Gato aleatorio</string>
+    <string name="watch_ad">Ver anuncio</string>
+    <string name="watch_ad_to_randomize_cat">Mira un anuncio breve para generar un gato aleatorio.</string>
+    <string name="successfully">Correctamente</string>
+    <string name="save">Guardar</string>
+    <string name="size">Tamaño</string>
+    <string name="please_watch_full_ads">Mira el anuncio completo</string>
+    <string name="load_ads_fail">No se pudo cargar el anuncio</string>
+    <string name="facebook_story">Facebook</string>
+    <string name="instagram_story">Instagram</string>
+    <string name="facebook_story_not_supported">Las historias de Facebook no son compatibles con este dispositivo</string>
+    <string name="instagram_story_not_supported">Las historias de Instagram no son compatibles con este dispositivo</string>
+    <string name="your_cosplay_score">Tu puntuación de cosplay</string>
+    <string name="match">Coincidencia</string>
 </resources>

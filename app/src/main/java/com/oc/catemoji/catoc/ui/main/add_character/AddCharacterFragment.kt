@@ -738,7 +738,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
 
                 override fun onLoadCleared(placeholder: android.graphics.drawable.Drawable?) {}
                 override fun onLoadFailed(errorDrawable: android.graphics.drawable.Drawable?) {
-                    showToast("Don't Download sticker")
+//                    showToast("Don't Download sticker")
                     onDone?.invoke()
                 }
             })
@@ -850,15 +850,18 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     }
 
     private fun handleSetBackgroundImage(path: String, position: Int) {
+        // Ảnh chọn từ thiết bị truyền position = -1; item Gallery/Add Image
+        // nằm ở vị trí 0 và cần được focus như một background đang được chọn.
+        val selectedPosition = if (position >= 0) position else 0
         viewModel.setBackgroundImage(path)
         viewModel.savedBackgroundColor = null
         binding.imvBackground.setBackgroundColor(requireContext().getColor(R.color.transparent))
         loadImage(requireContext(), path, binding.imvBackground)
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.updateBackgroundImageSelected(position)
+            viewModel.updateBackgroundImageSelected(selectedPosition)
             withContext(Dispatchers.Main) {
                 backgroundColorAdapter.clearSelection()
-                backgroundImageAdapter.selectItem(position)
+                backgroundImageAdapter.selectItem(selectedPosition)
             }
         }
     }

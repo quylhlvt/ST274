@@ -26,6 +26,7 @@ import com.oc.catemoji.catoc.core.extention.goToSettings
 import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
+import com.oc.catemoji.catoc.core.extention.onClick2
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.core.extention.showInter
@@ -89,6 +90,8 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
 
     override fun onFragmentStop() {
         if (!isAdded || isDetached) return
+        toast?.cancel()
+        toast = null
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
         binding.flNativeCollab.removeAllViews()
     }
@@ -195,10 +198,10 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
 
     private fun setupBottomButtons() {
         binding.apply {
-            btnWhatsapp.onClick { handleWhatsAppShare() }
-            btnTelegram.onClick { handleTelegramShare() }
-            btnDownload.onClick { handleDownload() }
-            btnShare.onClick { handleShare() }
+            btnWhatsapp.onClick2 { handleWhatsAppShare() }
+            btnTelegram.onClick2 { handleTelegramShare() }
+            btnDownload.onClick2 { handleDownload() }
+            btnShare.onClick2 { handleShare() }
             actionBar.btnActionBarRight.onClick { handleSelectAll() }
             actionBar.btnActionBarNextToRight.onClick { handleDeleteSelected() }  // ✅ thêm
 
@@ -206,11 +209,11 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
     }
 
     private fun handleShare() {
-        val selected = getSelectedItems()
-        if (selected.isEmpty()) {
+        val items = getItemsForShareOrDownload()
+        if (items.isEmpty()) {
             showToast(R.string.please_select_an_image); return
         }
-        val paths = selected.map { it.path }.filter { it.isNotEmpty() }
+        val paths = items.map { it.path }.filter { it.isNotEmpty() }
         if (paths.isEmpty()) {
             showToast(R.string.please_select_an_image); return
         }
@@ -284,13 +287,19 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.downloadState.collect { state ->
                 when (state) {
-                    MyPonyViewModel.DownloadState.SUCCESS -> showToast(
-                        getString(
-                            R.string.download_success, getString(R.string.app_name)
+                    MyPonyViewModel.DownloadState.SUCCESS -> {
+                        showToast(
+                            getString(
+                                R.string.download_success, getString(R.string.app_name)
+                            )
                         )
-                    )
+                        viewModel.consumeDownloadResult()
+                    }
 
-                    MyPonyViewModel.DownloadState.ERROR -> showToast(R.string.download_failed_please_try_again_later)
+                    MyPonyViewModel.DownloadState.ERROR -> {
+                        showToast(R.string.download_failed_please_try_again_later)
+                        viewModel.consumeDownloadResult()
+                    }
 
                     else -> {}
                 }
@@ -308,8 +317,6 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
         val currentList = if (isAvatarTab.value) myAvatarAdapter.items else myDesignAdapter.items
         val hasSelection = currentList.any { it.isShowSelection }
         val allSelected = currentList.isNotEmpty() && currentList.all { it.isSelected }
-        val selectedCount = currentList.count { it.isSelected }
-
         binding.actionBar.apply {
             if (hasSelection) {
                 btnActionBarNextToRight.visible()
@@ -329,15 +336,30 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
             binding.lnlBottom.visible()
             if (isAvatarTab.value) {
                 binding.lnlBottomTop.visible()   // WhatsApp + Telegram
-                binding.llBottom.gone()
+                binding.llBottom.visible()       // Share + Download
             } else {
                 binding.lnlBottomTop.gone()       // Ẩn WhatsApp + Telegram cho Design tab
                 binding.llBottom.visible()
 
             }
+        } else if (isAvatarTab.value && currentList.isNotEmpty()) {
+            // Trạng thái thường của My Cat chỉ hiển thị WhatsApp + Telegram.
+            // Share + Download chỉ xuất hiện sau khi nhấn giữ để vào chế độ chọn.
+            binding.lnlBottom.visible()
+            binding.lnlBottomTop.visible()
+            binding.llBottom.gone()
         } else {
             binding.lnlBottom.gone()
         }
+
+        setRecyclerBottomMargin(
+            if (isAvatarTab.value) binding.recycleAvatar else binding.recycleDesign,
+            when {
+                !binding.lnlBottom.isVisible -> 0
+                binding.lnlBottomTop.isVisible && binding.llBottom.isVisible -> 120
+                else -> 50
+            }
+        )
     }
 
     // ── DATA LOADING ──────────────────────────────────────────────────────────
@@ -438,6 +460,17 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
     private fun getSelectedItems(): List<MyAlbumModel> =
         if (isAvatarTab.value) myAvatarAdapter.items.filter { it.isSelected }
         else myDesignAdapter.items.filter { it.isSelected }
+
+    /**
+     * Khi chưa chọn ảnh nào, Share/Download ở tab My Cat sẽ thao tác với toàn bộ ảnh.
+     * Khi đang chọn, chỉ thao tác với những ảnh đã chọn như trước.
+     */
+    private fun getItemsForShareOrDownload(): List<MyAlbumModel> {
+        val selected = getSelectedItems()
+        if (selected.isNotEmpty()) return selected
+
+        return if (isAvatarTab.value) myAvatarAdapter.items else emptyList()
+    }
 
     // ── NAVIGATION ────────────────────────────────────────────────────────────
 
@@ -551,11 +584,14 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
     }
 
     private fun handleDownload() {
-        val selected = getSelectedItems()
-        if (selected.isEmpty()) {
+        val items = getItemsForShareOrDownload()
+        if (items.isEmpty()) {
             showToast(R.string.please_select_an_image); return
         }
-        pendingDownloadPaths = ArrayList(selected.map { it.path })
+        pendingDownloadPaths = ArrayList(items.map { it.path }.filter { it.isNotEmpty() })
+        if (pendingDownloadPaths.isEmpty()) {
+            showToast(R.string.please_select_an_image); return
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             performBatchDownload(); return
@@ -590,7 +626,7 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
      * KHÔNG dùng customized.avatar (đó là thumbnail template gốc từ assets)
      */
     private fun getSharePaths(): List<String> =
-        getSelectedItems().map { it.path }.filter { it.isNotEmpty() }
+        getItemsForShareOrDownload().map { it.path }.filter { it.isNotEmpty() }
 
     // ── WHATSAPP ──────────────────────────────────────────────────────────────
 
@@ -653,14 +689,6 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
     }
 
     // ── UTILITY ───────────────────────────────────────────────────────────────
-
-    private fun showToast(resId: Int) =
-        android.widget.Toast.makeText(requireContext(), resId, android.widget.Toast.LENGTH_SHORT)
-            .show()
-
-    private fun showToast(msg: String) =
-        android.widget.Toast.makeText(requireContext(), msg, android.widget.Toast.LENGTH_SHORT)
-            .show()
 
     // ── BASE OVERRIDES ────────────────────────────────────────────────────────
 

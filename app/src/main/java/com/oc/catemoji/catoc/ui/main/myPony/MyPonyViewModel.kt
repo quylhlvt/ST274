@@ -280,6 +280,14 @@ class MyPonyViewModel @Inject constructor(
         }
     }
 
+    fun consumeDownloadResult() {
+        if (_downloadState.value == DownloadState.SUCCESS ||
+            _downloadState.value == DownloadState.ERROR
+        ) {
+            _downloadState.value = DownloadState.IDLE
+        }
+    }
+
 
     // ==================== WHATSAPP INTEGRATION ====================
 

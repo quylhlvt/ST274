@@ -31,7 +31,6 @@ import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.gone
-import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.popBack
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
@@ -68,10 +67,12 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
 
     private val pendingLoads = AtomicInteger(0)
     private var timerJob: Job? = null
-    private val totalSeconds = 5 * 60
+    private val totalSeconds = 1 * 10
     private var remainingSeconds = totalSeconds
     private var countDownJob: Job? = null
     private var hasFinishedCountDown = false
+    private val isCountDownActive: Boolean
+        get() = !hasFinishedCountDown
     // ── INFLATE ───────────────────────────────────────────────────────────────
 
     override fun inflateBinding(
@@ -134,6 +135,8 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
         binding.flNativeCollab.removeAllViews()
     }
     override fun initView() {
+        binding.txtTitle.isSelected = true
+        binding.txtTitle2.isSelected = true
         initNativeCollab()
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
@@ -260,10 +263,22 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
 
     private fun doNavigateToSuccess() {
         if (!isAdded || isDetached) return
-        val bitmap = renderLayersToBitmap()
-        if (bitmap != null) viewModelActivity.userResultBitmap = bitmap
+        val userBitmap = renderLayersToBitmap()
+        if (userBitmap != null) {
+            viewModelActivity.userResultBitmap = userBitmap
+            // Ảnh nhân vật mà người dùng vừa chọn/tạo.
+            binding.imvImage3.setImageBitmap(userBitmap)
+        }
+
+        val cosplayBitmap = viewModelActivity.cosplayBitmap
+        if (cosplayBitmap != null && !cosplayBitmap.isRecycled) {
+            // Ảnh mẫu người dùng đã xem để cosplay theo.
+            binding.imvImage4.setImageBitmap(cosplayBitmap)
+        }
+
         viewModelActivity.cosplayPercent = viewModel.state.value.matchPercent
-        findNavController().navigate(R.id.action_show_to_successCosplay)
+        binding.win.visible()
+        binding.txtTitle2.text = "${viewModel.state.value.matchPercent}% "+ getString(R.string.match)
     }
     private fun renderLayersToBitmap(): Bitmap? {
         val root = binding.rlCharacter
@@ -289,43 +304,65 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
             actionBar.btnActionBarLeft.onClick {showInter {
                 popBack()
             }  }
-            actionBar.btnActionBarRight.onClick { showInter {
-                navigateToSuccess()
-            }}
 
-            materialSmall.onClick { imgShowBig.visible() }
-            close.onClick { imgShowBig.gone() }
+            btnNext.onClick{
+                showInter {
+                    findNavController().navigate(R.id.action_show_to_successCosplay)
+                }
+            }
+
+            materialSmall.onClick {
+                if (!isCountDownActive) imgShowBig.visible()
+            }
+            close.onClick {
+                if (!isCountDownActive) imgShowBig.gone()
+            }
 
             // ── Random ────────────────────────────────────────────────────────────
             imgRandom.onClick {
+                if (isCountDownActive) return@onClick
                 if (!checkOnlineNetworkOrShowDialog()) viewModel.randomizeAll() // ← guard
             }
 
             // ── Color toggle ──────────────────────────────────────────────────────
             imgChangColor.onClick {
+                if (isCountDownActive) return@onClick
                 if (checkOnlineNetworkOrShowDialog()) return@onClick              // ← guard
                 val navPos = viewModel.state.value.currentNavIndex
                 if (!viewModel.state.value.hasMultipleColors) return@onClick
-                if (navPos < arrShowColor.size) arrShowColor[navPos] = true
-                if (llColor.isVisible) return@onClick
-                llColor.visibility = View.VISIBLE
-                llColor.alpha = 0f
-                llColor.animate().alpha(1f).setDuration(200).start()
+                if (navPos !in arrShowColor.indices) return@onClick
+
+                val shouldShow = !arrShowColor[navPos]
+                arrShowColor[navPos] = shouldShow
+                llColor.animate().cancel()
+
+                if (shouldShow) {
+                    llColor.visibility = View.VISIBLE
+                    llColor.alpha = 0f
+                    llColor.animate().alpha(1f).setDuration(200).start()
+                } else {
+                    llColor.animate().alpha(0f).setDuration(200).withEndAction {
+                        llColor.visibility = View.GONE
+                    }.start()
+                }
             }
         }
 
         // ── Nav ───────────────────────────────────────────────────────────────────
-        adapterNav.onClick = {
+        adapterNav.onClick = navClick@{
+            if (isCountDownActive) return@navClick
             if (!checkOnlineNetworkOrShowDialog()) viewModel.selectNav(it)       // ← guard
         }
 
         // ── Color ─────────────────────────────────────────────────────────────────
-        adapterColor.onClick = {
+        adapterColor.onClick = colorClick@{
+            if (isCountDownActive) return@colorClick
             if (!checkOnlineNetworkOrShowDialog()) viewModel.selectColor(it)     // ← guard
         }
 
         // ── Part ──────────────────────────────────────────────────────────────────
-        adapterPart.onClick = { idx, type ->
+        adapterPart.onClick = partClick@{ idx, type ->
+            if (isCountDownActive) return@partClick
             if (!checkOnlineNetworkOrShowDialog()) {                              // ← guard
                 when (type) {
                     "none" -> viewModel.selectNone()
@@ -492,7 +529,6 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
                     binding.llColor.visibility = View.VISIBLE
                 }.start()
             } else {
-                binding.imgChangColor.invisible()
                 binding.llColor.animate().alpha(0f).setDuration(150).withEndAction {
                     binding.llColor.visibility = View.GONE
                 }.start()

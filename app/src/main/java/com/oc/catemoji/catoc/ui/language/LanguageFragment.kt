@@ -21,6 +21,7 @@ import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.popBack
+import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.core.extention.toHomeFromLanguage
 import com.oc.catemoji.catoc.core.extention.toIntroFromLanguage
@@ -90,6 +91,7 @@ class LanguageFragment : BaseFragment<FragmentLanguageBinding, LanguageViewModel
                 setTextActionBar(actionBar.tvStart, getString(R.string.language))
                 actionBar.btnActionBarRight.setImageResource(R.drawable.select_language)
             } else {
+                setImageActionBar(actionBar.btnActionBarRight,R.drawable.select_language)
                 actionBar.btnActionBarLeft.visible()
                 setTextActionBar(actionBar.tvCenter, getString(R.string.language))
             }

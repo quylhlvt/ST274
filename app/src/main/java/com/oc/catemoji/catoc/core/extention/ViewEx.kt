@@ -101,6 +101,16 @@ fun View.onClick(interval: Long = 200, action: (View) -> Unit) {
         }
     }
 }
+private val lastClickTime2 = java.util.concurrent.atomic.AtomicLong(0L)
+
+fun View.onClick2(interval: Long = 800, action: (View) -> Unit) {
+    setOnClickListener {
+        val now = System.currentTimeMillis()
+        if (lastClickTime2.getAndSet(now).let { now - it >= interval }) {
+            action(it)
+        }
+    }
+}
 fun View.drawToBitmap(): Bitmap {
     val bitmap = Bitmap.createBitmap(
         width.coerceAtLeast(1),

@@ -37,29 +37,29 @@
 
             <!--            btnMyAvatar-->
             <FrameLayout
-                android:id="@+id/btnMyDesign"
+                android:id="@+id/btnMyAvatar"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="156">
 
                 <!--                imvFocusMyAvatar-->
                 <ImageView
-                    android:id="@+id/imvFocusMyDesign"
+                    android:id="@+id/imvFocusMyAvatar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="fitXY"
-                    android:src="@drawable/bg_btn_type_unselected" />
+                    android:src="@drawable/bg_btn_type_selected" />
 
                 <!--                tvMyAvatar-->
                 <TextView
-                    android:id="@+id/tvMyDesign"
+                    android:id="@+id/tvMyAvatar"
                     style="@style/single_marquee"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginVertical="1dp"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
-                    android:text="@string/design"
+                    android:text="@string/my_avatar"
                     android:textColor="@color/app_color"
                     android:textSize="20sp" />
 
@@ -72,30 +72,30 @@
 
             <!--            btnMyDesign-->
             <FrameLayout
-                android:id="@+id/btnMyAvatar"
+                android:id="@+id/btnMyDesign"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="156">
 
                 <!--                imvFocusMyDesign-->
                 <ImageView
-                    android:id="@+id/imvFocusMyAvatar"
+                    android:id="@+id/imvFocusMyDesign"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginVertical="1dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/bg_btn_type_selected" />
+                    android:src="@drawable/bg_btn_type_unselected" />
 
                 <!--                tvMyDesign-->
                 <TextView
-                    android:id="@+id/tvMyAvatar"
+                    android:id="@+id/tvMyDesign"
 
                     style="@style/single_marquee"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
-                    android:text="@string/my_avatar"
+                    android:text="@string/design"
                     android:textColor="@color/app_color"
                     android:textSize="20sp" />
 
@@ -236,7 +236,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="14dp"
                     android:layout_marginBottom="16dp"
-                    android:src="@drawable/ic_whatsapp"
+                    android:src="@drawable/ic_telegram"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintStart_toStartOf="parent"

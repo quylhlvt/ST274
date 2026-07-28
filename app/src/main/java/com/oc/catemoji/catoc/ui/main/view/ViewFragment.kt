@@ -21,8 +21,10 @@ import com.oc.catemoji.catoc.core.extention.checkPermissions
 import com.oc.catemoji.catoc.core.extention.dp
 import com.oc.catemoji.catoc.core.extention.goToSettings
 import com.oc.catemoji.catoc.core.extention.gone
+import com.oc.catemoji.catoc.core.extention.hideNavigation
 import com.oc.catemoji.catoc.core.extention.loadImage
 import com.oc.catemoji.catoc.core.extention.onClick
+import com.oc.catemoji.catoc.core.extention.onClick2
 import com.oc.catemoji.catoc.core.extention.safeNavigate
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
@@ -44,7 +46,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
 ) {
     private var isWaitingDataDialogShown = false
     private val storageHelper = PermissionRequestHelper()
-    private var hasNativeCollab = false
+    private var isReturningFromExternalScreen = false
 
     private val permissionViewModel: PermissionViewModel by activityViewModels()
 
@@ -73,15 +75,14 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
             when (imageType) {
                 // ── Type 0: Từ AddCharacter — success screen ──────────────────
                 0 -> {
-                    imvImage.visible()
-                    imvImage2.gone()
+                    frame.visible()
+                    frame2.gone()
                     loadImage(requireContext(), imagePath, imvImage)
                     linearView.gone()
                     lnlBottom.visible()
                     lnlBottom.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                         bottomMargin = 5.dp(requireContext())
                     }
-                    hasNativeCollab = false
                     nativeAds.visible()
                     Admob.getInstance().loadNativeAd(
                         requireContext(),
@@ -102,30 +103,28 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                 }
                 // ── Type 1: Avatar từ MyPony ──────────────────────────────────
                 1 -> {
-                    imvImage.gone()
-                    imvImage2.visible()
+                    frame.gone()
+                    frame2.visible()
                     loadImage(requireContext(), imagePath, imvImage2)
                     linearView.visible()
                     lnlBottom.gone()
                     tvSuccess.gone()
-                    hasNativeCollab = true
                     nativeAds.gone()
-                    initNativeCollab()
+                    disableNativeCollabOverlay()
                     txtLeft3.text = getString(R.string.share)
                     setImageActionBar(actionBar.btnActionBarRight, R.drawable.ic_delete)
                     setImageActionBar(actionBar.btnActionBarNextToRight, R.drawable.ic_edit1)
                 }
                 // ── Type 2: Design từ MyPony ──────────────────────────────────
                 2 -> {
-                    imvImage.gone()
-                    imvImage2.visible()
+                    frame.gone()
+                    frame2.visible()
                     loadImage(requireContext(), imagePath, imvImage2)
                     linearView.visible()
                     lnlBottom.gone()
                     tvSuccess.gone()
-                    hasNativeCollab = true
                     nativeAds.gone()
-                    initNativeCollab()
+                    disableNativeCollabOverlay()
                     txtLeft3.text = getString(R.string.share)
                     setImageActionBar(actionBar.btnActionBarRight, R.drawable.ic_delete)
                 }
@@ -133,19 +132,17 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
         }
     }
 
-    private fun initNativeCollab() {
-        if (!hasNativeCollab) return
-        Admob.getInstance().loadNativeCollapNotBanner(
-            requireContext(),
-            getString(R.string.native_cl_detail),
-            binding.flNativeCollab
-        )
+    private fun disableNativeCollabOverlay() {
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
+        binding.flNativeCollab.removeAllViews()
+        binding.flNativeCollab.gone()
     }
 
     override fun onFragmentStart() {
         if (!isAdded || isDetached) return
-        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
-        initNativeCollab()
+        // Không reload native-collab tại View: callback muộn sau Facebook/Settings
+        // có thể thêm một view trong suốt và chặn toàn bộ thao tác.
+        disableNativeCollabOverlay()
     }
 
     override fun onFragmentStop() {
@@ -177,7 +174,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                         }
 
                     }
-                    actionBar.btnActionBarNextToRight.onClick {
+                    actionBar.btnActionBarNextToRight.onClick2 {
                         shareImage()
                     }
                     // ✅ MyPony button
@@ -194,7 +191,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
 
                     }
                     // ✅ Download button
-                    btnBottomRight.onClick { downloadImage() }
+                    btnBottomRight.onClick2 { downloadImage() }
                 }
 
                 // ── Type 1: Avatar từ MyPony ──────────────────────────────────
@@ -205,19 +202,19 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                             navigateToEdit()
                         }
                     }
-                    btnBottomLeft2.onClick { shareToStory(FACEBOOK_PACKAGE, FACEBOOK_STORY_ACTION) }
-                    btnBottomRight2.onClick { shareToStory(INSTAGRAM_PACKAGE, INSTAGRAM_STORY_ACTION) }
-                    btnBottomLeft3.onClick { shareImage() }
-                    btnBottomRight3.onClick { downloadImage() }
+                    btnBottomLeft2.onClick2 { shareToSocialApp(FACEBOOK_PACKAGE) }
+                    btnBottomRight2.onClick2 { shareToSocialApp(INSTAGRAM_PACKAGE) }
+                    btnBottomLeft3.onClick2 { shareImage() }
+                    btnBottomRight3.onClick2 { downloadImage() }
                 }
 
                 // ── Type 2: Design từ MyPony ──────────────────────────────────
                 2 -> {
                     actionBar.btnActionBarRight.onClick { confirmDelete() }
-                    btnBottomLeft2.onClick { shareToStory(FACEBOOK_PACKAGE, FACEBOOK_STORY_ACTION) }
-                    btnBottomRight2.onClick { shareToStory(INSTAGRAM_PACKAGE, INSTAGRAM_STORY_ACTION) }
-                    btnBottomLeft3.onClick { shareImage() }
-                    btnBottomRight3.onClick { downloadImage() }
+                    btnBottomLeft2.onClick2 { shareToSocialApp(FACEBOOK_PACKAGE) }
+                    btnBottomRight2.onClick2 { shareToSocialApp(INSTAGRAM_PACKAGE) }
+                    btnBottomLeft3.onClick2 { shareImage() }
+                    btnBottomRight3.onClick2 { downloadImage() }
                 }
             }
         }
@@ -238,7 +235,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
         startActivity(android.content.Intent.createChooser(intent, getString(R.string.share)))
     }
 
-    private fun shareToStory(packageName: String, action: String) {
+    private fun shareToSocialApp(packageName: String) {
         if (imagePath.isEmpty()) return
 
         val uri = FileProvider.getUriForFile(
@@ -246,11 +243,15 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
             "${requireContext().packageName}.provider",
             File(imagePath)
         )
-        val intent = Intent(action).apply {
-            setDataAndType(uri, "image/*")
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/*"
             setPackage(packageName)
-            clipData = ClipData.newRawUri("story_image", uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            putExtra(Intent.EXTRA_STREAM, uri)
+            clipData = ClipData.newRawUri("shared_image", uri)
+            addFlags(
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                    Intent.FLAG_ACTIVITY_NEW_TASK
+            )
         }
 
         requireContext().grantUriPermission(
@@ -260,8 +261,12 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
         )
 
         try {
+            isReturningFromExternalScreen = true
+            // Mở một intent mới cho mỗi lần bấm. Không dùng chung ActivityResultLauncher
+            // vì Facebook/Instagram có thể chưa trả result sau luồng permission/Settings.
             startActivity(intent)
         } catch (_: android.content.ActivityNotFoundException) {
+            isReturningFromExternalScreen = false
             showToast(
                 if (packageName == FACEBOOK_PACKAGE) {
                     getString(R.string.facebook_story_not_supported)
@@ -270,6 +275,33 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                 }
             )
         }
+    }
+
+    /**
+     * Facebook/Instagram có thể mở thêm màn cấp quyền/Settings. Khi quay lại,
+     * khôi phục rõ ràng trạng thái touch của màn View và native-ad container.
+     */
+    private fun restoreViewInteractions(clearNativeOverlay: Boolean = false) {
+        if (!isAdded || view == null) return
+
+        if (clearNativeOverlay) {
+            disableNativeCollabOverlay()
+        }
+
+        binding.root.isEnabled = true
+        binding.actionBar.root.isEnabled = true
+        binding.actionBar.btnActionBarLeft.isEnabled = true
+        binding.actionBar.btnActionBarNextToRight.isEnabled = true
+        binding.actionBar.btnActionBarRight.isEnabled = true
+        binding.btnBottomLeft.isEnabled = true
+        binding.btnBottomRight.isEnabled = true
+        binding.btnBottomLeft2.isEnabled = true
+        binding.btnBottomRight2.isEnabled = true
+        binding.btnBottomLeft3.isEnabled = true
+        binding.btnBottomRight3.isEnabled = true
+
+        binding.root.requestLayout()
+        binding.root.invalidate()
     }
 
 // ViewFragment.kt
@@ -282,7 +314,10 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
         val permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
         when {
             requireContext().checkPermissions(arrayOf(permission)) -> performDownload()
-            permissionViewModel.shouldGoToSettings(isStorage = true) -> activity?.goToSettings()
+            permissionViewModel.shouldGoToSettings(isStorage = true) -> {
+                isReturningFromExternalScreen = true
+                activity?.goToSettings()
+            }
             else -> downloadPermissionLauncher.launch(arrayOf(permission))
         }
     }
@@ -382,9 +417,8 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
 
     companion object {
         private const val FACEBOOK_PACKAGE = "com.facebook.katana"
-        private const val FACEBOOK_STORY_ACTION = "com.facebook.stories.ADD_TO_STORY"
         private const val INSTAGRAM_PACKAGE = "com.instagram.android"
-        private const val INSTAGRAM_STORY_ACTION = "com.instagram.share.ADD_TO_STORY"
+        private const val EXTERNAL_SCREEN_RESTORE_DELAY_MS = 500L
     }
 
     private fun showEditDataUnavailableDialog() {
@@ -428,6 +462,25 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                 val targetImage = if (imageType == 0) binding.imvImage else binding.imvImage2
                 loadImage(requireContext(), currentImagePath, targetImage)
             }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!isReturningFromExternalScreen) return
+
+        // Facebook không bảo đảm trả Activity result (cả khi cho phép lẫn từ chối).
+        // Khôi phục theo lifecycle của app, sau khi View thực sự quay lại foreground.
+        requireActivity().hideNavigation(true)
+        binding.root.post {
+            restoreViewInteractions(clearNativeOverlay = true)
+            requireActivity().hideNavigation(true)
+        }
+        binding.root.postDelayed({
+            if (!isAdded || view == null) return@postDelayed
+            restoreViewInteractions(clearNativeOverlay = true)
+            requireActivity().hideNavigation(true)
+            isReturningFromExternalScreen = false
+        }, EXTERNAL_SCREEN_RESTORE_DELAY_MS)
     }
 
     override fun bindViewModel() {}

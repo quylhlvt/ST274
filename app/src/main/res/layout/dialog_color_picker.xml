@@ -6,6 +6,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="100dp"
         >
         <ImageView
             android:id="@+id/imageView4"
@@ -43,10 +44,7 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/baloo2_bold"
                 android:gravity="center"
-                android:shadowColor="@color/app_color"
-                android:shadowDx="5"
-                android:shadowDy="-5"
-                android:shadowRadius="5"
+
                 android:text="@string/choose_color"
                 android:textColor="@color/app_color2"
                 android:textSize="28sp"

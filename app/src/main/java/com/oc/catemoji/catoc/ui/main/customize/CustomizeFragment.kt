@@ -143,8 +143,8 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         binding.txtSize.isSelected = true
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
-            setImageActionBar(btnActionBarCenter, R.drawable.ic_reset_all_custom)
-            setImageActionBar(btnActionBarCenter2, R.drawable.ic_flip_all_custom)
+            setImageActionBar(btnActionBarCenter2, R.drawable.ic_reset_all_custom)
+            setImageActionBar(btnActionBarCenter, R.drawable.ic_flip_all_custom)
             setFrameActionBar(btnActionBarRightText,tvRightText,getString(R.string.next ))
 
         }
@@ -285,11 +285,21 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             imgChangColor.onClick {
                 val navPos = viewModel.state.value.currentNavIndex
                 if (!viewModel.state.value.hasMultipleColors) return@onClick
-                if (navPos < arrShowColor.size) arrShowColor[navPos] = true
-                if (llColor.isVisible) return@onClick
-                llColor.visibility = View.VISIBLE
-                llColor.alpha = 0f
-                llColor.animate().alpha(1f).setDuration(200).start()
+                if (navPos !in arrShowColor.indices) return@onClick
+
+                val shouldShow = !arrShowColor[navPos]
+                arrShowColor[navPos] = shouldShow
+                llColor.animate().cancel()
+
+                if (shouldShow) {
+                    llColor.visibility = View.VISIBLE
+                    llColor.alpha = 0f
+                    llColor.animate().alpha(1f).setDuration(200).start()
+                } else {
+                    llColor.animate().alpha(0f).setDuration(200).withEndAction {
+                        llColor.visibility = View.GONE
+                    }.start()
+                }
             }
             imgRandom.onClick {
                 if (!checkOnlineNetworkOrShowDialog()) {
@@ -311,7 +321,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                     }
                 }
             }
-            actionBar.btnActionBarCenter.setOnClickListener {
+            actionBar.btnActionBarCenter2.setOnClickListener {
                 if (!checkOnlineNetworkOrShowDialog()){
                 showConfirmDialog(
                     title = getString(R.string.reset),
@@ -327,7 +337,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                     }
                 )
             }}
-            actionBar.btnActionBarCenter2.onClick { viewModel.toggleFlip() }
+            actionBar.btnActionBarCenter.onClick { viewModel.toggleFlip() }
             actionBar.btnActionBarRightText.onClick {
                 if (!canSave) return@onClick
                 if (!isAdded || isDetached || view == null) return@onClick
