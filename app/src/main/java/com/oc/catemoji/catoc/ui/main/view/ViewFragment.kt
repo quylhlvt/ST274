@@ -2,8 +2,10 @@ package com.oc.catemoji.catoc.ui.main.view
 
 import android.content.ClipData
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +25,7 @@ import com.oc.catemoji.catoc.core.extention.goToSettings
 import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.hideNavigation
 import com.oc.catemoji.catoc.core.extention.loadImage
+import com.oc.catemoji.catoc.core.extention.logEventSocial
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.onClick2
 import com.oc.catemoji.catoc.core.extention.safeNavigate
@@ -33,6 +36,7 @@ import com.oc.catemoji.catoc.core.extention.toCleanSelections
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.core.helper.PermissionRequestHelper
 import com.oc.catemoji.catoc.databinding.FragmentViewBinding
+import com.oc.catemoji.catoc.ui.main.add_character.DesignSource
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeFragment
 import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionViewModel
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
@@ -54,6 +58,9 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
     private val imagePath: String by lazy { arguments?.getString("imagePath") ?: "" }
     private val imageType: Int by lazy { arguments?.getInt("imageType", 0) ?: 0 }
     private val idEdit: String by lazy { arguments?.getString("idEdit") ?: "" }
+    private val designSource: String by lazy {
+        arguments?.getString(DesignSource.ARG_SOURCE) ?: DesignSource.CUSTOM
+    }
 
     override fun inflateBinding(
         inflater: LayoutInflater,
@@ -84,9 +91,14 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                         bottomMargin = 5.dp(requireContext())
                     }
                     nativeAds.visible()
+                    val successAdUnitId = if (designSource == DesignSource.STUDIO) {
+                        R.string.native_successCatStudio
+                    } else {
+                        R.string.native_success
+                    }
                     Admob.getInstance().loadNativeAd(
                         requireContext(),
-                        getString(R.string.native_success),
+                        getString(successAdUnitId),
                         binding.nativeAds,
                         R.layout.ads_native_big_btn_top
                     )
@@ -110,7 +122,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                     lnlBottom.gone()
                     tvSuccess.gone()
                     nativeAds.gone()
-                    disableNativeCollabOverlay()
+                    initNativeCollab()
                     txtLeft3.text = getString(R.string.share)
                     setImageActionBar(actionBar.btnActionBarRight, R.drawable.ic_delete)
                     setImageActionBar(actionBar.btnActionBarNextToRight, R.drawable.ic_edit1)
@@ -124,12 +136,24 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                     lnlBottom.gone()
                     tvSuccess.gone()
                     nativeAds.gone()
-                    disableNativeCollabOverlay()
+                    initNativeCollab()
                     txtLeft3.text = getString(R.string.share)
                     setImageActionBar(actionBar.btnActionBarRight, R.drawable.ic_delete)
                 }
             }
         }
+    }
+
+    private fun initNativeCollab() {
+        // Native collapsible detail chỉ dùng cho ảnh mở từ My Creation.
+        if (imageType !in 1..2 || !isAdded || isDetached) return
+        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
+        binding.flNativeCollab.visible()
+        Admob.getInstance().loadNativeCollapNotBanner(
+            requireContext(),
+            getString(R.string.native_cl_detail),
+            binding.flNativeCollab
+        )
     }
 
     private fun disableNativeCollabOverlay() {
@@ -140,9 +164,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
 
     override fun onFragmentStart() {
         if (!isAdded || isDetached) return
-        // Không reload native-collab tại View: callback muộn sau Facebook/Settings
-        // có thể thêm một view trong suốt và chặn toàn bộ thao tác.
-        disableNativeCollabOverlay()
+        initNativeCollab()
     }
 
     override fun onFragmentStop() {
@@ -211,8 +233,39 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                 // ── Type 2: Design từ MyPony ──────────────────────────────────
                 2 -> {
                     actionBar.btnActionBarRight.onClick { confirmDelete() }
-                    btnBottomLeft2.onClick2 { shareToSocialApp(FACEBOOK_PACKAGE) }
-                    btnBottomRight2.onClick2 { shareToSocialApp(INSTAGRAM_PACKAGE) }
+                    btnBottomLeft2.onClick2 {
+                        val avatarUrl = viewModelActivity.customizedCharacters.value
+                            .firstOrNull { it.id == idEdit }
+                            ?.avatar
+                            .orEmpty()
+                        val dataName = Uri.parse(avatarUrl).pathSegments
+                            .dropLast(1)
+                            .lastOrNull()
+                            .orEmpty()
+                        logEventSocial(
+                            "click_FaceBook",
+                            "click_FaceBook_$dataName",
+                            avatarUrl
+                        )
+                        Log.d("logevenfb", "click_FaceBook_$dataName -- ${avatarUrl}")
+                        shareToSocialApp(FACEBOOK_PACKAGE)
+                    }
+                    btnBottomRight2.onClick2 {
+                        val avatarUrl = viewModelActivity.customizedCharacters.value
+                            .firstOrNull { it.id == idEdit }
+                            ?.avatar
+                            .orEmpty()
+                        val dataName = Uri.parse(avatarUrl).pathSegments
+                            .dropLast(1)
+                            .lastOrNull()
+                            .orEmpty()
+                        logEventSocial(
+                            "click_Instagram",
+                            "click_Instagram_$dataName",
+                            avatarUrl
+                        )
+                        Log.d("logevenfb", "click_Instagram_$dataName -- ${avatarUrl}")
+                        shareToSocialApp(INSTAGRAM_PACKAGE) }
                     btnBottomLeft3.onClick2 { shareImage() }
                     btnBottomRight3.onClick2 { downloadImage() }
                 }
@@ -472,12 +525,12 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
         // Khôi phục theo lifecycle của app, sau khi View thực sự quay lại foreground.
         requireActivity().hideNavigation(true)
         binding.root.post {
-            restoreViewInteractions(clearNativeOverlay = true)
+            restoreViewInteractions()
             requireActivity().hideNavigation(true)
         }
         binding.root.postDelayed({
             if (!isAdded || view == null) return@postDelayed
-            restoreViewInteractions(clearNativeOverlay = true)
+            restoreViewInteractions()
             requireActivity().hideNavigation(true)
             isReturningFromExternalScreen = false
         }, EXTERNAL_SCREEN_RESTORE_DELAY_MS)

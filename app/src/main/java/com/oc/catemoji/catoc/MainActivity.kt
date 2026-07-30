@@ -47,7 +47,7 @@ interface LoadingController {
 }
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() , LoadingController{
+class MainActivity : AppCompatActivity(), LoadingController {
     private var globalLoadingDialog: Dialog? = null
     private var globalConfirmDialog: Dialog? = null
     private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -247,9 +247,9 @@ class MainActivity : AppCompatActivity() , LoadingController{
         hideNavigation(true)
         setContentView(R.layout.activity_main)
         Log.d("PERF2", "setContentView done: ${System.currentTimeMillis()}")
-        Admob.getInstance().setOpenShowAllAds(false)
+
         Admob.getInstance().setTimeLimitShowAds(30000)
-        Admob.getInstance().setTimeCountdownNativeCollab(15000)
+        Admob.getInstance().setTimeCountdownNativeCollab(18000)
         initSharedPreferences()
 //        applyLanguage()
         Admob.getInstance().loadInterAll(this, getString(R.string.inter_all))

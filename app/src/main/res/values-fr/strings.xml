@@ -109,8 +109,10 @@
     <string name="load_ads_fail">Échec du chargement de la publicité</string>
     <string name="facebook_story">Facebook</string>
     <string name="instagram_story">Instagram</string>
-    <string name="facebook_story_not_supported">Les stories Facebook ne sont pas prises en charge sur cet appareil</string>
-    <string name="instagram_story_not_supported">Les stories Instagram ne sont pas prises en charge sur cet appareil</string>
+    <string name="facebook_story_not_supported">Facebook n’est pas pris en charge sur cet appareil</string>
+    <string name="instagram_story_not_supported">Instagram n’est pas pris en charge sur cet appareil</string>
+    <string name="cat_studio">Studio de chats</string>
+    <string name="please_turn_on_internet_to_use_this_feature">Veuillez activer votre connexion Internet pour utiliser cette fonctionnalité.</string>
     <string name="your_cosplay_score">Votre score de cosplay</string>
     <string name="match">Correspondance</string>
 </resources>

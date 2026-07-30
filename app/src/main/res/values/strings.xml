@@ -107,8 +107,10 @@
     <string name="load_ads_fail">Load Ads Fail</string>
     <string name="facebook_story">Facebook</string>
     <string name="instagram_story">Instagram</string>
-    <string name="facebook_story_not_supported">Facebook Story is not supported on this device</string>
-    <string name="instagram_story_not_supported">Instagram Story is not supported on this device</string>
+    <string name="facebook_story_not_supported">Facebook is not supported on this device</string>
+    <string name="instagram_story_not_supported">Instagram is not supported on this device</string>
     <string name="your_cosplay_score">Your Cosplay Score</string>
     <string name="match">Match</string>
+    <string name="cat_studio">Cat Studio</string>
+    <string name="please_turn_on_internet_to_use_this_feature">Please turn on your internet connection to use this feature.</string>
 </resources>

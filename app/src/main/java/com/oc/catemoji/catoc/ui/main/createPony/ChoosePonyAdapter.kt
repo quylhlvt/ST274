@@ -21,10 +21,13 @@ class ChoosePonyAdapter(
         val shimmerDrawable = ShimmerDrawable().apply { setShimmer(DataLocal.shimmer) }
 
 
-        Glide.with(binding.root.context)
-            .load(item.avatar)
-            .placeholder(shimmerDrawable)
-            .into(binding.imvImage)
+        if (binding.imvImage.tag != item.avatar) {
+            binding.imvImage.tag = item.avatar
+            Glide.with(binding.imvImage)
+                .load(item.avatar)
+                .placeholder(shimmerDrawable)
+                .into(binding.imvImage)
+        }
 
         binding.root.setOnClickListener { onClick(item, position) }
     }

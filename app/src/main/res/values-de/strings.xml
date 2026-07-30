@@ -109,8 +109,10 @@
     <string name="load_ads_fail">Werbung konnte nicht geladen werden</string>
     <string name="facebook_story">Facebook</string>
     <string name="instagram_story">Instagram</string>
-    <string name="facebook_story_not_supported">Facebook Story wird auf diesem Gerät nicht unterstützt</string>
-    <string name="instagram_story_not_supported">Instagram Story wird auf diesem Gerät nicht unterstützt</string>
+    <string name="facebook_story_not_supported">Facebook wird auf diesem Gerät nicht unterstützt</string>
+    <string name="instagram_story_not_supported">Instagram wird auf diesem Gerät nicht unterstützt</string>
+    <string name="cat_studio">Katzenstudio</string>
+    <string name="please_turn_on_internet_to_use_this_feature">Bitte schalten Sie Ihre Internetverbindung ein, um diese Funktion zu verwenden.</string>
     <string name="your_cosplay_score">Deine Cosplay-Punktzahl</string>
     <string name="match">Übereinstimmung</string>
 </resources>

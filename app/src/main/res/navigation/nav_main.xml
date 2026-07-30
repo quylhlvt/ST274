@@ -30,6 +30,16 @@
             app:popUpToInclusive="false"
             />
         <action
+            android:id="@+id/action_home_to_studio"
+            app:destination="@id/catStudioFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"
+            />
+        <action
             android:id="@+id/action_home_to_cosplay"
             app:destination="@id/cosplay"
             app:enterAnim="@anim/slide_in_right"
@@ -157,6 +167,10 @@
             android:name="imagePath"
             android:defaultValue=""
             app:argType="string" />
+        <argument
+            android:name="designSource"
+            android:defaultValue="custom"
+            app:argType="string" />
         <action
             android:id="@+id/action_addCharacterFragment_to_viewImageFragment"
             app:destination="@id/viewFragment"
@@ -179,6 +193,10 @@
             android:name="imageType"
             android:defaultValue="0"
             app:argType="integer" />
+        <argument
+            android:name="designSource"
+            android:defaultValue="custom"
+            app:argType="string" />
         <argument
             android:name="idEdit"
             app:argType="string" />
@@ -272,5 +290,17 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
-
+    <fragment
+        android:id="@+id/catStudioFragment"
+        android:name="com.oc.catemoji.catoc.ui.main.studio.CatStudioFragment"
+        android:label="fragment_cat_studio"
+        tools:layout="@layout/fragment_cat_studio" >
+        <action
+            android:id="@+id/action_customizeFragment_to_addFragment"
+            app:destination="@id/addCharacterFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
 </navigation>

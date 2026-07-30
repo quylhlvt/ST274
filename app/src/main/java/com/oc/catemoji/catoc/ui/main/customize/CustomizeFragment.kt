@@ -17,6 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
@@ -42,6 +43,7 @@ import com.oc.catemoji.catoc.data.model.custom.BodyPartModel
 import com.oc.catemoji.catoc.data.model.custom.LayerTransform
 import com.oc.catemoji.catoc.data.model.custom.SelectionIndex
 import com.oc.catemoji.catoc.databinding.FragmentCustomizeBinding
+import com.oc.catemoji.catoc.ui.main.add_character.DesignSource
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -79,6 +81,9 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
     private var hasTriggeredReInit = false
     private var shouldScrollPartToSelection = true
     private var lastNavIndex = RecyclerView.NO_POSITION
+    private var lastNavData: List<BodyPartModel>? = null
+    private var lastColorData: List<com.oc.catemoji.catoc.data.model.custom.ColorModel>? = null
+    private var lastPartData: List<String>? = null
 
     // ── INFLATE ───────────────────────────────────────────────────────────────
 
@@ -202,6 +207,20 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
     }
 
     private fun setupAdapters() {
+        binding.rcvNav.layoutManager = object : LinearLayoutManager(
+            requireContext(),
+            RecyclerView.HORIZONTAL,
+            false
+        ) {
+            override fun calculateExtraLayoutSpace(
+                state: RecyclerView.State,
+                extraLayoutSpace: IntArray
+            ) {
+                // Bind toàn bộ nav ngay lần layout đầu thay vì đợi item đi vào viewport.
+                extraLayoutSpace[0] = FULL_NAV_LAYOUT_SPACE_PX
+                extraLayoutSpace[1] = FULL_NAV_LAYOUT_SPACE_PX
+            }
+        }
         binding.rcvNav.adapter = adapterNav
         binding.rcvColor.adapter = adapterColor
         binding.rcvPart.adapter = adapterPart
@@ -343,9 +362,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                 if (!isAdded || isDetached || view == null) return@onClick
                 if (checkOnlineNetworkOrShowDialog()) return@onClick
                 if (canSave)
-                    showInter {
                         performSave()
-                    }
             }
             actionBar.btnActionBarLeft.setOnClickListener { confirmExit() }
         }
@@ -639,8 +656,12 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         val navChanged = lastNavIndex != state.currentNavIndex
         if (navChanged) lastNavIndex = state.currentNavIndex
 
-        adapterNav.setPos(state.currentNavIndex)
-        adapterNav.submitList(state.listData)
+        if (lastNavData !== state.listData) {
+            lastNavData = state.listData
+            adapterNav.submitList(state.listData)
+            binding.rcvNav.setItemViewCacheSize(state.listData.size)
+        }
+        adapterNav.setPos(state.currentNavIndex.coerceIn(0, maxOf(0, state.listData.lastIndex)))
         binding.imgChangColor.isVisible = state.hasMultipleColors
 
         // ── Color ──────────────────────────────────────────────────────────────
@@ -655,7 +676,10 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         val navPos = state.currentNavIndex
 
         if (state.hasMultipleColors) {
-            adapterColor.submitList(state.currentColors)
+            if (lastColorData !== state.currentColors) {
+                lastColorData = state.currentColors
+                adapterColor.submitList(state.currentColors)
+            }
             binding.rcvColor.post {
                 binding.rcvColor.smoothScrollToPosition(state.currentColorIndex)
             }
@@ -670,6 +694,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
                 }.start()
             }
         } else {
+            lastColorData = null
             binding.llColor.animate().alpha(0f).setDuration(150).withEndAction {
                 binding.llColor.visibility = View.GONE
             }.start()
@@ -682,7 +707,10 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         adapterPart.setPos(state.currentPathIndex)
 
         val targetPartIndex = state.currentPathIndex.coerceAtLeast(0)
-        adapterPart.submitList(state.currentPaths)
+        if (lastPartData !== state.currentPaths) {
+            lastPartData = state.currentPaths
+            adapterPart.submitList(state.currentPaths)
+        }
         if (shouldScrollPartToSelection || navChanged) {
             binding.rcvPart.post {
                 binding.rcvPart.smoothScrollToPosition(targetPartIndex)
@@ -754,7 +782,10 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             if (isAdded && !isDetached) {
                 findNavController().navigate(
                     R.id.action_customizeFragment_to_addFragment,
-                    Bundle().apply { putString("imagePath", savedPath) }
+                    Bundle().apply {
+                        putString("imagePath", savedPath)
+                        putString(DesignSource.ARG_SOURCE, DesignSource.CUSTOM)
+                    }
                 )
             }
         }
@@ -873,6 +904,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         private const val ROTATION_STEP = 5f
         private const val TRANSLATION_STEP = 20f
         private const val DISABLED_CONTROL_ALPHA = 0.4f
+        private const val FULL_NAV_LAYOUT_SPACE_PX = 100_000
         const val ARG_TEMPLATE_INDEX = "template_index"
         const val ARG_TEMPLATE_ID = "template_id"
         const val ARG_IS_EDIT = "is_edit"

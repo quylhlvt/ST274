@@ -39,9 +39,15 @@ class NavAdapter :
 
     fun setPos(pos: Int) {
         val old = posNav; posNav = pos
-        if (old != pos) {
-            notifyItemChanged(old); notifyItemChanged(pos)
+        val lastIndex = itemCount - 1
+        if (old != pos && lastIndex >= 0) {
+            if (old in 0..lastIndex) notifyItemChanged(old, PAYLOAD_SELECTION)
+            if (pos in 0..lastIndex) notifyItemChanged(pos, PAYLOAD_SELECTION)
         }
+    }
+
+    private fun updateSelection(binding: ItemBottomCustomBinding, position: Int) {
+        if (posNav == position) binding.focus.visible() else binding.focus.gone()
     }
 
     override fun onBind(binding: ItemBottomCustomBinding, item: BodyPartModel, position: Int) {
@@ -49,23 +55,56 @@ class NavAdapter :
 
         binding.apply {
             val ctx = root.context
-        if (posNav == position) {
-            focus.visible()
+        updateSelection(binding, position)
+        if (imvImage.tag != item.nav) {
+            sflShimmer.visible()
+            sflShimmer.startShimmer()
+            imvImage.tag = item.nav
+            Glide.with(imvImage)
+                .load(item.nav)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .override(256)
+                .dontAnimate()
+                .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?, model: Any?,
+                    target: Target<Drawable>?, isFirstResource: Boolean
+                ): Boolean {
+                    sflShimmer.stopShimmer()
+                    sflShimmer.gone()
+                    return false
+                }
 
+                override fun onResourceReady(
+                    resource: Drawable?, model: Any?,
+                    target: Target<Drawable>?, dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    sflShimmer.stopShimmer()
+                    sflShimmer.gone()
+                    return false
+                }
+                })
+                .placeholder(shimmerDrawable)
+                .into(imvImage)
         } else {
-            focus.gone()
-
+            sflShimmer.stopShimmer()
+            sflShimmer.gone()
         }
-        Glide.with(imvImage)
-            .load(item.nav)
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-            .override(256)
-            .dontAnimate()
-            .placeholder(shimmerDrawable)
-            .into(imvImage)
 
         root.setOnClickListener { onClick?.invoke(position) }
     }}
+
+    override fun onBindPayload(
+        binding: ItemBottomCustomBinding,
+        item: BodyPartModel,
+        position: Int,
+        payloads: List<Any>
+    ) = updateSelection(binding, position)
+
+    private companion object {
+        const val PAYLOAD_SELECTION = "selection"
+    }
 }
 
 // ── COLOR ADAPTER ─────────────────────────────────────────────────────────────
@@ -77,12 +116,17 @@ class ColorAdapter : BaseAdapter<ColorModel, ItemColorBinding>(ItemColorBinding:
     fun setPos(pos: Int) {
         val old = posColor; posColor = pos
         if (old != pos) {
-            notifyItemChanged(old); notifyItemChanged(pos)
+            if (old in items.indices) notifyItemChanged(old, PAYLOAD_SELECTION)
+            if (pos in items.indices) notifyItemChanged(pos, PAYLOAD_SELECTION)
         }
     }
 
-    override fun onBind(binding: ItemColorBinding, item: ColorModel, position: Int) {
+    private fun updateSelection(binding: ItemColorBinding, position: Int) {
         binding.colorSelected.isVisible = posColor == position
+    }
+
+    override fun onBind(binding: ItemColorBinding, item: ColorModel, position: Int) {
+        updateSelection(binding, position)
 
         val colorInt = runCatching {
             Color.parseColor(
@@ -93,6 +137,17 @@ class ColorAdapter : BaseAdapter<ColorModel, ItemColorBinding>(ItemColorBinding:
 
         DrawableCompat.setTint(binding.viewColor.background.mutate(), colorInt)
         binding.root.setOnClickListener { onClick?.invoke(position) }
+    }
+
+    override fun onBindPayload(
+        binding: ItemColorBinding,
+        item: ColorModel,
+        position: Int,
+        payloads: List<Any>
+    ) = updateSelection(binding, position)
+
+    private companion object {
+        const val PAYLOAD_SELECTION = "selection"
     }
 }
 
@@ -106,8 +161,13 @@ class PartAdapter : BaseAdapter<String, ItemLayerBinding>(ItemLayerBinding::infl
     fun setPos(pos: Int) {
         val old = posPath; posPath = pos
         if (old != pos) {
-            notifyItemChanged(old); notifyItemChanged(pos)
+            if (old in items.indices) notifyItemChanged(old, PAYLOAD_SELECTION)
+            if (pos in items.indices) notifyItemChanged(pos, PAYLOAD_SELECTION)
         }
+    }
+
+    private fun updateSelection(binding: ItemLayerBinding, position: Int) {
+        if (posPath == position) binding.focus.visible() else binding.focus.gone()
     }
 
     override fun onBind(binding: ItemLayerBinding, item: String, position: Int) {
@@ -116,36 +176,48 @@ class PartAdapter : BaseAdapter<String, ItemLayerBinding>(ItemLayerBinding::infl
         binding.apply {
             val ctx = root.context
 
-        if (posPath == position) {
-            focus.visible()
-        } else {
-            focus.gone() }
+        updateSelection(binding, position)
         val thumbPath = listThumb.getOrElse(position) { item }
         when (item) {
             "none" -> {
                 Glide.with(imvImage).clear(imvImage)
+                imvImage.tag = "none"
                 imvImage.setImageResource(R.drawable.ic_none)
 
             }
 
             "dice" -> {
                 Glide.with(imvImage).clear(imvImage)
+                imvImage.tag = "dice"
                 imvImage.setImageResource(R.drawable.ic_dice)
 
             }
 
             else -> {
-
                 val thumbPath = listThumb.getOrElse(position) { item }
-                Glide.with(imvImage)
-                    .load(thumbPath)
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                    .override(256)
-                    .dontAnimate()
-                    .placeholder(shimmerDrawable)
-                    .into(imvImage)
+                if (imvImage.tag != thumbPath) {
+                    imvImage.tag = thumbPath
+                    Glide.with(imvImage)
+                        .load(thumbPath)
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .override(256)
+                        .dontAnimate()
+                        .placeholder(shimmerDrawable)
+                        .into(imvImage)
+                }
             }
         }
         root.setOnClickListener { onClick?.invoke(position, item) }
     }}
+
+    override fun onBindPayload(
+        binding: ItemLayerBinding,
+        item: String,
+        position: Int,
+        payloads: List<Any>
+    ) = updateSelection(binding, position)
+
+    private companion object {
+        const val PAYLOAD_SELECTION = "selection"
+    }
 }

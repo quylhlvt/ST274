@@ -66,6 +66,11 @@ fun Fragment.showInterAll() {
         }
     })
 }
+fun Fragment.logEventSocial(nameEvent: String, nameEvent1: String, value: String) {
+    val bundle = Bundle()
+    bundle.putString("link_${nameEvent}", value)
+    AdmobEvent.logEvent(requireActivity(), nameEvent1, bundle)
+}
 fun Fragment.logEvent(nameEvent: String, value: String) {
     val bundle = Bundle()
     bundle.putString("link", value)

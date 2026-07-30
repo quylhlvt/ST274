@@ -109,8 +109,10 @@
     <string name="load_ads_fail">Gagal memuat iklan</string>
     <string name="facebook_story">Facebook</string>
     <string name="instagram_story">Instagram</string>
-    <string name="facebook_story_not_supported">Cerita Facebook tidak didukung di perangkat ini</string>
-    <string name="instagram_story_not_supported">Cerita Instagram tidak didukung di perangkat ini</string>
+    <string name="facebook_story_not_supported">Facebook tidak didukung di perangkat ini</string>
+    <string name="instagram_story_not_supported">Instagram tidak didukung di perangkat ini</string>
+    <string name="cat_studio">Studio Kucing</string>
+    <string name="please_turn_on_internet_to_use_this_feature">Aktifkan koneksi internet Anda untuk menggunakan fitur ini.</string>
     <string name="your_cosplay_score">Skor Cosplay Anda</string>
     <string name="match">Kecocokan</string>
 </resources>

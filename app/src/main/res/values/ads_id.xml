@@ -8,6 +8,7 @@
     <string name = "inter_per" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
     <string name = "inter_all" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
     <string name = "native_cl_home" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
+    <string name = "native_cl_catStudio" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_cl_category" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_cl_randon" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_cl_cosplaySuccess" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
@@ -15,7 +16,9 @@
     <string name = "native_cl_cosplay" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_cl_custom" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_cl_bg" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
+    <string name = "native_cl_catStudioBG" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_success" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
+    <string name = "native_successCatStudio" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_creation" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_cl_creation" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_cl_detail" translatable="false">ca-app-pub-3940256099942544/2247696110</string>

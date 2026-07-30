@@ -23,12 +23,15 @@ class SpeechAdapter  : BaseAdapter<SelectedAddModel, ItemSpeechBinding>(ItemSpee
         val shimmerDrawable = ShimmerDrawable().apply { setShimmer(DataLocal.shimmer) }
 
         binding.apply {
-            Glide.with(binding.root)
-                .load(item.path)
-                .override(256, 256)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(shimmerDrawable)
-                .into(imvImage)
+            if (imvImage.tag != item.path) {
+                imvImage.tag = item.path
+                Glide.with(imvImage)
+                    .load(item.path)
+                    .override(256, 256)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(shimmerDrawable)
+                    .into(imvImage)
+            }
 //            loadImage(root, item.path, imageView)
             root.onClick {
                 selectItem(position)          // ← was missing entirely
@@ -40,9 +43,6 @@ class SpeechAdapter  : BaseAdapter<SelectedAddModel, ItemSpeechBinding>(ItemSpee
 
     fun selectItem(position: Int) {           // ← changed private → public
         if (position == currentSelected) return
-        val old = currentSelected
         currentSelected = position
-        if (old >= 0) notifyItemChanged(old)
-        notifyItemChanged(position)
     }
 }

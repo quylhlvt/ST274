@@ -105,8 +105,8 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
     init {
         touchSlop = ViewConfiguration.get(context).scaledTouchSlop
-        //quylh dùng hardware layer tối ưu hiệu suất vẽ
-        setLayerType(LAYER_TYPE_HARDWARE, null)
+        // Tránh giữ bitmap trong GPU texture khi app nằm nền lâu.
+        setLayerType(LAYER_TYPE_NONE, null)
         val typedArray: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.StickerView)
         try {
             isShowIcons = typedArray.getBoolean(R.styleable.StickerView_showIcons, true)
@@ -158,7 +158,12 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 downX = ev.x
                 downY = ev.y
 
-                return targetCurrentDraw() != null || targetHandlingDraw() != null
+                val touchedIcon = targetCurrentDraw() != null
+                val touchedDraw = targetHandlingDraw() != null
+                if (!touchedIcon && !touchedDraw && handlingDraw != null) {
+                    hideSelect()
+                }
+                return touchedIcon || touchedDraw
             }
         }
 

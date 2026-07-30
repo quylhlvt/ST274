@@ -18,7 +18,10 @@ class MyDesignAdapter() : BaseAdapter<MyAlbumModel, ItemMyDesignBinding>(ItemMyD
 
     override fun onBind(binding: ItemMyDesignBinding, item: MyAlbumModel, position: Int) {
         binding.apply {
-            loadImage(root, item.path, imvImage)
+            if (imvImage.tag != item.path) {
+                imvImage.tag = item.path
+                loadImage(root, item.path, imvImage)
+            }
 
             if (item.isShowSelection) {
                 btnSelect.visible()

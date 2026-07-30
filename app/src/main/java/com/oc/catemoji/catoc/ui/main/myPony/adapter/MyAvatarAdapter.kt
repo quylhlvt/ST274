@@ -22,7 +22,10 @@ class MyAvatarAdapter(val context: Context) :
 
     override fun onBind(binding: ItemMyAlbumBinding, item: MyAlbumModel, position: Int) {
         binding.apply {
-            loadImage(root, item.path, imvImage)
+            if (imvImage.tag != item.path) {
+                imvImage.tag = item.path
+                loadImage(root, item.path, imvImage)
+            }
 
             if (item.isShowSelection) {
                 btnSelect.visible()

@@ -109,8 +109,10 @@
     <string name="load_ads_fail">Falha ao carregar o anúncio</string>
     <string name="facebook_story">Facebook</string>
     <string name="instagram_story">Instagram</string>
-    <string name="facebook_story_not_supported">O Story do Facebook não é compatível com este dispositivo</string>
-    <string name="instagram_story_not_supported">O Story do Instagram não é compatível com este dispositivo</string>
+    <string name="facebook_story_not_supported">O Facebook não é compatível com este dispositivo</string>
+    <string name="instagram_story_not_supported">O Instagram não é compatível com este dispositivo</string>
+    <string name="cat_studio">Estúdio de Gatos</string>
+    <string name="please_turn_on_internet_to_use_this_feature">Ative sua conexão com a internet para usar este recurso.</string>
     <string name="your_cosplay_score">Sua pontuação de cosplay</string>
     <string name="match">Correspondência</string>
 </resources>

@@ -1,16 +1,20 @@
 package com.oc.catemoji.catoc
 
 import android.content.Context
+import android.app.ActivityManager
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.oc.catemoji.catoc.data.datalocal.manager.AppDataManager
 import com.oc.catemoji.catoc.data.model.custom.CustomModel
+import com.oc.catemoji.catoc.data.model.custom.BodyPartModel
 import com.oc.catemoji.catoc.data.model.custom.LayerTransform
 import com.oc.catemoji.catoc.data.model.custom.SelectionIndex
+import com.oc.catemoji.catoc.data.model.studio.StudioCatalogueMapper
 import com.oc.catemoji.catoc.data.usecase.GetCatalogueUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,6 +30,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.UUID
 import javax.inject.Inject
 @HiltViewModel
@@ -54,6 +60,11 @@ class ViewModelActivity @Inject constructor(
     private val _bgStickerReady = MutableStateFlow(false)
     val bgStickerReady: StateFlow<Boolean> = _bgStickerReady.asStateFlow()
     private val _bgLoading = MutableStateFlow(false)
+    private val _studioCatalogue = MutableStateFlow<List<BodyPartModel>>(emptyList())
+    val studioCatalogue: StateFlow<List<BodyPartModel>> = _studioCatalogue.asStateFlow()
+    private val _studioLoading = MutableStateFlow(false)
+    private val _studioFailed = MutableStateFlow(false)
+    private var studioRemoteLoaded = false
     var bgQuantity: Int = 0
     var stickerQuantity: Int = 0
     val bgBaseUrl = "https://lvtglobal.tech/public/app/ST229_CatAvatarCatMaker/bg"
@@ -145,6 +156,58 @@ class ViewModelActivity @Inject constructor(
             }
         }
     }
+
+    fun loadStudioCatalogue() {
+        if (_studioLoading.value || studioRemoteLoaded) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            _studioLoading.value = true
+            try {
+                if (_studioCatalogue.value.isEmpty()) {
+                    val cachedJson = studioPreferences.getString(KEY_STUDIO_JSON, null)
+                    if (!cachedJson.isNullOrBlank()) {
+                        runCatching {
+                            StudioCatalogueMapper.mapBodyParts(cachedJson)
+                        }.onSuccess { cachedParts ->
+                            if (cachedParts.isNotEmpty()) {
+                                _studioCatalogue.value = cachedParts
+                                prefetchStudioThumbnails(cachedParts)
+                            }
+                        }.onFailure {
+                            studioPreferences.edit().remove(KEY_STUDIO_JSON).apply()
+                        }
+                    }
+                }
+
+                val connection = URL(StudioCatalogueMapper.JSON_URL)
+                    .openConnection() as HttpURLConnection
+                val json = try {
+                    connection.connectTimeout = STUDIO_TIMEOUT_MS
+                    connection.readTimeout = STUDIO_TIMEOUT_MS
+                    connection.inputStream.bufferedReader().use { reader ->
+                        reader.readText()
+                    }
+                } finally {
+                    connection.disconnect()
+                }
+
+                val parts = StudioCatalogueMapper.mapBodyParts(json)
+                require(parts.isNotEmpty()) { "Studio catalogue is empty" }
+                studioPreferences.edit().putString(KEY_STUDIO_JSON, json).apply()
+                _studioCatalogue.value = parts
+                _studioFailed.value = false
+                studioRemoteLoaded = true
+                prefetchStudioThumbnails(parts)
+                Log.d("ViewModelActivity", "✅ Studio loaded: ${parts.size}")
+            } catch (e: Exception) {
+                _studioFailed.value = true
+                Log.e("ViewModelActivity", "❌ Studio error: ${e.message}", e)
+            } finally {
+                _studioLoading.value = false
+            }
+        }
+    }
+
     private fun loadInitialData() {
         viewModelScope.launch {
             try {
@@ -159,12 +222,11 @@ class ViewModelActivity @Inject constructor(
 
                 Log.d("ViewModelActivity", "📦 After quick load — customized: ${appDataManager.customizedCharacters.value.size}")
 
-                // ✅ Bước 2: Fetch online SAU KHI local đã ổn định
-                // Gọi trực tiếp, KHÔNG launch(IO) riêng → tránh race condition
-                fetchOnlineTemplatesInternal()
-                launch { loadBackgroundsAndStickers() }
+                // Ba nguồn online chạy song song, không chờ nguồn trước hoàn thành.
+                launch(Dispatchers.IO) { fetchOnlineTemplatesInternal() }
+                loadBackgroundsAndStickers()
+                loadStudioCatalogue()
                 launch { observeNetworkForRetry() }
-                Log.d("ViewModelActivity", "📦 After online fetch — customized: ${appDataManager.customizedCharacters.value.size}")
             } catch (e: Exception) {
                 Log.e("ViewModelActivity", "❌ Init error: ${e.message}", e)
             }
@@ -182,6 +244,10 @@ class ViewModelActivity @Inject constructor(
                 Log.d("ViewModelActivity", "🔄 Network restored, retrying...")
                 _bgStickerFailed.value = false
                 loadBackgroundsAndStickers()
+            }
+            if (isOnline && _studioFailed.value && !_studioLoading.value) {
+                _studioFailed.value = false
+                loadStudioCatalogue()
             }
         }
     }
@@ -248,6 +314,26 @@ class ViewModelActivity @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun prefetchStudioThumbnails(parts: List<BodyPartModel>) {
+        val activityManager =
+            context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        if (activityManager.isLowRamDevice) return
+
+        parts.forEach { bodyPart ->
+            bodyPart.listThumbPath
+                .take(STUDIO_VISIBLE_THUMB_COUNT)
+                .forEach { path ->
+                    Glide.with(context)
+                        .load(path)
+                        .priority(Priority.LOW)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .skipMemoryCache(true)
+                        .override(STUDIO_THUMB_SIZE_PX, STUDIO_THUMB_SIZE_PX)
+                        .preload()
+                }
         }
     }
 
@@ -338,4 +424,16 @@ class ViewModelActivity @Inject constructor(
     // ── CLEAR ─────────────────────────────────────────────────────────────────
 
     fun clearData() { appDataManager.clearData() }
+
+    companion object {
+        private const val STUDIO_PREFS = "studio_catalogue_cache"
+        private const val KEY_STUDIO_JSON = "studio_json"
+        private const val STUDIO_TIMEOUT_MS = 15_000
+        private const val STUDIO_VISIBLE_THUMB_COUNT = 5
+        private const val STUDIO_THUMB_SIZE_PX = 192
+    }
+
+    private val studioPreferences by lazy {
+        context.getSharedPreferences(STUDIO_PREFS, Context.MODE_PRIVATE)
+    }
 }

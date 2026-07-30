@@ -67,6 +67,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(
         Log.d("NativeCollab", "▶️ initView")
         Admob.getInstance().loadInterAll(requireContext(), getString(R.string.inter_all))
         initNativeCollab()
+        binding.rcvMain.adapter = HomeMenuAdapter(::onHomeMenuClick)
         binding.actionBar.apply {
             setImageActionBar(btnActionBarRight, R.drawable.ic_settings)
         }
@@ -93,25 +94,47 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(
     }
 
     override fun viewListener() {
-        binding.apply {
-            btnCreate.onClick {
+        binding.actionBar.btnActionBarRight.onClick { toSettingFromHome() }
+    }
+
+    private fun onHomeMenuClick(action: HomeMenuAction) {
+        when (action) {
+            HomeMenuAction.CREATE -> {
                 navigateWithCheck(R.id.action_home_to_createPony)
             }
-            btnMyAlbum.onClick {
+
+            HomeMenuAction.MY_ALBUM -> {
                 showInter {
                     findNavController().navigate(R.id.action_home_to_myPony)
                 }
-
             }
-            btnRandom.onClick(1000) {
+
+            HomeMenuAction.RANDOM -> {
                 navigateWithCheck(R.id.action_home_to_random)
             }
-            btnCosPlay.onClick(1000) {
+
+            HomeMenuAction.COSPLAY -> {
                 navigateWithCheck(R.id.action_home_to_cosplay)
             }
-            actionBar.btnActionBarRight.onClick { toSettingFromHome() }
+
+            HomeMenuAction.STUDIO -> {
+                navigateStudioWithNetworkCheck()
+            }
         }
     }
+
+    private fun navigateStudioWithNetworkCheck() {
+        val hasNetwork =
+            isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
+
+        if (!hasNetwork) {
+            showUnstableNetworkDialog()
+            return
+        }
+
+        findNavController().navigate(R.id.action_home_to_studio)
+    }
+
     private fun navigateWithCheck(destination: Int) {
         val hasNetwork = isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
         val hasData = viewModelActivity.templates.value.isNotEmpty() // ← bỏ dấu !
@@ -126,10 +149,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(
         binding.root.post {
             Log.d("PERF2", "HomeFragment first frame: ${System.currentTimeMillis()}")
             if (!isAdded || isDetached) return@post
-            binding.tv1.isSelected = true
-            binding.tv2.isSelected = true
-            binding.tv3.isSelected = true
-            binding.tv4.isSelected = true
+
 
             viewLifecycleOwner.lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {

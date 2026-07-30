@@ -103,6 +103,9 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     private val imagepath: String by lazy {
         arguments?.getString("imagePath") ?: ""
     }
+    private val designSource: String by lazy {
+        arguments?.getString(DesignSource.ARG_SOURCE) ?: DesignSource.CUSTOM
+    }
 
     private fun buttonNavigationList() = arrayListOf(
         binding.btnBackground,
@@ -146,9 +149,14 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     ): FragmentAddCharacterBinding = FragmentAddCharacterBinding.inflate(inflater, container, false)
 
     private fun initNativeCollab() {
+        val adUnitId = if (designSource == DesignSource.STUDIO) {
+            R.string.native_cl_catStudioBG
+        } else {
+            R.string.native_cl_bg
+        }
         Admob.getInstance().loadNativeCollapNotBanner(
             requireContext(),
-            getString(R.string.native_cl_bg),
+            getString(adUnitId),
             binding.flNativeCollab
         )
     }
@@ -1023,6 +1031,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
                             putString("imagePath", savedImagePath)
                             putString("idEdit", "")
                             putInt("imageType", 0)
+                            putString(DesignSource.ARG_SOURCE, designSource)
                         }
                     )
                 } else {
