@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp">
+    android:layout_margin="@dimen/dimension_4">
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardLayer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:cardCornerRadius="6dp"
-        app:strokeWidth="0dp"
-        android:elevation="0dp"
-        app:cardElevation="0dp"
+        android:layout_height="@dimen/dimension_0"
+        app:cardCornerRadius="@dimen/dimension_6"
+        app:strokeWidth="@dimen/dimension_0"
+        android:elevation="@dimen/dimension_0"
+        app:cardElevation="@dimen/dimension_0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,18 +31,18 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dimension_0"
         android:id="@+id/focus"
-        app:cardElevation="0dp"
-        android:elevation="2dp"
-        android:layout_height="0dp"
+        app:cardElevation="@dimen/dimension_0"
+        android:elevation="@dimen/dimension_2"
+        android:layout_height="@dimen/dimension_0"
         android:visibility="gone"
         app:cardBackgroundColor="@color/transparent"
         app:layout_constraintStart_toStartOf="@+id/cardLayer"
         app:layout_constraintEnd_toEndOf="@+id/cardLayer"
         app:layout_constraintTop_toTopOf="@+id/cardLayer"
-        app:cardCornerRadius="6dp"
-        app:strokeWidth="3dp"
+        app:cardCornerRadius="@dimen/dimension_6"
+        app:strokeWidth="@dimen/dimension_3"
         app:strokeColor="@color/shadown_item_cate"
         app:layout_constraintBottom_toBottomOf="@+id/cardLayer"/>
 

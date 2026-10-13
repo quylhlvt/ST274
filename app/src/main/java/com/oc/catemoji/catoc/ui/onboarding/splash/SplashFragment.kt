@@ -23,7 +23,6 @@ import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.base.BackPressHandler
 import com.oc.catemoji.catoc.core.base.BaseFragment
-import com.oc.catemoji.catoc.core.extention.dpToPx
 import com.oc.catemoji.catoc.core.extention.toIntro
 import com.oc.catemoji.catoc.core.extention.toLanguage
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager.isLanuageScreen
@@ -56,7 +55,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
     override fun initView() {
         ResourcesCompat.getFont(requireContext(), R.font.baloo2_extrabold)
 
-        checkAndClearDataIfNewVersion()
 
         interCallBack = object : InterCallback() {
             override fun onNextAction() {
@@ -68,27 +66,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
         Admob.getInstance().loadSplashInterAds(
             requireActivity(), getString(R.string.inter_splash), 30000, 3000, interCallBack
         )
-    }
-
-    private fun checkAndClearDataIfNewVersion() {
-        val context = requireContext()
-        val currentVersion = context.packageManager
-            .getPackageInfo(context.packageName, 0).versionCode
-        val savedVersion = sharedPreferences.getVersionCode()
-
-        if (savedVersion != currentVersion) {
-            MMKV.defaultMMKV().clearAll()
-            sharedPreferences.clearAll()
-            context.filesDir.deleteRecursively()
-            context.cacheDir.deleteRecursively()
-            context.externalCacheDir?.deleteRecursively()
-
-            sharedPreferences.setVersionCode(currentVersion)
-
-            viewLifecycleOwner.lifecycleScope.launch {
-                mainViewModel.forceReloadAll()
-            }
-        }
     }
 
     override fun viewListener() {}
@@ -150,7 +127,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(
                 currentOverlayFraction = fraction
 
                 val total = container.width.toFloat()
-                val overlayLeft = overlay.left.toFloat() - dpToPx(requireContext(), 18)
+                val overlayLeft = overlay.left.toFloat() - resources.getDimension(R.dimen.dimension_18)
                 val tx = total * (1f - fraction) - overlayLeft
 
                 overlay.translationX = tx

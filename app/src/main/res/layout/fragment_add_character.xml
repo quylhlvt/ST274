@@ -13,14 +13,14 @@
         android:id="@+id/tvGetText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="48dp"
+        android:layout_marginHorizontal="@dimen/dimension_48"
         android:background="@color/transparent"
         android:clickable="false"
         android:focusable="false"
         android:gravity="center"
         android:maxLength="30"
         android:text=""
-        android:textSize="40sp"
+        android:textSize="@dimen/text_size_40"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +31,7 @@
         android:id="@+id/flActionBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="2dp"
+        android:elevation="@dimen/dimension_2"
         app:layout_constraintTop_toTopOf="parent">
 
         <include
@@ -39,47 +39,46 @@
             layout="@layout/layout_actionbar1" />
     </FrameLayout>
 
-    <Space
-        android:id="@+id/flSpce"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="20dp"
-        app:layout_constraintDimensionRatio="36:39"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/flActionBar" />
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_63"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.62"/>
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/flSave"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/flSpce"
-        app:layout_constraintTop_toBottomOf="@+id/flActionBar">
+            android:id="@+id/flSave"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintBottom_toBottomOf="@+id/guideline_63"
+            app:layout_constraintTop_toBottomOf="@+id/flActionBar" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:id="@+id/imvBackground"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop" />
+                android:id="@+id/imvBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"/>
 
         <!--        drawView-->
         <com.oc.catemoji.catoc.core.custom.DrawView
-            android:id="@+id/drawView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:elevation="1dp" />
+                android:id="@+id/drawView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="@dimen/dimension_1"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--    flFunction-->
     <FrameLayout
         android:id="@+id/flFunction"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/dimension_0"
         android:background="@drawable/img_bg_layer"
-        android:elevation="3dp"
+        android:elevation="@dimen/dimension_3"
         android:layerType="hardware"
         app:layout_constraintBottom_toTopOf="@+id/lnlBottom"
-        app:layout_constraintTop_toBottomOf="@+id/flSpce">
+        app:layout_constraintTop_toBottomOf="@+id/guideline_63">
 
         <!--        lnlBackground-->
         <include
@@ -102,8 +101,8 @@
                 android:id="@+id/rcvSticker"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                android:paddingHorizontal="12dp"
+                android:layout_marginTop="@dimen/dimension_16"
+                android:paddingHorizontal="@dimen/dimension_12"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="5"
                 tools:listitem="@layout/item_sticker" />
@@ -123,8 +122,8 @@
                 android:id="@+id/rcvSpeech"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                android:paddingHorizontal="12dp"
+                android:layout_marginTop="@dimen/dimension_16"
+                android:paddingHorizontal="@dimen/dimension_12"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="4"
                 tools:listitem="@layout/item_sticker" />
@@ -137,8 +136,8 @@
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
         android:background="#D05F5A"
         app:layout_constraintBottom_toBottomOf="@+id/lnlBottom"
         app:layout_constraintEnd_toEndOf="@+id/lnlBottom"
@@ -150,52 +149,52 @@
         android:id="@+id/lnlBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
+        android:layout_marginBottom="@dimen/dimension_0"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingVertical="8dp"
+        android:paddingVertical="@dimen/dimension_8"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <!--        btnBackground-->
         <ImageView
             android:id="@+id/btnBackground"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginHorizontal="24dp"
+            android:layout_weight="1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_44"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_background_selected" />
 
         <!--        btnSticker-->
         <ImageView
             android:id="@+id/btnSticker"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginHorizontal="24dp"
+            android:layout_weight="1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_44"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_sticker" />
 
         <!--        btnSpeech-->
         <ImageView
             android:id="@+id/btnSpeech"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginHorizontal="24dp"
+            android:layout_weight="1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_44"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_speech" />
 
         <!--        btnText-->
         <ImageView
             android:id="@+id/btnText"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginHorizontal="24dp"
+            android:layout_weight="1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_44"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_text" />
     </LinearLayout>
 
     <com.oc.catemoji.catoc.utils.BlockableFrameLayout
         android:id="@+id/flNativeCollab"
-        android:elevation="100dp"
+        android:elevation="@dimen/dimension_100"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />

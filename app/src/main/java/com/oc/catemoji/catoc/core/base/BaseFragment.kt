@@ -113,7 +113,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>(
         initView()
         initText()
         binding.root.post {
-            if (!isAdded) return@post
+            if (!isAdded || this@BaseFragment.view !== view) return@post
             viewListener()
             bindViewModel()
             observeData()
@@ -124,6 +124,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>(
     private fun observeNetworkRetry() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModelActivity.loadBackgroundsAndStickers()
                 viewModelActivity.networkOnline
                     .filter { it } // chỉ quan tâm khi online = true
                     .collect {
@@ -133,7 +134,6 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>(
                             viewModelActivity.fetchOnlineTemplates()
                         }
                     }
-                viewModelActivity.loadBackgroundsAndStickers()
             }
         }
     }

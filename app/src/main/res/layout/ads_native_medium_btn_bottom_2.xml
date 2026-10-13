@@ -25,16 +25,16 @@
 
                 <com.google.android.gms.ads.nativead.MediaView
                     android:id="@+id/ad_media"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_120"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_weight="1"
-                    android:minWidth="120dp"
-                    android:minHeight="120dp" />
+                    android:minWidth="@dimen/dimension_120"
+                    android:minHeight="@dimen/dimension_120" />
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/dimension_0"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_3sdp"
                     android:layout_weight="1"
@@ -49,10 +49,10 @@
                         <androidx.cardview.widget.CardView
                             android:layout_width="40dip"
                             android:layout_height="40dip"
-                            android:layout_marginLeft="6.5dp"
-                            android:layout_marginTop="6.5dp"
-                            android:elevation="0dp"
-                            app:cardCornerRadius="8dp">
+                            android:layout_marginLeft="@dimen/dimension_6_5"
+                            android:layout_marginTop="@dimen/dimension_6_5"
+                            android:elevation="@dimen/dimension_0"
+                            app:cardCornerRadius="@dimen/dimension_8">
 
                             <ImageView
                                 android:id="@+id/ad_app_icon"
@@ -67,7 +67,7 @@
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dip"
-                            android:layout_marginTop="6.5dp"
+                            android:layout_marginTop="@dimen/dimension_6_5"
                             android:orientation="vertical">
 
                             <LinearLayout
@@ -91,7 +91,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:textColor="@color/native_text_color_btn"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/text_size_14" />
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -100,7 +100,7 @@
 
                         <TextView
                             android:id="@+id/ad_body"
-                            android:layout_width="0dp"
+                            android:layout_width="@dimen/dimension_0"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_5sdp"
                             android:layout_weight="1"
@@ -108,7 +108,7 @@
                             android:lines="2"
                             android:maxLines="2"
                             android:textColor="@color/native_text_color_btn"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/text_size_12" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -119,13 +119,13 @@
                 android:layout_height="@dimen/_38sdp"
                 android:layout_marginHorizontal="@dimen/_8sdp"
                 android:layout_marginTop="@dimen/_8sdp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="@dimen/dimension_4"
                 android:background="@drawable/bg_btn_ads_native"
                 android:gravity="center"
                 android:textStyle="bold"
                 android:text="INSTALL"
                 android:textColor="@color/native_text_color"
-                android:textSize="14sp" />
+                android:textSize="@dimen/text_size_14" />
         </LinearLayout>
     </RelativeLayout>
 </com.google.android.gms.ads.nativead.NativeAdView>

@@ -7,8 +7,8 @@
     tools:context=".ui.onboarding.splash.SplashFragment">
     <View
         android:id="@+id/view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.17"
         app:layout_constraintTop_toTopOf="parent"
@@ -16,8 +16,8 @@
         app:layout_constraintEnd_toEndOf="parent" />
     <View
         android:id="@+id/view2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintTop_toTopOf="parent"
@@ -32,7 +32,7 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/appCompatImageView4"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dimension_0"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:src="@drawable/img_title_splash"
@@ -40,13 +40,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
-    <FrameLayout
+    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
         android:id="@+id/progressWrapper"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="20dp"
-        android:background="@drawable/bg_progress_track_splash"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
+        android:layout_marginHorizontal="@dimen/dimension_20"
         android:clipChildren="true"
+        app:gslCornerRadius="@dimen/dimension_100"
+        app:gslStrokeWidth="@dimen/dimension_2"
+        app:gslStartColor="@color/app_color"
+        app:gslCenterColor="@color/app_color"
+        app:gslEndColor="@color/app_color"
         app:layout_constraintBottom_toBottomOf="@+id/view2"
         app:layout_constraintDimensionRatio="3.2:0.24"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,14 +62,12 @@
             android:id="@+id/progressFill"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="2dp"
             android:background="@drawable/bg_progress_fill" />
 
         <!-- Container clip cho overlay + cap -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="2dp"
             android:clipChildren="true"
             android:clipToPadding="true">
 
@@ -74,15 +76,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:cardBackgroundColor="@color/transparent"
-                app:cardCornerRadius="12dp"
-                app:strokeWidth="0dp">
+                app:strokeWidth="@dimen/dimension_0">
 
                 <View
                     android:id="@+id/progressOverlay"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
-                    android:layout_marginStart="18dp"
+                    android:layout_marginStart="@dimen/dimension_18"
                     android:background="@drawable/bg_progress_dark_overlay" />
 
             </com.google.android.material.card.MaterialCardView>
@@ -90,36 +91,28 @@
             <!-- capRight di chuyển ở START -->
             <ImageView
                 android:id="@+id/progressCap"
-                android:layout_width="12dp"
+                android:layout_width="@dimen/dimension_12"
                 android:layout_height="match_parent"
                 android:layout_gravity="start|center_vertical"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="@dimen/dimension_6"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_progress_cap_right" />
         </FrameLayout>
 
-        <!-- capLeft cố định ở END -->
-        <ImageView
-            android:id="@+id/progressCapLeft"
-            android:layout_width="11dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginVertical="2dp"
-            android:layout_marginEnd="2dp"
-            android:scaleType="fitXY" />
 
-    </FrameLayout>
+
+    </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
 
     <ImageView
         android:id="@+id/imageAvatar"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
         android:src="@drawable/image_splash"
         app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView"
         app:layout_constraintDimensionRatio="3.6:4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="@dimen/dimension_32"
         app:layout_constraintTop_toBottomOf="@+id/view2" />
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/appCompatTextView2"
@@ -129,8 +122,8 @@
         android:gravity="center"
         android:text="@string/this_action_may_contain_advertising"
         android:textColor="@color/black2"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_size_16"
         app:outerStrokeColor="@color/app_color"
-        app:outerStrokeWidth="1dp"
+        app:outerStrokeWidth="@dimen/dimension_1"
         app:layout_constraintBottom_toBottomOf="@+id/imageAvatar" />
 </androidx.constraintlayout.widget.ConstraintLayout>

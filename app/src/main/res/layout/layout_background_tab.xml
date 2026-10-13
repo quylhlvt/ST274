@@ -12,21 +12,20 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="44"
+        android:layout_height="@dimen/dimension_0"
+        android:layout_weight="40"
         android:clipChildren="false"
         android:clipToPadding="false"
         >
 
         <FrameLayout
             android:id="@+id/btnBackgroundImage"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
             android:background="@drawable/img_bg_image_addcharacter"
 
-            android:elevation="3dp"
+            android:elevation="@dimen/dimension_3"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1.8:0.44"
             app:layout_constraintEnd_toStartOf="@id/btnBackgroundColor"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,24 +35,23 @@
                 android:id="@+id/btnBackgroundImageTv"
                 style="@style/single_marquee"
                 android:layout_width="match_parent"
-                android:layout_height="47dp"
+                android:layout_height="match_parent"
                 android:fontFamily="@font/baloo2_bold"
                 android:gravity="center"
-                android:paddingVertical="2dp"
+                android:paddingVertical="@dimen/dimension_2"
                 android:text="@string/image"
                 android:textColor="@color/app_color"
-                android:textSize="20sp"
+                android:textSize="@dimen/text_size_20"
                 tools:ignore="NestedWeights" />
         </FrameLayout>
 
         <FrameLayout
             android:id="@+id/btnBackgroundColor"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
             android:background="@drawable/img_bg_color_addcharacter"
-            android:elevation="3dp"
+            android:elevation="@dimen/dimension_3"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1.8:0.44"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@id/btnBackgroundImage"
@@ -66,19 +64,19 @@
                 android:layout_height="match_parent"
                 android:fontFamily="@font/baloo2_bold"
                 android:gravity="center"
-                android:paddingVertical="2dp"
+                android:paddingVertical="@dimen/dimension_2"
                 android:text="@string/color"
                 android:textColor="@color/origin2"
-                android:textSize="20sp" />
+                android:textSize="@dimen/text_size_20" />
         </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginHorizontal="12dp"
-        android:layout_weight="196">
+        android:layout_height="@dimen/dimension_0"
+        android:layout_marginTop="@dimen/dimension_16"
+        android:layout_marginHorizontal="@dimen/dimension_12"
+        android:layout_weight="200">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcvBackgroundImage"

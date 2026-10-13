@@ -6,15 +6,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="100dp"
+        android:paddingBottom="@dimen/dimension_100"
         >
         <ImageView
             android:id="@+id/imageView4"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:paddingHorizontal="-2dp"
-            android:layout_marginBottom="-30dp"
-            android:elevation="2dp"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:paddingHorizontal="@dimen/dimension_minus_2"
+            android:layout_marginBottom="@dimen/dimension_minus_30"
+            android:elevation="@dimen/dimension_2"
             android:src="@drawable/img_title_loading"
             app:layout_constraintBottom_toTopOf="@+id/contrainColor"
             app:layout_constraintDimensionRatio="3.2:1.91"
@@ -24,13 +24,13 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/contrainColor"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/dimension_0"
             android:layout_gravity="center"
             android:layout_height="wrap_content"
 
-            android:layout_marginHorizontal="20dp"
+            android:layout_marginHorizontal="@dimen/dimension_20"
             android:background="@drawable/frame_bg_dialog"
-            android:paddingTop="20dp"
+            android:paddingTop="@dimen/dimension_20"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -40,26 +40,26 @@
                 style="@style/single_marquee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="50dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginHorizontal="@dimen/dimension_50"
+                android:layout_marginTop="@dimen/dimension_16"
                 android:fontFamily="@font/baloo2_bold"
                 android:gravity="center"
 
                 android:text="@string/choose_color"
                 android:textColor="@color/app_color2"
-                android:textSize="28sp"
+                android:textSize="@dimen/text_size_28"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:outerStrokeColor="@color/app_color"
-                app:outerStrokeWidth="1dp" />
+                app:outerStrokeWidth="@dimen/dimension_1" />
 
 
             <ir.kotlin.kavehcolorpicker.KavehColorPicker
                 android:id="@+id/colorPickerView"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_marginHorizontal="35dp"
+                android:layout_height="@dimen/dimension_120"
+                android:layout_marginHorizontal="@dimen/dimension_35"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvTitle" />
@@ -67,38 +67,38 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
+                android:layout_marginHorizontal="@dimen/dimension_20"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:paddingBottom="18dp"
+                android:paddingBottom="@dimen/dimension_18"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/colorPickerView">
 
                 <ir.kotlin.kavehcolorpicker.KavehHueSlider
                     android:id="@+id/hueSlider"
-                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginHorizontal="@dimen/dimension_20"
                     app:layout_constraintTop_toTopOf="parent"
                     android:layout_width="match_parent"
-                    android:layout_height="24dp" />
+                    android:layout_height="@dimen/dimension_24" />
 
                 <!--                btnDone-->
                 <LinearLayout
                     android:id="@+id/llBottom"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="@dimen/dimension_0"
                     android:orientation="horizontal"
                     android:weightSum="280"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="@dimen/dimension_16"
                     app:layout_constraintDimensionRatio="2.8:0.44"
                     app:layout_constraintTop_toBottomOf="@+id/hueSlider">
 
                     <FrameLayout
                         android:id="@+id/btnCancel"
-                        android:layout_width="0dp"
+                        android:layout_width="@dimen/dimension_0"
                         android:layout_height="match_parent"
                         android:layout_weight="132"
-                        android:background="@drawable/bg_frame_mycreation">
+                        android:background="@drawable/bg_btn_type_selected">
 
                         <TextView
                             android:id="@+id/tvCancel"
@@ -106,25 +106,25 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:layout_marginHorizontal="4dp"
+                            android:layout_marginHorizontal="@dimen/dimension_4"
                             android:fontFamily="@font/baloo2_bold"
                             android:gravity="center"
                             android:text="@string/cancel"
                             android:textColor="@color/app_color"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/text_size_20" />
                     </FrameLayout>
 
                     <Space
-                        android:layout_width="0dp"
+                        android:layout_width="@dimen/dimension_0"
                         android:layout_height="match_parent"
                         android:layout_weight="18" />
 
                     <FrameLayout
                         android:id="@+id/btnDone"
-                        android:layout_width="0dp"
+                        android:layout_width="@dimen/dimension_0"
                         android:layout_height="match_parent"
                         android:layout_weight="132"
-                        android:background="@drawable/bg_frame_mycreation">
+                        android:background="@drawable/bg_btn_type_selected">
 
                         <TextView
                             android:id="@+id/tvDone"
@@ -132,12 +132,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:layout_marginHorizontal="4dp"
+                            android:layout_marginHorizontal="@dimen/dimension_4"
                             android:fontFamily="@font/baloo2_bold"
                             android:gravity="center"
                             android:text="@string/done"
                             android:textColor="@color/app_color"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/text_size_20" />
                     </FrameLayout>
                 </LinearLayout>
 

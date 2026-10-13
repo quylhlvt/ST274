@@ -28,7 +28,6 @@ import com.oc.catemoji.catoc.core.custom.listener.listenerdraw.EditEvent
 import com.oc.catemoji.catoc.core.custom.listener.listenerdraw.FlipEvent
 import com.oc.catemoji.catoc.core.custom.listener.listenerdraw.OnDrawListener
 import com.oc.catemoji.catoc.core.custom.listener.listenerdraw.ZoomEvent
-import com.oc.catemoji.catoc.core.extention.dpToPx
 
 import java.util.Collections
 import kotlin.collections.get
@@ -120,7 +119,7 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             )
             borderPaint.alpha = typedArray.getInteger(R.styleable.StickerView_borderAlpha, 255)
             borderPaint.style = Paint.Style.STROKE
-            borderPaint.strokeWidth = dpToPx(2)
+            borderPaint.strokeWidth = resources.getDimension(R.dimen.dimension_2)
             borderPaint.strokeJoin = Paint.Join.ROUND
             borderPaint.strokeCap = Paint.Cap.ROUND
             borderPaint.pathEffect = DashPathEffect(floatArrayOf(40f, 40f), 0f)
@@ -683,7 +682,7 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
                 borderPath.reset()
 
-                val radius = dpToPx(6)
+                val radius = resources.getDimension(R.dimen.dimension_6)
 
                 fun offsetPoint(x1: Float, y1: Float, x2: Float, y2: Float, dist: Float): Pair<Float, Float> {
                     val dx = x2 - x1
@@ -755,7 +754,7 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         icon.y = y
         icon.getMatrix().reset()
         // Thu nhỏ icon xuống 39dp
-        val targetSizePx = dpToPx(35)
+        val targetSizePx = resources.getDimension(R.dimen.dimension_35)
         val scaleX = targetSizePx / icon.width
         val scaleY = targetSizePx / icon.height
         val scale = minOf(scaleX, scaleY) // Giữ tỷ lệ aspect ratio

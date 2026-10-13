@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bg_native"
         android:orientation="vertical"
-        android:padding="4dp">
+        android:padding="@dimen/dimension_4">
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -47,14 +47,14 @@
                         android:maxLines="2"
                         android:text=""
                         android:textColor="@color/native_text_color_btn"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/text_size_12"
                         android:textStyle="bold" />
 
 
                     <TextView
                         android:id="@+id/ad_advertiser"
                         android:layout_width="wrap_content"
-                        android:layout_height="0dp"
+                        android:layout_height="@dimen/dimension_0"
                         android:layout_weight="1"
                         android:gravity="bottom"
                         android:lines="1"
@@ -68,20 +68,20 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <TextView
-                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginHorizontal="@dimen/dimension_20"
                     android:id="@+id/ad_body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/native_text_color_btn"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/text_size_12" />
 
             </LinearLayout>
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/ad_call_to_action"
                 android:layout_width="fill_parent"
-                android:layout_height="50dp"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginVertical="18dp"
+                android:layout_height="@dimen/dimension_50"
+                android:layout_marginHorizontal="@dimen/dimension_20"
+                android:layout_marginVertical="@dimen/dimension_18"
                 android:background="@drawable/bg_btn_ads_native"
                 android:textColor="@color/native_text_color"
                 android:gravity="center"

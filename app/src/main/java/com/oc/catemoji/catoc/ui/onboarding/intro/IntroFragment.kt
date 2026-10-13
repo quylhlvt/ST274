@@ -87,7 +87,6 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
     ): FragmentIntroBinding = FragmentIntroBinding.inflate(inflater, container, false)
 
     override fun initView() {
-        binding.viewPager2.adapter = introAdapter
 //        binding.viewPager2.isUserInputEnabled = false
         Admob.getInstance().loadNativeAd(
             requireContext(),
@@ -112,7 +111,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
     }
 
     override fun bindViewModel() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
                 introAdapter.submitList(state.pagesSplash)
                 binding.apply {
@@ -122,7 +121,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(
             }
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.singleEvent.collect { event ->
                 when (event) {
                     is IntroSingleEvent.NavigateToNextScreen ->

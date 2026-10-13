@@ -20,7 +20,6 @@ import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.checkPermissions
-import com.oc.catemoji.catoc.core.extention.dp
 import com.oc.catemoji.catoc.core.extention.goToSettings
 import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.hideNavigation
@@ -88,7 +87,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                     linearView.gone()
                     lnlBottom.visible()
                     lnlBottom.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        bottomMargin = 5.dp(requireContext())
+                        bottomMargin = resources.getDimensionPixelSize(R.dimen.dimension_5)
                     }
                     nativeAds.visible()
                     val successAdUnitId = if (designSource == DesignSource.STUDIO) {
@@ -221,7 +220,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                     actionBar.btnActionBarRight.onClick { confirmDelete() }
                     actionBar.btnActionBarNextToRight.onClick {
                         if (ensureEditItemExists()) {
-                            navigateToEdit()
+                            showInter { navigateToEdit() }
                         }
                     }
                     btnBottomLeft2.onClick2 { shareToSocialApp(FACEBOOK_PACKAGE) }
@@ -274,11 +273,11 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
     }
 
     private fun shareImage() {
-        if (imagePath.isEmpty()) return
+        val file = currentImageFile() ?: return
         val uri = androidx.core.content.FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.provider",
-            java.io.File(imagePath)
+            file
         )
         val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
             type = "image/*"
@@ -289,12 +288,12 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
     }
 
     private fun shareToSocialApp(packageName: String) {
-        if (imagePath.isEmpty()) return
+        val file = currentImageFile() ?: return
 
         val uri = FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.provider",
-            File(imagePath)
+            file
         )
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "image/*"
@@ -361,6 +360,7 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
 
     // Thêm vào ViewFragment
     private fun downloadImage() {
+        if (currentImageFile() == null) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             performDownload(); return
         }
@@ -390,7 +390,9 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
         }
 
     private fun performDownload() {
-        viewModel.downloadFile(requireContext(), imagePath) { success ->
+        val file = currentImageFile() ?: return
+        viewModel.downloadFile(requireContext(), file.absolutePath) { success ->
+            if (!isAdded || view == null) return@downloadFile
             showToast(
                 if (success) getString(R.string.download_success, getString(R.string.app_name))
                 else getString(R.string.download_failed_please_try_again_later)
@@ -404,10 +406,11 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
             message = getString(R.string.are_you_sure_want_to_delete_this_item),
             onYes = {
                 viewModel.deleteFile(
-                    path = imagePath,
+                    path = currentImagePath,
                     isAvatar = imageType == 1,
                     idEdit = idEdit,
                     onDone = {
+                        if (!isAdded || view == null) return@deleteFile
                         findNavController().navigateUp()
                     }
                 )
@@ -416,8 +419,18 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
         )
     }
 
+    private fun currentImageFile(): File? {
+        val file = File(currentImagePath)
+        if (currentImagePath.isBlank() || !file.isFile) {
+            showEditItemNotFoundDialog()
+            return null
+        }
+        return file
+    }
+
     private fun navigateToEdit() {
-        if (idEdit.isEmpty() || imageType != 1) {
+        if (!isAdded || isDetached || view == null) return
+        if (idEdit.isBlank() || imageType != 1) {
             showEditItemNotFoundDialog()
             return
         }
@@ -428,6 +441,11 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
                 showEditItemNotFoundDialog()
                 return
             }
+
+        if (!viewModelActivity.hasValidSelectionsForCustomized(idEdit)) {
+            showEditItemNotFoundDialog()
+            return
+        }
 
         val templateIndex = viewModelActivity.getTemplateIndexForCustomized(idEdit)
             .takeIf { it >= 0 }
@@ -442,7 +460,9 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
         if (template?.id?.startsWith("online_") == true) {
             val onlineTemplateCount = viewModelActivity.templates.value
                 .count { it.id.startsWith("online_") }
-            if (!isInternetAvailable(requireContext()) || onlineTemplateCount < 2) {
+            if (!isInternetAvailable(requireContext()) ||
+                !isNetworkConnected(requireContext()) || onlineTemplateCount < 2
+            ) {
                 showEditDataUnavailableDialog()
                 return
             }
@@ -450,14 +470,13 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
 
         val args = CustomizeFragment.newArgs(
             templateIndex = templateIndex,
+            templateId = template?.id,
             isEdit = true,
             customizedId = idEdit,
             savedSelections = customized.selections.toCleanSelections(),
             isFlipped = customized.isFlipped
         )
-        showInter {
-            findNavController().safeNavigate(R.id.action_view_to_customize, args)
-        }
+        findNavController().safeNavigate(R.id.action_view_to_customize, args)
     }
 
     private fun ensureEditItemExists(): Boolean {
@@ -475,13 +494,13 @@ class ViewFragment : BaseFragment<FragmentViewBinding, ViewViewModel>(
     }
 
     private fun showEditDataUnavailableDialog() {
-        if (isInternetAvailable(requireContext()) && viewModelActivity.hasCompleteOnlineCatalogue()) {
-            showEditItemNotFoundDialog()
+        if (!isInternetAvailable(requireContext()) || !isNetworkConnected(requireContext())) {
+            showUnstableNetworkDialog()
             return
         }
 
-        if (!isInternetAvailable(requireContext()) || !isNetworkConnected(requireContext())) {
-            showUnstableNetworkDialog()
+        if (viewModelActivity.hasCompleteOnlineCatalogue()) {
+            showEditItemNotFoundDialog()
             return
         }
 

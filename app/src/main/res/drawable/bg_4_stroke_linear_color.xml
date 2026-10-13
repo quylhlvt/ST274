@@ -8,19 +8,19 @@
                 android:startColor="#FFD18D"
                 android:endColor="#FFE6C0"
                 android:type="linear" />
-            <corners android:radius="0dp" />
+            <corners android:radius="@dimen/dimension_0" />
         </shape>
     </item>
 
     <!-- ✅ Layer 2: Trong suốt hoàn toàn -->
     <item
-        android:left="1dp"
-        android:top="1dp"
-        android:right="1dp"
-        android:bottom="1dp">
+        android:left="@dimen/dimension_1"
+        android:top="@dimen/dimension_1"
+        android:right="@dimen/dimension_1"
+        android:bottom="@dimen/dimension_1">
         <shape android:shape="rectangle">
 <!--            <solid android:color="@color/white" />  &lt;!&ndash; ✅ Transparent &ndash;&gt;-->
-            <corners android:radius="0dp" />
+            <corners android:radius="@dimen/dimension_0" />
         </shape>
     </item>
 

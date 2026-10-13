@@ -3,6 +3,7 @@ package com.oc.catemoji.catoc.data.model.custom
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
+import kotlin.math.abs
 
 // ─────────────────────────────────────────────
 //  SelectionIndex
@@ -22,7 +23,18 @@ data class LayerTransform(
     val translationX: Float = 0f,
     val translationY: Float = 0f,
     val rotation: Float = 0f
-) : Parcelable
+) : Parcelable {
+    fun isDefault(): Boolean =
+        abs(scale - 1f) <= DEFAULT_EPSILON &&
+            abs(translationX) <= DEFAULT_EPSILON &&
+            abs(translationY) <= DEFAULT_EPSILON &&
+            abs(rotation) <= DEFAULT_EPSILON
+
+    companion object {
+        // Reversing scale steps can leave a tiny Float rounding error around 1f.
+        private const val DEFAULT_EPSILON = 0.0001f
+    }
+}
 
 // ─────────────────────────────────────────────
 //  ColorModel
@@ -70,4 +82,15 @@ data class CustomModel(
     fun hasPreviewImage() = imageSave.isNotEmpty()
     fun getBodyPart(index: Int) = listPath.getOrNull(index)
     fun getSelection(navIndex: Int) = selections.getOrNull(navIndex)
+
+    fun hasValidSelectionsFor(template: CustomModel): Boolean {
+        val parts = template.listPath.sortedBy { it.zIndex }
+        if (selections.size > parts.size) return false
+
+        return selections.withIndex().all { (index, selection) ->
+            val part = parts.getOrNull(index) ?: return false
+            val color = part.listPath.getOrNull(selection.colorIndex) ?: return false
+            color.listPath.getOrNull(selection.pathIndex) != null
+        }
+    }
 }

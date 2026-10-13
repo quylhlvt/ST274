@@ -250,6 +250,7 @@ class MainActivity : AppCompatActivity(), LoadingController {
 
         Admob.getInstance().setTimeLimitShowAds(30000)
         Admob.getInstance().setTimeCountdownNativeCollab(18000)
+//        Admob.getInstance().setOpenShowAllAds(false)
         initSharedPreferences()
 //        applyLanguage()
         Admob.getInstance().loadInterAll(this, getString(R.string.inter_all))

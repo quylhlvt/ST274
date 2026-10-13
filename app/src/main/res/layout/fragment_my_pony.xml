@@ -24,9 +24,9 @@
     <LinearLayout
         android:id="@+id/cvType"
         android:layout_width="match_parent"
-        android:layout_height="46dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="@dimen/dimension_46"
+        android:layout_marginHorizontal="@dimen/dimension_16"
+        android:layout_marginTop="@dimen/dimension_10"
         app:layout_constraintTop_toBottomOf="@id/layoutActionBar">
 
         <LinearLayout
@@ -38,7 +38,7 @@
             <!--            btnMyAvatar-->
             <FrameLayout
                 android:id="@+id/btnMyAvatar"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/dimension_0"
                 android:layout_height="match_parent"
                 android:layout_weight="156">
 
@@ -56,24 +56,24 @@
                     style="@style/single_marquee"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginVertical="1dp"
+                    android:layout_marginVertical="@dimen/dimension_1"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
                     android:text="@string/my_avatar"
                     android:textColor="@color/app_color"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/text_size_20" />
 
             </FrameLayout>
 
             <Space
-                android:layout_width="0dp"
+                android:layout_width="@dimen/dimension_0"
                 android:layout_height="match_parent"
                 android:layout_weight="16" />
 
             <!--            btnMyDesign-->
             <FrameLayout
                 android:id="@+id/btnMyDesign"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/dimension_0"
                 android:layout_height="match_parent"
                 android:layout_weight="156">
 
@@ -82,7 +82,7 @@
                     android:id="@+id/imvFocusMyDesign"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginVertical="1dp"
+                    android:layout_marginVertical="@dimen/dimension_1"
                     android:scaleType="fitXY"
                     android:src="@drawable/bg_btn_type_unselected" />
 
@@ -97,7 +97,7 @@
                     android:gravity="center"
                     android:text="@string/design"
                     android:textColor="@color/app_color"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/text_size_20" />
 
             </FrameLayout>
 
@@ -108,7 +108,7 @@
         android:id="@+id/native_ads"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/dimension_10"
         app:layout_constraintTop_toBottomOf="@id/cvType">
 
         <include layout="@layout/ads_native_banner_shimmer" />
@@ -116,9 +116,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleAvatar"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginTop="5dp"
+        android:layout_height="@dimen/dimension_0"
+        android:layout_marginHorizontal="@dimen/dimension_8"
+        android:layout_marginTop="@dimen/dimension_5"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/native_ads"
@@ -129,9 +129,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleDesign"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginTop="5dp"
+        android:layout_height="@dimen/dimension_0"
+        android:layout_marginHorizontal="@dimen/dimension_8"
+        android:layout_marginTop="@dimen/dimension_5"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -148,7 +148,7 @@
         android:gravity="center"
         android:text="@string/no_item_here"
         android:textColor="@color/app_color"
-        android:textSize="18sp"
+        android:textSize="@dimen/text_size_18"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/lnlBottom"
         app:layout_constraintEnd_toEndOf="@+id/recycleAvatar"
@@ -161,39 +161,39 @@
         android:id="@+id/lnlBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="20dp"
+        android:paddingBottom="@dimen/dimension_20"
         android:orientation="vertical"
         android:background="@drawable/bg_mycreation"
-        android:paddingHorizontal="16dp"
+        android:paddingHorizontal="@dimen/dimension_16"
         app:layout_constraintBottom_toBottomOf="parent">
 <Space
     app:layout_constraintBottom_toTopOf="@+id/lnlBottomTop"
     android:layout_width="match_parent"
-    android:layout_height="30dp"/>
+    android:layout_height="@dimen/dimension_30"/>
         <!--        lnlBottomTop-->
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/lnlBottomTop"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="@dimen/dimension_0"
             android:orientation="horizontal"
             android:weightSum="328"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="@dimen/dimension_10"
             app:layout_constraintBottom_toTopOf="@+id/llBottom"
             app:layout_constraintDimensionRatio="3.28:0.44">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/btnWhatsapp"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/dimension_0"
                 android:layout_height="match_parent"
                 android:layout_weight="156"
                 android:background="@drawable/bg_btn_whatsapp">
                 <ImageView
                     android:id="@+id/imageView"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="14dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    android:layout_marginStart="@dimen/dimension_10"
+                    android:layout_marginTop="@dimen/dimension_14"
+                    android:layout_marginBottom="@dimen/dimension_16"
                     android:src="@drawable/ic_whatsapp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1:1"
@@ -204,38 +204,38 @@
                 <TextView
                     android:id="@+id/tvWhatApp"
                     style="@style/single_marquee"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/dimension_0"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginHorizontal="4dp"
+                    android:layout_marginHorizontal="@dimen/dimension_4"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
-                    android:paddingBottom="2dp"
+                    android:paddingBottom="@dimen/dimension_2"
                     android:text="@string/add_to_whatsapp"
                     android:textColor="@color/white"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/text_size_16"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/imageView" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Space
-                android:layout_width="0dp"
+                android:layout_width="@dimen/dimension_0"
                 android:layout_height="match_parent"
                 android:layout_weight="16" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/btnTelegram"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/dimension_0"
                 android:layout_height="match_parent"
                 android:layout_weight="156"
                 android:background="@drawable/bg_btn_telegram">
                 <ImageView
                     android:id="@+id/imageView2"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="14dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    android:layout_marginStart="@dimen/dimension_10"
+                    android:layout_marginTop="@dimen/dimension_14"
+                    android:layout_marginBottom="@dimen/dimension_16"
                     android:src="@drawable/ic_telegram"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1:1"
@@ -244,17 +244,17 @@
                 <TextView
                     android:id="@+id/tvTelegram"
                     style="@style/single_marquee"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/dimension_0"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/imageView2"
-                    android:layout_marginHorizontal="4dp"
+                    android:layout_marginHorizontal="@dimen/dimension_4"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
                     android:text="@string/add_to_telegram"
                     android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/text_size_16" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -262,7 +262,7 @@
         <LinearLayout
             android:id="@+id/llBottom"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="@dimen/dimension_0"
             android:orientation="horizontal"
             android:weightSum="328"
             app:layout_constraintDimensionRatio="3.28:0.48"
@@ -270,10 +270,10 @@
 
             <FrameLayout
                 android:id="@+id/btnShare"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/dimension_0"
                 android:layout_height="match_parent"
                 android:layout_weight="156"
-                android:background="@drawable/bg_frame_mycreation">
+                android:background="@drawable/bg_mycreation_bottom">
 
                 <TextView
                     android:id="@+id/tvShare"
@@ -281,25 +281,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginHorizontal="4dp"
+                    android:layout_marginHorizontal="@dimen/dimension_4"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
                     android:text="@string/share"
                     android:textColor="@color/app_color"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/text_size_20" />
             </FrameLayout>
 
             <Space
-                android:layout_width="0dp"
+                android:layout_width="@dimen/dimension_0"
                 android:layout_height="match_parent"
                 android:layout_weight="16" />
 
             <FrameLayout
                 android:id="@+id/btnDownload"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/dimension_0"
                 android:layout_height="match_parent"
                 android:layout_weight="156"
-                android:background="@drawable/bg_frame_mycreation">
+                android:background="@drawable/bg_mycreation_bottom">
 
                 <TextView
                     android:id="@+id/tvDownload"
@@ -307,12 +307,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginHorizontal="4dp"
+                    android:layout_marginHorizontal="@dimen/dimension_4"
                     android:fontFamily="@font/baloo2_bold"
                     android:gravity="center"
                     android:text="@string/download"
                     android:textColor="@color/app_color"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/text_size_20" />
             </FrameLayout>
         </LinearLayout>
 
@@ -320,7 +320,7 @@
 
     <com.oc.catemoji.catoc.utils.BlockableFrameLayout
         android:id="@+id/flNativeCollab"
-        android:elevation="100dp"
+        android:elevation="@dimen/dimension_100"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />

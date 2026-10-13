@@ -20,8 +20,8 @@ android {
         applicationId "com.oc.catemoji.catoc"
         minSdk 24
         targetSdk 36
-        versionCode 8
-        versionName "1.0.7"
+        versionCode 9
+        versionName "1.0.8"
         testInstrumentationRunner= "androidx.test.runner.AndroidJUnitRunner"
         def formattedDate = new Date().format('MM.dd.yyyy')
         archivesBaseName = "ST229_Cat_Avatar_Cat_Maker_v${versionName}_${formattedDate}"
@@ -81,7 +81,8 @@ dependencies {
     // Navigation Component
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-
+    implementation("com.github.lehongquyme:roundedframelayout:release~v1.1")
+    implementation ("com.github.lehongquyme:canvasShadow:release~v1.0.1")
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

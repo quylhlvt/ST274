@@ -23,7 +23,7 @@
                 android:layout_height="@dimen/_40sdp"
                 android:layout_marginHorizontal="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="@dimen/dimension_5"
                 android:background="@drawable/bg_btn_ads_native"
                 android:gravity="center"
                 android:text="Install"
@@ -67,14 +67,14 @@
                         android:maxLines="2"
                         android:text=""
                         android:textColor="@color/native_text_color_btn"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/text_size_12"
                         android:textStyle="bold" />
 
 
                     <TextView
                         android:id="@+id/ad_advertiser"
                         android:layout_width="wrap_content"
-                        android:layout_height="0dp"
+                        android:layout_height="@dimen/dimension_0"
                         android:layout_weight="1"
                         android:gravity="bottom"
                         android:lines="1"
@@ -92,10 +92,10 @@
                     android:id="@+id/ad_body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="20dp"
-                    android:paddingBottom="10dp"
+                    android:layout_marginHorizontal="@dimen/dimension_20"
+                    android:paddingBottom="@dimen/dimension_10"
                     android:textColor="@color/native_text_color_btn"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/text_size_12" />
 
             </LinearLayout>
         </LinearLayout>

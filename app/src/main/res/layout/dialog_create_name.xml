@@ -11,7 +11,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="@dimen/dimension_16"
             android:background="@drawable/bg_16_solid_white_stroke_brown"
             android:gravity="center_horizontal"
             android:orientation="vertical">
@@ -20,63 +20,63 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/dimension_24"
                 android:fontFamily="@font/roboto_regular"
                 android:gravity="center"
                 android:text="@string/create_package_name"
                 android:textColor="@color/app_color"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_size_16" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginHorizontal="@dimen/dimension_16"
+                android:layout_marginTop="@dimen/dimension_16"
                 android:background="@drawable/bg_100_stroke_appcolor"
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="start|center_vertical"
                 android:hint="@string/enter_your_package_name"
                 android:maxLength="20"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="12dp"
+                android:paddingHorizontal="@dimen/dimension_16"
+                android:paddingVertical="@dimen/dimension_12"
                 android:textColor="#52525B"
                 android:textColorHint="#99868686"
-                android:textSize="14sp" />
+                android:textSize="@dimen/text_size_14" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="18dp"
-                android:layout_marginBottom="23dp"
+                android:layout_marginHorizontal="@dimen/dimension_20"
+                android:layout_marginTop="@dimen/dimension_18"
+                android:layout_marginBottom="@dimen/dimension_23"
                 android:orientation="horizontal">
 
                 <!--                tvNo-->
                 <TextView
                     android:id="@+id/tvNo"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_50"
+                    android:layout_marginEnd="@dimen/dimension_16"
                     android:layout_weight="1"
                     android:background="@drawable/bg_8_color"
                     android:fontFamily="@font/roboto_medium"
                     android:gravity="center"
-                    android:paddingVertical="8dp"
+                    android:paddingVertical="@dimen/dimension_8"
                     android:text="@string/no"
                     android:textColor="@color/app_color" />
 
                 <!--                tvYes-->
                 <TextView
                     android:id="@+id/tvYes"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_50"
                     android:layout_weight="1"
                     android:background="@drawable/bg_8_color_name"
                     android:fontFamily="@font/roboto_medium"
                     android:gravity="center"
-                    android:paddingVertical="8dp"
+                    android:paddingVertical="@dimen/dimension_8"
                     android:text="@string/yes"
                     android:textColor="@color/white" />
             </LinearLayout>

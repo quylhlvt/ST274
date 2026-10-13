@@ -364,6 +364,15 @@ class ViewModelActivity @Inject constructor(
         return -1
     }
 
+    /** Validate saved indices against the current template before opening Edit. */
+    fun hasValidSelectionsForCustomized(customizedId: String): Boolean {
+        val customized = customizedCharacters.value.firstOrNull { it.id == customizedId }
+            ?: return false
+        val templateIndex = getTemplateIndexForCustomized(customizedId)
+        val template = templates.value.getOrNull(templateIndex) ?: return false
+        return customized.hasValidSelectionsFor(template)
+    }
+
     // ── CRUD ──────────────────────────────────────────────────────────────────
 
     fun saveCharacterWithSelections(

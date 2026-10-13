@@ -12,8 +12,9 @@
         android:label="My Setting" >
         <action
             android:id="@+id/action_setting_to_home"
-            app:destination="@id/language"
-            app:popUpTo="@id/language"
+            app:destination="@id/nav_main"
+            app:popUpTo="@id/nav_setting"
+            app:popUpToInclusive="true"
              />
         <action
             android:id="@+id/action_setting_to_language"

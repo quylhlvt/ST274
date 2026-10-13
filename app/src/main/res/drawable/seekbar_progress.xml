@@ -4,8 +4,8 @@
     <!-- Background -->
     <item android:id="@android:id/background">
         <shape>
-            <corners android:radius="10dp"/>
-            <size android:height="6dp"/>
+            <corners android:radius="@dimen/dimension_10"/>
+            <size android:height="@dimen/dimension_6"/>
             <solid android:color="#575757"/>
         </shape>
     </item>
@@ -14,8 +14,8 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <corners android:radius="10dp"/>
-                <size android:height="6dp"/>
+                <corners android:radius="@dimen/dimension_10"/>
+                <size android:height="@dimen/dimension_6"/>
                 <solid android:color="#FF1101"/>
             </shape>
         </clip>

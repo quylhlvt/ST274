@@ -69,9 +69,9 @@
 
     <fragment
         android:id="@+id/createPony"
-        android:name="com.oc.catemoji.catoc.ui.main.createPony.ChoosePonyFragment"
+        android:name="com.oc.catemoji.catoc.ui.main.createPony.ChooseCatFragment"
         android:label="Create Pony"
-        tools:layout="@layout/fragment_choose_pony">
+        tools:layout="@layout/fragment_choose_cat">
         <action
             android:id="@+id/action_createPony_to_home"
             app:destination="@id/homeFragment"

@@ -3,6 +3,7 @@ package com.oc.catemoji.catoc.ui.main.customize
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -27,12 +29,14 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.lvt.ads.util.Admob
+import com.oc.catemoji.catoc.MyApplication
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.base.BackPressHandler
 import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
+import com.oc.catemoji.catoc.core.extention.logEvent
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.saveToFile
 import com.oc.catemoji.catoc.core.extention.setFrameActionBar
@@ -173,15 +177,14 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
 
         // ✅ Resolve index đúng bằng id nếu có
         val resolvedIndex = if (templateId != null) {
-            val byId = templates.indexOfFirst { it.id == templateId }
-            if (byId >= 0) byId else templateIndex // fallback về index nếu không tìm được
+            templates.indexOfFirst { it.id == templateId }
         } else {
             templateIndex
         }
 
         // ✅ Guard cuối
         if (resolvedIndex < 0 || resolvedIndex >= templates.size) {
-            showToast(getString(R.string.download_failed_please_try_again_later))
+            showToast(getString(R.string.errorcontent))
             findNavController().navigateUp()
             return
         }
@@ -223,6 +226,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         }
         binding.rcvNav.adapter = adapterNav
         binding.rcvColor.adapter = adapterColor
+        (binding.rcvPart.layoutManager as? GridLayoutManager)?.spanCount = MyApplication.editorGridSpanCount
         binding.rcvPart.adapter = adapterPart
     }
 
@@ -471,6 +475,7 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
         val transform = viewModel.getTransform(navIndex)
         binding.btnResetScale.isEnabled = hasVisibleLayer && !viewModel.isTransformDefault(navIndex)
         binding.btnResetScale.alpha = if (binding.btnResetScale.isEnabled) 1f else DISABLED_CONTROL_ALPHA
+//        binding.txtReset.alpha = if (binding.btnResetScale.isEnabled) 1f else DISABLED_CONTROL_ALPHA
 
         setTransformControlEnabled(binding.ratioPlus, hasVisibleLayer && transform.scale < MAX_LAYER_SCALE)
         setTransformControlEnabled(binding.ratioMinus, hasVisibleLayer && transform.scale > MIN_LAYER_SCALE)
@@ -770,6 +775,26 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
             }
 
             val isEdit = arguments?.getBoolean(ARG_IS_EDIT, false) ?: false
+            val savedCharacter = result?.first
+            if (savedCharacter == null) {
+                setSaveEnabled(true)
+                hideLoadingSafe()
+                return@launch
+            }
+
+            // Bản edit có ID riêng; lấy số template từ thư mục avatar để giữ cùng event.
+            val dataFolder = Uri.parse(savedCharacter.avatar)
+                .pathSegments
+                .dropLast(1)
+                .lastOrNull()
+                .orEmpty()
+            val number = dataFolder.filter { it.isDigit() }
+                .ifEmpty { savedCharacter.templateId?.filter { it.isDigit() }.orEmpty() }
+                .ifEmpty { savedCharacter.id.filter { it.isDigit() } }
+            val eventName = "click_item_${number}_${if (isEdit) "edit" else "done"}"
+            logEvent(eventName, savedCharacter.avatar)
+            Log.d("LogEvenA", "$eventName -- ${savedCharacter.avatar}")
+
             if (isEdit) {
                 runCatching {
                     findNavController()
@@ -780,6 +805,8 @@ class CustomizeFragment : BaseFragment<FragmentCustomizeBinding, CustomizeViewMo
 
             // ✅ Navigate trực tiếp trên Main thread, KHÔNG wrap thêm withContext
             if (isAdded && !isDetached) {
+                hideLoadingSafe()
+                setSaveEnabled(true)
                 findNavController().navigate(
                     R.id.action_customizeFragment_to_addFragment,
                     Bundle().apply {

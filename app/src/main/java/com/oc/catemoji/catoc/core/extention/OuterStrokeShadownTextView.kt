@@ -6,7 +6,6 @@ import android.graphics.Paint.Join
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.oc.catemoji.catoc.R
-import ir.kotlin.kavehcolorpicker.dp
 import kotlin.text.toInt
 
 
@@ -38,7 +37,7 @@ class OuterStrokeShadownTextView : AppCompatTextView {
             a.recycle()
         }
         if (outerStrokeWidth > 0f) {
-            extraPadding = (outerStrokeWidth * 2.dp(context)).toInt()
+            extraPadding = (outerStrokeWidth * resources.getDimension(R.dimen.dimension_2)).toInt()
         }
     }
 

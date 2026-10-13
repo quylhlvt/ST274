@@ -53,8 +53,8 @@
     <string name="invalid_action_msg">Application not installed</string>
     <string name="invalid_action">Error</string>
     <string name="download_failed_please_try_again_later">Download failed, please try again later!</string>
-    <string name="error">Notice</string>
-    <string name="errorcontent">This character has been removed and can\'t be edited</string>
+    <string name="error">Error</string>
+    <string name="errorcontent">This item is no longer available.</string>
     <string name="edit">Edit</string>
     <string name="rate">Rate</string>
     <string name="privacy_policy">Privacy Policy</string>

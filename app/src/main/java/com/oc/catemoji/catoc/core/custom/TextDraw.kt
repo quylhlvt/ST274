@@ -10,6 +10,7 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
+import com.oc.catemoji.catoc.R
 
 class TextDraw @JvmOverloads constructor(private val context: Context, drawable: Drawable? = null, filePath: String? = null) : Draw() {
 
@@ -54,8 +55,8 @@ class TextDraw @JvmOverloads constructor(private val context: Context, drawable:
         textPaint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
         bounds = Rect(0, 0, width, height)
         textRect = Rect(0, 0, width, height)
-        minTextSizePixels = convertSpToPx(6f)
-        maxTextSizePixels = convertSpToPx(20f)
+        minTextSizePixels = context.resources.getDimension(R.dimen.text_size_6)
+        maxTextSizePixels = context.resources.getDimension(R.dimen.text_size_20)
         textAlign = Layout.Alignment.ALIGN_CENTER
         textPaint.textSize = maxTextSizePixels
     }
@@ -168,10 +169,6 @@ class TextDraw @JvmOverloads constructor(private val context: Context, drawable:
         textPaint.textSize = textSizePixels
         val staticLayout = StaticLayout(source, textPaint, availableWidthPixels, Layout.Alignment.ALIGN_NORMAL, lineSpacingMultiplier, lineSpacingExtra, true)
         return staticLayout.height
-    }
-
-    private fun convertSpToPx(scaledPixels: Float): Float {
-        return scaledPixels * context.resources.displayMetrics.scaledDensity
     }
 
 }

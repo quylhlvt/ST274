@@ -136,20 +136,22 @@ class CosplayFragment : BaseFragment<FragmentCosplayBinding, CosplayViewModel>(
 
                 val isOnline =
                     isNetworkConnected(requireContext()) && isInternetAvailable(requireContext())
-                val templateId =
-                    viewModelActivity.templates.value.getOrNull(item.templateIndex)?.id ?: ""
+                val templateId = item.template.id
                 if (templateId.startsWith("online_") && !isOnline) {
                     showUnstableNetworkDialog()
                     return@onClick
                 }
 
-                val cached = viewModel.cachedBitmap
-                if (cached != null && !cached.isRecycled) {
-                    viewModelActivity.cosplayBitmap = cached
+                val cached = viewModel.cachedBitmap?.takeUnless { it.isRecycled }
+                if (cached == null) {
+                    showLoadingDataDialog()
+                    return@onClick
                 }
+                viewModelActivity.cosplayBitmap = cached
                 val args = ShowFragment.newArgshow(
                     templateIndex = item.templateIndex,
-                    targetSelections = item.selections
+                    targetSelections = item.selections,
+                    templateId = templateId
                 )
                 findNavController().navigate(R.id.action_cosplay_to_show, args)
             }
@@ -199,11 +201,12 @@ class CosplayFragment : BaseFragment<FragmentCosplayBinding, CosplayViewModel>(
         }
     }
 
-    private fun renderCharacter(item: CosplayViewModel.RandomItem) {
-        viewLifecycleOwner.lifecycleScope.launch {
+    private suspend fun renderCharacter(item: CosplayViewModel.RandomItem) {
+        val imageContext = requireContext().applicationContext
+        binding.imvImage.setImageDrawable(null)
+        try {
             val paths = item.resolvedPaths.filterNotNull()
-            if (paths.isEmpty()) return@launch
-            binding.imvImage.setImageDrawable(null)
+            if (paths.isEmpty()) return
 
             showLoadingSafe()
 
@@ -211,7 +214,7 @@ class CosplayFragment : BaseFragment<FragmentCosplayBinding, CosplayViewModel>(
                 paths.map { path ->
                     async {
                         runCatching {
-                            Glide.with(requireContext())
+                            Glide.with(imageContext)
                                 .asBitmap()
                                 .load(path)
                                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -223,8 +226,7 @@ class CosplayFragment : BaseFragment<FragmentCosplayBinding, CosplayViewModel>(
                 }.awaitAll().filterNotNull()
             }
 
-            hideLoadingSafe()
-            if (bitmaps.isEmpty()) return@launch
+            if (bitmaps.isEmpty()) return
 
             val merged = mergeBitmaps(bitmaps)
 
@@ -234,6 +236,8 @@ class CosplayFragment : BaseFragment<FragmentCosplayBinding, CosplayViewModel>(
             withContext(Dispatchers.Main) {
                 showBitmap(merged)
             }
+        } finally {
+            hideLoadingSafe()
         }
     }
 

@@ -44,8 +44,9 @@ abstract class BaseAdapter<T, VB : ViewBinding>(private val bindingInflater: (La
     fun submitList(list: List<T>, isNotChang: Boolean= false) {
         items.clear()
         items.addAll(list)
-        if(!isNotChang)
-        notifyDataSetChanged()
+        if (!isNotChang) {
+            notifyDataSetChanged()
+        }
     }
 
     protected abstract fun onBind(binding: VB, item: T, position: Int)

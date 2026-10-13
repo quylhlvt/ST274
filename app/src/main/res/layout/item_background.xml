@@ -6,8 +6,8 @@
     android:layout_height="wrap_content">
 
     <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
         app:cardBackgroundColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="2:3"
@@ -18,9 +18,9 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="8dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="0dp">
+            android:layout_margin="@dimen/dimension_8"
+            app:cardCornerRadius="@dimen/dimension_10"
+            app:cardElevation="@dimen/dimension_0">
 
             <!--            imvImage-->
             <ImageView
@@ -42,7 +42,7 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginHorizontal="@dimen/dimension_15"
                     android:adjustViewBounds="true"
                     android:src="@drawable/ic_add_item" />
 
@@ -52,12 +52,12 @@
                     style="@style/single_marquee"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginHorizontal="@dimen/dimension_8"
+                    android:layout_marginTop="@dimen/dimension_2"
                     android:gravity="center"
                     android:text="@string/add_image"
                     android:textColor="@color/red_BA"
-                    android:textSize="8sp"
+                    android:textSize="@dimen/text_size_8"
                     tools:ignore="SmallSp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -65,10 +65,10 @@
         <!--        imvFocus-->
         <View
             android:id="@+id/vFocus"
-            android:elevation="-1dp"
+            android:elevation="@dimen/dimension_minus_1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="3.5dp"
+            android:layout_margin="@dimen/dimension_3_5"
             android:visibility="invisible"
             android:background="@drawable/bg_4_stroke_linear_color" />
 

@@ -120,7 +120,7 @@ class LanguageFragment : BaseFragment<FragmentLanguageBinding, LanguageViewModel
             requireContext(),
             getString(R.string.native_language),
             binding.nativeAds,
-            R.layout.ads_native_big_btn_top
+            R.layout.ads_native_big_btn_bottom
         )
         binding.actionBar.apply {
             btnActionBarRight.gone()
@@ -133,7 +133,7 @@ class LanguageFragment : BaseFragment<FragmentLanguageBinding, LanguageViewModel
 
 
     override fun observeData() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.isFirstLanguage.collect { isFirst ->

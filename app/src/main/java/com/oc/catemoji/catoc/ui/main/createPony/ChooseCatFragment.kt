@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.ironsource.ch
 import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.ViewModelActivity
@@ -25,7 +24,7 @@ import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.data.model.custom.CustomModel
-import com.oc.catemoji.catoc.databinding.FragmentChoosePonyBinding
+import com.oc.catemoji.catoc.databinding.FragmentChooseCatBinding
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeFragment.Companion.ARG_TEMPLATE_ID
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeFragment.Companion.ARG_TEMPLATE_INDEX
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
@@ -37,8 +36,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
-class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyViewModel>(
-    FragmentChoosePonyBinding::inflate,
+class ChooseCatFragment : BaseFragment<FragmentChooseCatBinding, ChoosePonyViewModel>(
+    FragmentChooseCatBinding::inflate,
     ChoosePonyViewModel::class.java
 ) {
     private val mainViewModel: ViewModelActivity by activityViewModels()
@@ -49,7 +48,7 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): FragmentChoosePonyBinding = FragmentChoosePonyBinding.inflate(inflater, container, false)
+    ): FragmentChooseCatBinding = FragmentChooseCatBinding.inflate(inflater, container, false)
     private fun initNativeCollab() {
         Log.d("NativeCollab", "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}")
         Admob.getInstance().loadNativeCollapNotBanner(requireContext(), getString(R.string.native_cl_category), binding.flNativeCollab)
@@ -99,7 +98,7 @@ class ChoosePonyFragment : BaseFragment<FragmentChoosePonyBinding, ChoosePonyVie
 
         binding.recycleChoose.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter       = this@ChoosePonyFragment.adapter
+            adapter       = this@ChooseCatFragment.adapter
             itemAnimator  = null
         }
     }

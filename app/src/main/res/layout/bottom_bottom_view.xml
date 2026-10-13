@@ -3,27 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="52dp"
-    app:cardCornerRadius="100dp"
-    app:cardElevation="100dp">
+    android:layout_height="@dimen/dimension_52"
+    app:cardCornerRadius="@dimen/dimension_100"
+    app:cardElevation="@dimen/dimension_100">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
-        android:paddingHorizontal="16dp"
+        android:paddingHorizontal="@dimen/dimension_16"
         android:fontFamily="@font/baloo2_bold"
         android:textColor="@color/app_color"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_size_16"
         tools:text="Next" />
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnNext"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
-        app:strokeWidth="0dp"
+        android:layout_height="@dimen/dimension_52"
+        app:strokeWidth="@dimen/dimension_0"
         android:visibility="gone"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="@dimen/dimension_5"
         app:cardBackgroundColor="@color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,10 +36,10 @@
             android:textStyle="bold"
             android:fontFamily="@font/baloo2_bold"
             android:gravity="center"
-            android:paddingHorizontal="50dp"
+            android:paddingHorizontal="@dimen/dimension_50"
             android:text="@string/next"
             android:textColor="@color/app_color"
-            android:textSize="17sp" />
+            android:textSize="@dimen/text_size_17" />
 
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

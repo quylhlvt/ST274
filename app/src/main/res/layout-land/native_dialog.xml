@@ -24,7 +24,7 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/dimension_20"
                 android:orientation="horizontal"
                 android:paddingStart="25dip"
                 android:paddingTop="8dip"
@@ -52,14 +52,14 @@
                         android:maxLines="2"
                         android:text=""
                         android:textColor="@color/native_text_color_btn"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/text_size_12"
                         android:textStyle="bold" />
 
 
                     <TextView
                         android:id="@+id/ad_advertiser"
                         android:layout_width="wrap_content"
-                        android:layout_height="0dp"
+                        android:layout_height="@dimen/dimension_0"
                         android:layout_weight="1"
                         android:gravity="bottom"
                         android:lines="1"
@@ -79,9 +79,9 @@
                     android:id="@+id/ad_body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginHorizontal="@dimen/dimension_20"
                     android:textColor="@color/native_text_color_btn"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/text_size_12" />
 
             </LinearLayout>
 
@@ -95,21 +95,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginHorizontal="@dimen/dimension_2"
                     android:layout_weight="1"
                     tools:ignore="InefficientWeight" />
 
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="16dp">
+                    android:layout_marginVertical="@dimen/dimension_16">
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/ad_call_to_action"
                         android:layout_width="fill_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="@dimen/dimension_50"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginHorizontal="@dimen/dimension_20"
                         android:background="@drawable/bg_btn_ads_native1"
                         android:gravity="center"
                         android:text="Install"

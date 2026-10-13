@@ -77,7 +77,7 @@ class CustomizeViewModel @Inject constructor(
         _layerTransforms.update { it - navIndex }
     }
 
-    fun isTransformDefault(navIndex: Int): Boolean = getTransform(navIndex) == LayerTransform()
+    fun isTransformDefault(navIndex: Int): Boolean = getTransform(navIndex).isDefault()
 
     // ── INIT ──────────────────────────────────────────────────────────────────
 

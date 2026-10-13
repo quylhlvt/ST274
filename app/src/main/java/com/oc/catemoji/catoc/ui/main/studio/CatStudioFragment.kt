@@ -20,6 +20,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
@@ -27,6 +28,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.lvt.ads.util.Admob
+import com.oc.catemoji.catoc.MyApplication
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BackPressHandler
 import com.oc.catemoji.catoc.core.base.BaseFragment
@@ -505,6 +507,7 @@ class CatStudioFragment : BaseFragment<FragmentCatStudioBinding, CatStudioViewMo
     }
 
     private fun setupAdapters() {
+        (binding.rcvPart.layoutManager as? GridLayoutManager)?.spanCount = MyApplication.editorGridSpanCount
         binding.rcvNav.setHasFixedSize(true)
         binding.rcvPart.setHasFixedSize(true)
         binding.rcvNav.itemAnimator = null
@@ -804,6 +807,8 @@ class CatStudioFragment : BaseFragment<FragmentCatStudioBinding, CatStudioViewMo
 
             // ✅ Navigate trực tiếp trên Main thread, KHÔNG wrap thêm withContext
             if (isAdded && !isDetached) {
+                hideLoadingSafe()
+                updateSaveButtonState()
                 findNavController().navigate(
                     R.id.action_customizeFragment_to_addFragment,
                     Bundle().apply {

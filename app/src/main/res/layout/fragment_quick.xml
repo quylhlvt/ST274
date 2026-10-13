@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:src="@drawable/img_bg_view"
         android:scaleType="fitXY"
-        android:elevation="-1dp"
+        android:elevation="@dimen/dimension_minus_1"
         android:adjustViewBounds="true" />
 
     <FrameLayout
@@ -27,8 +27,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewQuick"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:paddingBottom="80dp"
+        android:layout_height="@dimen/dimension_0"
+        android:paddingBottom="@dimen/dimension_80"
         android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
         app:layout_constraintBottom_toBottomOf="parent" />
@@ -36,11 +36,11 @@
     <!-- Nút Refresh All nổi phía dưới -->
     <Button
         android:id="@+id/btnRefreshAll"
-        android:layout_width="0dp"
-        android:layout_height="52dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_52"
+        android:layout_marginStart="@dimen/dimension_32"
+        android:layout_marginEnd="@dimen/dimension_32"
+        android:layout_marginBottom="@dimen/dimension_16"
         android:text="@string/refresh"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"

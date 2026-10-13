@@ -29,7 +29,6 @@ import com.oc.catemoji.catoc.core.helper.StringHelper
 import com.oc.catemoji.catoc.databinding.FragmentPermissionBinding
 import com.oc.catemoji.catoc.utils.key.RequestKey
 import com.oc.catemoji.catoc.core.extention.checkPermissions
-import com.oc.catemoji.catoc.core.extention.dp
 import com.oc.catemoji.catoc.core.extention.goToSettings
 import com.oc.catemoji.catoc.core.extention.requestPermission
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
@@ -46,12 +45,14 @@ class PermissionFragment : BaseFragment<FragmentPermissionBinding, PermissionVie
 ), BackPressHandler {
     private var inter: InterstitialAd? = null
     override fun viewListener() {
+        val currentView = binding.root
         binding.swPermission.onClick(1500) { handlePermissionRequest(isStorage = true) }
         binding.swNotification.onClick(1500) { handlePermissionRequest(isStorage = false) }
         binding.tvContinue.onClick(1000) {
             Admob.getInstance().showInterAds(requireActivity(), inter, object : InterCallback() {
             override fun onNextAction() {
                 super.onNextAction()
+                if (!isAdded || view !== currentView) return
                 handleContinue()
             }
         })}
@@ -61,6 +62,7 @@ class PermissionFragment : BaseFragment<FragmentPermissionBinding, PermissionVie
     ): FragmentPermissionBinding = FragmentPermissionBinding.inflate(inflater, container, false)
 
     override fun initView() {
+        val currentBinding = binding
         updateContinueMargin()
         Admob.getInstance().loadInterAds(requireContext(), getString(R.string.inter_per), object : InterCallback() {
             override fun onAdLoadSuccess(interstitialAd: InterstitialAd?) {
@@ -71,11 +73,16 @@ class PermissionFragment : BaseFragment<FragmentPermissionBinding, PermissionVie
         Admob.getInstance().loadNativeAd(requireContext(), getString(R.string.native_per), object : NativeCallback() {
             override fun onAdFailedToLoad() {
                 super.onAdFailedToLoad()
+                if (view !== currentBinding.root) return
                 binding.nativeAds.gone()
             }
 
             override fun onNativeAdLoaded(nativeAd: NativeAd?) {
                 super.onNativeAdLoaded(nativeAd)
+                if (!isAdded || view !== currentBinding.root) {
+                    nativeAd?.destroy()
+                    return
+                }
                 binding.nativeAds.visible()
                 val adView =
                     LayoutInflater.from(requireContext()).inflate(R.layout.ads_native_big_btn_top, null) as NativeAdView
@@ -118,9 +125,9 @@ class PermissionFragment : BaseFragment<FragmentPermissionBinding, PermissionVie
 
     private fun updateContinueMargin() {
         val marginPx = if (!isNetworkAvailable()) {
-            200.dp(requireContext())
+            resources.getDimensionPixelSize(R.dimen.dimension_200)
         } else {
-            10.dp(requireContext())
+            resources.getDimensionPixelSize(R.dimen.dimension_10)
         }
         val params = binding.tvContinue.layoutParams as? ViewGroup.MarginLayoutParams
         params?.bottomMargin = marginPx  // hoặc topMargin tuỳ layout

@@ -6,24 +6,24 @@
         <shape android:shape="rectangle">
             <solid android:color="#FFFBD893"/>
             <stroke
-                android:width="1.6dp"
+                android:width="@dimen/dimension_1_6"
                 android:color="#FF4A2711"/>
-            <corners android:radius="22dp"/>
+            <corners android:radius="@dimen/dimension_22"/>
         </shape>
     </item>
 
     <!-- Layer 2: nền kem bên trong, lùi vào 10dp -->
     <item
-        android:left="9dp"
-        android:right="9dp"
-        android:top="0dp"
-        android:bottom="9dp">
+        android:left="@dimen/dimension_9"
+        android:right="@dimen/dimension_9"
+        android:top="@dimen/dimension_0"
+        android:bottom="@dimen/dimension_9">
         <shape android:shape="rectangle">
             <solid android:color="#FFF7EEE5"/>
             <stroke
-                android:width="1.6dp"
+                android:width="@dimen/dimension_1_6"
                 android:color="#FFEEBD5A"/>
-            <corners android:radius="16dp"/>
+            <corners android:radius="@dimen/dimension_16"/>
         </shape>
     </item>
 

@@ -17,32 +17,32 @@
     </FrameLayout>
     <ImageView
         android:id="@+id/btnGuide"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="16dp"
-        android:elevation="4dp"
+        android:layout_width="@dimen/dimension_36"
+        android:layout_height="@dimen/dimension_36"
+        android:layout_marginEnd="@dimen/dimension_16"
+        android:elevation="@dimen/dimension_4"
         android:src="@drawable/img_guide"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="@dimen/dimension_10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/dimension_0"
         android:layout_gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
         app:layout_constraintVertical_bias="0.0"
 
-        tools:layout_editor_absoluteX="-16dp">
+        tools:layout_editor_absoluteX="@dimen/dimension_minus_16">
 
         <FrameLayout
             android:id="@+id/rlCharacter"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:elevation="3dp"
-            android:layout_marginVertical="5dp"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:elevation="@dimen/dimension_3"
+            android:layout_marginVertical="@dimen/dimension_5"
             android:background="@android:color/transparent"
             app:layout_constraintBottom_toTopOf="@+id/frameLayer"
             app:layout_constraintDimensionRatio="1:1"
@@ -53,7 +53,7 @@
                 android:id="@+id/drawView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:elevation="1dp" />
+                android:elevation="@dimen/dimension_1" />
         </FrameLayout>
 
 
@@ -61,7 +61,7 @@
         <FrameLayout
             android:id="@+id/frameLayer"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="@dimen/dimension_0"
             android:background="@drawable/img_bg_layer"
             app:layout_constraintBottom_toTopOf="@+id/rcvNav"
             app:layout_constraintHeight_percent="0.3">
@@ -70,9 +70,9 @@
                 android:id="@+id/rcvPart"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:elevation="1dp"
-                android:paddingHorizontal="12dp"
-                android:paddingTop="12dp"
+                android:elevation="@dimen/dimension_1"
+                android:paddingHorizontal="@dimen/dimension_12"
+                android:paddingTop="@dimen/dimension_12"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="5"
                 tools:itemCount="40"
@@ -82,14 +82,14 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcvNav"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
             android:background="@drawable/bg_nav_custom"
             android:clipToPadding="false"
-            android:elevation="1dp"
+            android:elevation="@dimen/dimension_1"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="5dp"
+            android:paddingHorizontal="@dimen/dimension_16"
+            android:paddingVertical="@dimen/dimension_5"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="3.6:0.60"
@@ -104,14 +104,14 @@
         android:layout_height="match_parent"
         android:background="#99000000"
         android:clickable="true"
-        android:elevation="30dp"
+        android:elevation="@dimen/dimension_30"
         android:focusable="true"
         android:visibility="gone">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
+            android:layout_width="@dimen/dimension_0"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="22dp"
+            android:layout_marginHorizontal="@dimen/dimension_22"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -120,22 +120,22 @@
             <ImageView
                 android:id="@+id/imgTopBodyWin"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:elevation="2dp"
+                android:layout_height="@dimen/dimension_0"
+                android:elevation="@dimen/dimension_2"
                 android:src="@drawable/img_top_body_guide"
                 app:layout_constraintDimensionRatio="3.2:0.73"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/bodyGuide"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="-20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                android:layout_marginTop="@dimen/dimension_minus_20"
+                android:layout_marginBottom="@dimen/dimension_20"
                 android:background="@drawable/bg_win_img"
-                android:padding="18dp"
+                android:padding="@dimen/dimension_18"
                 android:clipChildren="false"
-                android:layout_marginHorizontal="2dp"
+                android:layout_marginHorizontal="@dimen/dimension_2"
                 android:clipToPadding="false"
                 app:layout_constraintDimensionRatio="3.2:5.2"
                 app:layout_constraintBottom_toTopOf="@id/close"
@@ -146,7 +146,7 @@
                 <androidx.media3.ui.PlayerView
                     android:id="@+id/playerViewGuide"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="@dimen/dimension_0"
                     app:layout_constraintBottom_toTopOf="@+id/layoutController"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -156,8 +156,8 @@
 
                 <ImageView
                     android:id="@+id/btnPlayGuide"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="@dimen/dimension_64"
+                    android:layout_height="@dimen/dimension_64"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_play"
                     app:layout_constraintBottom_toBottomOf="@+id/playerViewGuide"
@@ -173,10 +173,10 @@
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     android:orientation="vertical"
-                    android:paddingHorizontal="12dp"
-                    android:paddingBottom="12dp"
+                    android:paddingHorizontal="@dimen/dimension_12"
+                    android:paddingBottom="@dimen/dimension_12"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    tools:layout_editor_absoluteX="18dp">
+                    tools:layout_editor_absoluteX="@dimen/dimension_18">
 
                     <TextView
                         android:id="@+id/tvGuideTime"
@@ -190,8 +190,8 @@
                     <SeekBar
                         android:id="@+id/seekGuide"
                         android:layout_width="match_parent"
-                        android:layout_height="10dp"
-                        android:paddingHorizontal="0dp"
+                        android:layout_height="@dimen/dimension_10"
+                        android:paddingHorizontal="@dimen/dimension_0"
                         android:progressDrawable="@drawable/seekbar_progress"
                         android:splitTrack="false"
                         android:thumb="@drawable/seekbar_thumb" />
@@ -203,17 +203,17 @@
                     app:layout_constraintStart_toStartOf="@+id/playerViewGuide"
                     app:layout_constraintTop_toTopOf="@+id/playerViewGuide"
                     android:id="@+id/loadingGuide"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="@dimen/dimension_36"
+                    android:layout_height="@dimen/dimension_36"
                     android:layout_gravity="center"
                     android:visibility="gone"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/close"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginTop="20dp"
+                android:layout_width="@dimen/dimension_36"
+                android:layout_height="@dimen/dimension_36"
+                android:layout_marginTop="@dimen/dimension_20"
                 android:src="@drawable/ic_close_guide"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
@@ -226,6 +226,6 @@
         android:id="@+id/flNativeCollab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="100dp"
+        android:elevation="@dimen/dimension_100"
         app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

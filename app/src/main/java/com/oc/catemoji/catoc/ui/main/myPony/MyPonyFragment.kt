@@ -172,7 +172,7 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
             onItemTick = { position -> toggleSelection(position, true) }
             onEditClick = { idEdit ->
                 if (ensureEditItemExists(idEdit)) {
-                    navigateToEdit(idEdit)
+                    showInter { navigateToEdit(idEdit) }
                 }
             }
             onDeleteClick = { path -> confirmDelete(arrayListOf(path), true) }
@@ -355,9 +355,9 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
         setRecyclerBottomMargin(
             if (isAvatarTab.value) binding.recycleAvatar else binding.recycleDesign,
             when {
-                !binding.lnlBottom.isVisible -> 0
-                binding.lnlBottomTop.isVisible && binding.llBottom.isVisible -> 120
-                else -> 50
+                !binding.lnlBottom.isVisible -> R.dimen.dimension_0
+                binding.lnlBottomTop.isVisible && binding.llBottom.isVisible -> R.dimen.dimension_120
+                else -> R.dimen.dimension_50
             }
         )
     }
@@ -377,6 +377,7 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
 //        } else {
 //            navigateToView(path, type, idEdit)
 //        }
+        resetSelection()
         navigateToView(path, type, idEdit)
     }
 // MyAvatarAdapter — long click gọi về Fragment
@@ -395,16 +396,16 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
         }
         if (isAvatar) {
             myAvatarAdapter.submitList(updatedList)
-            setRecyclerBottomMargin(binding.recycleAvatar, 50) // ← thêm margin
+            setRecyclerBottomMargin(binding.recycleAvatar, R.dimen.dimension_50) // ← thêm margin
         } else {
             myDesignAdapter.submitList(updatedList)
-            setRecyclerBottomMargin(binding.recycleDesign, 50) // ← thêm margin
+            setRecyclerBottomMargin(binding.recycleDesign, R.dimen.dimension_50) // ← thêm margin
         }
         updateSelectionUI()
     }
 
-    private fun setRecyclerBottomMargin(view: RecyclerView, dpValue: Int) {
-        val px = (dpValue * resources.displayMetrics.density).toInt()
+    private fun setRecyclerBottomMargin(view: RecyclerView, marginRes: Int) {
+        val px = resources.getDimensionPixelSize(marginRes)
         (view.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
             bottomMargin = px
             view.layoutParams = this
@@ -451,8 +452,8 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
         myDesignAdapter.submitList(designReset)
 
         // Reset margin về 0
-        setRecyclerBottomMargin(binding.recycleAvatar, 0)
-        setRecyclerBottomMargin(binding.recycleDesign, 0)
+        setRecyclerBottomMargin(binding.recycleAvatar, R.dimen.dimension_0)
+        setRecyclerBottomMargin(binding.recycleDesign, R.dimen.dimension_0)
 
         updateSelectionUI()
     }
@@ -479,19 +480,10 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
         findNavController().navigate(action)
     }
 
-    /**
-     * Navigate sang CustomizeFragment ở chế độ Edit.
-     *
-     * Vấn đề: khi save từ template, ViewModelActivity.saveCharacterWithSelections() copy
-     * character với id = UUID mới. Không có field "templateId" nào được lưu lại.
-     *
-     * Giải pháp: dùng [CustomModel.avatar] của customized character để tìm template gốc
-     * có cùng avatar (template gốc KHÔNG thay đổi avatar, chỉ customized mới có imageSave riêng).
-     *
-     * Nếu project có field templateId trong CustomModel thì dùng trực tiếp field đó thay thế.
-     */
+    /** Kiểm tra lại bản lưu và selections sau quảng cáo, trước khi mở Edit. */
     private fun navigateToEdit(idEdit: String) {
-        if (idEdit.isEmpty()) {
+        if (!isAdded || isDetached || view == null) return
+        if (idEdit.isBlank()) {
             showEditItemNotFoundDialog()
             return
         }
@@ -502,6 +494,11 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
                     showEditItemNotFoundDialog()
                     return
                 }
+
+        if (!viewModelActivity.hasValidSelectionsForCustomized(idEdit)) {
+            showEditItemNotFoundDialog()
+            return
+        }
 
         val templateIndex =
             viewModelActivity.getTemplateIndexForCustomized(idEdit).takeIf { it >= 0 }
@@ -524,14 +521,13 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
 
         val args = CustomizeFragment.newArgs(
             templateIndex = templateIndex,
+            templateId = template?.id,
             isEdit = true,
             customizedId = idEdit,
             savedSelections = customized.selections.toCleanSelections(),
             isFlipped = customized.isFlipped
         )
-        showInter {
-            findNavController().navigate(R.id.action_mypony_to_custom, args)
-        }
+        findNavController().navigate(R.id.action_mypony_to_custom, args)
     }
 
     private fun ensureEditItemExists(idEdit: String): Boolean {
@@ -542,13 +538,13 @@ class MyPonyFragment : WhatsappSharingFragment<FragmentMyPonyBinding, MyPonyView
     }
 
     private fun showEditDataUnavailableDialog() {
-        if (isInternetAvailable(requireContext()) && viewModelActivity.hasCompleteOnlineCatalogue()) {
-            showEditItemNotFoundDialog()
+        if (!isInternetAvailable(requireContext()) || !isNetworkConnected(requireContext())) {
+            showUnstableNetworkDialog()
             return
         }
 
-        if (!isInternetAvailable(requireContext()) || !isNetworkConnected(requireContext())) {
-            showUnstableNetworkDialog()
+        if (viewModelActivity.hasCompleteOnlineCatalogue()) {
+            showEditItemNotFoundDialog()
             return
         }
 

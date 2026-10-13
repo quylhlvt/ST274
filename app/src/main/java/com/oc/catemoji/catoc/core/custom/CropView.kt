@@ -133,13 +133,22 @@ class CropView : AppCompatImageView {
         return if (x >= leftTop!!.x - buffer && x <= leftTop!!.x + buffer) LEFT else if (y >= leftTop!!.y - buffer && y <= leftTop!!.y + buffer) TOP else if (x >= rightBottom!!.x - buffer && x <= rightBottom!!.x + buffer) RIGHT else if (y >= rightBottom!!.y - buffer && y <= rightBottom!!.y + buffer) BOTTOM else DRAG
     }
 
-    fun getCroppedImage(): ByteArray? {
+    suspend fun getCroppedImage(): ByteArray? {
         val drawable = drawable as BitmapDrawable
         val x: Float = (leftTop!!.x - center!!.x + drawable.bitmap.width / 2).toFloat()
         val y: Float = (leftTop!!.y - center!!.y + drawable.bitmap.height / 2).toFloat()
-        val cropped = Bitmap.createBitmap(drawable.bitmap, x.toInt(), y.toInt(), rightBottom!!.x - leftTop!!.x, rightBottom!!.y - leftTop!!.y)
-        val stream = ByteArrayOutputStream()
-        cropped.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        return stream.toByteArray()
+        val cropWidth = rightBottom!!.x - leftTop!!.x
+        val cropHeight = rightBottom!!.y - leftTop!!.y
+        return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+            val cropped = Bitmap.createBitmap(drawable.bitmap, x.toInt(), y.toInt(), cropWidth, cropHeight)
+            try {
+                ByteArrayOutputStream().use { stream ->
+                    cropped.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                    stream.toByteArray()
+                }
+            } finally {
+                if (cropped !== drawable.bitmap) cropped.recycle()
+            }
+        }
     }
 }

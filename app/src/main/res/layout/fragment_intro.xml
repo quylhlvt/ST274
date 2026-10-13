@@ -11,14 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
-        android:elevation="-1dp"
+        android:elevation="@dimen/dimension_minus_1"
         android:scaleType="fitXY"
         android:src="@drawable/img_bg_lang" />
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager2"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="10dp"
+        android:layout_height="@dimen/dimension_0"
+        android:layout_marginBottom="@dimen/dimension_10"
         app:layout_constraintBottom_toTopOf="@+id/dotsIndicator"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,24 +27,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/baloo2_bold"
-        android:paddingHorizontal="6dp"
-        android:layout_marginEnd="10dp"
+        android:paddingHorizontal="@dimen/dimension_6"
+        android:layout_marginEnd="@dimen/dimension_10"
         android:text="@string/continue_per"
         android:textColor="@color/app_color"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_size_16"
         android:visibility="gone"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="@dimen/dimension_30"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
     <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
         android:id="@+id/dotsIndicator"
         android:layout_width="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="@dimen/dimension_5"
         android:layout_height="wrap_content"
         app:dotsColor="#A6A6A6"
-        app:dotsCornerRadius="8dp"
-        app:dotsSize="8dp"
-        app:dotsSpacing="3dp"
+        app:dotsCornerRadius="@dimen/dimension_8"
+        app:dotsSize="@dimen/dimension_8"
+        app:dotsSpacing="@dimen/dimension_3"
         app:dotsWidthFactor="2.5"
         app:progressMode="false"
         app:layout_constraintBottom_toTopOf="@+id/native_ads"
@@ -73,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:padding="5dp"
+            android:padding="@dimen/dimension_5"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </FrameLayout>

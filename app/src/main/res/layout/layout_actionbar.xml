@@ -2,16 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="90dp"
+    android:layout_height="@dimen/dimension_90"
     android:background="@color/transparent">
 
     <!--    btnActionBarLeft-->
     <ImageView
         android:id="@+id/btnActionBarLeft"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="10dp"
+        android:layout_width="@dimen/dimension_36"
+        android:layout_height="@dimen/dimension_36"
+        android:layout_marginStart="@dimen/dimension_16"
+        android:layout_marginBottom="@dimen/dimension_10"
         android:src="@drawable/back_app"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -20,13 +20,13 @@
     <!--    cvLogo-->
     <androidx.cardview.widget.CardView
         android:id="@+id/cvLogo"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="10dp"
+        android:layout_width="@dimen/dimension_36"
+        android:layout_height="@dimen/dimension_36"
+        android:layout_marginStart="@dimen/dimension_16"
+        android:layout_marginBottom="@dimen/dimension_10"
         android:visibility="invisible"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="0dp"
+        app:cardCornerRadius="@dimen/dimension_8"
+        app:cardElevation="@dimen/dimension_0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -42,12 +42,12 @@
     <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
         android:id="@+id/tvStart"
         style="@style/single_marquee"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dimension_0"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
+        android:layout_marginHorizontal="@dimen/dimension_16"
         android:gravity="start|center_vertical"
         android:text="@string/language"
-        android:textSize="28sp"
+        android:textSize="@dimen/text_size_28"
         android:fontFamily="@font/baloo2_extrabold"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
@@ -55,7 +55,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft"
         app:outerStrokeColor="@color/app_color"
-        app:outerStrokeWidth="1.5dp"
+        app:outerStrokeWidth="@dimen/dimension_1_5"
         android:textColor="@color/app_color2"
         />
 
@@ -63,27 +63,27 @@
     <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
         android:id="@+id/tvCenter"
         style="@style/single_marquee"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dimension_0"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/language"
-        android:textSize="28sp"
+        android:textSize="@dimen/text_size_28"
         android:fontFamily="@font/baloo2_extrabold"
         android:visibility="gone"
-        android:layout_marginHorizontal="-10dp"
+        android:layout_marginHorizontal="@dimen/dimension_minus_10"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toStartOf="@+id/contrainSelect"
         app:layout_constraintStart_toEndOf="@+id/contrainSelect1"
         app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft"
         app:outerStrokeColor="@color/app_color"
-        app:outerStrokeWidth="1.5dp"
+        app:outerStrokeWidth="@dimen/dimension_1_5"
         android:textColor="@color/app_color2"/>
 
     <!--    btnActionBarCenter-->
     <ImageView
         android:id="@+id/btnActionCenter"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/dimension_36"
+        android:layout_height="@dimen/dimension_36"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toEndOf="parent"
@@ -92,8 +92,8 @@
     <!--    btnActionBarCenter-->
     <ImageView
         android:id="@+id/btnActionBarCenter"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/dimension_36"
+        android:layout_height="@dimen/dimension_36"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toStartOf="@+id/btnActionBarCenter1"
@@ -101,8 +101,8 @@
         app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
     <ImageView
         android:id="@+id/btnActionBarCenter1"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/dimension_36"
+        android:layout_height="@dimen/dimension_36"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toStartOf="@+id/btnActionBarCenter2"
@@ -111,8 +111,8 @@
     <!--    btnActionBarCenter-->
     <ImageView
         android:id="@+id/btnActionBarCenter2"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/dimension_36"
+        android:layout_height="@dimen/dimension_36"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toStartOf="@+id/btnEnd"
@@ -120,10 +120,10 @@
         app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
     <ImageView
         android:id="@+id/btnEnd"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="13dp"
-        android:layout_marginBottom="10dp"
+        android:layout_width="@dimen/dimension_36"
+        android:layout_height="@dimen/dimension_36"
+        android:layout_marginEnd="@dimen/dimension_13"
+        android:layout_marginBottom="@dimen/dimension_10"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -139,10 +139,10 @@
         app:layout_constraintStart_toStartOf="parent">
         <ImageView
 
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="10dp"
+            android:layout_width="@dimen/dimension_36"
+            android:layout_height="@dimen/dimension_36"
+            android:layout_marginEnd="@dimen/dimension_5"
+            android:layout_marginBottom="@dimen/dimension_10"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight1" />
@@ -151,10 +151,10 @@
 
         <ImageView
             android:id="@+id/btnActionBarRight1"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="13dp"
-            android:layout_marginBottom="10dp"
+            android:layout_width="@dimen/dimension_36"
+            android:layout_height="@dimen/dimension_36"
+            android:layout_marginEnd="@dimen/dimension_13"
+            android:layout_marginBottom="@dimen/dimension_10"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -173,10 +173,10 @@
 
         <ImageView
             android:id="@+id/btnActionBarNextToRight"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="10dp"
+            android:layout_width="@dimen/dimension_36"
+            android:layout_height="@dimen/dimension_36"
+            android:layout_marginEnd="@dimen/dimension_5"
+            android:layout_marginBottom="@dimen/dimension_10"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnActionBarRight" />
@@ -185,10 +185,10 @@
 
         <ImageView
             android:id="@+id/btnActionBarRight"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="13dp"
-            android:layout_marginBottom="10dp"
+            android:layout_width="@dimen/dimension_36"
+            android:layout_height="@dimen/dimension_36"
+            android:layout_marginEnd="@dimen/dimension_13"
+            android:layout_marginBottom="@dimen/dimension_10"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -196,18 +196,18 @@
         <!--            btnActionBarRightText-->
         <FrameLayout
             android:id="@+id/btnActionBarRightText"
-            android:layout_width="64dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="@dimen/dimension_64"
+            android:layout_height="@dimen/dimension_36"
+            android:layout_marginEnd="@dimen/dimension_16"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/btnActionBarRight"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/btnActionBarRight">
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/btnAction"
-                android:layout_width="64dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="16dp"
+                android:layout_width="@dimen/dimension_64"
+                android:layout_height="@dimen/dimension_36"
+                android:layout_marginEnd="@dimen/dimension_16"
                 android:src="@drawable/frame_save_custom"
                 android:scaleType="fitXY" />
             <TextView
@@ -216,12 +216,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="2dp"
+                android:layout_marginHorizontal="@dimen/dimension_2"
                 android:fontFamily="@font/baloo2_bold"
                 android:gravity="center"
                 android:text="@string/next"
                 android:textColor="@color/app_color"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_size_16"
                 android:clickable="false"
                 android:focusable="false"
                 />

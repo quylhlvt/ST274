@@ -43,11 +43,9 @@ class RandomViewModel  @Inject constructor(
     fun setCachedBitmap(bmp: Bitmap) { _cachedBitmap = bmp }
     override fun onCleared() {
         super.onCleared()
-        _cachedBitmap?.recycle()
         _cachedBitmap = null
     }
     fun randomize(isOnline: Boolean = true) {
-        _cachedBitmap?.recycle()
         _cachedBitmap = null
         viewModelScope.launch(Dispatchers.IO) {
             val allTemplates = appDataManager.templates.value
@@ -82,9 +80,12 @@ class RandomViewModel  @Inject constructor(
             val colorIdx = (0 until colorCount).random()
             val color    = bp.listPath[colorIdx]
             val paths    = color.listPath
-            val limited  = if (paths.size > 6) paths.subList(0, paths.size / 2) else paths
-            val validIdx = limited.indices.filter { limited[it] != "none" && limited[it] != "dice" }
-            val pathIdx  = if (validIdx.isNotEmpty()) validIdx.random() else limited.indices.random()
+            val validIdx = paths.indices.filter { paths[it] != "none" && paths[it] != "dice" }
+            val pathIdx = when {
+                validIdx.isNotEmpty() -> validIdx.random()
+                paths.isNotEmpty() -> paths.indices.random()
+                else -> 0
+            }
             list.add(SelectionIndex(bpIdx, colorIdx, pathIdx))
         }
         return list
@@ -95,6 +96,6 @@ class RandomViewModel  @Inject constructor(
             val s     = sel.getOrNull(bpIdx) ?: return@mapIndexed null
             val color = bp.listPath.getOrNull(s.colorIndex) ?: return@mapIndexed null
             val path  = color.listPath.getOrNull(s.pathIndex) ?: return@mapIndexed null
-            if (path == "none") null else path
+            if (path == "none" || path == "dice") null else path
         }
 }

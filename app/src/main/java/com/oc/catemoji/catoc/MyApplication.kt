@@ -14,6 +14,7 @@ import dagger.hilt.android.HiltAndroidApp
 class MyApplication :  AdsApplication() {
     override fun onCreate() {
         super.onCreate()
+        isTablet = resources.configuration.smallestScreenWidthDp >= 600
         val mmkvDir = java.io.File(filesDir, "mmkv_store").also { it.mkdirs() }
         MMKV.initialize(this, mmkvDir.absolutePath)
         AppOpenManager.getInstance().disableAppResumeWithActivity(MyApplication::class.java)
@@ -22,7 +23,6 @@ class MyApplication :  AdsApplication() {
             try {
                 // 1. Font — giảm ~100-300ms cho lần đầu
                 ResourcesCompat.getFont(this, R.font.baloo2_extrabold)
-
                 // 2. Drawable — thread-safe
                 ContextCompat.getDrawable(this, R.drawable.img_bg_home1)
                 ContextCompat.getDrawable(this, R.drawable.img_title_home)
@@ -57,5 +57,16 @@ class MyApplication :  AdsApplication() {
 
     override fun buildDebug(): Boolean {
         return true
+    }
+
+    companion object {
+        var isTablet: Boolean = false
+            private set
+
+        val editorGridSpanCount: Int
+            get() = if (isTablet) 7 else 5
+
+        val speechGridSpanCount: Int
+            get() = if (isTablet) 6 else 4
     }
 }

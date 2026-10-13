@@ -11,7 +11,7 @@ public class StickerBook {
     public static ArrayList<StickerPack> allStickerPacks = checkIfPacksAreNull();
 
     public static void init(Context context) {
-        myContext = context;
+        myContext = context.getApplicationContext();
     }
     private static ArrayList<StickerPack> checkIfPacksAreNull() {
         if (allStickerPacks == null) {

@@ -14,9 +14,11 @@ import com.oc.catemoji.catoc.R
 
 
 fun Fragment.showInter(action: (() -> Unit)) {
+    val currentView = view ?: return
     Admob.getInstance().showInterAll(requireActivity(), object : InterCallback() {
         override fun onNextAction() {
             super.onNextAction()
+            if (!isAdded || isDetached || view !== currentView) return
             action()
         }
     })

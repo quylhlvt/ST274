@@ -25,9 +25,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.lvt.ads.util.Admob
+import com.oc.catemoji.catoc.MyApplication
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BackPressHandler
 import com.oc.catemoji.catoc.core.base.BaseFragment
@@ -39,7 +41,6 @@ import com.oc.catemoji.catoc.core.dialog.DialogSpeech
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.checkPermissions
-import com.oc.catemoji.catoc.core.extention.dp
 import com.oc.catemoji.catoc.core.extention.dpToPx
 import com.oc.catemoji.catoc.core.extention.drawToBitmap
 import com.oc.catemoji.catoc.core.extention.goToSettings
@@ -440,7 +441,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     }
 
     private fun setupKeyboardListenerLegacy() {
-        val threshold = 150.dp(requireContext())
+        val threshold = resources.getDimensionPixelSize(R.dimen.dimension_150)
 
         keyboardLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
             val rect = android.graphics.Rect()
@@ -460,7 +461,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     private fun onKeyboardOpen() {
         isKeyboardOpen = true
         if (viewModel.isTextTabActive && !viewModel.isSpeechDialogOpen) {
-            binding.flFunction.translationY = (-170).dp(requireContext()).toFloat()
+            binding.flFunction.translationY = resources.getDimension(R.dimen.dimension_minus_170)
         }
     }
 
@@ -507,7 +508,7 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
             binding.drawView.hideSelect()
         hideSoftKeyboard()
         setFlFunctionTopMargin(0)
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             delay(50)
             binding.lnlText.edtText.clearFocus()
         }
@@ -527,17 +528,21 @@ class AddCharacterFragment : BaseFragment<FragmentAddCharacterBinding, AddCharac
     private fun initRcv() {
         binding.apply {
             lnlBackground.rcvBackgroundImage.apply {
+                (layoutManager as? GridLayoutManager)?.spanCount = MyApplication.editorGridSpanCount
                 adapter = backgroundImageAdapter; itemAnimator = null
                 setHasFixedSize(true); setItemViewCacheSize(10)
             }
             lnlBackground.rcvBackgroundColor.apply {
+                (layoutManager as? GridLayoutManager)?.spanCount = MyApplication.editorGridSpanCount
                 adapter = backgroundColorAdapter; itemAnimator = null
             }
             rcvSticker.apply {
+                (layoutManager as? GridLayoutManager)?.spanCount = MyApplication.editorGridSpanCount
                 adapter = stickerAdapter; itemAnimator = null
                 setHasFixedSize(true); setItemViewCacheSize(10)
             }
             rcvSpeech.apply {
+                (layoutManager as? GridLayoutManager)?.spanCount = MyApplication.speechGridSpanCount
                 adapter = speechAdapter; itemAnimator = null
                 setHasFixedSize(true); setItemViewCacheSize(10)
             }

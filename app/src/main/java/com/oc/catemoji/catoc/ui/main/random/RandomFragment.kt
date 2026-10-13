@@ -133,6 +133,7 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
                 }
                 val args = CustomizeFragment.newArgs(
                     templateIndex = item.templateIndex,
+                    templateId = item.template.id,
                     isEdit = false,
                     savedSelections = item.selections
                 )
@@ -176,18 +177,19 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
         }
     }
 
-    private fun renderCharacter(item: RandomViewModel.RandomItem) {
-        viewLifecycleOwner.lifecycleScope.launch {
+    private suspend fun renderCharacter(item: RandomViewModel.RandomItem) {
+        val imageContext = requireContext().applicationContext
+        binding.imvImage.setImageDrawable(null)
+        try {
             val paths = item.resolvedPaths.filterNotNull()
-            if (paths.isEmpty()) return@launch
-            binding.imvImage.setImageDrawable(null)
+            if (paths.isEmpty()) return
             showLoadingSafe()
 
             val bitmaps = withContext(Dispatchers.IO) {
                 paths.map { path ->
                     async {
                         runCatching {
-                            Glide.with(requireContext())
+                            Glide.with(imageContext)
                                 .asBitmap()
                                 .load(path)
                                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -199,8 +201,7 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
                 }.awaitAll().filterNotNull()
             }
 
-            hideLoadingSafe()
-            if (bitmaps.isEmpty()) return@launch
+            if (bitmaps.isEmpty()) return
 
             val merged = mergeBitmaps(bitmaps)
 
@@ -210,6 +211,8 @@ class RandomFragment : BaseFragment<FragmentRandomBinding, RandomViewModel>(
             withContext(Dispatchers.Main) {
                 showBitmap(merged)
             }
+        } finally {
+            hideLoadingSafe()
         }
     }
 

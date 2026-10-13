@@ -1,74 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimension_8">
 
     <!-- Container chính — flat ConstraintLayout, không lồng -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/flMain"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:elevation="2dp">
-        <ImageView
+            android:id="@+id/flMain"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="3dp"
-            android:layout_marginTop="3dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/bg_frame_permission_shadown" />
+            android:layout_height="@dimen/dimension_56"
+            android:elevation="@dimen/dimension_2">
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/dimension_3"
+                android:layout_marginTop="@dimen/dimension_3"
+                android:scaleType="fitXY"
+                android:src="@drawable/bg_frame_permission_shadown"/>
 
         <ImageView
-            android:id="@+id/bgLang"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="3dp"
-            android:layout_marginBottom="3dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/frame_select_language" />
+                android:id="@+id/bgLang"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dimension_3"
+                android:layout_marginBottom="@dimen/dimension_3"
+                android:scaleType="fitXY"
+                android:src="@drawable/frame_select_language"/>
         <ImageView
-            android:id="@+id/imvFlag"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_flag_english"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/imvFlag"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                android:layout_marginStart="@dimen/dimension_16"
+                android:src="@drawable/ic_flag_english"
+                app:layout_constraintDimensionRatio="1"
+                android:layout_marginTop="@dimen/dimension_13"
+                android:layout_marginBottom="@dimen/dimension_11"
+                app:layout_constraintBottom_toBottomOf="@+id/bgLang"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/bgLang"/>
 
         <ImageView
-            android:id="@+id/btnRadio"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginEnd="16dp"
-            android:src="@drawable/ic_select_lang"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/btnRadio"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                android:layout_marginTop="@dimen/dimension_13"
+                android:layout_marginBottom="@dimen/dimension_11"
+                app:layout_constraintDimensionRatio="1"
+                android:layout_marginEnd="@dimen/dimension_16"
+                android:src="@drawable/ic_select_lang"
+                app:layout_constraintBottom_toBottomOf="@+id/bgLang"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/bgLang"/>
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvLang"
-            style="@style/single_marquee"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:fontFamily="@font/baloo2_bold"
-            android:gravity="start"
-            android:text="@string/language"
-            android:textColor="@color/app_color"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imvFlag"
-            app:layout_constraintEnd_toStartOf="@+id/btnRadio"
-            app:layout_constraintStart_toEndOf="@+id/imvFlag"
-            app:layout_constraintTop_toTopOf="@+id/imvFlag"
-            app:outerStrokeColor="@color/app_color"
-            app:outerStrokeWidth="1.3dp" />
+                android:id="@+id/tvLang"
+                style="@style/single_marquee"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                android:layout_marginStart="@dimen/dimension_12"
+                android:fontFamily="@font/baloo2_bold"
+                android:gravity="start"
+                android:text="@string/language"
+                android:textColor="@color/app_color"
+                android:textSize="@dimen/text_size_18"
+                app:layout_constraintEnd_toStartOf="@+id/btnRadio"
+                app:layout_constraintStart_toEndOf="@+id/imvFlag"
+                android:layout_marginTop="@dimen/dimension_13"
+                android:layout_marginBottom="@dimen/dimension_11"
+            app:layout_constraintTop_toTopOf="@+id/bgLang"
+                app:layout_constraintBottom_toBottomOf="@+id/bgLang"
+                app:outerStrokeColor="@color/app_color"
+                app:outerStrokeWidth="@dimen/dimension_1_3"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
 </FrameLayout>

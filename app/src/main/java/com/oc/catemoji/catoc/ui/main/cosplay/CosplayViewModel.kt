@@ -46,12 +46,10 @@ class CosplayViewModel @Inject constructor(
     fun setCachedBitmap(bmp: Bitmap) { _cachedBitmap = bmp }
     override fun onCleared() {
         super.onCleared()
-        _cachedBitmap?.recycle()
         _cachedBitmap = null
     }
     fun randomize(isOnline: Boolean = true) {
         if (_randomItem.value != null) {
-            _cachedBitmap?.recycle()
             _cachedBitmap = null
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -112,6 +110,6 @@ class CosplayViewModel @Inject constructor(
             val s     = sel.getOrNull(bpIdx) ?: return@mapIndexed null
             val color = bp.listPath.getOrNull(s.colorIndex) ?: return@mapIndexed null
             val path  = color.listPath.getOrNull(s.pathIndex) ?: return@mapIndexed null
-            if (path == "none") null else path
+            if (path == "none" || path == "dice") null else path
         }
 }

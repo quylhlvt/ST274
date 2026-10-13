@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_marginHorizontal="4dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginHorizontal="@dimen/dimension_4"
+    android:layout_marginBottom="@dimen/dimension_8"
     android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/materialParent"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
         app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="6dp"
+        app:cardCornerRadius="@dimen/dimension_6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:strokeColor="@color/app_color"
-        app:strokeWidth="0dp"
-        app:cardElevation="0dp"
-        android:elevation="0dp"
+        app:strokeWidth="@dimen/dimension_0"
+        app:cardElevation="@dimen/dimension_0"
+        android:elevation="@dimen/dimension_0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -43,17 +43,17 @@
     </androidx.cardview.widget.CardView>
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialForcus"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dimension_0"
         android:visibility="gone"
-        android:layout_height="0dp"
-        android:elevation="3dp"
-        app:cardCornerRadius="6dp"
+        android:layout_height="@dimen/dimension_0"
+        android:elevation="@dimen/dimension_3"
+        app:cardCornerRadius="@dimen/dimension_6"
         app:cardBackgroundColor="@color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:strokeColor="@color/app_color"
-        app:strokeWidth="2dp"
+        app:strokeWidth="@dimen/dimension_2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 

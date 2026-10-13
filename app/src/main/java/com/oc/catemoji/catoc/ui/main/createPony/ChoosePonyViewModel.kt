@@ -30,7 +30,6 @@ import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.data.model.custom.CustomModel
-import com.oc.catemoji.catoc.databinding.FragmentChoosePonyBinding
 import com.oc.catemoji.catoc.databinding.ItemChooseBinding
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel

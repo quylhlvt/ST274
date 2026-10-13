@@ -8,7 +8,6 @@ import android.graphics.Paint.Join
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.oc.catemoji.catoc.R
-import ir.kotlin.kavehcolorpicker.dp
 
 class OuterStrokeTextView : AppCompatTextView {
 
@@ -61,7 +60,7 @@ class OuterStrokeTextView : AppCompatTextView {
             a.recycle()
         }
         if (outerStrokeWidth > 0f) {
-            extraPadding = (outerStrokeWidth * dp(5)).toInt()
+            extraPadding = (outerStrokeWidth * resources.getDimension(R.dimen.dimension_5)).toInt()
         }
     }
     override fun onAttachedToWindow() {
@@ -85,7 +84,7 @@ class OuterStrokeTextView : AppCompatTextView {
             // Vẽ stroke bên ngoài
             setTextColor(outerStrokeColor)
             paint.style = Paint.Style.STROKE
-            paint.strokeWidth = outerStrokeWidth * dp(1.5)
+            paint.strokeWidth = outerStrokeWidth * resources.getDimension(R.dimen.dimension_1_5)
             paint.strokeJoin = outerStrokeJoin
             paint.strokeMiter = strokeMiter
             paint.isAntiAlias = true

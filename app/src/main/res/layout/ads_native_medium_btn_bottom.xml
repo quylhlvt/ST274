@@ -32,8 +32,8 @@
 
                     <com.google.android.gms.ads.nativead.MediaView
                         android:id="@+id/ad_media"
-                        android:layout_width="120dp"
-                        android:layout_height="120dp" />
+                        android:layout_width="@dimen/dimension_120"
+                        android:layout_height="@dimen/dimension_120" />
                     <TextView
                         style="@style/AppTheme.Ads"
                         android:layout_gravity="end"
@@ -44,7 +44,7 @@
 
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/dimension_0"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="vertical">
@@ -57,7 +57,7 @@
                         android:gravity="bottom"
                         android:maxLines="2"
                         android:textColor="@color/native_text_color"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/text_size_12"
                         android:textStyle="bold" />
 
                     <TextView
@@ -67,7 +67,7 @@
                         android:ellipsize="end"
                         android:maxLines="2"
                         android:textColor="@color/native_text_color"
-                        android:textSize="12sp" />
+                        android:textSize="@dimen/text_size_12" />
                 </LinearLayout>
 
 
@@ -89,7 +89,7 @@
 
                 <TextView
                     android:id="@+id/ad_headline"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/dimension_0"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="@dimen/_5sdp"
                     android:layout_weight="1"
@@ -97,7 +97,7 @@
                     android:maxLines="3"
                     android:text=""
                     android:textColor="@color/native_text_color"
-                    android:textSize="11sp" />
+                    android:textSize="@dimen/text_size_11" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/ad_call_to_action"
@@ -107,7 +107,7 @@
                     android:gravity="center"
                     android:text="Install"
                     android:textColor="@color/native_text_color"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_size_14"
                     android:textStyle="bold" />
             </LinearLayout>
 

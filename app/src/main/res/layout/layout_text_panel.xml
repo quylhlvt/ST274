@@ -11,14 +11,14 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="@dimen/dimension_8">
 
         <ImageView
             android:id="@+id/btnDoneText"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="@dimen/dimension_32"
+            android:layout_height="@dimen/dimension_32"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="@dimen/dimension_16"
             android:src="@drawable/ic_done_1" />
     </FrameLayout>
 
@@ -35,18 +35,18 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginHorizontal="@dimen/dimension_16"
                 android:text="@string/text"
                 android:fontFamily="@font/baloo2_bold"
                 android:textColor="@color/app_color"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_size_16" />
 
             <EditText
                 android:id="@+id/edtText"
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="4dp"
+                android:layout_height="@dimen/dimension_44"
+                android:layout_marginHorizontal="@dimen/dimension_16"
+                android:layout_marginTop="@dimen/dimension_4"
                 android:background="@drawable/bg_8_solid_white"
                 android:ellipsize="end"
                 android:fontFamily="@font/itim_regular"
@@ -54,27 +54,27 @@
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:maxLength="30"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="@dimen/dimension_16"
                 android:singleLine="true"
                 android:textColorHint="#99868686"
-                android:textSize="14sp" />
+                android:textSize="@dimen/text_size_14" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="@dimen/dimension_16"
+                android:layout_marginTop="@dimen/dimension_12"
                 android:text="Font"
                 android:fontFamily="@font/baloo2_bold"
                 android:textColor="@color/app_color"
-                android:textSize="16sp"/>
+                android:textSize="@dimen/text_size_16"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvFont"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="4dp"
+                android:layout_height="@dimen/dimension_45"
+                android:layout_marginStart="@dimen/dimension_12"
+                android:layout_marginTop="@dimen/dimension_4"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_font" />
@@ -82,26 +82,26 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="@dimen/dimension_16"
+                android:layout_marginTop="@dimen/dimension_12"
                 android:text="@string/color"
                 android:fontFamily="@font/baloo2_bold"
                 android:textColor="@color/app_color"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_size_16" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvTextColor"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="4dp"
+                android:layout_height="@dimen/dimension_40"
+                android:layout_marginStart="@dimen/dimension_16"
+                android:layout_marginTop="@dimen/dimension_4"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_text_color" />
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="30dp" />
+                android:layout_height="@dimen/dimension_30" />
 
         </LinearLayout>
     </ScrollView>

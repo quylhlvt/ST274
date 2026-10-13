@@ -1,6 +1,6 @@
 package com.oc.catemoji.catoc.ui.main.show
 
-import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
@@ -12,12 +12,15 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
@@ -26,6 +29,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.lvt.ads.util.Admob
+import com.oc.catemoji.catoc.MyApplication
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseFragment
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
@@ -70,6 +74,7 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
     private val totalSeconds = 5 * 60
     private var remainingSeconds = totalSeconds
     private var countDownJob: Job? = null
+    private var progressAnimator: ValueAnimator? = null
     private var hasFinishedCountDown = false
     private val isCountDownActive: Boolean
         get() = !hasFinishedCountDown
@@ -129,6 +134,7 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
     override fun onFragmentStop() {
         timerJob?.cancel()
         countDownJob?.cancel()
+        progressAnimator?.cancel()
         binding.tvCountDown.animate().cancel()
         if (!isAdded || isDetached) return
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
@@ -232,7 +238,18 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
         }
     }
     private fun readArgsAndInit() {
-        val templateIndex = arguments?.getInt(ARG_TEMPLATE_INDEX, 0) ?: 0
+        val templateId = arguments?.getString(ARG_TEMPLATE_ID)
+        val templates = viewModelActivity.templates.value
+        val templateIndex = if (templateId != null) {
+            templates.indexOfFirst { it.id == templateId }
+        } else {
+            arguments?.getInt(ARG_TEMPLATE_INDEX, 0) ?: 0
+        }
+        if (templateIndex !in templates.indices) {
+            showToast(getString(R.string.errorcontent))
+            findNavController().navigateUp()
+            return
+        }
         val targetSelections: ArrayList<SelectionIndex> =
             arguments?.getParcelableArrayList(ARG_SELECTIONS) ?: return
 
@@ -242,6 +259,7 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
     private fun setupAdapters() {
         binding.rcvNav.adapter = adapterNav
         binding.rcvColor.adapter = adapterColor
+        (binding.rcvPart.layoutManager as? GridLayoutManager)?.spanCount = MyApplication.editorGridSpanCount
         binding.rcvPart.adapter = adapterPart
     }
     private fun navigateToSuccess() {
@@ -564,39 +582,24 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
     // ── PROGRESS (giống ShowActivity.updateMatchUI) ───────────────────────────
 
     private fun updateMatchUI(percent: Int) {
-        binding.tvPercent.text = "$percent%"
+        val safePercent = percent.coerceIn(0, 100)
+        binding.tvPercent.text = "$safePercent%"
 
-        // Animate progress fill (scaleY từ 0→1 theo %)
-        binding.progressTrack.post {
-            val trackH = binding.progressTrack.height.toFloat()
-            val marginPx = 11 * resources.displayMetrics.density
-            val fillH = trackH - marginPx
-            val scale = percent / 100f
+        val anchor = binding.imgStarAnchor
+        val targetBias = 1f - safePercent / 100f
+        val currentBias = (anchor.layoutParams as ConstraintLayout.LayoutParams).verticalBias
+        progressAnimator?.cancel()
+        if (currentBias == targetBias) return
 
-            binding.progressFill.pivotX = binding.progressFill.width / 2f
-            binding.progressFill.pivotY = fillH
-
-            ObjectAnimator.ofFloat(
-                binding.progressFill, "scaleY",
-                binding.progressFill.scaleY,
-                scale * fillH / trackH
-            ).apply {
-                duration = 400
-                interpolator = DecelerateInterpolator()
-                start()
+        progressAnimator = ValueAnimator.ofFloat(currentBias, targetBias).apply {
+            duration = 400
+            interpolator = DecelerateInterpolator()
+            addUpdateListener { animator ->
+                anchor.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    verticalBias = animator.animatedValue as Float
+                }
             }
-
-            // Star icon chạy theo thanh progress
-            val starH = binding.imgStar.height.toFloat()
-            ObjectAnimator.ofFloat(
-                binding.imgStar, "translationY",
-                binding.imgStar.translationY,
-                -(fillH * scale) - marginPx + starH / 2f
-            ).apply {
-                duration = 400
-                interpolator = DecelerateInterpolator()
-                start()
-            }
+            start()
         }
     }
 
@@ -614,6 +617,8 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
             countDownJob?.cancel()
             remainingSeconds = totalSeconds
             hasFinishedCountDown = false
+            binding.win.gone()
+            binding.imgShowBig.gone()
             viewModel.reset()
             hasTriggeredReInit = false
 
@@ -660,6 +665,8 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
         }
     }
     override fun onDestroyView() {
+        progressAnimator?.cancel()
+        progressAnimator = null
         super.onDestroyView()
         timerJob?.cancel()
         countDownJob?.cancel()
@@ -670,13 +677,16 @@ class ShowFragment : BaseFragment<FragmentShowBinding, ShowViewModel>(
 
     companion object {
         const val ARG_TEMPLATE_INDEX = "template_index"
+        const val ARG_TEMPLATE_ID = "template_id"
         const val ARG_SELECTIONS = "selections"
 
         fun newArgshow(
             templateIndex: Int,
-            targetSelections: ArrayList<SelectionIndex>
+            targetSelections: ArrayList<SelectionIndex>,
+            templateId: String? = null
         ) = Bundle().apply {
             putInt(ARG_TEMPLATE_INDEX, templateIndex)
+            templateId?.let { putString(ARG_TEMPLATE_ID, it) }
             putParcelableArrayList(ARG_SELECTIONS, targetSelections)
         }
     }

@@ -5,7 +5,7 @@
     android:background="@drawable/img_bg_lang"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.main.createPony.ChoosePonyFragment">
+    tools:context=".ui.main.createPony.ChooseCatFragment">
 
     <FrameLayout
         android:id="@+id/layoutActionBar"
@@ -21,19 +21,19 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleChoose"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:elevation="1dp"
+        android:layout_height="@dimen/dimension_0"
+        android:elevation="@dimen/dimension_1"
         app:spanCount="2"
         android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        android:layout_marginHorizontal="8dp"
+        android:layout_marginHorizontal="@dimen/dimension_8"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
         tools:listitem="@layout/item_choose" />
     <com.oc.catemoji.catoc.utils.BlockableFrameLayout
         android:id="@+id/flNativeCollab"
-        android:elevation="100dp"
+        android:elevation="@dimen/dimension_100"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
