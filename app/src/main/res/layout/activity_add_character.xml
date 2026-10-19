@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/yellow2"
+    tools:context=".ui.main.add_character.AddCharacterActivity">
+
+    <!-- Hidden renderer used to turn the entered text into a bitmap. -->
+    <TextView
+        android:id="@+id/tvGetText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dimension_48"
+        android:background="@color/transparent"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:maxLength="30"
+        android:text=""
+        android:textSize="@dimen/text_size_40"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--    flActionBar-->
+    <FrameLayout
+        android:id="@+id/flActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/dimension_2"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar1" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_63"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.62"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/flSave"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintBottom_toBottomOf="@+id/guideline_63"
+            app:layout_constraintTop_toBottomOf="@+id/flActionBar" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+                android:id="@+id/imvBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"/>
+
+        <!--        drawView-->
+        <com.oc.catemoji.catoc.core.custom.DrawView
+                android:id="@+id/drawView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="@dimen/dimension_1"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--    flFunction-->
+    <FrameLayout
+        android:id="@+id/flFunction"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimension_0"
+        android:background="@drawable/img_bg_layer"
+        android:elevation="@dimen/dimension_3"
+        android:layerType="hardware"
+        app:layout_constraintBottom_toTopOf="@+id/lnlBottom"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_63">
+
+        <!--        lnlBackground-->
+        <include
+            android:id="@+id/lnlBackground"
+            layout="@layout/layout_background_tab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!--        lnlSticker-->
+        <LinearLayout
+            android:id="@+id/lnlSticker"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+
+            <!--            rcvSticker-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvSticker"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/dimension_16"
+                android:paddingHorizontal="@dimen/dimension_12"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="5"
+                tools:listitem="@layout/item_sticker" />
+        </LinearLayout>
+
+        <!--        lnlSpeech-->
+        <LinearLayout
+            android:id="@+id/lnlSpeech"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+
+            <!--            rcvSticker-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvSpeech"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/dimension_16"
+                android:paddingHorizontal="@dimen/dimension_12"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="4"
+                tools:listitem="@layout/item_sticker" />
+        </LinearLayout>
+
+
+        <include
+            android:id="@+id/lnlText"
+            layout="@layout/layout_text_panel" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
+        android:background="#D05F5A"
+        app:layout_constraintBottom_toBottomOf="@+id/lnlBottom"
+        app:layout_constraintEnd_toEndOf="@+id/lnlBottom"
+        app:layout_constraintStart_toStartOf="@+id/lnlBottom"
+        app:layout_constraintTop_toTopOf="@+id/lnlBottom" />
+
+    <!--    lnlBottom-->
+    <LinearLayout
+        android:id="@+id/lnlBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimension_0"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/dimension_8"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!--        btnBackground-->
+        <ImageView
+            android:id="@+id/btnBackground"
+            android:layout_weight="1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_44"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_background_selected" />
+
+        <!--        btnSticker-->
+        <ImageView
+            android:id="@+id/btnSticker"
+            android:layout_weight="1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_44"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_sticker" />
+
+        <!--        btnSpeech-->
+        <ImageView
+            android:id="@+id/btnSpeech"
+            android:layout_weight="1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_44"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_speech" />
+
+        <!--        btnText-->
+        <ImageView
+            android:id="@+id/btnText"
+            android:layout_weight="1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_44"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_text" />
+    </LinearLayout>
+
+    <com.oc.catemoji.catoc.utils.BlockableFrameLayout
+        android:id="@+id/flNativeCollab"
+        android:elevation="@dimen/dimension_100"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

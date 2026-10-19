@@ -1,0 +1,143 @@
+package com.oc.catemoji.catoc.ui.onboarding.intro
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.lvt.ads.util.Admob
+import com.oc.catemoji.catoc.R
+import com.oc.catemoji.catoc.core.base.BaseActivity
+import com.oc.catemoji.catoc.core.extention.gone
+import com.oc.catemoji.catoc.core.extention.invisible
+import com.oc.catemoji.catoc.core.extention.onClick
+import com.oc.catemoji.catoc.core.extention.toHome
+import com.oc.catemoji.catoc.core.extention.toIntro
+import com.oc.catemoji.catoc.core.extention.toPermission
+import com.oc.catemoji.catoc.core.extention.visible
+import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager.isPermissionScreen
+import com.oc.catemoji.catoc.databinding.ActivityIntroBinding
+import com.oc.catemoji.catoc.databinding.ActivityPermissionBinding
+import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionViewModel
+import com.oc.catemoji.catoc.utils.DataLocal
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.text.compareTo
+
+@AndroidEntryPoint
+class IntroActivity : BaseActivity<ActivityIntroBinding, IntroViewModel>(
+    ActivityIntroBinding::inflate,
+    IntroViewModel::class.java
+) {
+    @Inject
+    lateinit var introAdapter: IntroAdapter
+
+    override fun viewListener() {
+        binding.btnNextPager.tvButton.onClick(200) {
+            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
+            viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
+        }
+        binding.btnContinue.onClick(200) {
+            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
+            viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
+        }
+
+//         binding.btnNextPager.tvButton.onClick(200) {
+//            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
+//            viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
+//        }
+
+        binding.apply {
+           viewPager2.registerOnPageChangeCallback(object :
+                ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    btnContinue.gone()
+                    if (position == 1) {
+                        btnNextPager.tvButton.visible()
+                        nativeAds.gone()
+                    } else {
+                        if (position ==2){
+                            btnContinue.visible()
+                            btnNextPager.tvButton.invisible()
+                        }else{
+
+                            btnNextPager.tvButton.visible()
+                        }
+                        nativeAds.visible()
+                    }
+
+                }
+            })
+        }
+
+    }
+override fun initView() {
+//        binding.viewPager2.isUserInputEnabled = false
+        Admob.getInstance().loadNativeAd(
+            requireContext(),
+            getString(R.string.native_intro),
+            binding.nativeAds,
+            R.layout.ads_native_medium_btn_bottom
+        )
+        binding.viewPager2.adapter = introAdapter
+        binding.dotsIndicator.attachTo(binding.viewPager2)
+        setOnChangeViewPager2()
+
+//        binding.textView.text = "Home Activity"
+//        binding.btnTest.setOnClickListener {
+//            showSnackbar("Xin chào từ Home!")
+//        }
+    }
+
+    override fun observeData() {
+//        viewModel.data.observe(viewLifecycleOwner) { text ->
+//            binding.textView.text = text
+//        }
+    }
+
+    override fun bindViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                introAdapter.submitList(state.pagesSplash)
+                binding.apply {
+                    viewPager2.currentItem = state.page
+                    btnNextPager.tvButton.text = getString(state.textButtonRes)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.singleEvent.collect { event ->
+                when (event) {
+                    is IntroSingleEvent.NavigateToNextScreen ->
+                        if (sharedPreferences.isPermissionScreen())
+                            toHome()
+                        else
+                            toPermission()
+                }
+            }
+        }
+    }
+
+
+    private fun setOnChangeViewPager2() {
+        binding.viewPager2.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+
+                viewModel.getPage(binding.viewPager2.currentItem, introAdapter.itemCount)
+            }
+        })
+    }
+
+    override fun onScreenBackPressed(): Boolean {
+        requireActivity().finish()
+        System.exit(0)
+        return  true
+    }
+}

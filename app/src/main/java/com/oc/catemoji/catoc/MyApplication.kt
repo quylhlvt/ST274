@@ -7,6 +7,9 @@ import androidx.core.content.res.ResourcesCompat
 import com.lvt.ads.util.AdsApplication
 import com.lvt.ads.util.AppOpenManager
 import com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+import com.oc.catemoji.catoc.core.helper.LanguageHelper
+import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
+import com.oc.catemoji.catoc.ui.onboarding.splash.SplashActivity
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 
@@ -15,9 +18,16 @@ class MyApplication :  AdsApplication() {
     override fun onCreate() {
         super.onCreate()
         isTablet = resources.configuration.smallestScreenWidthDp >= 600
+        getSharedPreferences("DEFAULT", MODE_PRIVATE).also { preferences ->
+            SharedPreferencesManager.sharedPreferences = preferences
+            SharedPreferencesManager.editor = preferences.edit()
+        }
+        LanguageHelper.setLocale(this)
+        com.lvt.ads.util.Admob.getInstance().setTimeLimitShowAds(30_000)
+        com.lvt.ads.util.Admob.getInstance().setTimeCountdownNativeCollab(20_000)
         val mmkvDir = java.io.File(filesDir, "mmkv_store").also { it.mkdirs() }
         MMKV.initialize(this, mmkvDir.absolutePath)
-        AppOpenManager.getInstance().disableAppResumeWithActivity(MyApplication::class.java)
+        AppOpenManager.getInstance().disableAppResumeWithActivity(SplashActivity::class.java)
         Log.d("MyApplication", "MMKV initialized at: ${mmkvDir.absolutePath}")
         Thread {
             try {

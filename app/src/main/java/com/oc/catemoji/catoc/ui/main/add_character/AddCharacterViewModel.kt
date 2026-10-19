@@ -40,7 +40,7 @@ class AddCharacterViewModel @Inject constructor(
     var textColorList: ArrayList<SelectedAddModel> = arrayListOf()
 
     // ========== Navigation ==========
-    // -1 = chưa set, Fragment bỏ qua
+    // -1 = chưa set, Activity bỏ qua
     private val _typeNavigation = MutableStateFlow(-1)
     val typeNavigation: StateFlow<Int> = _typeNavigation.asStateFlow()
 
@@ -109,7 +109,7 @@ class AddCharacterViewModel @Inject constructor(
         stickers: List<String>,
         speeches: List<String>
     ) {
-        // Giữ nguyên các list và trạng thái selected khi Fragment tạm dừng
+        // Giữ nguyên các list và trạng thái selected khi Activity tạm dừng
         // (ví dụ lúc mở Photo Picker).
         if (hasLoadedData) return
         if (backgrounds.isEmpty() || stickers.isEmpty() || speeches.isEmpty()) return

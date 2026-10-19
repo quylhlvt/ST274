@@ -4,7 +4,8 @@ import android.app.Activity
 import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import android.view.View
+import androidx.core.content.getSystemService
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.lvt.ads.callback.InterCallback
 import com.lvt.ads.callback.RewardCallback
@@ -12,72 +13,41 @@ import com.lvt.ads.event.AdmobEvent
 import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 
-
-fun Fragment.showInter(action: (() -> Unit)) {
-    val currentView = view ?: return
-    Admob.getInstance().showInterAll(requireActivity(), object : InterCallback() {
+fun Activity.showInter(action: () -> Unit) {
+    Admob.getInstance().showInterAll(this, object : InterCallback() {
         override fun onNextAction() {
             super.onNextAction()
-            if (!isAdded || isDetached || view !== currentView) return
-            action()
+            if (!isFinishing && !isDestroyed) action()
         }
     })
 }
-fun Fragment.showRewardAds1(
-    onRewardSuccess: () -> Unit,
-    onAdClosed: () -> Unit = {}
-) {
+
+fun Activity.loadNativeCollabAds(id: String, layout: FrameLayout) {
+    Admob.getInstance().loadNativeCollap(this, id, layout)
+}
+
+fun Activity.showRewardAds1(onRewardSuccess: () -> Unit, onAdClosed: () -> Unit = {}) {
     var earned = false
-    Admob.getInstance().loadAndShowRewardAds(
-        requireActivity(),
-        getString(R.string.reward_random),
-        object : RewardCallback() {
-            override fun onEarnedReward(rewardItem: RewardItem?) {
-                earned = true
-            }
-            override fun onAdClosed() {
-                super.onAdClosed()
-                if (earned) {
-                    onRewardSuccess()
-                } else {
-                    Toast.makeText(requireActivity(), getString(R.string.please_watch_full_ads), Toast.LENGTH_SHORT).show()
-                }
-                onAdClosed()
-            }
-            override fun onAdFailedToLoad() {
-                super.onAdFailedToLoad()
-                Toast.makeText(requireActivity(), getString(R.string.load_ads_fail), Toast.LENGTH_SHORT).show()
-                onAdClosed()
-            }
-            override fun onAdFailedToShow(codeError: Int) {
-                super.onAdFailedToShow(codeError)
-                Toast.makeText(requireActivity(), getString(R.string.load_ads_fail), Toast.LENGTH_SHORT).show()
-                onAdClosed()
-            }
+    Admob.getInstance().loadAndShowRewardAds(this, getString(R.string.reward_random), object : RewardCallback() {
+        override fun onEarnedReward(rewardItem: RewardItem?) { earned = true }
+        override fun onAdClosed() {
+            super.onAdClosed()
+            if (earned) onRewardSuccess() else Toast.makeText(this@showRewardAds1, R.string.please_watch_full_ads, Toast.LENGTH_SHORT).show()
+            onAdClosed()
         }
-    )
-}
-fun Fragment.loadNativeCollabAds(id: String, layout: FrameLayout) {
-    Admob.getInstance().loadNativeCollap(requireActivity(), id, layout)
-}
-
-fun Fragment.showInterAll() {
-    Admob.getInstance().showInterAll(requireActivity(), object : InterCallback() {
-        override fun onNextAction() {
-            super.onNextAction()
-        }
+        override fun onAdFailedToLoad() { super.onAdFailedToLoad(); onAdClosed() }
+        override fun onAdFailedToShow(codeError: Int) { super.onAdFailedToShow(codeError); onAdClosed() }
     })
 }
-fun Fragment.logEventSocial(nameEvent: String, nameEvent1: String, value: String) {
-    val bundle = Bundle()
-    bundle.putString("link_${nameEvent}", value)
-    AdmobEvent.logEvent(requireActivity(), nameEvent1, bundle)
+
+fun Activity.logEvent(nameEvent: String, value: String) {
+    val bundle = Bundle().apply { putString("link", value) }
+    AdmobEvent.logEvent(this, nameEvent, bundle)
 }
-fun Fragment.logEvent(nameEvent: String, value: String) {
-    val bundle = Bundle()
-    bundle.putString("link", value)
-    AdmobEvent.logEvent(requireActivity(), nameEvent, bundle)
-}
-fun Fragment.logEvent(nameEvent: String) {
-    AdmobEvent.logEvent(requireActivity(), nameEvent, null)
+
+fun Activity.logEvent(nameEvent: String) = AdmobEvent.logEvent(this, nameEvent, null)
+
+fun Activity.logEventSocial(nameEvent: String, nameEvent1: String, value: String) {
+    val bundle = Bundle().apply { putString("link_$nameEvent", value) }
+    AdmobEvent.logEvent(this, nameEvent1, bundle)
 }

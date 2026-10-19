@@ -1,0 +1,274 @@
+package com.oc.catemoji.catoc.core.base
+
+import android.os.Bundle
+import android.app.Dialog
+import android.view.Gravity
+import android.view.View
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.SavedStateHandle
+import androidx.viewbinding.ViewBinding
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.android.material.snackbar.Snackbar
+import com.oc.catemoji.catoc.R
+import com.oc.catemoji.catoc.ViewModelActivity
+import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
+import com.oc.catemoji.catoc.databinding.DialogbaseBinding
+import javax.inject.Inject
+
+/** Common lifecycle and binding support for screens implemented as Activities. */
+abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
+    private val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> VB,
+    private val viewModelClass: Class<VM>
+) : AppCompatActivity() {
+    private lateinit var _binding: VB
+    private var loadingDialog: Dialog? = null
+    private var confirmDialog: Dialog? = null
+    protected val binding: VB get() = _binding
+    protected val view: View get() = binding.root
+    /** Kept as a migration alias for screen code formerly hosted in Fragments. */
+    protected val viewLifecycleOwner: androidx.lifecycle.LifecycleOwner get() = this
+    protected val arguments: Bundle? get() = intent.extras
+    protected val isAdded: Boolean get() = !isFinishing && !isDestroyed
+    protected val isDetached: Boolean get() = false
+    protected val viewModel: VM by lazy { ViewModelProvider(this)[viewModelClass] }
+    protected val viewModelActivity: ViewModelActivity
+        get() = requireNotNull(SharedActivityViewModels.instance) {
+            "MainActivity must initialize the shared app ViewModel before opening screen Activities"
+        }
+
+    @Inject
+    internal lateinit var sharedPreferences: SharedPreferencesManager
+
+    protected open fun setupPreViews() {}
+    protected open fun initView() {}
+    protected open fun initText() {}
+    protected open fun viewListener() {}
+    protected open fun bindViewModel() {}
+    protected open fun observeData() {}
+    protected open fun onScreenStart() {}
+    protected open fun onScreenStop() {}
+    protected open fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): VB = bindingInflater(inflater, container, false)
+
+    protected fun requireContext(): android.content.Context = this
+    protected fun requireActivity(): AppCompatActivity = this
+    protected open fun onScreenBackPressed(): Boolean = false
+
+    protected fun showSnackbar(message: String) = Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    protected fun hideGlobalDialogSafe() {
+        loadingDialog?.dismiss()
+        loadingDialog = null
+        confirmDialog?.dismiss()
+        confirmDialog = null
+    }
+    protected fun showLoadingSafe() {
+        if (loadingDialog?.isShowing == true) return
+        loadingDialog = createScreenDialog(getString(R.string.loading), showButtons = false, cancelable = false)
+            .also { it.show() }
+    }
+    protected fun hideLoadingSafe() {
+        loadingDialog?.dismiss()
+        loadingDialog = null
+    }
+    protected fun showToast(content: Any) {
+        val message = if (content is Int) getString(content) else content.toString()
+        android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
+    }
+    protected fun showNoInternetDialog(onOk: (() -> Unit)? = null) = android.app.AlertDialog.Builder(this)
+        .setMessage(R.string.please_connect_to_the_internet_to_download_more_data)
+        .setPositiveButton(R.string.ok) { _, _ -> onOk?.invoke() }.show()
+    protected fun showUnstableNetworkDialog(onOk: (() -> Unit)? = null) = android.app.AlertDialog.Builder(this)
+        .setMessage(R.string.unstable_connection_please_check_your_network_connection)
+        .setPositiveButton(R.string.ok) { _, _ -> onOk?.invoke() }.show()
+    protected fun showLoadingDataDialog(onOk: (() -> Unit)? = null) = android.app.AlertDialog.Builder(this)
+        .setMessage(R.string.please_wait_a_few_seconds_for_data_to_load)
+        .setPositiveButton(R.string.ok) { _, _ -> onOk?.invoke() }.show()
+    protected fun showOkDialog(message: String, title: String? = null, onOk: (() -> Unit)? = null) {
+        android.app.AlertDialog.Builder(this).apply {
+            title?.let(::setTitle)
+            setMessage(message)
+            setPositiveButton(R.string.ok) { _, _ -> onOk?.invoke() }
+        }.show()
+    }
+    protected fun showConfirmDialog(message: String, title: String? = null, onYes: () -> Unit, onNo: (() -> Unit)? = null, yesText: String? = null, noText: String? = null) {
+        confirmDialog?.dismiss()
+        confirmDialog = createScreenDialog(
+            message = message,
+            title = title,
+            showButtons = true,
+            cancelable = true,
+            yesText = yesText,
+            noText = noText,
+            onYes = onYes,
+            onNo = onNo
+        ).also { it.show() }
+    }
+
+    private fun createScreenDialog(
+        message: String,
+        title: String? = null,
+        showButtons: Boolean,
+        cancelable: Boolean,
+        yesText: String? = null,
+        noText: String? = null,
+        onYes: (() -> Unit)? = null,
+        onNo: (() -> Unit)? = null
+    ): Dialog {
+        val dialog = Dialog(this, R.style.BaseDialog)
+        val dialogBinding = DialogbaseBinding.inflate(layoutInflater)
+        dialog.setContentView(dialogBinding.root)
+        dialogBinding.txtYes.isSelected = true
+        dialogBinding.txtNo.isSelected = true
+        dialogBinding.txtYes.text = yesText ?: getString(R.string.yes)
+        dialogBinding.txtNo.text = noText ?: getString(R.string.no)
+        title?.let { dialogBinding.txtTitle.text = it }
+        dialogBinding.txtContent.text = message
+        if (showButtons) {
+            dialogBinding.btnYes.visibility = View.VISIBLE
+            dialogBinding.btnNo.visibility = View.VISIBLE
+            dialogBinding.btnYes.setOnClickListener {
+                dialog.dismiss()
+                onYes?.invoke()
+            }
+            dialogBinding.btnNo.setOnClickListener {
+                dialog.dismiss()
+                onNo?.invoke()
+            }
+            dialogBinding.txtContent.visibility = View.VISIBLE
+            dialogBinding.animationView.visibility = View.GONE
+        } else {
+            dialogBinding.btnYes.visibility = View.GONE
+            dialogBinding.btnNo.visibility = View.GONE
+            dialogBinding.txtContent.visibility = View.GONE
+            dialogBinding.animationView.visibility = View.VISIBLE
+        }
+        dialog.setCancelable(cancelable)
+        dialog.window?.apply {
+            setBackgroundDrawableResource(android.R.color.transparent)
+            setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
+            setGravity(Gravity.CENTER)
+        }
+        return dialog
+    }
+    protected fun activityRouter() = ActivityRouter(this)
+    protected fun popBack(): Boolean { finish(); return true }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        logScreenView()
+        _binding = inflateBinding(layoutInflater, null, savedInstanceState)
+        setContentView(binding.root)
+        setupPreViews()
+        initView()
+        initText()
+        onViewCreated(binding.root, savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!this@BaseActivity.onScreenBackPressed()) finish()
+            }
+        })
+        binding.root.post {
+            if (isFinishing || isDestroyed) return@post
+            viewListener()
+            bindViewModel()
+            observeData()
+        }
+    }
+
+    protected open fun onViewCreated(view: View, savedInstanceState: Bundle?) {}
+
+    private fun logScreenView() {
+        val screenClass = javaClass.simpleName
+        FirebaseAnalytics.getInstance(this).logEvent(
+            FirebaseAnalytics.Event.SCREEN_VIEW,
+            Bundle().apply {
+                putString(FirebaseAnalytics.Param.SCREEN_NAME, screenClass.removeSuffix("Activity"))
+                putString(FirebaseAnalytics.Param.SCREEN_CLASS, screenClass)
+            }
+        )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        onScreenStart()
+    }
+
+    override fun onStop() {
+        onScreenStop()
+        super.onStop()
+    }
+
+    protected open fun onScreenDestroyed() {}
+
+    override fun onDestroy() {
+        hideGlobalDialogSafe()
+        onScreenDestroyed()
+        super.onDestroy()
+    }
+}
+
+/** MainActivity remains at the root of the task and owns app-wide screen state. */
+object SharedActivityViewModels {
+    @Volatile
+    var instance: ViewModelActivity? = null
+}
+
+object MainActivityReference { @Volatile var instance: AppCompatActivity? = null }
+
+private object ActivityNavigationState { val handle = SavedStateHandle() }
+
+class ActivityRouter(private val activity: AppCompatActivity) {
+    val currentBackStackEntry = ActivityBackStackEntry(ActivityNavigationState.handle)
+    fun getBackStackEntry(@Suppress("UNUSED_PARAMETER") id: Int) = currentBackStackEntry
+    fun navigateUp(): Boolean { activity.finish(); return true }
+    fun popBackStack(): Boolean = navigateUp()
+    fun safeNavigate(actionId: Int, args: Bundle? = null) = navigate(actionId, args)
+    fun navigate(actionId: Int, args: Bundle? = null) {
+        if (actionId == R.id.action_successCosplay_back_show) {
+            activity.finish()
+            return
+        }
+        val target: Class<out android.app.Activity> = when (actionId) {
+            R.id.homeActivity -> com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java
+            R.id.myPony, R.id.action_home_to_myPony, R.id.action_view_to_myPony,
+            R.id.action_custom_to_myPony -> com.oc.catemoji.catoc.ui.main.myPony.MyPonyActivity::class.java
+            R.id.viewActivity -> com.oc.catemoji.catoc.ui.main.view.ViewActivity::class.java
+            R.id.random, R.id.action_home_to_random -> com.oc.catemoji.catoc.ui.main.random.RandomActivity::class.java
+            R.id.action_my_pony_to_home -> com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java
+            R.id.action_home_to_createPony -> com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity::class.java
+            R.id.action_home_to_cosplay -> com.oc.catemoji.catoc.ui.main.cosplay.CosplayActivity::class.java
+            R.id.action_home_to_studio -> com.oc.catemoji.catoc.ui.main.studio.CatStudioActivity::class.java
+            R.id.action_home_to_setting -> com.oc.catemoji.catoc.ui.main.setting.SettingActivity::class.java
+            R.id.action_createPony_to_custom, R.id.action_random_to_custom,
+            R.id.action_mypony_to_custom, R.id.action_view_to_customize -> com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity::class.java
+            R.id.action_customize_to_addCharacter -> com.oc.catemoji.catoc.ui.main.add_character.AddCharacterActivity::class.java
+            R.id.action_addCharacter_to_viewImage,
+            R.id.action_mypony_to_view -> com.oc.catemoji.catoc.ui.main.view.ViewActivity::class.java
+            R.id.action_cosplay_to_show, R.id.action_successCosplay_back_show -> com.oc.catemoji.catoc.ui.main.show.ShowActivity::class.java
+            R.id.action_show_to_successCosplay -> com.oc.catemoji.catoc.ui.main.successcosplay.SuccessCosplayActivity::class.java
+            R.id.action_successCosplay_to_home -> com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java
+            else -> throw IllegalArgumentException("Unknown Activity action: $actionId")
+        }
+        val intent = android.content.Intent(activity, target).apply {
+            args?.let { putExtras(it) }
+            if (target == com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java ||
+                target == com.oc.catemoji.catoc.ui.main.myPony.MyPonyActivity::class.java
+            ) {
+                addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            }
+        }
+        activity.startActivity(intent)
+        if (actionId == R.id.action_view_to_myPony) activity.finish()
+    }
+}
+
+class ActivityBackStackEntry(val savedStateHandle: SavedStateHandle)

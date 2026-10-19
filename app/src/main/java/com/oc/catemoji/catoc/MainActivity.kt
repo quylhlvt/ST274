@@ -8,18 +8,14 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
-import androidx.navigation.fragment.FragmentNavigator
-import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.lvt.ads.util.Admob
-import com.oc.catemoji.catoc.core.base.BackPressHandler
+import com.oc.catemoji.catoc.core.base.SharedActivityViewModels
+import com.oc.catemoji.catoc.core.base.MainActivityReference
 import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.hideNavigation
 import com.oc.catemoji.catoc.core.extention.visible
@@ -50,7 +46,6 @@ interface LoadingController {
 class MainActivity : AppCompatActivity(), LoadingController {
     private var globalLoadingDialog: Dialog? = null
     private var globalConfirmDialog: Dialog? = null
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun showGlobalLoading() {
         if (globalLoadingDialog?.isShowing == true) return
@@ -234,19 +229,24 @@ class MainActivity : AppCompatActivity(), LoadingController {
 
     }
     }
-    private lateinit var navController: NavController
     private val mainViewModel: ViewModelActivity by viewModels()
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.getBooleanExtra(EXTRA_OPEN_HOME, false)) openHome()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("PERF2", "onCreate START: ${System.currentTimeMillis()}")
         super.onCreate(savedInstanceState)
+        MainActivityReference.instance = this
         Log.d("PERF2", "super.onCreate done: ${System.currentTimeMillis()}")
 
         // Áp dụng edge-to-edge trước khi inflate layout để tránh vùng trống quanh
         // status bar/tai thỏ xuất hiện trong frame đầu tiên.
         hideNavigation(true)
         setContentView(R.layout.activity_main)
-        Log.d("PERF2", "setContentView done: ${System.currentTimeMillis()}")
 
         Admob.getInstance().setTimeLimitShowAds(30000)
         Admob.getInstance().setTimeCountdownNativeCollab(18000)
@@ -254,32 +254,7 @@ class MainActivity : AppCompatActivity(), LoadingController {
         initSharedPreferences()
 //        applyLanguage()
         Admob.getInstance().loadInterAll(this, getString(R.string.inter_all))
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
-        navController.addOnDestinationChangedListener { _, destination,_  ->
-            val screenName = destination.label?.toString() ?: resources.getResourceEntryName(destination.id)
-            val screenClass = if (destination is FragmentNavigator.Destination) {
-                destination.className.substringAfterLast(".")
-            } else {
-                screenName
-            }
-            Log.d("SCREEN", "$screenName - $screenClass")
-            val bundle = Bundle().apply {
-                putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
-                putString(FirebaseAnalytics.Param.SCREEN_CLASS, screenClass)
-            }
-
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle)
-        }
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val currentFragment = navHostFragment.childFragmentManager.primaryNavigationFragment
-                if (currentFragment is BackPressHandler && currentFragment.onBackPressed()) return
-                if (!navController.popBackStack()) finish()
-            }
-        })
+        SharedActivityViewModels.instance = mainViewModel
 
         window.decorView.post {
             preloadHomeDrawables {
@@ -287,6 +262,11 @@ class MainActivity : AppCompatActivity(), LoadingController {
                     mainViewModel.notifyImagesReady()
                 }
             }
+        }
+
+        if (savedInstanceState == null) {
+            if (intent.getBooleanExtra(EXTRA_OPEN_HOME, false)) openHome()
+            else startActivity(android.content.Intent(this, com.oc.catemoji.catoc.ui.onboarding.splash.SplashActivity::class.java))
         }
 
         Log.d("PERF2", "onCreate END: ${System.currentTimeMillis()}")
@@ -326,22 +306,17 @@ class MainActivity : AppCompatActivity(), LoadingController {
 //        applyLanguage()
 //    }
 
-//    // QUAN TRỌNG: xử lý nút Back đúng cách
-//    override fun onBackPressed() {
-//        if (!navController.popBackStack()) {
-//            // Không còn gì trong back stack → thoát app
-//            super.onBackPressed()
-//        }
-//    }
-
-    // Nếu bạn dùng Toolbar + NavigationIcon (mũi tên back)
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
-    }
-
     override fun onResume() {
         super.onResume()
         hideNavigation(true)
+    }
+
+    override fun onDestroy() {
+        if (MainActivityReference.instance === this) MainActivityReference.instance = null
+        if (isFinishing && SharedActivityViewModels.instance === mainViewModel) {
+            SharedActivityViewModels.instance = null
+        }
+        super.onDestroy()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -359,6 +334,11 @@ class MainActivity : AppCompatActivity(), LoadingController {
     }
 
     companion object {
+        const val EXTRA_OPEN_HOME = "open_home"
         private const val SYSTEM_BAR_RESTORE_DELAY_MS = 300L
+    }
+
+    private fun openHome() {
+        startActivity(android.content.Intent(this, com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java))
     }
 }

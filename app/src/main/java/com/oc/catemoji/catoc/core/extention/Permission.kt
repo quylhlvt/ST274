@@ -13,8 +13,6 @@ import androidx.core.content.ContextCompat
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.helper.LanguageHelper.setLocale
 import androidx.core.net.toUri
-import androidx.fragment.app.Fragment
-import com.oc.catemoji.catoc.utils.key.RequestKey
 
 
 fun Context.checkPermissions(listPermission: Array<String>): Boolean {
@@ -25,14 +23,6 @@ fun Context.checkPermissions(listPermission: Array<String>): Boolean {
 
 fun Activity.requestPermission(permissions: Array<String>, requestCode: Int) {
     ActivityCompat.requestPermissions(this, permissions, requestCode)
-}
-fun Fragment.requestPermission(permissions: Array<String>, requestCode: Int) {
-    requestPermissions(permissions, requestCode)
-}
-fun Fragment.openImagePicker() {
-    val intent = Intent(Intent.ACTION_PICK)
-    intent.type = "image/*"
-    startActivityForResult(intent, RequestKey.PICK_IMAGE_REQUEST_CODE)
 }
 fun Activity.goToSettings() {
     setLocale(this)

@@ -1,6 +1,5 @@
 package com.oc.catemoji.catoc.data.datalocal.api
 
-// com/example/basefragment/data/datalocal/api/ApiHelper.kt
 
 import com.facebook.shimmer.BuildConfig
 import okhttp3.ConnectionPool

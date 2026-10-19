@@ -11,7 +11,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PermissionViewModel @Inject constructor() : ViewModel() {
 
-    // ✅ Count tập trung, share across fragments
+    // ✅ Count tập trung, dùng chung giữa các màn hình.
     private val _storageDenyCount = MutableStateFlow(0)
     private val _notificationDenyCount = MutableStateFlow(0)
 

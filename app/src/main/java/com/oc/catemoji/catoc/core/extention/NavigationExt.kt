@@ -1,77 +1,49 @@
 package com.oc.catemoji.catoc.core.extention
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
-import com.oc.catemoji.catoc.R
+import android.content.Intent
+import android.app.Activity
 
-// ── Base navigate helpers ─────────────────────────────────────────────────────
-
-fun Fragment.nav(actionId: Int) {
-    try {
-        findNavController().navigate(actionId)
-    } catch (e: Exception) {
-        // Đã ở đích hoặc action không tồn tại → ignore
-    }
+fun Activity.toSettingFromHome() {
+    startActivity(Intent(this, com.oc.catemoji.catoc.ui.main.setting.SettingActivity::class.java))
 }
 
-/**
- * Navigate an toàn với args — không crash khi:
- * - Action không tồn tại ở destination hiện tại (double-tap, wrong destination)
- */
-fun NavController.safeNavigate(actionId: Int, args: Bundle? = null) {
-    try {
-        currentDestination?.getAction(actionId) ?: run {
-            android.util.Log.w("SafeNav", "⚠️ Action $actionId not found from [${currentDestination?.label}]. Skipped.")
-            return
-        }
-        navigate(actionId, args)
-    } catch (e: IllegalArgumentException) {
-        android.util.Log.e("SafeNav", "❌ ${e.message}")
+private fun Activity.startOnboardingScreen(target: Class<out Activity>, firstRun: Boolean = false) {
+    val intent = Intent(this, target)
+    if (target == com.oc.catemoji.catoc.ui.language.LanguageActivity::class.java) {
+        intent.putExtra(com.oc.catemoji.catoc.ui.language.LanguageActivity.EXTRA_FIRST_RUN, firstRun)
     }
+    startActivity(intent)
+    finish()
 }
 
-// ── Splash ────────────────────────────────────────────────────────────────────
+fun Activity.toLanguage() = startOnboardingScreen(
+    com.oc.catemoji.catoc.ui.language.LanguageActivity::class.java,
+    firstRun = true
+)
 
-fun Fragment.toLanguage() = nav(R.id.action_splash_to_language)
-fun Fragment.toIntro()    = nav(R.id.action_splash_to_intro)
+fun Activity.toIntro() = startOnboardingScreen(
+    com.oc.catemoji.catoc.ui.onboarding.intro.IntroActivity::class.java
+)
 
-// ── Intro ─────────────────────────────────────────────────────────────────────
+fun Activity.toPermission() = startOnboardingScreen(
+    com.oc.catemoji.catoc.ui.onboarding.permission.PermissionActivity::class.java
+)
 
-fun Fragment.toPermission() = nav(R.id.action_intro_to_permission)
-fun Fragment.toHome()       = nav(R.id.action_intro_to_home)
-
-// ── Permission ────────────────────────────────────────────────────────────────
-
-fun Fragment.toHomeFromPermission() = nav(R.id.action_permission_to_home)
-
-// ── Setting ───────────────────────────────────────────────────────────────────
-fun Fragment.toLangFromSetting() = nav(R.id.action_setting_to_language)
-
-fun Fragment.toHomeFromSetting() = nav(R.id.action_setting_to_home)
-
-// ── Language ──────────────────────────────────────────────────────────────────
-fun Fragment.toSettingFromLang() {
-    try {
-        // Pop back về Setting
-        findNavController().popBackStack()
-    } catch (e: Exception) {
-        android.util.Log.e("Navigation", "Error popping back to setting: ${e.message}")
-    }
+fun Activity.toHome() {
+    startActivity(
+        Intent(this, com.oc.catemoji.catoc.MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            .putExtra(com.oc.catemoji.catoc.MainActivity.EXTRA_OPEN_HOME, true)
+    )
 }
-fun Fragment.toIntroFromLanguage() = nav(R.id.action_language_to_intro)
-fun Fragment.toHomeFromLanguage()  = nav(R.id.action_language_to_home)
-// Home
-fun Fragment.toSettingFromHome() = nav(R.id.action_home_to_setting)
 
-
-
-fun Fragment.popBack(): Boolean {
-    return try {
-        findNavController().popBackStack()
-    } catch (e: Exception) {
-        android.util.Log.e("Navigation", "Error popping back: ${e.message}")
-        false
-    }
-}
+fun Activity.toHomeFromPermission() = toHome()
+fun Activity.toHomeFromLanguage() = finish()
+fun Activity.toSettingFromLang() = finish()
+fun Activity.toLangFromSetting() = startOnboardingScreen(
+    com.oc.catemoji.catoc.ui.language.LanguageActivity::class.java
+)
+fun Activity.toIntroFromLanguage() = startOnboardingScreen(
+    com.oc.catemoji.catoc.ui.onboarding.intro.IntroActivity::class.java
+)
+fun Activity.toHomeFromSetting() = toHome()

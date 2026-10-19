@@ -84,9 +84,6 @@
 -keep class com.pfp.ocmaker.create.maker.ui.splash.SplashActivity.** {*; }
 -keep class com.pfp.ocmaker.create.maker.data.** {*; }
 -keep public class com.google.android.gms.** { public protected *; }
--keep class * extends androidx.fragment.app.Fragment { *; }
--keep class **.*Fragment { *; }
--keep class androidx.navigation.** { *; }
 -keep class com.oc.catemoji.catoc.ui.** { *; }
 -keep class dagger.hilt.** { *; }
 -keep class * implements dagger.hilt.internal.GeneratedComponent { *; }

@@ -28,12 +28,12 @@ class ShowViewModel @Inject constructor(
     private val _state = MutableStateFlow(ShowState())
     val state: StateFlow<ShowState> = _state.asStateFlow()
 
-    /** Phát khi đạt 100% — Fragment lắng nghe để navigate */
+    /** Phát khi đạt 100% — Activity lắng nghe để navigate */
     private val _onComplete = MutableSharedFlow<Unit>(replay = 0)
     val onComplete = _onComplete.asSharedFlow()
 
 
-    // ── INIT — gọi từ Fragment sau khi nhận args từ CosplayFragment ───────────
+    // ── INIT — gọi từ Activity sau khi nhận args từ CosplayActivity ───────────
 
     /**
      * [templateIndex]   : index template random từ CosplayViewModel

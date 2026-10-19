@@ -81,12 +81,14 @@ class ViewModelActivity @Inject constructor(
             initialValue = false
         )
 
-    // Guard chống gọi fetch trùng từ nhiều fragment
+    // Guard chống gọi fetch trùng từ nhiều màn hình.
     private val _isFetchingOnline = MutableStateFlow(false)
     val isFetchingOnlineFlow: StateFlow<Boolean> = _isFetchingOnline.asStateFlow()
     private val _hasFetchedOnlineCatalogue = MutableStateFlow(false)
     private val _imagesReady = MutableStateFlow(false)
     val imagesReady: StateFlow<Boolean> = _imagesReady.asStateFlow()
+    private val _localDataReady = MutableStateFlow(false)
+    val localDataReady: StateFlow<Boolean> = _localDataReady.asStateFlow()
 
     fun notifyImagesReady() {
         _imagesReady.value = true
@@ -147,7 +149,7 @@ class ViewModelActivity @Inject constructor(
                 bgQuantity = jsonObj.getJSONArray("Background").getJSONObject(0).getInt("quantity") // ✅ update biến
                 stickerQuantity = jsonObj.getJSONArray("Sticker").getJSONObject(0).getInt("quantity") // ✅ update biến
                 _bgStickerFailed.value = false
-                _bgStickerReady.value = true // ✅ fragment collect → update adapter
+                _bgStickerReady.value = true // Màn hình đang mở sẽ cập nhật adapter.
             } catch (e: Exception) {
                 Log.e("ViewModelActivity", "❌ ${e.message}")
                 _bgStickerFailed.value = true
@@ -220,6 +222,8 @@ class ViewModelActivity @Inject constructor(
                     appDataManager.loadInitialData()
                 }
 
+                _localDataReady.value = true
+
                 Log.d("ViewModelActivity", "📦 After quick load — customized: ${appDataManager.customizedCharacters.value.size}")
 
                 // Ba nguồn online chạy song song, không chờ nguồn trước hoàn thành.
@@ -229,6 +233,7 @@ class ViewModelActivity @Inject constructor(
                 launch { observeNetworkForRetry() }
             } catch (e: Exception) {
                 Log.e("ViewModelActivity", "❌ Init error: ${e.message}", e)
+                _localDataReady.value = true
             }
         }
     }
@@ -236,7 +241,7 @@ class ViewModelActivity @Inject constructor(
 
     /**
      * Gọi từ mọi nơi đều an toàn — guard đảm bảo chỉ 1 request chạy tại 1 thời điểm.
-     * BaseFragment gọi khi vào màn + có mạng + chưa có online data.
+     * BaseActivity gọi khi vào màn + có mạng + chưa có online data.
      */
     private suspend fun observeNetworkForRetry() {
         networkOnline.collect { isOnline ->
@@ -277,7 +282,7 @@ class ViewModelActivity @Inject constructor(
         }
     }
 
-    /** Public — BaseFragment và pull-to-refresh gọi */
+    /** Public — BaseActivity và pull-to-refresh gọi */
     fun fetchOnlineTemplates() {
         viewModelScope.launch(Dispatchers.IO){ fetchOnlineTemplatesInternal() }
     }
@@ -287,7 +292,14 @@ class ViewModelActivity @Inject constructor(
             (_hasFetchedOnlineCatalogue.value || templates.value.any { it.id.startsWith("online_") })
 
     fun forceReloadAll() {
-        viewModelScope.launch { appDataManager.forceReloadAll() }
+        viewModelScope.launch {
+            _localDataReady.value = false
+            try {
+                appDataManager.forceReloadAll()
+            } finally {
+                _localDataReady.value = true
+            }
+        }
     }
 
     fun refreshApiData() {

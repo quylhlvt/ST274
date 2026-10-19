@@ -37,7 +37,7 @@ class GetCatalogueUseCase @Inject constructor(
                     appDataManager.prependOnlineTemplates(result.data)
 
                     // Preload avatar SONG SONG (parallel) — xong hết rồi mới return
-                    // SplashFragment.waitForApiOrTimeout() đang chờ Flow emit,
+                    // SplashActivity.waitForApiOrTimeout() đang chờ Flow emit,
                     // nên avatars sẽ được cache trước khi user vào màn Choose
                     preloadAvatarsParallel(result.data)
 
@@ -57,7 +57,7 @@ class GetCatalogueUseCase @Inject constructor(
     /**
      * Preload tất cả avatar song song (coroutineScope + async).
      * Hàm này SUSPEND — caller phải chờ cho đến khi tất cả avatar được cache.
-     * → Đảm bảo khi SplashFragment navigate sang ChoosePony, ảnh đã sẵn sàng.
+     * → Đảm bảo khi SplashActivity navigate sang ChoosePony, ảnh đã sẵn sàng.
      */
     private suspend fun preloadAvatarsParallel(templates: List<CustomModel>) =
         withContext(Dispatchers.IO) {

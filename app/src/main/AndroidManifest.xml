@@ -22,7 +22,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
 
-        android:theme="@style/Base.Theme.BaseFragment"
+        android:theme="@style/Base.Theme.BaseActivity"
         android:hardwareAccelerated="true"
         android:largeHeap="true"
         >
@@ -53,6 +53,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.main.setting.SettingActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".ui.language.LanguageActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".ui.main.successcosplay.SuccessCosplayActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".ui.main.createPony.ChooseCatActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity android:name=".ui.main.home.HomeActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ui.main.customize.CustomizeActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ui.main.cosplay.CosplayActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ui.main.add_character.AddCharacterActivity" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize|stateHidden" android:exported="false" />
+        <activity android:name=".ui.main.show.ShowActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ui.main.studio.CatStudioActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ui.main.view.ViewActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ui.main.myPony.MyPonyActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ui.main.random.RandomActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ui.onboarding.splash.SplashActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ui.onboarding.intro.IntroActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ui.onboarding.permission.PermissionActivity" android:screenOrientation="portrait" android:exported="false" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
