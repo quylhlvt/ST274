@@ -28,6 +28,14 @@ fun Activity.toHome() {
     finish()
 }
 
+/** Khởi tạo Home bằng context mới sau khi đổi locale và loại Settings khỏi back stack. */
+fun Activity.toHomeAfterLanguageChange() {
+    startActivity(Intent(this, HomeActivity::class.java).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+    })
+    finish()
+}
+
 fun Activity.toHomeFromPermission() = toHome()
 fun Activity.toHomeFromLanguage() = finish()
 fun Activity.toSettingFromLang() = finish()

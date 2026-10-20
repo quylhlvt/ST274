@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
+
+    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+        android:id="@+id/gradientSort"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/dimension_4"
+        app:gslCenterColor="@color/app_color"
+        app:gslCornerRadius="@dimen/dimension_10"
+        app:gslEndColor="@color/app_color"
+        app:gslStartColor="@color/app_color"
+        app:gslStrokeWidth="@dimen/dimension_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imvImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:padding="@dimen/dimension_4"
+            android:scaleType="centerInside"
+            tools:src="@drawable/ic_sticker_pet" />
+
+        <TextView
+            android:id="@+id/tvLabel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/baloo2_bold"
+            android:gravity="center"
+            android:textColor="@color/app_color"
+            android:textSize="@dimen/text_size_22"
+            android:visibility="gone"
+            tools:text="A"
+            tools:visibility="visible" />
+    </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

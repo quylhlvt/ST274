@@ -26,9 +26,8 @@ import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.databinding.ActivityPauseOcchallengeBinding
-import com.oc.catemoji.catoc.ui.main.add_character.AddCharacterActivity
-import com.oc.catemoji.catoc.ui.main.add_character.DesignSource
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity
+import com.oc.catemoji.catoc.ui.main.done.DoneActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -117,8 +116,14 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
 
     override fun viewListener() {
         binding.actionBar.btnActionBarLeft.onClick { finish() }
+        binding.actionBar.btnActionBarRightText.onClick { exportResult() }
         binding.btnPlayOrPause.onClick {
-            if (viewModel.session == null || isSaving) return@onClick
+            val session = viewModel.session ?: return@onClick
+            if (isSaving) return@onClick
+            if (session.isComplete) {
+                exportResult()
+                return@onClick
+            }
             if (isPlaying) pausePlayback() else startPlayback()
         }
         binding.btnSkip.onClick { advanceStage(skip = true) }
@@ -273,13 +278,13 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
             if (isPlaying) R.string.pause else R.string.play
         )
 
-        binding.btnPlayOrPause.isEnabled = available && !isLoadingFrame
+        binding.btnPlayOrPause.isEnabled = session != null && !isSaving && !isLoadingFrame
         binding.btnSkip.isEnabled = available && !isLoadingFrame
 
-        val showNext = isPausedByUser &&
+        val showNext = (isPausedByUser || session?.isComplete == true) &&
                 !isPlaying &&
-                hasSelectedFirstImage &&
-                available
+                (hasSelectedFirstImage || session?.isComplete == true) &&
+                session != null && !isSaving
 
         binding.actionBar.btnActionBarRightText.visibility =
             if (showNext) View.VISIBLE else View.INVISIBLE
@@ -291,21 +296,34 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
     }
 
     private fun exportResult() {
-        if (isSaving) return
+        val session = viewModel.session ?: return
+        if (isSaving || isFinishing || isDestroyed) return
         val root = binding.rlCharacterPause
         if (root.width == 0 || root.height == 0) {
             root.doOnLayout { exportResult() }
             return
         }
         isSaving = true
+        // Freeze the visible result before capturing, including when Next ends a run early.
+        pausePlayback()
         updateControls()
         showLoadingSafe()
         lifecycleScope.launch {
             try {
                 val path = viewModel.resultPath ?: run {
-                    // The preview contains only the frozen image layers, in their visual order.
+                    // The current nav is still a preview until advanceStage confirms it.
+                    // Exclude it only from the export; Pause keeps the visible preview intact.
+                    val previewLayer = session.currentStage?.partIndex?.let(layerViews::get)
                     val bitmap = Bitmap.createBitmap(root.width, root.height, Bitmap.Config.ARGB_8888)
-                    root.draw(Canvas(bitmap))
+                    val canvas = Canvas(bitmap)
+                    for (index in 0 until root.childCount) {
+                        val layer = root.getChildAt(index)
+                        if (layer === previewLayer || layer.visibility != View.VISIBLE) continue
+                        val saveCount = canvas.save()
+                        canvas.translate(layer.left.toFloat(), layer.top.toFloat())
+                        layer.draw(canvas)
+                        canvas.restoreToCount(saveCount)
+                    }
                     val savedPath = withContext(Dispatchers.IO) {
                         bitmap.saveToFile(applicationContext, "pause_${System.nanoTime()}")
                     } ?: error("Cannot save challenge bitmap")
@@ -314,9 +332,13 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
                     savedPath
                 }
                 hideLoadingSafe()
-                startActivity(Intent(this@PauseOCChallengeActivity, AddCharacterActivity::class.java).apply {
-                    putExtra("imagePath", path)
-                    putExtra(DesignSource.ARG_SOURCE, DesignSource.CUSTOM)
+                startActivity(Intent(this@PauseOCChallengeActivity, DoneActivity::class.java).apply {
+                    putExtra(DoneActivity.EXTRA_IMAGE_PATH, path)
+                    putExtra(CustomizeActivity.ARG_TEMPLATE_ID, session.template.id)
+                    putExtra(
+                        CustomizeActivity.ARG_TEMPLATE_INDEX,
+                        intent.getIntExtra(CustomizeActivity.ARG_TEMPLATE_INDEX, 0)
+                    )
                 })
                 finish()
             } catch (e: CancellationException) {
@@ -325,11 +347,9 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
                 Log.e("PauseOCChallenge", "Unable to export challenge", e)
                 hideLoadingSafe()
                 showToast(R.string.download_failed_please_try_again_later)
-                // Keep the completed character available and let the player retry export.
-                binding.btnPlayOrPause.isEnabled = true
-                binding.btnPlayOrPause.setOnClickListener { exportResult() }
             } finally {
                 isSaving = false
+                updateControls()
             }
         }
     }

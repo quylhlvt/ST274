@@ -140,4 +140,21 @@
     <string name="pause_challenge_progress">%1$s (%2$d/%3$d)</string>
     <string name="pause_challenge_hint">Tap the screen to keep this layer</string>
     <string name="skip_this_layer">Skip this layer</string>
+    <string name="customize">Customize</string>
+    <string name="cat">Cat</string>
+    <string name="eyes">Eyes</string>
+    <string name="keyboard">Keyboard</string>
+    <string name="background">Background</string>
+    <string name="sticker">Sticker</string>
+    <string name="enter_text">Enter text</string>
+    <string name="add">Add</string>
+    <string name="choose_cat">Choose a cat</string>
+    <string name="choose_eyes">Choose eyes</string>
+    <string name="tap_a_key">Tap a key to add it</string>
+    <string name="choose_background">Choose a background</string>
+    <string name="choose_text_color">Enter text and choose a color</string>
+    <string name="choose_sticker">Choose a sticker</string>
+    <string name="nothing_to_save">Add at least one item before saving</string>
+    <string name="save_failed">Could not save the image. Please try again.</string>
+    <string name="image_load_failed">Could not load this item</string>
 </resources>

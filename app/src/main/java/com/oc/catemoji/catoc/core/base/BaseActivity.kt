@@ -167,6 +167,45 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
     protected fun activityRouter() = router
     protected fun popBack(): Boolean { finish(); return true }
 
+    /**
+     * Lưu và áp dụng locale ngay trên Activity hiện tại trước khi điều hướng.
+     * Nếu Android chưa phản ánh locale mới ngay lập tức, màn gọi có thể recreate
+     * và BaseActivity sẽ lấy locale đã commit trong attachBaseContext().
+     */
+    protected fun updateAppLanguage(languageCode: String): Boolean {
+        val locale = Locale.forLanguageTag(languageCode)
+        if (languageCode.isBlank() || locale.language.isBlank()) return false
+
+        // setLanguageKey dùng commit=true, nên Activity kế tiếp luôn đọc được giá trị mới.
+        SharedPreferencesManager.setLanguageKey(languageCode)
+        Locale.setDefault(locale)
+
+        val activityConfig = Configuration(resources.configuration).apply {
+            setLocale(locale)
+            setLayoutDirection(locale)
+        }
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(activityConfig, resources.displayMetrics)
+
+        val appResources = applicationContext.resources
+        val appConfig = Configuration(appResources.configuration).apply {
+            setLocale(locale)
+            setLayoutDirection(locale)
+        }
+        @Suppress("DEPRECATION")
+        appResources.updateConfiguration(appConfig, appResources.displayMetrics)
+
+        appliedLanguage = languageCode
+        return isAppLanguageApplied(languageCode)
+    }
+
+    protected fun isAppLanguageApplied(languageCode: String): Boolean {
+        val expected = Locale.forLanguageTag(languageCode).toLanguageTag()
+        val actual = resources.configuration.locales[0].toLanguageTag()
+        return SharedPreferencesManager.isLanguageKey() == languageCode &&
+            actual.equals(expected, ignoreCase = true)
+    }
+
     override fun attachBaseContext(newBase: Context) {
         appliedLanguage = newBase.getSharedPreferences("DEFAULT", Context.MODE_PRIVATE)
             .getString("language_key", "").orEmpty().ifEmpty { "en" }

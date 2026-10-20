@@ -35,6 +35,7 @@ import com.oc.catemoji.catoc.core.extention.toSettingFromHome
 import com.oc.catemoji.catoc.core.helper.RateHelper
 import com.oc.catemoji.catoc.core.helper.RateHelper.showRateDialog
 import com.oc.catemoji.catoc.databinding.ActivityHomeBinding
+import com.oc.catemoji.catoc.ui.main.cusomdiypet.CustomDiyPetActivity
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import com.oc.catemoji.catoc.utils.state.RateState
 import dagger.hilt.android.AndroidEntryPoint
@@ -90,7 +91,9 @@ private fun initNativeCollab() {
 
     private fun onHomeMenuClick(action: HomeMenuAction) {
         when (action) {
-            HomeMenuAction.DIY -> return
+            HomeMenuAction.DIY -> startActivity(
+                android.content.Intent(requireContext(), CustomDiyPetActivity::class.java)
+            )
             HomeMenuAction.CREATE -> {
                 val hasNetwork = isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
                 when {
@@ -117,7 +120,6 @@ private fun initNativeCollab() {
                     ))
                 }
             }
-
             HomeMenuAction.MY_ALBUM -> {
                 showInter {
                     activityRouter().navigate(R.id.action_home_to_myPony)

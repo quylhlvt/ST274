@@ -2,6 +2,7 @@ package com.oc.catemoji.catoc.ui.language
 
 import android.content.res.Configuration
 import android.os.Bundle
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -12,6 +13,7 @@ import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.core.extention.toHome
+import com.oc.catemoji.catoc.core.extention.toHomeAfterLanguageChange
 import com.oc.catemoji.catoc.core.extention.toIntroFromLanguage
 import com.oc.catemoji.catoc.databinding.ActivityLanguageBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -85,7 +87,8 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding, LanguageViewModel
             tvStart.isVisible = isFirst
             tvCenter.isVisible = !isFirst
             setTextActionBar(if (isFirst) tvStart else tvCenter, getString(R.string.language))
-            btnActionBarLeft.isVisible = !isFirst
+            // Keep the header's vertical anchor when onboarding hides the back button.
+            btnActionBarLeft.isInvisible = isFirst
             btnActionBarRight.isVisible = code.isNotEmpty()
             btnActionBarRight.isEnabled = !applyingLanguage && code.isNotEmpty()
         }
@@ -134,8 +137,12 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding, LanguageViewModel
             DESTINATION_HOME
         }
         sharedPreferences.setLanuageScreen(true)
-        com.oc.catemoji.catoc.core.helper.LanguageHelper.setLocale(this, code)
-        navigateWhenLocaleApplied()
+        if (updateAppLanguage(code)) {
+            navigateWhenLocaleApplied()
+        } else {
+            // pendingDestination được lưu; Activity mới sẽ nhận locale trong attachBaseContext().
+            recreate()
+        }
     }
 
     private fun navigateWhenLocaleApplied() {
@@ -153,9 +160,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding, LanguageViewModel
             pendingDestination = DESTINATION_NONE
             when (destination) {
                 DESTINATION_INTRO -> toIntroFromLanguage()
-                DESTINATION_HOME -> {
-                    if (fromSetting) finish() else toHome()
-                }
+                DESTINATION_HOME -> toHomeAfterLanguageChange()
             }
         }
     }
