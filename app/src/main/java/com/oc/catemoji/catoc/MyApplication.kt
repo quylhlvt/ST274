@@ -1,6 +1,5 @@
 package com.oc.catemoji.catoc
 
-import android.app.Application
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -11,10 +10,22 @@ import com.oc.catemoji.catoc.core.helper.LanguageHelper
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
 import com.oc.catemoji.catoc.ui.onboarding.splash.SplashActivity
 import com.tencent.mmkv.MMKV
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp                     // QUAN TRỌNG NHẤT – KHÔNG ĐƯỢC THIẾU
-class MyApplication :  AdsApplication() {
+class MyApplication : AdsApplication() {
+    private val screenViewModelStore = ViewModelStore()
+
+    // Every Activity uses the same process-scoped state, including restored screens.
+    fun sharedViewModel(owner: AppCompatActivity): ViewModelActivity = ViewModelProvider(
+        screenViewModelStore,
+        owner.defaultViewModelProviderFactory,
+        owner.defaultViewModelCreationExtras
+    )[ViewModelActivity::class.java]
+
     override fun onCreate() {
         super.onCreate()
         isTablet = resources.configuration.smallestScreenWidthDp >= 600

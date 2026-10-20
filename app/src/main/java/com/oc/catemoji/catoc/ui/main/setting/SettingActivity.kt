@@ -39,7 +39,9 @@ override fun initView() {
     override fun viewListener() {
         binding.actionBar.btnActionBarLeft.onClick { finish() }
         binding.btnLang.onClick {
-            startActivity(Intent(this, com.oc.catemoji.catoc.ui.language.LanguageActivity::class.java))
+            startActivity(Intent(this, com.oc.catemoji.catoc.ui.language.LanguageActivity::class.java).apply {
+                putExtra(com.oc.catemoji.catoc.ui.language.LanguageActivity.EXTRA_FROM_SETTING, true)
+            })
         }
         binding.btnPolicy.onClick {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(POLICY_URL)))

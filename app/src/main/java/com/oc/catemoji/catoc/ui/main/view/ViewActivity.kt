@@ -12,6 +12,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
 import androidx.activity.viewModels
 import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
@@ -504,15 +508,17 @@ override fun initView() {
             .show()
 
     override fun observeData() {
-        activityRouter().currentBackStackEntry
-            ?.savedStateHandle
-            ?.getLiveData<String>("updated_image_path")
-            ?.observe(viewLifecycleOwner) { newPath ->
-                if (newPath.isNullOrEmpty()) return@observe
-                currentImagePath = newPath
-                val targetImage = if (imageType == 0) binding.imvImage else binding.imvImage2
-                loadImage(requireContext(), currentImagePath, targetImage)
+        if (imageType != 1 || idEdit.isBlank()) return
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModelActivity.customizedCharacters.collect { characters ->
+                    val newPath = characters.firstOrNull { it.id == idEdit }?.imageSave.orEmpty()
+                    if (newPath.isBlank() || newPath == currentImagePath) return@collect
+                    currentImagePath = newPath
+                    loadImage(this@ViewActivity, newPath, binding.imvImage2)
+                }
             }
+        }
     }
 
     override fun onResume() {

@@ -22,7 +22,6 @@ import com.oc.catemoji.catoc.core.extention.toLanguage
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager.isLanuageScreen
 import com.oc.catemoji.catoc.databinding.ActivitySplashBinding
-import com.tencent.mmkv.MMKV
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
@@ -86,12 +85,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>(
         val currentVersion = packageManager.getPackageInfo(packageName, 0).versionCode
         if (SharedPreferencesManager.getVersionCode() == currentVersion) return
 
-        MMKV.defaultMMKV()?.clearAll()
-        SharedPreferencesManager.clearAll()
-        cacheDir.deleteRecursively()
-        externalCacheDir?.deleteRecursively()
+        // Version changes must preserve the user's language, permissions and creations.
         SharedPreferencesManager.setVersionCode(currentVersion)
-        mainViewModel.forceReloadAll()
     }
 
     private fun startFakeProgress() {
@@ -123,7 +118,11 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>(
                 binding.progressCap.translationX = translation
             }
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) = onEnd?.invoke() ?: Unit
+                private var cancelled = false
+                override fun onAnimationCancel(animation: Animator) { cancelled = true }
+                override fun onAnimationEnd(animation: Animator) {
+                    if (!cancelled) onEnd?.invoke()
+                }
             })
             start()
         }

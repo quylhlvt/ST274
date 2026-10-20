@@ -227,8 +227,7 @@ override fun initView() {
     ) = StringHelper.changeColor(requireContext(), getString(textRes), colorRes, font)
 
     override fun onScreenBackPressed(): Boolean {
-        requireActivity().finish()
-        System.exit(0)
+        finishAffinity()
         return true
     }
 }

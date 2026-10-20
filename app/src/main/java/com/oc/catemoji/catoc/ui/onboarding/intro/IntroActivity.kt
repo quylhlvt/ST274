@@ -136,8 +136,7 @@ override fun initView() {
     }
 
     override fun onScreenBackPressed(): Boolean {
-        requireActivity().finish()
-        System.exit(0)
+        finishAffinity()
         return  true
     }
 }

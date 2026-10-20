@@ -41,7 +41,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
-import java.lang.System.exit
 @AndroidEntryPoint
 class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
     ActivityHomeBinding::inflate,
@@ -169,12 +168,10 @@ private fun initNativeCollab() {
         if (!sharedPreferences.isRateRequest() && countRate % 2 == 0) {
             showRateDialog(requireActivity(), sharedPreferences) { state ->
                 if (state != RateState.CANCEL) showToast(R.string.have_rated)
-                requireActivity().finish()
-                exit(0)
+                finishAffinity()
             }
         } else {
-            requireActivity().finish()
-            exit(0)
+            finishAffinity()
         }
         return true
     }

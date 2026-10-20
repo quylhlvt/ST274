@@ -50,6 +50,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -153,7 +154,17 @@ private fun initNativeCollab() {
     }
 
     // CustomizeActivity.kt - readArgsAndInit() — FIX chính ở đây
+    private var initializeJob: Job? = null
+
     private fun readArgsAndInit() {
+        initializeJob?.cancel()
+        initializeJob = lifecycleScope.launch {
+            sharedViewModel.localDataReady.first { it }
+            initializeFromArguments()
+        }
+    }
+
+    private fun initializeFromArguments() {
         val templateIndex = arguments?.getInt(ARG_TEMPLATE_INDEX, 0) ?: 0
         val templateId = arguments?.getString(ARG_TEMPLATE_ID) // ✅ id để verify
         val isEdit = arguments?.getBoolean(ARG_IS_EDIT, false) ?: false
@@ -784,14 +795,6 @@ private fun initNativeCollab() {
             val eventName = "click_item_${number}_${if (isEdit) "edit" else "done"}"
             logEvent(eventName, savedCharacter.avatar)
             Log.d("LogEvenA", "$eventName -- ${savedCharacter.avatar}")
-
-            if (isEdit) {
-                runCatching {
-                    activityRouter()
-                        .getBackStackEntry(R.id.viewActivity)
-                        .savedStateHandle["updated_image_path"] = savedPath
-                }
-            }
 
             // ✅ Navigate trực tiếp trên Main thread, KHÔNG wrap thêm withContext
             if (isAdded && !isDetached) {

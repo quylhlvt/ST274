@@ -48,6 +48,7 @@ import com.oc.catemoji.catoc.ui.main.customize.PartAdapter
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -74,6 +75,18 @@ class ShowActivity : BaseActivity<ActivityShowBinding, ShowViewModel>(
     private var countDownJob: Job? = null
     private var progressAnimator: ValueAnimator? = null
     private var hasFinishedCountDown = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        remainingSeconds = savedInstanceState?.getInt(KEY_REMAINING_SECONDS) ?: totalSeconds
+        hasFinishedCountDown = savedInstanceState?.getBoolean(KEY_COUNTDOWN_FINISHED) ?: false
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(KEY_REMAINING_SECONDS, remainingSeconds)
+        outState.putBoolean(KEY_COUNTDOWN_FINISHED, hasFinishedCountDown)
+        super.onSaveInstanceState(outState)
+    }
     private val isCountDownActive: Boolean
         get() = !hasFinishedCountDown
     // ── INFLATE ───────────────────────────────────────────────────────────────
@@ -112,6 +125,7 @@ private fun isOnlineTemplate(): Boolean {
         if (!isAdded || isDetached) return
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
         initNativeCollab()
+        if (binding.win.isVisible) return
 
         when {
             hasFinishedCountDown && remainingSeconds > 0 && timerJob?.isActive != true -> {
@@ -143,7 +157,9 @@ private fun isOnlineTemplate(): Boolean {
         }
         setupAdapters()
         readArgsAndInit()
-        startCountDown()
+        if (hasFinishedCountDown) {
+            binding.countDown.gone()
+        }
         val bitmap = viewModelActivity.cosplayBitmap
         if (bitmap != null && !bitmap.isRecycled) {
             binding.imvImage2.setImageBitmap(bitmap)
@@ -229,7 +245,17 @@ private fun isOnlineTemplate(): Boolean {
             startTimer()
         }
     }
+    private var initializeJob: Job? = null
+
     private fun readArgsAndInit() {
+        initializeJob?.cancel()
+        initializeJob = lifecycleScope.launch {
+            viewModelActivity.localDataReady.first { it }
+            initializeFromArguments()
+        }
+    }
+
+    private fun initializeFromArguments() {
         val templateId = arguments?.getString(ARG_TEMPLATE_ID)
         val templates = viewModelActivity.templates.value
         val templateIndex = if (templateId != null) {
@@ -673,6 +699,8 @@ private fun isOnlineTemplate(): Boolean {
     // ── COMPANION ─────────────────────────────────────────────────────────────
 
     companion object {
+        private const val KEY_REMAINING_SECONDS = "remainingSeconds"
+        private const val KEY_COUNTDOWN_FINISHED = "countdownFinished"
         const val ARG_TEMPLATE_INDEX = "template_index"
         const val ARG_TEMPLATE_ID = "template_id"
         const val ARG_SELECTIONS = "selections"

@@ -30,8 +30,10 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding, LanguageViewModel
     private val fromSetting: Boolean
         get() = intent.getBooleanExtra(EXTRA_FROM_SETTING, false)
     private val languageAdapter by lazy {
-        LanguageAdapter { code ->
-            if (!applyingLanguage) viewModel.selectLanguage(code)
+        LanguageAdapter(this).apply {
+            onItemClick = { code ->
+                if (!applyingLanguage) viewModel.selectLanguage(code)
+            }
         }
     }
 
@@ -91,7 +93,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding, LanguageViewModel
 
     override fun viewListener() {
         binding.actionBar.btnActionBarRight.onClick { handleDone() }
-        binding.actionBar.btnActionBarLeft.onClick { handleBackPressed() }
+        binding.actionBar.btnActionBarLeft.onClick { onScreenBackPressed() }
     }
 
     override fun observeData() {
@@ -107,7 +109,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding, LanguageViewModel
         }
     }
 
-    override fun handleBackPressed(): Boolean {
+    override fun onScreenBackPressed(): Boolean {
         if (!applyingLanguage) {
             if (fromSetting || sharedPreferences.isLanuageScreen()) finish() else finishAffinity()
         }
@@ -138,8 +140,10 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding, LanguageViewModel
 
     private fun navigateWhenLocaleApplied() {
         if (pendingDestination == DESTINATION_NONE || navigationPosted || isFinishing || isDestroyed) return
-        val appliedLanguage = resources.configuration.locales[0].language
-        if (!appliedLanguage.equals(viewModel.codeLang.value, ignoreCase = true)) return
+        // Android canonicalizes legacy codes such as Indonesian "in" to "id".
+        val appliedLanguage = resources.configuration.locales[0].toLanguageTag()
+        val selectedLanguage = Locale.forLanguageTag(viewModel.codeLang.value).toLanguageTag()
+        if (!appliedLanguage.equals(selectedLanguage, ignoreCase = true)) return
 
         navigationPosted = true
         binding.root.post {
@@ -150,18 +154,17 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding, LanguageViewModel
             when (destination) {
                 DESTINATION_INTRO -> toIntroFromLanguage()
                 DESTINATION_HOME -> {
-                    toHome()
-                    finish()
+                    if (fromSetting) finish() else toHome()
                 }
             }
         }
     }
 
-    private companion object {
+    companion object {
         const val EXTRA_FROM_SETTING = "fromSetting"
-        const val KEY_PENDING_DESTINATION = "pendingLanguageDestination"
-        const val DESTINATION_NONE = 0
-        const val DESTINATION_INTRO = 1
-        const val DESTINATION_HOME = 2
+        private const val KEY_PENDING_DESTINATION = "pendingLanguageDestination"
+        private const val DESTINATION_NONE = 0
+        private const val DESTINATION_INTRO = 1
+        private const val DESTINATION_HOME = 2
     }
 }

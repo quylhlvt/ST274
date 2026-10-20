@@ -44,7 +44,7 @@ class ShowViewModel @Inject constructor(
         if (_state.value.listData.isNotEmpty()) return  // safe với process death
 
 
-        val template = appDataManager.getCharacterByIndex(templateIndex) ?: return
+        val template = appDataManager.templates.value.getOrNull(templateIndex) ?: return
         val sorted   = template.listPath.sortedBy { it.zIndex }
 
         // Remap targetSelections từ unsorted sang sorted (giống CustomizeViewModel.initWithSelections)

@@ -11,10 +11,14 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.SavedStateHandle
 import androidx.viewbinding.ViewBinding
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.android.material.snackbar.Snackbar
+import android.content.Context
+import android.content.res.Configuration
+import java.util.Locale
+import com.oc.catemoji.catoc.MyApplication
+import com.oc.catemoji.catoc.core.extention.hideNavigation
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
@@ -37,10 +41,11 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
     protected val isAdded: Boolean get() = !isFinishing && !isDestroyed
     protected val isDetached: Boolean get() = false
     protected val viewModel: VM by lazy { ViewModelProvider(this)[viewModelClass] }
-    protected val viewModelActivity: ViewModelActivity
-        get() = requireNotNull(SharedActivityViewModels.instance) {
-            "MainActivity must initialize the shared app ViewModel before opening screen Activities"
-        }
+    protected val viewModelActivity: ViewModelActivity by lazy {
+        (application as MyApplication).sharedViewModel(this)
+    }
+    private var appliedLanguage = ""
+    private val router by lazy { ActivityRouter(this) }
 
     @Inject
     internal lateinit var sharedPreferences: SharedPreferencesManager
@@ -159,11 +164,25 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
         }
         return dialog
     }
-    protected fun activityRouter() = ActivityRouter(this)
+    protected fun activityRouter() = router
     protected fun popBack(): Boolean { finish(); return true }
+
+    override fun attachBaseContext(newBase: Context) {
+        appliedLanguage = newBase.getSharedPreferences("DEFAULT", Context.MODE_PRIVATE)
+            .getString("language_key", "").orEmpty().ifEmpty { "en" }
+        val locale = Locale.forLanguageTag(appliedLanguage)
+        val config = Configuration(newBase.resources.configuration).apply {
+            setLocale(locale)
+            setLayoutDirection(locale)
+        }
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        hideNavigation(true)
+        // Start loading even when Android restores a screen without the launcher.
+        viewModelActivity
         logScreenView()
         _binding = inflateBinding(layoutInflater, null, savedInstanceState)
         setContentView(binding.root)
@@ -197,6 +216,21 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        hideNavigation(true)
+        val language = SharedPreferencesManager.isLanguageKey().ifEmpty { "en" }
+        if (language != appliedLanguage) {
+            appliedLanguage = language
+            recreate()
+        }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideNavigation(true)
+    }
+
     override fun onStart() {
         super.onStart()
         onScreenStart()
@@ -216,19 +250,7 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
     }
 }
 
-/** MainActivity remains at the root of the task and owns app-wide screen state. */
-object SharedActivityViewModels {
-    @Volatile
-    var instance: ViewModelActivity? = null
-}
-
-object MainActivityReference { @Volatile var instance: AppCompatActivity? = null }
-
-private object ActivityNavigationState { val handle = SavedStateHandle() }
-
 class ActivityRouter(private val activity: AppCompatActivity) {
-    val currentBackStackEntry = ActivityBackStackEntry(ActivityNavigationState.handle)
-    fun getBackStackEntry(@Suppress("UNUSED_PARAMETER") id: Int) = currentBackStackEntry
     fun navigateUp(): Boolean { activity.finish(); return true }
     fun popBackStack(): Boolean = navigateUp()
     fun safeNavigate(actionId: Int, args: Bundle? = null) = navigate(actionId, args)
@@ -253,7 +275,7 @@ class ActivityRouter(private val activity: AppCompatActivity) {
             R.id.action_customize_to_addCharacter -> com.oc.catemoji.catoc.ui.main.add_character.AddCharacterActivity::class.java
             R.id.action_addCharacter_to_viewImage,
             R.id.action_mypony_to_view -> com.oc.catemoji.catoc.ui.main.view.ViewActivity::class.java
-            R.id.action_cosplay_to_show, R.id.action_successCosplay_back_show -> com.oc.catemoji.catoc.ui.main.show.ShowActivity::class.java
+            R.id.action_cosplay_to_show -> com.oc.catemoji.catoc.ui.main.show.ShowActivity::class.java
             R.id.action_show_to_successCosplay -> com.oc.catemoji.catoc.ui.main.successcosplay.SuccessCosplayActivity::class.java
             R.id.action_successCosplay_to_home -> com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java
             else -> throw IllegalArgumentException("Unknown Activity action: $actionId")
@@ -266,9 +288,16 @@ class ActivityRouter(private val activity: AppCompatActivity) {
                 addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
         }
+        if (target == com.oc.catemoji.catoc.ui.main.myPony.MyPonyActivity::class.java &&
+            actionId in setOf(R.id.action_view_to_myPony, R.id.action_custom_to_myPony)
+        ) {
+            // Complete the creation flow so Back from the album returns to Home.
+            androidx.core.app.TaskStackBuilder.create(activity)
+                .addNextIntent(android.content.Intent(activity, com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java))
+                .addNextIntent(intent)
+                .startActivities()
+            return
+        }
         activity.startActivity(intent)
-        if (actionId == R.id.action_view_to_myPony) activity.finish()
     }
 }
-
-class ActivityBackStackEntry(val savedStateHandle: SavedStateHandle)

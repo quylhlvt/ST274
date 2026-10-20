@@ -86,7 +86,7 @@ class CustomizeViewModel @Inject constructor(
         // ✅ Dùng state check thay vì flag — safe với process death
         if (_state.value.listData.isNotEmpty()) return
         editingCustomizedId = null
-        val template = appDataManager.getCharacterByIndex(templateIndex) ?: return
+        val template = appDataManager.templates.value.getOrNull(templateIndex) ?: return
         val sorted   = sortBodyParts(template.listPath)
         val draft = restoreDraft(template.id, sorted)
         _state.value = CustomizeState(
@@ -102,7 +102,7 @@ class CustomizeViewModel @Inject constructor(
     /** Khởi tạo để EDIT character đã lưu. */
     fun initEdit(templateIndex: Int, savedSelections: List<SelectionIndex>, isFlipped: Boolean) {
         if (_state.value.listData.isNotEmpty()) return
-        val template = appDataManager.getCharacterByIndex(templateIndex) ?: return
+        val template = appDataManager.templates.value.getOrNull(templateIndex) ?: return
         val sorted   = sortBodyParts(template.listPath)
         _state.value = CustomizeState(
             template        = template,
@@ -117,7 +117,7 @@ class CustomizeViewModel @Inject constructor(
 // Xóa hàm initWithSelections sai đi, thay bằng:
     fun initWithSelections(templateIndex: Int, savedSelections: ArrayList<SelectionIndex>) {
         if (_state.value.listData.isNotEmpty()) return
-        val template = appDataManager.getCharacterByIndex(templateIndex) ?: return
+        val template = appDataManager.templates.value.getOrNull(templateIndex) ?: return
         val sorted   = sortBodyParts(template.listPath)
         val remapped = sorted.mapIndexed { sortedIdx, bp ->
             val originalIdx = template.listPath.indexOf(bp)
@@ -141,7 +141,7 @@ class CustomizeViewModel @Inject constructor(
     ) {
         if (_state.value.listData.isNotEmpty()) return
         editingCustomizedId = customizedId
-        val template = appDataManager.getCharacterByIndex(templateIndex) ?: return
+        val template = appDataManager.templates.value.getOrNull(templateIndex) ?: return
         _layerTransforms.value =
             appDataManager.getCharacterById(customizedId)?.layerTransforms.orEmpty()
         val sorted   = sortBodyParts(template.listPath)
