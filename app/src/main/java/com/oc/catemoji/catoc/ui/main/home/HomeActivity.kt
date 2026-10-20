@@ -90,6 +90,7 @@ private fun initNativeCollab() {
 
     private fun onHomeMenuClick(action: HomeMenuAction) {
         when (action) {
+            HomeMenuAction.DIY -> return
             HomeMenuAction.CREATE -> {
                 val hasNetwork = isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
                 when {
@@ -98,6 +99,21 @@ private fun initNativeCollab() {
                     else -> startActivity(android.content.Intent(
                         requireContext(),
                         com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity::class.java
+                    ))
+                }
+            }
+
+            HomeMenuAction.Pause -> {
+                val hasNetwork = isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
+                when {
+                    !hasNetwork -> showUnstableNetworkDialog()
+                    viewModelActivity.templates.value.isEmpty() -> showLoadingDataDialog()
+                    else -> startActivity(android.content.Intent(
+                        requireContext(),
+                        com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity::class.java
+                    ).putExtra(
+                        com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity.EXTRA_PAUSE_CHALLENGE,
+                        true
                     ))
                 }
             }

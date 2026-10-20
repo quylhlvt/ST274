@@ -44,9 +44,7 @@ class ViewViewModel @Inject constructor(  private val appDataManager: AppDataMan
                 }
                 // ✅ Nếu là design, xóa khỏi myDesignPaths
                 if (!isAvatar) {
-                    val current = appDataManager.myDesignPaths.value.toMutableList()
-                    current.remove(path)
-                    appDataManager.saveMyDesignToJson(current)
+                    appDataManager.removeMyDesignPath(path)
                 }
                 // Xóa file vật lý
                 File(path).delete()

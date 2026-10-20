@@ -21,89 +21,28 @@
     </FrameLayout>
 
     <!--    cvType-->
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/cvType"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dimension_46"
-        android:layout_marginHorizontal="@dimen/dimension_16"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
+        app:layout_constraintDimensionRatio="3.6:0.48"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="@dimen/dimension_10"
         app:layout_constraintTop_toBottomOf="@id/layoutActionBar">
-
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:paddingHorizontal="@dimen/dimension_8"
+            android:id="@+id/recycleTabMycreation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
             android:orientation="horizontal"
-            android:weightSum="328">
+            android:overScrollMode="never"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_my_creation_tab"/>
 
-            <!--            btnMyAvatar-->
-            <FrameLayout
-                android:id="@+id/btnMyAvatar"
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="match_parent"
-                android:layout_weight="156">
-
-                <!--                imvFocusMyAvatar-->
-                <ImageView
-                    android:id="@+id/imvFocusMyAvatar"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/bg_btn_type_selected" />
-
-                <!--                tvMyAvatar-->
-                <TextView
-                        android:id="@+id/tvMyAvatar"
-                        style="@style/single_marquee"
-                        android:layout_width="273dp"
-                        android:layout_height="69dp"
-                        android:layout_marginVertical="@dimen/dimension_1"
-                        android:fontFamily="@font/baloo2_bold"
-                        android:gravity="center"
-                        android:text="@string/my_avatar"
-                        android:textColor="@color/app_color"
-                        android:textSize="@dimen/text_size_20"/>
-
-            </FrameLayout>
-
-            <Space
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="match_parent"
-                android:layout_weight="16" />
-
-            <!--            btnMyDesign-->
-            <FrameLayout
-                android:id="@+id/btnMyDesign"
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="match_parent"
-                android:layout_weight="156">
-
-                <!--                imvFocusMyDesign-->
-                <ImageView
-                    android:id="@+id/imvFocusMyDesign"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginVertical="@dimen/dimension_1"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/bg_btn_type_unselected" />
-
-                <!--                tvMyDesign-->
-                <TextView
-                    android:id="@+id/tvMyDesign"
-
-                    style="@style/single_marquee"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fontFamily="@font/baloo2_bold"
-                    android:gravity="center"
-                    android:text="@string/design"
-                    android:textColor="@color/app_color"
-                    android:textSize="@dimen/text_size_20" />
-
-            </FrameLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </FrameLayout>
     <FrameLayout
         android:id="@+id/native_ads"
         android:layout_width="match_parent"
@@ -138,6 +77,18 @@
         app:layout_constraintTop_toBottomOf="@id/native_ads"
         tools:itemCount="9"
         tools:listitem="@layout/item_my_design" />
+ <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleDiy"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimension_0"
+        android:layout_marginHorizontal="@dimen/dimension_8"
+        android:layout_marginTop="@dimen/dimension_5"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/native_ads"
+        tools:itemCount="9"
+        tools:listitem="@layout/item_my_diy" />
 
 
     <TextView

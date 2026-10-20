@@ -4,6 +4,8 @@
     <color name="color_text_intro">#1F2F4F</color>
     <color name="white">#FFFFFFFF</color>
     <color name="black">#000000</color>
+    <color name="_4D3F3E3F">#4D3F3E3F</color>
+    <color name="_3F3E3F">#3F3E3F</color>
     <color name="black2">#CC000000</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="orange_F6">#F68300</color>
@@ -20,6 +22,7 @@
     <color name="app_color8">#EEBD5A</color>
     <color name="app_color9">#FEFBE3</color>
     <color name="app_color10">#C6363E</color>
+    <color name="app_color11">#FFF5E2</color>
     <color name="shadown_item_cate">#4A2711</color>
     <color name="stroke_layercustom_select">#FFCBFF</color>
     <color name="stroke_forcus_1">#7EFEFD</color>

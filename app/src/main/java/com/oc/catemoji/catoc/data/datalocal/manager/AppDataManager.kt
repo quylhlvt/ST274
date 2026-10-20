@@ -29,6 +29,7 @@ class AppDataManager @Inject constructor(
         private const val KEY_TEMPLATES   = "templates"
         private const val KEY_CUSTOMIZED  = "customized"
         private const val KEY_MY_DESIGNS  = "my_designs"
+        private const val KEY_DESIGN_SOURCE_PREFIX = "my_design_source:"
         private const val KEY_API_CACHE   = "api_cache"
 
     }
@@ -511,7 +512,11 @@ class AppDataManager @Inject constructor(
         runCatching { mmkv.encode(KEY_MY_DESIGNS, gson.toJson(paths)) }
             .onFailure { Log.e(TAG, "❌ saveMyDesigns", it) }
     }
-    suspend fun addMyDesignPath(imagePath: String) {
+    fun getMyDesignSource(imagePath: String): String? =
+        mmkv.decodeString(KEY_DESIGN_SOURCE_PREFIX + imagePath)
+
+    suspend fun addMyDesignPath(imagePath: String, source: String? = null) {
+        if (source != null) mmkv.encode(KEY_DESIGN_SOURCE_PREFIX + imagePath, source)
         val list = _myDesignPaths.value.toMutableList()
         if (!list.contains(imagePath)) {
             list.add(0, imagePath)
@@ -523,6 +528,7 @@ class AppDataManager @Inject constructor(
     suspend fun removeMyDesignPath(imagePath: String) {
         val list = _myDesignPaths.value.toMutableList()
         if (list.remove(imagePath)) {
+            mmkv.removeValueForKey(KEY_DESIGN_SOURCE_PREFIX + imagePath)
             _myDesignPaths.value = list
             saveMyDesignToJson(list)
         }

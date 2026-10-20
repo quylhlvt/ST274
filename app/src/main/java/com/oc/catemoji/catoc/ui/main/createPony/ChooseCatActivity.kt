@@ -18,6 +18,8 @@ import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.data.model.custom.CustomModel
 import com.oc.catemoji.catoc.databinding.ActivityChooseCatBinding
+import com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity
+import com.oc.catemoji.catoc.ui.main.pause.PauseOCChallengeActivity
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -63,15 +65,27 @@ override fun initView() {
                 android.widget.Toast.makeText(this@ChooseCatActivity, R.string.download_failed_please_try_again_later, android.widget.Toast.LENGTH_SHORT).show()
                 return@launch
             }
-            startActivity(Intent(this@ChooseCatActivity, com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity::class.java).apply {
-                putExtra(com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity.ARG_TEMPLATE_INDEX, index)
-                putExtra(com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity.ARG_TEMPLATE_ID, character.id)
+            val destination = if (intent.getBooleanExtra(EXTRA_PAUSE_CHALLENGE, false)) {
+                PauseOCChallengeActivity::class.java
+            } else {
+                CustomizeActivity::class.java
+            }
+            startActivity(Intent(this@ChooseCatActivity, destination).apply {
+                putExtra(CustomizeActivity.ARG_TEMPLATE_INDEX, index)
+                putExtra(CustomizeActivity.ARG_TEMPLATE_ID, character.id)
+                if (destination == PauseOCChallengeActivity::class.java) {
+                    putExtra("SHOW_TOUCH_GUIDE", true)
+                }
             })
         }
     }
 
     override fun viewListener() {
         binding.actionBar.btnActionBarLeft.onClick { finish() }
+    }
+
+    companion object {
+        const val EXTRA_PAUSE_CHALLENGE = "pause_challenge"
     }
 
     override fun observeData() {

@@ -1016,7 +1016,9 @@ private fun initNativeCollab() {
                 val savedImagePath = withContext(Dispatchers.IO) {
                     imageManager.deleteOldImage(designId)
                     val path = imageManager.saveBitmap(bitmap, designId)
-                    if (path != null) viewModelActivity.appDataManager.addMyDesignPath(path)
+                    if (path != null) {
+                        viewModelActivity.appDataManager.addMyDesignPath(path, designSource)
+                    }
                     path
                 }
                 hideLoadingSafe()

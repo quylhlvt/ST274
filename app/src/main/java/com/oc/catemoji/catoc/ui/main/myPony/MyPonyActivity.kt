@@ -4,22 +4,29 @@ import android.app.AlertDialog
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Gravity
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupWindow
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.dialog.CreateNameDialog
+import com.oc.catemoji.catoc.core.dialog.DialogWallpaper
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.checkPermissions
@@ -34,17 +41,22 @@ import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.extention.toCleanSelections
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.core.helper.PermissionRequestHelper
+import com.oc.catemoji.catoc.core.helper.WallpaperHelper
 import com.oc.catemoji.catoc.data.model.mypony.MyAlbumModel
 import com.oc.catemoji.catoc.databinding.ActivityMyPonyBinding
+import com.oc.catemoji.catoc.databinding.PopupMyCreationBinding
+import com.oc.catemoji.catoc.ui.main.add_character.DesignSource
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity
 import com.oc.catemoji.catoc.ui.main.myPony.adapter.MyAvatarAdapter
+import com.oc.catemoji.catoc.ui.main.myPony.adapter.MyCreationTabAdapter
 import com.oc.catemoji.catoc.ui.main.myPony.adapter.MyDesignAdapter
+import com.oc.catemoji.catoc.ui.main.viewMyDiy.ViewMyDIYActivity
 import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionViewModel
 import com.oc.catemoji.catoc.utils.BlockableFrameLayout
 import com.oc.catemoji.catoc.utils.share.whatsapp.StickerPack
 import com.oc.catemoji.catoc.utils.share.whatsapp.WhitelistCheck
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -58,15 +70,39 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
 
     private lateinit var myAvatarAdapter: MyAvatarAdapter
     private lateinit var myDesignAdapter: MyDesignAdapter
+    private lateinit var myCreationTabAdapter: MyCreationTabAdapter
+    private var creationPopup: PopupWindow? = null
+    private var wallpaperDialog: DialogWallpaper? = null
+    private var isSettingWallpaper = false
     private var pendingDownloadPaths: ArrayList<String> = arrayListOf()
     private val permissionViewModel: PermissionViewModel by viewModels()
 
-    private val isAvatarTab = MutableStateFlow(true)
+    private var selectedTab = MyCreationTab.AVATAR
+    private val isAvatarTab: Boolean get() = selectedTab == MyCreationTab.AVATAR
+    private val currentCreationRecycler: RecyclerView
+        get() = when (selectedTab) {
+            MyCreationTab.AVATAR -> binding.recycleAvatar
+            MyCreationTab.DESIGN -> binding.recycleDesign
+            MyCreationTab.DIY -> binding.recycleDiy
+        }
 
     companion object {
+        private const val KEY_SELECTED_TAB = "selected_creation_tab"
         private const val ADD_PACK_REQUEST = 200
         private const val MIN_STICKERS_WHATSAPP = 3
         private const val MAX_STICKERS_WHATSAPP = 30
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        selectedTab = MyCreationTab.values().firstOrNull {
+            it.name == savedInstanceState?.getString(KEY_SELECTED_TAB)
+        } ?: MyCreationTab.AVATAR
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(KEY_SELECTED_TAB, selectedTab.name)
+        super.onSaveInstanceState(outState)
     }
 
     private fun performBatchDownload() {
@@ -92,6 +128,8 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
     }
 
     override fun onScreenStop() {
+        creationPopup?.dismiss()
+        wallpaperDialog?.dismiss()
         if (!isAdded || isDetached) return
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
         binding.flNativeCollab.removeAllViews()
@@ -132,32 +170,47 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
     }
 
     private fun setupTabs() {
-        binding.btnMyAvatar.onClick { switchTab(true) }
-        binding.btnMyDesign.onClick { switchTab(false) }
+        myCreationTabAdapter = MyCreationTabAdapter(::switchTab)
+        binding.recycleTabMycreation.apply {
+            layoutManager = LinearLayoutManager(this@MyPonyActivity, RecyclerView.HORIZONTAL, false)
+            adapter = myCreationTabAdapter
+            isNestedScrollingEnabled = false
+            scrollToPosition(selectedTab.ordinal)
+        }
     }
 
-    private fun switchTab(isAvatar: Boolean) {
-        isAvatarTab.value = isAvatar
-        applyTabUI(isAvatar)
+    private fun switchTab(tab: MyCreationTab) {
+        creationPopup?.dismiss()
+        wallpaperDialog?.dismiss()
+        if (selectedTab.designSource != tab.designSource && tab != MyCreationTab.AVATAR) {
+            myDesignAdapter.submitList(emptyList())
+        }
+        selectedTab = tab
+        applyTabUI()
+        binding.recycleTabMycreation.smoothScrollToPosition(tab.ordinal)
         resetSelection()
     }
 
-    private fun applyTabUI(isAvatar: Boolean) {
+    private fun applyTabUI() {
+        myCreationTabAdapter.selectTab(selectedTab)
+        myDesignAdapter.isDiy = selectedTab == MyCreationTab.DIY
         binding.apply {
-            if (isAvatar) {
-                imvFocusMyDesign.setImageResource(R.drawable.bg_btn_type_unselected)
-                imvFocusMyAvatar.setImageResource(R.drawable.bg_btn_type_selected)
-                recycleAvatar.visible()
-                recycleDesign.gone()
+            recycleAvatar.isVisible = isAvatarTab
+            recycleDesign.isVisible = selectedTab == MyCreationTab.DESIGN
+            recycleDiy.isVisible = selectedTab == MyCreationTab.DIY
+            if (isAvatarTab) {
                 updateEmptyState(myAvatarAdapter.items.isEmpty())
-                // ❌ Bỏ loadAvatarData() — dùng StateFlow
             } else {
-                imvFocusMyDesign.setImageResource(R.drawable.bg_btn_type_selected)
-                imvFocusMyAvatar.setImageResource(R.drawable.bg_btn_type_unselected)
-                recycleAvatar.gone()
-                recycleDesign.visible()
+                // Move the adapter to the selected list so DIY uses item_my_diy.
+                if (currentCreationRecycler.adapter !== myDesignAdapter) {
+                    recycleDesign.adapter = null
+                    recycleDiy.adapter = null
+                    currentCreationRecycler.adapter = myDesignAdapter
+                }
+                // Restore cached data even when StateFlow's list has not changed.
+                myDesignAdapter.submitList(viewModel.myDesignList.value)
                 updateEmptyState(myDesignAdapter.items.isEmpty())
-                loadDesignData() // Design vẫn load thủ công vì không có StateFlow
+                loadDesignData()
             }
         }
     }
@@ -185,15 +238,101 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
         }
 
         myDesignAdapter = MyDesignAdapter().apply {
+            isDiy = selectedTab == MyCreationTab.DIY
             onItemClick = { path ->    showInter {handleItemClick(path, false, 2, "0") }}
             onLongClick = { position -> handleLongClick(position, false) }
             onItemTick = { position -> toggleSelection(position, false) }
             onDeleteClick = { path -> confirmDelete(arrayListOf(path), false) }
+            onMoreClick = ::showCreationPopup
         }
         binding.recycleDesign.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = myDesignAdapter
             itemAnimator = null
+        }
+        binding.recycleDiy.apply {
+            layoutManager = GridLayoutManager(requireContext(), 2)
+            itemAnimator = null
+        }
+    }
+
+    private fun showCreationPopup(anchor: View, path: String) {
+        creationPopup?.dismiss()
+        val popupBinding = PopupMyCreationBinding.inflate(layoutInflater)
+        val popup = PopupWindow(
+            popupBinding.root,
+            resources.getDimensionPixelSize(R.dimen.dimension_200),
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        ).apply {
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isOutsideTouchable = true
+            elevation = resources.getDimension(R.dimen.dimension_5)
+            setOnDismissListener { creationPopup = null }
+        }
+        popupBinding.btnSetWallpaper.onClick {
+            popup.dismiss()
+            showWallpaperDialog(path)
+        }
+        popupBinding.btnShare.onClick {
+            popup.dismiss()
+            withCreationImage(path) { uri ->
+                startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                    type = "image/*"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }, getString(R.string.share)))
+            }
+        }
+        popupBinding.btnDelete.onClick {
+            popup.dismiss()
+            confirmDelete(arrayListOf(path), false)
+        }
+        creationPopup = popup
+        popup.showAsDropDown(anchor, 0, 0, Gravity.END)
+    }
+
+    private fun showWallpaperDialog(path: String) {
+        if (isSettingWallpaper || wallpaperDialog?.isShowing == true) return
+        wallpaperDialog = DialogWallpaper(requireContext()).apply {
+            onSetWallpaper = { flags -> setCreationWallpaper(path, flags) }
+            setOnDismissListener { wallpaperDialog = null }
+            show()
+        }
+    }
+
+    private fun setCreationWallpaper(path: String, flags: Int) {
+        if (isSettingWallpaper) return
+        val context = requireContext().applicationContext
+        isSettingWallpaper = true
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val message = WallpaperHelper.setWallpaper(context, path, flags)
+                showToast(message)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("MyPonyActivity", "Unable to set creation as wallpaper", e)
+                showToast(R.string.wallpaper_set_failed)
+            } finally {
+                isSettingWallpaper = false
+            }
+        }
+    }
+
+    private fun withCreationImage(path: String, action: (android.net.Uri) -> Unit) {
+        val file = File(path)
+        if (!file.isFile) {
+            showToast(R.string.errorcontent)
+            return
+        }
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            requireContext(), "${requireContext().packageName}.provider", file
+        )
+        try {
+            action(uri)
+        } catch (_: ActivityNotFoundException) {
+            showToast(R.string.no_app_found_to_handle_this_action)
         }
     }
 
@@ -258,6 +397,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
         }
         binding.recycleAvatar.addOnItemTouchListener(touchListener)
         binding.recycleDesign.addOnItemTouchListener(touchListener)
+        binding.recycleDiy.addOnItemTouchListener(touchListener)
     }
 
     // ── OBSERVE ───────────────────────────────────────────────────────────────
@@ -271,7 +411,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
                     .map { MyAlbumModel(path = it.imageSave, idEdit = it.id, type = 1) }
 
                 myAvatarAdapter.submitList(list)
-                if (isAvatarTab.value) updateEmptyState(list.isEmpty())
+                if (isAvatarTab) updateEmptyState(list.isEmpty())
                 updateSelectionUI()
             }
         }
@@ -280,7 +420,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.myDesignList.collect { list ->
                 myDesignAdapter.submitList(list)
-                if (!isAvatarTab.value) updateEmptyState(list.isEmpty())
+                if (!isAvatarTab) updateEmptyState(list.isEmpty())
                 updateSelectionUI()
             }
         }
@@ -315,7 +455,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
     }
 
     private fun updateSelectionUI() {
-        val currentList = if (isAvatarTab.value) myAvatarAdapter.items else myDesignAdapter.items
+        val currentList = if (isAvatarTab) myAvatarAdapter.items else myDesignAdapter.items
         val hasSelection = currentList.any { it.isShowSelection }
         val allSelected = currentList.isNotEmpty() && currentList.all { it.isSelected }
         binding.actionBar.apply {
@@ -335,7 +475,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
 
         if (hasSelection) {
             binding.lnlBottom.visible()
-            if (isAvatarTab.value) {
+            if (isAvatarTab) {
                 binding.lnlBottomTop.visible()   // WhatsApp + Telegram
                 binding.llBottom.visible()       // Share + Download
             } else {
@@ -343,7 +483,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
                 binding.llBottom.visible()
 
             }
-        } else if (isAvatarTab.value && currentList.isNotEmpty()) {
+        } else if (isAvatarTab && currentList.isNotEmpty()) {
             // Trạng thái thường của My Cat chỉ hiển thị WhatsApp + Telegram.
             // Share + Download chỉ xuất hiện sau khi nhấn giữ để vào chế độ chọn.
             binding.lnlBottom.visible()
@@ -354,7 +494,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
         }
 
         setRecyclerBottomMargin(
-            if (isAvatarTab.value) binding.recycleAvatar else binding.recycleDesign,
+            currentCreationRecycler,
             when {
                 !binding.lnlBottom.isVisible -> R.dimen.dimension_0
                 binding.lnlBottomTop.isVisible && binding.llBottom.isVisible -> R.dimen.dimension_120
@@ -366,7 +506,10 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
     // ── DATA LOADING ──────────────────────────────────────────────────────────
 
     private fun loadAvatarData() = viewModel.loadMyAvatar(requireContext(), true)
-    private fun loadDesignData() = viewModel.loadMyDesign(requireContext())
+    private fun loadDesignData() {
+        val source = selectedTab.designSource ?: return
+        viewModel.loadMyDesign(requireContext(), source = source)
+    }
 
     // ── SELECTION ─────────────────────────────────────────────────────────────
 
@@ -379,7 +522,15 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
 //            navigateToView(path, type, idEdit)
 //        }
         resetSelection()
-        navigateToView(path, type, idEdit)
+        if (!isAvatar && selectedTab == MyCreationTab.DIY) {
+            if (!File(path).isFile) {
+                showToast(R.string.errorcontent)
+                return
+            }
+            startActivity(ViewMyDIYActivity.newIntent(this, path))
+        } else {
+            navigateToView(path, type, idEdit)
+        }
     }
 // MyAvatarAdapter — long click gọi về Activity
 
@@ -400,7 +551,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
             setRecyclerBottomMargin(binding.recycleAvatar, R.dimen.dimension_50) // ← thêm margin
         } else {
             myDesignAdapter.submitList(updatedList)
-            setRecyclerBottomMargin(binding.recycleDesign, R.dimen.dimension_50) // ← thêm margin
+            setRecyclerBottomMargin(currentCreationRecycler, R.dimen.dimension_50)
         }
         updateSelectionUI()
     }
@@ -431,15 +582,15 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
             showToast(R.string.please_select_an_image); return
         }
         val paths = ArrayList(selected.map { it.path })
-        confirmDelete(paths, isAvatarTab.value)
+        confirmDelete(paths, isAvatarTab)
     }
 
     private fun handleSelectAll() {
-        val currentList = if (isAvatarTab.value) myAvatarAdapter.items else myDesignAdapter.items
+        val currentList = if (isAvatarTab) myAvatarAdapter.items else myDesignAdapter.items
         val shouldSelectAll = !currentList.all { it.isSelected }
         val updatedList =
             currentList.map { it.copy(isSelected = shouldSelectAll, isShowSelection = true) }
-        if (isAvatarTab.value) myAvatarAdapter.submitList(updatedList)
+        if (isAvatarTab) myAvatarAdapter.submitList(updatedList)
         else myDesignAdapter.submitList(updatedList)
         updateSelectionUI()
     }
@@ -455,12 +606,13 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
         // Reset margin về 0
         setRecyclerBottomMargin(binding.recycleAvatar, R.dimen.dimension_0)
         setRecyclerBottomMargin(binding.recycleDesign, R.dimen.dimension_0)
+        setRecyclerBottomMargin(binding.recycleDiy, R.dimen.dimension_0)
 
         updateSelectionUI()
     }
 
     private fun getSelectedItems(): List<MyAlbumModel> =
-        if (isAvatarTab.value) myAvatarAdapter.items.filter { it.isSelected }
+        if (isAvatarTab) myAvatarAdapter.items.filter { it.isSelected }
         else myDesignAdapter.items.filter { it.isSelected }
 
     /**
@@ -471,7 +623,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
         val selected = getSelectedItems()
         if (selected.isNotEmpty()) return selected
 
-        return if (isAvatarTab.value) myAvatarAdapter.items else emptyList()
+        return if (isAvatarTab) myAvatarAdapter.items else emptyList()
     }
 
     // ── NAVIGATION ────────────────────────────────────────────────────────────
@@ -481,6 +633,9 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
             putString("imagePath", path)
             putString("idEdit", idEdit)
             putInt("imageType", type)
+            selectedTab.designSource?.let { source ->
+                putString(DesignSource.ARG_SOURCE, source)
+            }
         })
     }
 
@@ -731,11 +886,8 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
     }
 
     override fun bindViewModel() {}
-override fun onResume() {
+    override fun onResume() {
         super.onResume()
-        applyTabUI(isAvatarTab.value)
-        if (!isAvatarTab.value) {
-            loadDesignData()
-        }
+        applyTabUI()
     }
 }

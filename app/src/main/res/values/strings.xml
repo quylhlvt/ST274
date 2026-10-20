@@ -89,12 +89,21 @@
     <string name="color">Color</string>
     <string name="successful">Successful</string>
     <string name="successfully">Successfully</string>
-    <string name="context_guide_body">Cosplay Mode, players are randomly given one reference image to follow. Your task is to recreate that character as accurately as possible by choosing the right hairstyles, outfits, colors, and accessories. Every correct match increases your percentage score (%). The closer your character looks to the random image, the higher your final score will be. Pay attention to small details to achieve the best cosplay result.</string>
+    <string name="context_guide_body">Cosplay Mode, players are randomly given one reference image to follow. Your task
+        is to recreate that character as accurately as possible by choosing the right hairstyles, outfits, colors, and
+        accessories. Every correct match increases your percentage score (%). The closer your character looks to the
+        random image, the higher your final score will be. Pay attention to small details to achieve the best cosplay
+        result.
+    </string>
     <string name="try_again">Try Again</string>
     <string name="no_internet">No internet</string>
     <string name="internet">Internet</string>
-    <string name="please_connect_to_the_internet_to_download_more_data">Please connect to the internet to download more data</string>
-    <string name="unstable_connection_please_check_your_network_connection">Unstable connection, please check your network connection</string>
+    <string name="please_connect_to_the_internet_to_download_more_data">Please connect to the internet to download more
+        data
+    </string>
+    <string name="unstable_connection_please_check_your_network_connection">Unstable connection, please check your
+        network connection
+    </string>
     <string name="ok">Okay</string>
     <string name="please_wait_a_few_seconds_for_data_to_load">Please wait a few seconds for data to load.</string>
     <string name="create_package_name">Create Package Name</string>
@@ -112,5 +121,23 @@
     <string name="your_cosplay_score">Your Cosplay Score</string>
     <string name="match">Match</string>
     <string name="cat_studio">Cat Studio</string>
-    <string name="please_turn_on_internet_to_use_this_feature">Please turn on your internet connection to use this feature.</string>
+    <string name="please_turn_on_internet_to_use_this_feature">Please turn on your internet connection to use this
+        feature.
+    </string>
+    <string name="my_diy">My DIY</string>
+    <string name="set_wallpaper">Set wallpaper</string>
+    <string name="set_wallpaper2">Set Wallpaper</string>
+    <string name="wallpaper_set_success">Wallpaper set successfully!</string>
+    <string name="wallpaper_set_failed">Unable to set wallpaper. Please try again.</string>
+    <string name="lockscreen">Lockscreen</string>
+    <string name="home">Home</string>
+    <string name="lockscreen_home"><![CDATA[Lockscreen & Home]]></string>
+    <string name="set">Set</string>
+    <string name="diy_pet_language">DIY Pet Language</string>
+    <string name="pause_oc_challenge">Pause OC Challenge</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="pause_challenge_progress">%1$s (%2$d/%3$d)</string>
+    <string name="pause_challenge_hint">Tap the screen to keep this layer</string>
+    <string name="skip_this_layer">Skip this layer</string>
 </resources>

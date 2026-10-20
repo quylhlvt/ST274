@@ -13,15 +13,19 @@ import androidx.lifecycle.viewModelScope
 import com.oc.catemoji.catoc.core.helper.DownloadHelper
 import com.oc.catemoji.catoc.data.datalocal.manager.AppDataManager
 import com.oc.catemoji.catoc.data.model.mypony.MyAlbumModel
+import com.oc.catemoji.catoc.ui.main.add_character.DesignSource
 import com.oc.catemoji.catoc.utils.share.telegram.TelegramSharing
 import com.oc.catemoji.catoc.utils.share.whatsapp.IdGenerator
 import com.oc.catemoji.catoc.utils.share.whatsapp.StickerBook
 import com.oc.catemoji.catoc.utils.share.whatsapp.StickerPack
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -44,6 +48,8 @@ class MyPonyViewModel @Inject constructor(
     // Design list
     private val _myDesignList = MutableStateFlow<List<MyAlbumModel>>(emptyList())
     val myDesignList: StateFlow<List<MyAlbumModel>> = _myDesignList.asStateFlow()
+    private var designLoadJob: Job? = null
+    private var selectedDesignSource = DesignSource.CUSTOM
 
     // Download state
     private val _downloadState = MutableStateFlow<DownloadState>(DownloadState.IDLE)
@@ -98,40 +104,37 @@ class MyPonyViewModel @Inject constructor(
 
     // ==================== LOAD DESIGN DATA ====================
 
-    fun loadMyDesign(context: Context, forceReload: Boolean = false) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun loadMyDesign(
+        context: Context,
+        forceReload: Boolean = false,
+        source: String = selectedDesignSource
+    ) {
+        selectedDesignSource = source
+        designLoadJob?.cancel()
+        designLoadJob = viewModelScope.launch(Dispatchers.IO) {
             try {
                 Log.d(TAG, "🔄 Loading designs...")
 
-                val paths = appDataManager.myDesignPaths.value
-
-                Log.d(TAG, "📦 Raw paths from AppDataManager: ${paths.size}")
-
-                // Filter only existing files
-                val existingPaths = paths.filter { path ->
-                    val exists = File(path).exists()
-                    if (!exists) {
-                        Log.w(TAG, "⚠️ File not found: $path")
+                appDataManager.myDesignPaths.collectLatest { paths ->
+                    val list = paths.filter { path ->
+                        (appDataManager.getMyDesignSource(path) ?: DesignSource.CUSTOM) == source &&
+                            File(path).exists()
+                    }.map { path ->
+                        MyAlbumModel(
+                            path = path,
+                            isSelected = false,
+                            isShowSelection = false,
+                            idEdit = "",
+                            type = 2
+                        )
                     }
-                    exists
+                    withContext(Dispatchers.Main) {
+                        _myDesignList.value = list
+                        Log.d(TAG, "✅ Design list updated: ${list.size} items")
+                    }
                 }
-
-                Log.d(TAG, "✅ Existing paths: ${existingPaths.size}")
-
-                val list = existingPaths.map { path ->
-                    MyAlbumModel(
-                        path = path,
-                        isSelected = false,
-                        isShowSelection = false,
-                        idEdit = "",
-                        type = 2
-                    )
-                }
-
-                withContext(Dispatchers.Main) {
-                    _myDesignList.value = list
-                    Log.d(TAG, "✅ Design list updated: ${list.size} items")
-                }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG, "❌ Error loading designs: ${e.message}", e)
             }
@@ -232,16 +235,8 @@ class MyPonyViewModel @Inject constructor(
 
                 paths.forEach { path ->
                     deleteFileFromStorage(context, path)
+                    appDataManager.removeMyDesignPath(path)
                 }
-
-                // ✅ Update AppDataManager
-                val current = appDataManager.myDesignPaths.value.toMutableList()
-                val sizeBefore = current.size
-                current.removeAll(paths)
-
-                Log.d(TAG, "📦 Removed ${sizeBefore - current.size} paths from AppDataManager")
-
-                appDataManager.saveMyDesignToJson(current)
 
                 withContext(Dispatchers.Main) {
                     loadMyDesign(context, true)

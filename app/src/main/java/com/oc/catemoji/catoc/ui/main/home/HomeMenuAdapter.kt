@@ -8,7 +8,7 @@ import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.databinding.ItemHomeMenuBinding
 
 enum class HomeMenuAction {
-    CREATE, STUDIO, COSPLAY, RANDOM, MY_ALBUM
+    CREATE, DIY,Pause,STUDIO, COSPLAY, RANDOM, MY_ALBUM
 }
 
 data class HomeMenuItem(
@@ -22,6 +22,8 @@ class HomeMenuAdapter(
 
     private val items = listOf(
         HomeMenuItem(R.string.pony_maker, HomeMenuAction.CREATE),
+        HomeMenuItem(R.string.diy_pet_language, HomeMenuAction.DIY),
+        HomeMenuItem(R.string.pause_oc_challenge, HomeMenuAction.Pause),
         HomeMenuItem(R.string.cat_studio, HomeMenuAction.STUDIO),
         HomeMenuItem(R.string.cosplay, HomeMenuAction.COSPLAY),
         HomeMenuItem(R.string.cat_random, HomeMenuAction.RANDOM),
