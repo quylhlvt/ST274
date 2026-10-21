@@ -79,6 +79,8 @@ class ViewModelActivity @Inject constructor(
     val diyTagQuantity: StateFlow<Int> = _diyTagQuantity.asStateFlow()
     private val _diyAssetsReady = MutableStateFlow(false)
     val diyAssetsReady: StateFlow<Boolean> = _diyAssetsReady.asStateFlow()
+    private val _diyBackgroundQuantity = MutableStateFlow(0)
+    val diyBackgroundQuantity: StateFlow<Int> = _diyBackgroundQuantity.asStateFlow()
     private var diyAssetsJob: Job? = null
     var bgQuantity: Int = 0
     var stickerQuantity: Int = 0
@@ -196,6 +198,7 @@ class ViewModelActivity @Inject constructor(
         val jsonObject = org.json.JSONObject(json)
         _diyCatCategories.value = jsonObject.diyCategories("Cat")
         _diyStickerCategories.value = jsonObject.diyCategories("Stickers")
+        _diyBackgroundQuantity.value = jsonObject.diyCategories("Background").firstOrNull()?.quantity ?: 0
         _diyEyesQuantity.value = jsonObject.diyCategories("Eyes")
             .firstOrNull()?.quantity
             ?: 0

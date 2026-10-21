@@ -6,6 +6,9 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.EditText
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
@@ -24,19 +27,25 @@ import com.oc.catemoji.catoc.core.custom.Draw
 import com.oc.catemoji.catoc.core.custom.DrawKey
 import com.oc.catemoji.catoc.core.custom.DrawableDraw
 import com.oc.catemoji.catoc.core.custom.listener.listenerdraw.OnDrawListener
+import com.oc.catemoji.catoc.core.dialog.ChooseColorDialog
 import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.data.model.customDiy.DiyCatalogue
 import com.oc.catemoji.catoc.databinding.ActivityCustomDiyPetBinding
+import com.oc.catemoji.catoc.ui.main.add_character.AddCharacterViewModel
 import com.oc.catemoji.catoc.ui.main.add_character.DesignSource
+import com.oc.catemoji.catoc.ui.main.add_character.adapter.BackgroundColorAdapter
+import com.oc.catemoji.catoc.ui.main.add_character.adapter.BackgroundImageAdapter
 import com.oc.catemoji.catoc.ui.main.view.ViewActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiyPetViewModel>(
@@ -71,6 +80,10 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
     private val stickerAdapter = DiyCatStickerAdapter { path ->
         addImage(path, LayerKind.STICKER, replaceExisting = false)
     }
+    private val bgViewModel: AddCharacterViewModel by viewModels()
+    private val bgImageAdapter by lazy { BackgroundImageAdapter() }
+    private val bgColorAdapter by lazy { BackgroundColorAdapter() }
+    private var loadedBgQuantity = 0
     private val stickerTitleAdapter = DiyCatTitleAdapter(::selectStickerCategory)
     private var stickerCategories: List<DiyAssetCategory> = emptyList()
     private val keyboardAdapters = List(4) { row ->
@@ -92,7 +105,18 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
     private var backgroundDraw: DrawableDraw? = null
     private var hasChanges = false
     private var isSaving = false
-
+    private val bgImagePicker =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                runCatching {
+                    contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                }
+                selectBackgroundImage(uri.toString(), 0)
+            }
+        }
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -153,6 +177,8 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         }
         binding.lnlCat.gone()
         binding.lnlEge.gone()
+        binding.lnlBackground.gone()
+        initBackgroundPanel()
         // Keep the keyboard measured off-screen so its first reveal does not have to
         // inflate and lay out all four rows on the click frame.
         binding.lnlKeyBroad.invisible()
@@ -188,7 +214,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         binding.tagKeyBroad.onClick { selectKeyboardTab(showTags = false) }
         binding.tagTag.onClick { selectKeyboardTab(showTags = true) }
         binding.btnText.onClick { showTool(Tool.TEXT) }
-        binding.btnBackground.onClick { showTool(Tool.BACKGROUND) }
+        binding.btnBackground.onClick { toggleBackgroundPanel() }
         binding.btnSticker.onClick { toggleStickerPanel() }
     }
 
@@ -197,6 +223,8 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.catalogue.collect(::renderCatalogue) }
                 launch { viewModelActivity.diyStickerCategories.collect(::renderStickers) }
+                launch { viewModelActivity.diyBackgroundQuantity.collect(::loadBackgroundList) }
+
             }
         }
     }
@@ -209,6 +237,8 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         if (tool != Tool.EYES) hideEyesPanel()
         if (tool != Tool.KEYBOARD) hideKeyboardPanel()
         if (tool != Tool.STICKER) hideStickerPanel()
+        if (tool != Tool.BACKGROUND) hideBackgroundPanel()
+
     }
 
     private fun toggleCatPanel() {
@@ -252,32 +282,35 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         hideEyesPanel()
         hideKeyboardPanel()
         hideStickerPanel()
+        hideBackgroundPanel()
         binding.lnlCat.visible()
         binding.recycleSort.invisible()
     }
 
     private fun hideCatPanel() {
         binding.lnlCat.gone()
-        binding.recycleSort.visible()
+        restoreSortIfIdle()
     }
 
     private fun showEyesPanel() {
         hideCatPanel()
         hideKeyboardPanel()
         hideStickerPanel()
+        hideBackgroundPanel()
         binding.lnlEge.visible()
         binding.recycleSort.invisible()
     }
 
     private fun hideEyesPanel() {
         binding.lnlEge.gone()
-        if (!binding.lnlCat.isVisible) binding.recycleSort.visible()
+        restoreSortIfIdle()
     }
 
     private fun showKeyboardPanel() {
         hideCatPanel()
         hideEyesPanel()
         hideStickerPanel()
+        hideBackgroundPanel()
         binding.lnlKeyBroad.visible()
         binding.recycleSort.invisible()
     }
@@ -285,7 +318,13 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
     private fun hideKeyboardPanel() {
         // INVISIBLE keeps the already-created key views warm without intercepting input.
         binding.lnlKeyBroad.invisible()
-        if (!binding.lnlCat.isVisible && !binding.lnlEge.isVisible) {
+        restoreSortIfIdle()
+    }
+    private fun restoreSortIfIdle() {
+        if (!binding.lnlCat.isVisible && !binding.lnlEge.isVisible &&
+            !binding.lnlSticker.isVisible && !binding.lnlBackground.isVisible &&
+            binding.lnlKeyBroad.visibility != View.VISIBLE
+        ) {
             binding.recycleSort.visible()
         }
     }
@@ -304,6 +343,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         hideCatPanel()
         hideEyesPanel()
         hideKeyboardPanel()
+        hideBackgroundPanel()
         binding.lnlSticker.visible()
         binding.recycleSort.invisible()
     }
@@ -412,7 +452,156 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             }
         )
     }
+    private fun toggleBackgroundPanel() {
+        if (currentTool == Tool.BACKGROUND && binding.lnlBackground.isVisible) {
+            hideBackgroundPanel()
+            return
+        }
+        currentTool = Tool.BACKGROUND
+        updateNavigation(Tool.BACKGROUND)
+        refreshDrawList()
+        showBackgroundPanel()
+    }
 
+    private fun showBackgroundPanel() {
+        hideCatPanel()
+        hideEyesPanel()
+        hideKeyboardPanel()
+        hideStickerPanel()
+        binding.lnlBackground.visible()
+        binding.recycleSort.invisible()
+    }
+
+    private fun hideBackgroundPanel() {
+        binding.lnlBackground.gone()
+        if (!binding.lnlCat.isVisible && !binding.lnlEge.isVisible &&
+            !binding.lnlSticker.isVisible && binding.lnlKeyBroad.visibility != View.VISIBLE
+        ) {
+            binding.recycleSort.visible()
+        }
+    }
+
+    private fun initBackgroundPanel() {
+        val bg = binding.lnlBackgroundDiy
+        bg.btnBackgroundImageTv.isSelected = true
+        bg.btnBackgroundColorTv.isSelected = true
+        bg.rcvBackgroundImage.apply {
+            adapter = bgImageAdapter
+            itemAnimator = null
+        }
+        bg.rcvBackgroundColor.apply {
+            adapter = bgColorAdapter
+            itemAnimator = null
+        }
+        bg.btnBackgroundImage.onClick { showBackgroundTab(isImage = true) }
+        bg.btnBackgroundColor.onClick { showBackgroundTab(isImage = false) }
+
+        bgImageAdapter.onAddImageClick = {
+            runCatching {
+                bgImagePicker.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
+        }
+        bgImageAdapter.onNoneImageClick = { position ->
+            removeBackground()
+            selectBackgroundItem(position, isImage = true)
+        }
+        bgImageAdapter.onBackgroundImageClick = { path, position ->
+            selectBackgroundImage(path, position)
+        }
+        bgColorAdapter.onChooseColorClick = {
+            val dialog = ChooseColorDialog(this)
+            dialog.show()
+            dialog.onCloseEvent = { dialog.dismiss() }
+            dialog.onDoneEvent = { color ->
+                dialog.dismiss()
+                selectBackgroundColor(color, 0)
+            }
+        }
+        bgColorAdapter.onBackgroundColorClick = { color, position ->
+            selectBackgroundColor(color, position)
+        }
+    }
+
+    private fun showBackgroundTab(isImage: Boolean) {
+        val bg = binding.lnlBackgroundDiy
+        bg.rcvBackgroundImage.isVisible = isImage
+        bg.rcvBackgroundColor.isVisible = !isImage
+        bg.btnBackgroundImage.setBackgroundResource(
+            if (isImage) R.drawable.img_bg_image_addcharacter else R.drawable.img_bg_color_addcharacter
+        )
+        bg.btnBackgroundColor.setBackgroundResource(
+            if (isImage) R.drawable.img_bg_color_addcharacter else R.drawable.img_bg_image_addcharacter
+        )
+        bg.btnBackgroundImageTv.setTextColor(
+            ContextCompat.getColor(this, if (isImage) R.color.app_color else R.color.origin2)
+        )
+        bg.btnBackgroundColorTv.setTextColor(
+            ContextCompat.getColor(this, if (isImage) R.color.origin2 else R.color.app_color)
+        )
+    }
+
+    private fun loadBackgroundList(quantity: Int) {
+        if (quantity <= 0 || quantity == loadedBgQuantity) return
+        loadedBgQuantity = quantity
+        bgViewModel.hasLoadedData = false
+        bgViewModel.loadDataFromQuantity(
+            bgQuantity = quantity,
+            stickerQuantity = 1,
+            bgBaseUrl = viewModelActivity.keybroadBaseUrl,
+            speeches = listOf("")
+        )
+        bgImageAdapter.submitList(bgViewModel.backgroundImageList)
+        bgColorAdapter.submitList(bgViewModel.backgroundColorList, true)
+    }
+
+    private fun selectBackgroundImage(path: String, position: Int) {
+        bgViewModel.savedBackgroundColor = null
+        selectBackgroundItem(position, isImage = true)
+        val job = lifecycleScope.launch {
+            try {
+                val bitmap = viewModel.loadCanvasImage(path, trimPadding = false)
+                if (isFinishing || isDestroyed) return@launch
+                binding.drawView.background = bitmap.toDrawable(resources)
+                hasChanges = true
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                showToast(R.string.image_load_failed)
+            }
+        }
+        imageJobs += job
+        job.invokeOnCompletion { imageJobs.remove(job) }
+    }
+
+    private fun selectBackgroundColor(color: Int, position: Int) {
+        bgViewModel.savedBackgroundColor = color
+        binding.drawView.setBackgroundColor(color)
+        hasChanges = true
+        selectBackgroundItem(position, isImage = false)
+    }
+
+    private fun removeBackground() {
+        binding.drawView.setBackgroundColor(Color.WHITE)
+        hasChanges = true
+    }
+
+    private fun selectBackgroundItem(position: Int, isImage: Boolean) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (isImage) bgViewModel.updateBackgroundImageSelected(position)
+            else bgViewModel.updateBackgroundColorSelected(position)
+            withContext(Dispatchers.Main) {
+                if (isImage) {
+                    bgColorAdapter.clearSelection()
+                    bgImageAdapter.selectItem(position)
+                } else {
+                    bgImageAdapter.clearSelection()
+                    bgColorAdapter.selectItem(position)
+                }
+            }
+        }
+    }
     private fun addImage(
         path: String,
         kind: LayerKind,
