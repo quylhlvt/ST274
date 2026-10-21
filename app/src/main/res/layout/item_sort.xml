@@ -9,7 +9,7 @@
         android:id="@+id/gradientSort"
         android:layout_width="@dimen/dimension_0"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="@dimen/dimension_4"
+        android:layout_marginHorizontal="@dimen/dimension_8"
         app:gslCenterColor="@color/app_color"
         app:gslCornerRadius="@dimen/dimension_10"
         app:gslEndColor="@color/app_color"
@@ -22,6 +22,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+                android:background="@color/white"
             android:id="@+id/imvImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

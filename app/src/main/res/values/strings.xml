@@ -157,4 +157,5 @@
     <string name="nothing_to_save">Add at least one item before saving</string>
     <string name="save_failed">Could not save the image. Please try again.</string>
     <string name="image_load_failed">Could not load this item</string>
+    <string name="tag">Tag</string>
 </resources>

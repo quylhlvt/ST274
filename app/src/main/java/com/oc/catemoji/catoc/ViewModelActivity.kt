@@ -19,6 +19,7 @@ import com.oc.catemoji.catoc.data.usecase.GetCatalogueUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -34,6 +35,9 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.UUID
 import javax.inject.Inject
+
+data class DiyAssetCategory(val category: String, val quantity: Int)
+
 @HiltViewModel
 class ViewModelActivity @Inject constructor(
     private val getCatalogueUseCase: GetCatalogueUseCase,
@@ -65,9 +69,19 @@ class ViewModelActivity @Inject constructor(
     private val _studioLoading = MutableStateFlow(false)
     private val _studioFailed = MutableStateFlow(false)
     private var studioRemoteLoaded = false
+    private val _diyCatCategories = MutableStateFlow<List<DiyAssetCategory>>(emptyList())
+    val diyCatCategories: StateFlow<List<DiyAssetCategory>> = _diyCatCategories.asStateFlow()
+    private val _diyEyesQuantity = MutableStateFlow(0)
+    val diyEyesQuantity: StateFlow<Int> = _diyEyesQuantity.asStateFlow()
+    private val _diyKeyboardQuantity = MutableStateFlow(0)
+    val diyKeyboardQuantity: StateFlow<Int> = _diyKeyboardQuantity.asStateFlow()
+    private val _diyAssetsReady = MutableStateFlow(false)
+    val diyAssetsReady: StateFlow<Boolean> = _diyAssetsReady.asStateFlow()
+    private var diyAssetsJob: Job? = null
     var bgQuantity: Int = 0
     var stickerQuantity: Int = 0
     val bgBaseUrl = "https://lvtglobal.tech/public/app/ST229_CatAvatarCatMaker/bg"
+    val keybroadBaseUrl = "https://lvtglobal.tech/public/app/ST229_CatAvatarCatMaker/keybroad"
 
     var cosplayBitmap: Bitmap? = null
     var userResultBitmap: Bitmap? = null
@@ -80,6 +94,9 @@ class ViewModelActivity @Inject constructor(
             started = SharingStarted.Eagerly, // ← Eagerly để không miss network event
             initialValue = false
         )
+    private val diyPreferences by lazy {
+        context.getSharedPreferences(DIY_PREFS, Context.MODE_PRIVATE)
+    }
 
     // Guard chống gọi fetch trùng từ nhiều màn hình.
     private val _isFetchingOnline = MutableStateFlow(false)
@@ -98,6 +115,7 @@ class ViewModelActivity @Inject constructor(
     init {
         Log.d("PERF2", "ViewModelActivity created: ${System.currentTimeMillis()}")
         loadInitialData()
+        preloadDiyAssets()
     }
     private suspend fun loadUrlList(baseUrl: String, ext: String): List<String> {
         val results = java.util.Collections.synchronizedMap(mutableMapOf<Int, String>())
@@ -134,6 +152,115 @@ class ViewModelActivity @Inject constructor(
     fun preloadBackgroundsAndStickers() {
         if (_bgStickerReady.value) return
         loadBackgroundsAndStickers() // ← hàm này đã có trong ViewModelActivity
+    }
+
+    fun preloadDiyCatCategories() {
+        preloadDiyAssets()
+    }
+
+    fun preloadDiyAssets() {
+        if (_diyAssetsReady.value || diyAssetsJob?.isActive == true) return
+
+        diyAssetsJob = viewModelScope.launch(Dispatchers.IO) {
+            val cachedJson = diyPreferences.getString(KEY_DIY_JSON, null)
+            if (!cachedJson.isNullOrBlank()) {
+                runCatching { publishDiyManifest(cachedJson) }
+                    .onFailure { diyPreferences.edit().remove(KEY_DIY_JSON).apply() }
+            }
+
+            val json = runCatching {
+                URL("$keybroadBaseUrl/keybroad.json").readText()
+            }.onSuccess { remoteJson ->
+                diyPreferences.edit().putString(KEY_DIY_JSON, remoteJson).apply()
+                publishDiyManifest(remoteJson)
+            }.onFailure { error ->
+                Log.e("ViewModelActivity", "❌ Failed to load DIY catalogue", error)
+            }.getOrNull() ?: cachedJson
+
+            if (!json.isNullOrBlank()) {
+                val imageUrls = runCatching { diyImageUrls(json) }
+                    .onFailure { Log.e("ViewModelActivity", "❌ Invalid DIY catalogue", it) }
+                    .getOrDefault(emptyList())
+                prefetchDiyImages(imageUrls)
+                Log.d("ViewModelActivity", "✅ DIY preload complete: ${imageUrls.size} images")
+            }
+            _diyAssetsReady.value = true
+        }
+    }
+
+    private fun publishDiyManifest(json: String) {
+        val jsonObject = org.json.JSONObject(json)
+        _diyCatCategories.value = jsonObject.diyCategories("Cat")
+        _diyEyesQuantity.value = jsonObject.diyCategories("Eyes")
+            .firstOrNull()?.quantity
+            ?: 0
+        _diyKeyboardQuantity.value = (
+            jsonObject.diyCategories("Keybroad") + jsonObject.diyCategories("Keyboard")
+        ).firstOrNull {
+            it.category.equals("Keybroad", true) || it.category.equals("Keyboard", true)
+        }?.quantity ?: 0
+    }
+
+    private fun diyImageUrls(json: String): List<String> {
+        val jsonObject = org.json.JSONObject(json)
+        val cats = jsonObject.diyCategories("Cat").flatMap { category ->
+            (1..category.quantity).map { index ->
+                "$keybroadBaseUrl/Cat/${category.category}/$index.png"
+            }
+        }
+        val eyes = jsonObject.diyCategories("Eyes")
+            .firstOrNull()
+            ?.let { category ->
+                (1..category.quantity).map { index -> "$keybroadBaseUrl/Eyes/$index.png" }
+            }
+            .orEmpty()
+        val keyboard = (
+            jsonObject.diyCategories("Keybroad") + jsonObject.diyCategories("Keyboard")
+        ).firstOrNull {
+            it.category.equals("Keybroad", true) || it.category.equals("Keyboard", true)
+        }?.let { category ->
+            (1..category.quantity).map { index ->
+                "$keybroadBaseUrl/Keybroad/${category.category}/$index.png"
+            }
+        }.orEmpty()
+        return (cats + eyes + keyboard).distinct()
+    }
+
+    private fun org.json.JSONObject.diyCategories(key: String): List<DiyAssetCategory> {
+        val array = optJSONArray(key) ?: return emptyList()
+        return (0 until array.length()).mapNotNull { index ->
+            array.optJSONObject(index)?.let { item ->
+                DiyAssetCategory(
+                    category = item.optString("category"),
+                    quantity = item.optInt("quantity")
+                )
+            }
+        }.filter { it.quantity > 0 }
+    }
+
+    private suspend fun prefetchDiyImages(urls: List<String>) {
+        urls.chunked(DIY_PRELOAD_PARALLELISM).forEach { batch ->
+            coroutineScope {
+                batch.map { url ->
+                    async(Dispatchers.IO) {
+                        runCatching {
+                            val request = Glide.with(context)
+                                .downloadOnly()
+                                .load(url)
+                                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                                .submit()
+                            try {
+                                request.get()
+                            } finally {
+                                Glide.with(context).clear(request)
+                            }
+                        }.onFailure {
+                            Log.w("ViewModelActivity", "DIY image preload failed: $url")
+                        }
+                    }
+                }.awaitAll()
+            }
+        }
     }
 
     fun loadBackgroundsAndStickers() {
@@ -228,6 +355,7 @@ class ViewModelActivity @Inject constructor(
 
                 // Ba nguồn online chạy song song, không chờ nguồn trước hoàn thành.
                 launch(Dispatchers.IO) { fetchOnlineTemplatesInternal() }
+                preloadDiyAssets()
                 loadBackgroundsAndStickers()
                 loadStudioCatalogue()
                 launch { observeNetworkForRetry() }
@@ -452,9 +580,13 @@ class ViewModelActivity @Inject constructor(
         private const val STUDIO_TIMEOUT_MS = 15_000
         private const val STUDIO_VISIBLE_THUMB_COUNT = 5
         private const val STUDIO_THUMB_SIZE_PX = 192
+        private const val DIY_PREFS = "diy_catalogue_cache"
+        private const val KEY_DIY_JSON = "keybroad_json"
+        private const val DIY_PRELOAD_PARALLELISM = 8
     }
 
     private val studioPreferences by lazy {
         context.getSharedPreferences(STUDIO_PREFS, Context.MODE_PRIVATE)
     }
+
 }

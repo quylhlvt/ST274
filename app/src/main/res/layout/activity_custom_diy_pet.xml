@@ -1,91 +1,280 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.main.cusomdiypet.CustomDiyPetActivity">
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:id="@+id/main"
+                                                   android:layout_width="match_parent"
+                                                   android:background="@color/yellow2"
+                                                   android:layout_height="match_parent"
+                                                   tools:context=".ui.main.cusomdiypet.CustomDiyPetActivity">
     <FrameLayout
-        android:id="@+id/layoutActionBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/layoutActionBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
 
         <include
-            android:id="@+id/actionBar"
-            layout="@layout/layout_actionbar3" />
+                android:id="@+id/actionBar"
+                layout="@layout/layout_actionbar3"/>
     </FrameLayout>
     <com.oc.catemoji.catoc.core.custom.DrawView
-        android:id="@+id/drawView"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        app:layout_constraintDimensionRatio="3.6:4.8"
-        app:layout_constraintWidth_max="@dimen/dimension_300"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
-        app:layout_constraintBottom_toTopOf="@+id/recycleSort"
-        android:layout_marginVertical="@dimen/dimension_20"/>
-        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/drawView"
+            android:layout_width="@dimen/dimension_0"
+            android:background="@color/white"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="3.6:4.8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
+            app:layout_constraintBottom_toTopOf="@+id/recycleSort"
+            android:layout_marginBottom="@dimen/dimension_10"/>
+    <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycleSort"
             android:layout_marginBottom="@dimen/dimension_16"
+            android:paddingStart="@dimen/dimension_8"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimension_80"
             app:layout_constraintBottom_toTopOf="@+id/nav"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             tools:listitem="@layout/item_sort"
-            />
-    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
-        android:id="@+id/nav"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:gslCornerRadius="@dimen/dimension_12"
-        app:gslStrokeWidth="@dimen/dimension_0"
-        android:layout_marginBottom="@dimen/dimension_32"
-        android:layout_marginHorizontal="@dimen/dimension_16"
-        app:layout_constraintDimensionRatio="3.28:0.48">
-        <LinearLayout
+    />
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/lnlCat"
+            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:orientation="horizontal"
-            android:paddingVertical="@dimen/dimension_6"
-            android:background="@color/_D05F5A">
-            <ImageView
-                android:id="@+id/btnCat"
-                android:layout_width="0dp"
+            android:layout_height="@dimen/dimension_250"
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/dimension_8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/nav"
+    >
+
+        <RelativeLayout
+                android:id="@+id/relative"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/dimension_4"
+                android:background="@color/yellow2"
+                android:gravity="center"
+                app:layout_constraintDimensionRatio="3.6:0.36"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rcvCatTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:elevation="@dimen/dimension_2"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_tittle_pet"/>
+        </RelativeLayout>
+
+
+        <!--            rcvSticker-->
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvCat"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimension_0"
+                android:paddingTop="@dimen/dimension_16"
+                android:background="@drawable/bg_12_yellow"
+                app:layout_constraintBottom_toTopOf="@+id/relative"
+                android:paddingHorizontal="@dimen/dimension_8"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="5"
+                tools:listitem="@layout/item_ege"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/lnlEge"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimension_250"
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/dimension_12"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/nav">
+        <!--            rcvSticker-->
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvEge"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimension_0"
+                android:paddingTop="@dimen/dimension_16"
+                android:background="@drawable/bg_12_yellow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:paddingHorizontal="@dimen/dimension_8"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="5"
+                tools:listitem="@layout/item_ege"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/lnlKeyBroad"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimension_250"
+            android:orientation="vertical"
+            android:clipChildren="false"
+            android:clipToOutline="false"
+            android:layout_marginBottom="@dimen/dimension_8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/nav"
+    >
+
+        <LinearLayout
+                android:id="@+id/relative2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/yellow2"
+                android:orientation="horizontal"
+                android:gravity="center"
+                app:layout_constraintDimensionRatio="3.6:0.36"
+                app:layout_constraintBottom_toBottomOf="parent">
+            <TextView
+                    android:id="@+id/tagKeyBroad"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/text_size_16"
+                    android:text="@string/keyboard"
+                    android:fontFamily="@font/baloo2_bold"
+                    android:gravity="center"
+                    android:textColor="@color/app_color"
+                    android:background="@drawable/bg_selected_key"/>
+            <TextView
+                    android:id="@+id/tagTag"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/text_size_16"
+                    android:fontFamily="@font/baloo2_bold"
+                    android:text="@string/tag"
+                    android:gravity="center"
+                    android:textColor="@color/origin2"
+                    android:background="@drawable/bg_unselected_key"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+                android:id="@+id/keyBroad"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimension_0"
+                android:paddingTop="@dimen/dimension_8"
+                android:orientation="vertical"
+                android:background="@drawable/bg_12_yellow"
+                app:layout_constraintBottom_toTopOf="@+id/relative2"
+                android:paddingHorizontal="@dimen/dimension_8"
+                app:layout_constraintTop_toTopOf="parent"
+        >
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/dimension_10"
+                    android:paddingHorizontal="@dimen/dimension_8_"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:id="@+id/recycleNumber"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:itemCount="10"
+                    app:spanCount="10"
+                    tools:listitem="@layout/item_keybroad"
+            />
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_weight="1"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:itemCount="10"
+                    app:spanCount="10"
+                    android:paddingHorizontal="@dimen/dimension_8_"
+                    tools:listitem="@layout/item_keybroad"
+                    android:layout_marginBottom="@dimen/dimension_10"
+                    android:layout_width="match_parent" android:layout_height="0dp"
+                    android:id="@+id/recycleTop"/>
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_weight="1"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:itemCount="10"
+                    app:spanCount="9"
+                    android:paddingHorizontal="@dimen/dimension_8_"
+                    tools:listitem="@layout/item_keybroad"
+                    android:layout_marginHorizontal="@dimen/dimension_16"
+                    android:layout_marginBottom="@dimen/dimension_10"
+                    android:layout_width="match_parent" android:layout_height="0dp"
+                    android:id="@+id/recycleMid"/>
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_weight="1"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:itemCount="10"
+                    app:spanCount="7"
+                    android:layout_gravity="center"
+                    tools:listitem="@layout/item_keybroad"
+                    android:paddingHorizontal="@dimen/dimension_28_"
+                    android:translationX="@dimen/dimension_minus_5"
+                    android:layout_marginBottom="@dimen/dimension_10"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:id="@+id/recycleBottom"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"/>
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+            android:id="@+id/nav"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_48"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:gslCornerRadius="@dimen/dimension_12"
+            app:gslStrokeWidth="@dimen/dimension_0"
+            android:layout_marginBottom="@dimen/dimension_32"
+            android:layout_marginHorizontal="@dimen/dimension_16">
+        <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/ic_cat_pet"/>
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:paddingVertical="@dimen/dimension_6"
+                android:background="@color/_D05F5A">
             <ImageView
-                android:id="@+id/btnEge"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/ic_ege_pet"/>
+                    android:id="@+id/btnCat"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_cat_pet"/>
             <ImageView
-                android:id="@+id/btnKeyBroad"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/ic_keybroad_pet"/>
+                    android:id="@+id/btnEge"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_ege_pet"/>
             <ImageView
-                android:id="@+id/btnText"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/ic_text_pet"/>
+                    android:id="@+id/btnKeyBroad"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_keybroad_pet"/>
+            <ImageView
+                    android:id="@+id/btnBackground"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_bg_pet"/>
+            <ImageView
+                    android:id="@+id/btnText"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_text_pet"/>
 
             <ImageView
-                android:id="@+id/btnSticker"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/ic_sticker_pet"/>
+                    android:id="@+id/btnSticker"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_sticker_pet"/>
         </LinearLayout>
     </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

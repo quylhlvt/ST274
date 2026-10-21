@@ -39,7 +39,12 @@ override fun initView() {
         hideGlobalDialogSafe()
         Admob.getInstance().loadNativeCollapNotBanner(this, getString(R.string.native_cl_category), binding.flNativeCollab)
         setImageActionBar(binding.actionBar.btnActionBarLeft, R.drawable.back_app)
-        setTextActionBar(binding.actionBar.tvCenter, getString(R.string.category))
+        val titleRes = if (intent.getBooleanExtra(EXTRA_PAUSE_CHALLENGE, false)) {
+            R.string.pause_oc_challenge
+        } else {
+            R.string.category
+        }
+        setTextActionBar(binding.actionBar.tvCenter, getString(titleRes))
         adapter = ChoosePonyAdapter(::onCharacterClick)
         binding.recycleChoose.apply {
             layoutManager = GridLayoutManager(this@ChooseCatActivity, 2)

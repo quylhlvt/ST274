@@ -264,27 +264,25 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     }
 
     fun remove(draw: Draw?): Boolean {
-        if (drawList.contains(draw)) {
-            if (!draw!!.isCharacter){
-                drawList.remove(draw)
-                if (draw is DrawableDraw) {
-                    initialScaleMap.remove(draw)
-                }
-                OnDrawListener?.onDeletedDraw(draw!!)
-                if (handlingDraw == draw) {
-                    handlingDraw = null
-                }}
-
-            // save undo khi xóa xong
-            saveDrawState()
-
-            invalidate()
-
-            return true
-        } else {
+        if (!drawList.contains(draw)) {
             Log.d("Draw View", "remove: the sticker is not in this StickerView")
             return false
         }
+        if (draw?.isRemovable != true) return false
+
+        drawList.remove(draw)
+        if (draw is DrawableDraw) {
+            initialScaleMap.remove(draw)
+        }
+        OnDrawListener?.onDeletedDraw(draw)
+        if (handlingDraw == draw) {
+            handlingDraw = null
+        }
+
+        // save undo khi xóa xong
+        saveDrawState()
+        invalidate()
+        return true
     }
 
     fun exchangeLayers(oldP: Int, newP: Int) {
@@ -688,8 +686,18 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                     val dx = x2 - x1
                     val dy = y2 - y1
                     val len = sqrt(dx * dx + dy * dy)
-                    return Pair(x1 + dx / len * dist, y1 + dy / len * dist)
+                    // A drawable can briefly have an empty bound while its bitmap is
+                    // being loaded. Do not let NaN/Infinity enter the selection path;
+                    // Canvas may render those invalid points as a line across the view.
+                    if (!len.isFinite() || len <= 0f) return Pair(x1, y1)
+                    val inset = minOf(dist, len / 2f)
+                    return Pair(x1 + dx / len * inset, y1 + dy / len * inset)
                 }
+
+                // Do not draw a border for an invalid/empty mapped bitmap. This also
+                // prevents a transient frame during async image loading from leaving
+                // a stray horizontal stroke on the canvas.
+                if (bitmapPoints.any { !it.isFinite() }) return
 
                 val p1 = offsetPoint(x1, y1, x2, y2, radius)
                 val p2 = offsetPoint(x2, y2, x1, y1, radius)
@@ -738,7 +746,7 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
                         }
                     } else if (icon.positionDefault == DrawKey.RIGHT_TOP) {
-                        if (!handlingDraw!!.isCharacter) {
+                        if (handlingDraw!!.isRemovable) {
                             icon.draw(canvas, borderPaint,context)
                         }
                     } else {

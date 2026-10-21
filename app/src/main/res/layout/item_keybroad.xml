@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:clipChildren="false"
+        android:clipToOutline="false"
+        android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+            android:id="@+id/btnKeyBroad"
+            android:layout_marginHorizontal="@dimen/dimension_2"
+            android:layout_width="@dimen/dimension_0"
+            app:gslCornerRadius="@dimen/dimension_4"
+            app:gslStrokeWidth="@dimen/dimension_1"
+            app:gslStartColor="@color/white"
+            app:gslCenterColor="@color/white"
+            app:gslEndColor="@color/white"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="3.1:4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:background="@color/_FAF3E3"
+                android:layout_height="match_parent">
+            <ImageView
+                    android:id="@+id/imgKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintDimensionRatio="2.9:2.2"
+                    android:src="@drawable/img_intro1"
+                    android:scaleType="centerInside"/>
+            <View
+                    android:id="@+id/view34"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintDimensionRatio="2.9:1.7"/>
+            <TextView
+                    android:id="@+id/txtKey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dimension_0"
+
+                    app:layout_constraintTop_toBottomOf="@+id/view34"
+                    app:layout_constraintBottom_toTopOf="@+id/view33"
+                    android:textColor="@color/app_color"
+
+                    android:text="1"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/baloo2medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="center"/>
+            <View
+                android:id="@+id/view33"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="2.9:0.1"
+                  app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+            android:id="@+id/btnDeleteKey"
+            android:visibility="gone"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:layout_marginStart="@dimen/dimension_2"
+            android:clipChildren="false"
+            android:clipToOutline="false"
+            app:gslCornerRadius="@dimen/dimension_5"
+            app:gslStrokeWidth="@dimen/dimension_0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1">
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                   android:src="@drawable/ic_delete_key"
+                   android:background="@color/app_color"/>
+
+    </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

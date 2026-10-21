@@ -25,6 +25,11 @@ open class DrawableDraw(override var drawable: Drawable, private val path: Strin
     override fun draw(canvas: Canvas) {
         canvas.save()
         canvas.concat(getMatrix())
+        // The drawable can be replaced after this object is created (for example
+        // when selecting another cat). Reusing the bounds captured in the
+        // constructor then crops the new bitmap when its intrinsic size differs.
+        // Always match the current drawable dimensions before drawing.
+        bounds.set(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
         drawable.bounds = bounds
         drawable.draw(canvas)
         canvas.restore()

@@ -32,6 +32,9 @@ class SplashViewModel @Inject constructor() : ViewModel() {
         navigateJob = viewModelScope.launch {
             val remaining = MIN_SPLASH_MS - (SystemClock.elapsedRealtime() - createdAt)
             if (remaining > 0) delay(remaining)
+            withTimeoutOrNull(NAVIGATION_DATA_TIMEOUT_MS) {
+                dataReadySignal.first { it }
+            }
             _navigateSignal.value = true
         }
     }
@@ -41,7 +44,8 @@ class SplashViewModel @Inject constructor() : ViewModel() {
         hasOnlineTemplates: Boolean,
         templatesFlow: StateFlow<List<CustomModel>>,
         imagesReadyFlow: StateFlow<Boolean>,
-        localDataReadyFlow: StateFlow<Boolean>
+        localDataReadyFlow: StateFlow<Boolean>,
+        diyAssetsReadyFlow: StateFlow<Boolean>
     ) {
         if (splashJob != null) return
 
@@ -72,8 +76,14 @@ class SplashViewModel @Inject constructor() : ViewModel() {
                     imagesReadyFlow.first { it }
                 }
             }
+            val diyAssetsJob = launch {
+                withTimeoutOrNull(DIY_ASSETS_TIMEOUT_MS) {
+                    diyAssetsReadyFlow.first { it }
+                }
+            }
             templatesJob.join()
             imagesJob.join()
+            diyAssetsJob.join()
 
             val remaining = DATA_READY_MIN_MS - (SystemClock.elapsedRealtime() - startTime)
             if (remaining > 0) delay(remaining)
@@ -87,5 +97,7 @@ class SplashViewModel @Inject constructor() : ViewModel() {
         const val LOCAL_DATA_TIMEOUT_MS = 5_000L
         const val API_TIMEOUT_MS = 8_000L
         const val IMAGES_TIMEOUT_MS = 30_000L
+        const val DIY_ASSETS_TIMEOUT_MS = 15_000L
+        const val NAVIGATION_DATA_TIMEOUT_MS = 15_000L
     }
 }

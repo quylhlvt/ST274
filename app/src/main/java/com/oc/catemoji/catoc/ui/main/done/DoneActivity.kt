@@ -6,11 +6,13 @@ import com.bumptech.glide.Glide
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.extention.onClick
+import com.oc.catemoji.catoc.core.extention.setFrameActionBar
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.databinding.ActivityDoneBinding
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity
 import com.oc.catemoji.catoc.ui.main.pause.PauseOCChallengeActivity
+import com.oc.catemoji.catoc.ui.main.successchallenge.SuccessChallengeActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 
@@ -23,6 +25,7 @@ class DoneActivity : BaseActivity<ActivityDoneBinding, ViewModel>(
 
     override fun initView() {
         setImageActionBar(binding.actionBar.btnActionBarLeft, R.drawable.back_app)
+        setFrameActionBar(binding.actionBar.btnActionBarRightText,binding.actionBar.tvRightText,getString(R.string.next ))
         binding.txtPlayoragain.isSelected = true
 
         val image = intent.getStringExtra(EXTRA_IMAGE_PATH)?.let(::File)
@@ -36,23 +39,39 @@ class DoneActivity : BaseActivity<ActivityDoneBinding, ViewModel>(
     }
 
     override fun viewListener() {
-        binding.actionBar.btnActionBarLeft.onClick { finish() }
-        binding.btnTryAgain.onClick {
-            if (restarting) return@onClick
-            restarting = true
-            // A new Activity gets a fresh challenge session for the same template.
-            startActivity(Intent(this, PauseOCChallengeActivity::class.java).apply {
-                putExtra(
-                    CustomizeActivity.ARG_TEMPLATE_ID,
-                    intent.getStringExtra(CustomizeActivity.ARG_TEMPLATE_ID)
-                )
-                putExtra(
-                    CustomizeActivity.ARG_TEMPLATE_INDEX,
-                    intent.getIntExtra(CustomizeActivity.ARG_TEMPLATE_INDEX, 0)
-                )
+        binding.actionBar.btnActionBarLeft.onClick { restartChallenge() }
+        binding.actionBar.btnActionBarRightText.onClick {
+            val imagePath = intent.getStringExtra(EXTRA_IMAGE_PATH) ?: return@onClick
+            startActivity(Intent(this, SuccessChallengeActivity::class.java).apply {
+                putExtra(EXTRA_IMAGE_PATH, imagePath)
             })
-            finish()
         }
+        binding.btnTryAgain.onClick {
+            restartChallenge()
+        }
+    }
+
+    private fun restartChallenge() {
+        if (restarting) return
+        restarting = true
+        // Tạo Activity mới để bắt đầu một challenge session hoàn toàn mới.
+        startActivity(Intent(this, PauseOCChallengeActivity::class.java).apply {
+            putExtra(
+                CustomizeActivity.ARG_TEMPLATE_ID,
+                intent.getStringExtra(CustomizeActivity.ARG_TEMPLATE_ID)
+            )
+            putExtra(
+                CustomizeActivity.ARG_TEMPLATE_INDEX,
+                intent.getIntExtra(CustomizeActivity.ARG_TEMPLATE_INDEX, 0)
+            )
+            putExtra(PauseOCChallengeActivity.EXTRA_RESTART_FROM_DONE, true)
+        })
+        finish()
+    }
+
+    override fun onScreenBackPressed(): Boolean {
+        restartChallenge()
+        return true
     }
 
     companion object {

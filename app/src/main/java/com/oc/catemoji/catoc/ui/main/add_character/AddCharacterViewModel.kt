@@ -232,6 +232,7 @@ class AddCharacterViewModel @Inject constructor(
         val timestamp = SimpleDateFormat("dd_MM_yyyy_hh_mm_ss").format(Date())
         val drawableEmoji = DrawableDraw(drawable, "$timestamp.png")
         drawableEmoji.isCharacter = isCharacter
+        drawableEmoji.isRemovable = !isCharacter
         drawableEmoji.isText = isText
         return drawableEmoji
     }

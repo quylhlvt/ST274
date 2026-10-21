@@ -27,6 +27,7 @@ import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.databinding.ActivityPauseOcchallengeBinding
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity
+import com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity
 import com.oc.catemoji.catoc.ui.main.done.DoneActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
@@ -115,7 +116,7 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
     }
 
     override fun viewListener() {
-        binding.actionBar.btnActionBarLeft.onClick { finish() }
+        binding.actionBar.btnActionBarLeft.onClick { handlePauseBack() }
         binding.actionBar.btnActionBarRightText.onClick { exportResult() }
         binding.btnPlayOrPause.onClick {
             val session = viewModel.session ?: return@onClick
@@ -340,7 +341,6 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
                         intent.getIntExtra(CustomizeActivity.ARG_TEMPLATE_INDEX, 0)
                     )
                 })
-                finish()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -354,11 +354,37 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
         }
     }
 
-    override fun onScreenStop() {
-        pausePlayback(byUser = false)
+    override fun onScreenStart() {
+        updateControls()
     }
 
-    private companion object {
+    private fun handlePauseBack() {
+        if (!intent.getBooleanExtra(EXTRA_RESTART_FROM_DONE, false)) {
+            finish()
+            return
+        }
+
+        // Try Again tạo một Pause mới; xoá Pause cũ và quay về danh mục chọn mèo.
+        startActivity(Intent(this, ChooseCatActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            putExtra(ChooseCatActivity.EXTRA_PAUSE_CHALLENGE, true)
+        })
+        finish()
+    }
+
+    override fun onScreenBackPressed(): Boolean {
+        handlePauseBack()
+        return true
+    }
+
+    override fun onScreenStop() {
+        // App bị đưa xuống nền cũng được xem là một lần pause của người dùng:
+        // khi quay lại, nút Next phải được khôi phục nếu đã có layer được chọn.
+        pausePlayback(byUser = true)
+    }
+
+    companion object {
+        const val EXTRA_RESTART_FROM_DONE = "restart_from_done"
         const val FRAME_SIZE = 768
         const val FRAME_DELAY_MS = 180L
     }

@@ -13,6 +13,7 @@ import com.tencent.mmkv.MMKV
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import com.lvt.ads.util.Admob
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp                     // QUAN TRỌNG NHẤT – KHÔNG ĐƯỢC THIẾU
@@ -34,8 +35,9 @@ class MyApplication : AdsApplication() {
             SharedPreferencesManager.editor = preferences.edit()
         }
         LanguageHelper.setLocale(this)
-        com.lvt.ads.util.Admob.getInstance().setTimeLimitShowAds(30_000)
-        com.lvt.ads.util.Admob.getInstance().setTimeCountdownNativeCollab(20_000)
+        Admob.getInstance().setTimeLimitShowAds(30_000)
+        Admob.getInstance().setOpenShowAllAds(false)
+        Admob.getInstance().setTimeCountdownNativeCollab(20_000)
         val mmkvDir = java.io.File(filesDir, "mmkv_store").also { it.mkdirs() }
         MMKV.initialize(this, mmkvDir.absolutePath)
         AppOpenManager.getInstance().disableAppResumeWithActivity(SplashActivity::class.java)

@@ -43,6 +43,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>(
     override fun initView() {
         ResourcesCompat.getFont(this, R.font.baloo2_extrabold)
         resetAppStateForNewVersion()
+        mainViewModel.preloadDiyAssets()
 
         interCallBack = object : InterCallback() {
             override fun onNextAction() {
@@ -66,7 +67,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>(
             hasOnlineTemplates = mainViewModel.templates.value.any { it.id.startsWith("online_") },
             templatesFlow = mainViewModel.templates,
             imagesReadyFlow = mainViewModel.imagesReady,
-            localDataReadyFlow = mainViewModel.localDataReady
+            localDataReadyFlow = mainViewModel.localDataReady,
+            diyAssetsReadyFlow = mainViewModel.diyAssetsReady
         )
 
         lifecycleScope.launch {

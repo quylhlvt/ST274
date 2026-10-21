@@ -16,6 +16,7 @@ import kotlin.math.sqrt
 abstract class Draw {
     var isText: Boolean = false
     var isCharacter: Boolean = false
+    var isRemovable: Boolean = true
     var textContent: String? = null
     var textFont: Int? = null
     var textColor: Int? = null
