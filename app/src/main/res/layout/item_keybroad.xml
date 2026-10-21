@@ -66,14 +66,13 @@
             android:visibility="gone"
             android:layout_width="@dimen/dimension_0"
             android:layout_height="@dimen/dimension_0"
-            android:layout_marginStart="@dimen/dimension_2"
             android:clipChildren="false"
             android:clipToOutline="false"
             app:gslCornerRadius="@dimen/dimension_5"
             app:gslStrokeWidth="@dimen/dimension_0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/btnKeyBroad"
+            app:layout_constraintTop_toTopOf="@+id/btnKeyBroad"
+            app:layout_constraintBottom_toBottomOf="@+id/btnKeyBroad"
             app:layout_constraintDimensionRatio="1">
         <ImageView
                 android:layout_width="match_parent"

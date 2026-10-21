@@ -6,7 +6,9 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.facebook.shimmer.ShimmerDrawable
 import com.oc.catemoji.catoc.databinding.ItemSortBinding
+import com.oc.catemoji.catoc.utils.DataLocal
 
 sealed interface DiyAssetItem {
     data class Image(val path: String) : DiyAssetItem
@@ -56,6 +58,7 @@ class DiyAssetAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: DiyAssetItem, selected: Boolean) = with(binding) {
+            val shimmerDrawable = ShimmerDrawable().apply { setShimmer(DataLocal.shimmer) }
             gradientSort.alpha = if (selected) 1f else 0.82f
             gradientSort.scaleX = if (selected) 1f else 0.94f
             gradientSort.scaleY = if (selected) 1f else 0.94f
@@ -69,7 +72,8 @@ class DiyAssetAdapter(
                     Glide.with(imvImage)
                         .load(item.path)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .override(256, 256)
+                        .placeholder(shimmerDrawable)
+                        .override(400, 400)
                         .into(imvImage)
                 }
 

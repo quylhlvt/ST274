@@ -82,7 +82,7 @@
                 android:paddingHorizontal="@dimen/dimension_8"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="5"
+                app:spanCount="4"
                 tools:listitem="@layout/item_ege"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -106,12 +106,12 @@
                 android:paddingHorizontal="@dimen/dimension_8"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="5"
+                app:spanCount="4"
                 tools:listitem="@layout/item_ege"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/lnlKeyBroad"
-            android:visibility="gone"
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimension_250"
             android:orientation="vertical"
@@ -157,7 +157,19 @@
 
         </LinearLayout>
 
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleTagKeybroad"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimension_0"
+            android:paddingTop="@dimen/dimension_16"
+            android:orientation="vertical"
+            android:background="@drawable/bg_12_yellow"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="4"
+            tools:listitem="@layout/item_ege"
+            app:layout_constraintBottom_toTopOf="@+id/relative2"
+            android:paddingHorizontal="@dimen/dimension_8"
+            app:layout_constraintTop_toTopOf="parent"/>
         <LinearLayout
                 android:id="@+id/keyBroad"
                 android:layout_width="match_parent"
@@ -220,6 +232,54 @@
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/lnlSticker"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimension_250"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/dimension_8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/nav"
+        >
+
+        <RelativeLayout
+            android:id="@+id/relative5"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/dimension_4"
+            android:background="@color/yellow2"
+            android:gravity="center"
+            app:layout_constraintDimensionRatio="3.6:0.36"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvStickerTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:elevation="@dimen/dimension_2"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_tittle_pet"/>
+        </RelativeLayout>
+
+
+        <!--            rcvSticker-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvSticker"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimension_0"
+            android:paddingTop="@dimen/dimension_16"
+            android:background="@drawable/bg_12_yellow"
+            app:layout_constraintBottom_toTopOf="@+id/relative5"
+            android:paddingHorizontal="@dimen/dimension_8"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="4"
+            tools:listitem="@layout/item_ege"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
             android:id="@+id/nav"
             android:layout_width="@dimen/dimension_0"

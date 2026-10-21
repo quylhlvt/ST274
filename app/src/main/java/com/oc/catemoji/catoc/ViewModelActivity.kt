@@ -75,6 +75,8 @@ class ViewModelActivity @Inject constructor(
     val diyEyesQuantity: StateFlow<Int> = _diyEyesQuantity.asStateFlow()
     private val _diyKeyboardQuantity = MutableStateFlow(0)
     val diyKeyboardQuantity: StateFlow<Int> = _diyKeyboardQuantity.asStateFlow()
+    private val _diyTagQuantity = MutableStateFlow(0)
+    val diyTagQuantity: StateFlow<Int> = _diyTagQuantity.asStateFlow()
     private val _diyAssetsReady = MutableStateFlow(false)
     val diyAssetsReady: StateFlow<Boolean> = _diyAssetsReady.asStateFlow()
     private var diyAssetsJob: Job? = null
@@ -106,6 +108,8 @@ class ViewModelActivity @Inject constructor(
     val imagesReady: StateFlow<Boolean> = _imagesReady.asStateFlow()
     private val _localDataReady = MutableStateFlow(false)
     val localDataReady: StateFlow<Boolean> = _localDataReady.asStateFlow()
+    private val _diyStickerCategories = MutableStateFlow<List<DiyAssetCategory>>(emptyList())
+    val diyStickerCategories: StateFlow<List<DiyAssetCategory>> = _diyStickerCategories.asStateFlow()
 
     fun notifyImagesReady() {
         _imagesReady.value = true
@@ -191,13 +195,18 @@ class ViewModelActivity @Inject constructor(
     private fun publishDiyManifest(json: String) {
         val jsonObject = org.json.JSONObject(json)
         _diyCatCategories.value = jsonObject.diyCategories("Cat")
+        _diyStickerCategories.value = jsonObject.diyCategories("Stickers")
         _diyEyesQuantity.value = jsonObject.diyCategories("Eyes")
             .firstOrNull()?.quantity
             ?: 0
-        _diyKeyboardQuantity.value = (
+        val keyboardCategories = (
             jsonObject.diyCategories("Keybroad") + jsonObject.diyCategories("Keyboard")
-        ).firstOrNull {
+        )
+        _diyKeyboardQuantity.value = keyboardCategories.firstOrNull {
             it.category.equals("Keybroad", true) || it.category.equals("Keyboard", true)
+        }?.quantity ?: 0
+        _diyTagQuantity.value = keyboardCategories.firstOrNull {
+            it.category.equals("Tag", true)
         }?.quantity ?: 0
     }
 
@@ -214,16 +223,24 @@ class ViewModelActivity @Inject constructor(
                 (1..category.quantity).map { index -> "$keybroadBaseUrl/Eyes/$index.png" }
             }
             .orEmpty()
-        val keyboard = (
+        val keyboardCategories = (
             jsonObject.diyCategories("Keybroad") + jsonObject.diyCategories("Keyboard")
-        ).firstOrNull {
+        )
+        val keyboard = keyboardCategories.firstOrNull {
             it.category.equals("Keybroad", true) || it.category.equals("Keyboard", true)
         }?.let { category ->
             (1..category.quantity).map { index ->
                 "$keybroadBaseUrl/Keybroad/${category.category}/$index.png"
             }
         }.orEmpty()
-        return (cats + eyes + keyboard).distinct()
+        val tags = keyboardCategories.firstOrNull {
+            it.category.equals("Tag", true)
+        }?.let { category ->
+            (1..category.quantity).map { index ->
+                "$keybroadBaseUrl/Keybroad/${category.category}/$index.png"
+            }
+        }.orEmpty()
+        return (cats + eyes + keyboard + tags).distinct()
     }
 
     private fun org.json.JSONObject.diyCategories(key: String): List<DiyAssetCategory> {

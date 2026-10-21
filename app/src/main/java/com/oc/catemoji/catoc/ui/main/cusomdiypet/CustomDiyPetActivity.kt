@@ -2,12 +2,8 @@ package com.oc.catemoji.catoc.ui.main.cusomdiypet
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Typeface
 import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
@@ -21,42 +17,44 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import com.oc.catemoji.catoc.DiyAssetCategory
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.custom.Draw
+import com.oc.catemoji.catoc.core.custom.DrawKey
 import com.oc.catemoji.catoc.core.custom.DrawableDraw
 import com.oc.catemoji.catoc.core.custom.listener.listenerdraw.OnDrawListener
+import com.oc.catemoji.catoc.core.extention.gone
+import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
-import com.oc.catemoji.catoc.core.extention.saveToFile
+import com.oc.catemoji.catoc.core.extention.visible
+import com.oc.catemoji.catoc.data.model.customDiy.DiyCatalogue
 import com.oc.catemoji.catoc.databinding.ActivityCustomDiyPetBinding
-import com.oc.catemoji.catoc.ui.main.add_character.AddCharacterViewModel
 import com.oc.catemoji.catoc.ui.main.add_character.DesignSource
 import com.oc.catemoji.catoc.ui.main.view.ViewActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
-class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharacterViewModel>(
+class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiyPetViewModel>(
     ActivityCustomDiyPetBinding::inflate,
-    AddCharacterViewModel::class.java
+    CustomDiyPetViewModel::class.java
 ) {
 
     private enum class Tool { CAT, EYES, KEYBOARD, TEXT, BACKGROUND, STICKER }
-    private enum class LayerKind { CAT, EYES, KEYBOARD, BACKGROUND, STICKER }
+    private enum class LayerKind { CAT, EYES, KEYBOARD, TAG, BACKGROUND, STICKER }
 
-    private var keyboardPanelLoaded = false
-    private val preloadedKeyboardImages = HashSet<String>()
     private class KeyboardEntry(val label: String, var draw: DrawableDraw? = null)
 
     private val keyboardEntries = mutableListOf<KeyboardEntry>()
     private var keyboardTextDraw: DrawableDraw? = null
+    private var keyboardTextJob: Job? = null
+    private val imageJobs = mutableSetOf<Job>()
+    private var selectedStickerCategory = 0
+    private var renderedCatalogue: DiyCatalogue? = null
 
     private val drawAdapter = DiyDrawAdapter { draw ->
         binding.drawView.selectCurrentDraw(draw)
@@ -67,35 +65,30 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
     private val eyeAdapter = DiyCatStickerAdapter { path ->
         addImage(path, LayerKind.EYES, replaceExisting = false)
     }
-    private val keyboardAdapters = listOf(
-        DiyKeyboardAdapter(onItemClick = { path, key ->
-            val entry = appendKeyboardText(key)
-            addImage(path, LayerKind.KEYBOARD, replaceExisting = false, keyboardEntry = entry)
-        }),
-        DiyKeyboardAdapter(onItemClick = { path, key ->
-            val entry = appendKeyboardText(key)
-            addImage(path, LayerKind.KEYBOARD, replaceExisting = false, keyboardEntry = entry)
-        }),
-        DiyKeyboardAdapter(onItemClick = { path, key ->
-            val entry = appendKeyboardText(key)
-            addImage(path, LayerKind.KEYBOARD, replaceExisting = false, keyboardEntry = entry)
-        }),
+    private val tagAdapter = DiyCatStickerAdapter { path ->
+        addImage(path, LayerKind.TAG)
+    }
+    private val stickerAdapter = DiyCatStickerAdapter { path ->
+        addImage(path, LayerKind.STICKER, replaceExisting = false)
+    }
+    private val stickerTitleAdapter = DiyCatTitleAdapter(::selectStickerCategory)
+    private var stickerCategories: List<DiyAssetCategory> = emptyList()
+    private val keyboardAdapters = List(4) { row ->
         DiyKeyboardAdapter(
             onItemClick = { path, key ->
                 val entry = appendKeyboardText(key)
                 addImage(path, LayerKind.KEYBOARD, replaceExisting = false, keyboardEntry = entry)
             },
             onDeleteClick = {
-                deleteCurrentKeyboardDraw()
+                if (row == 3) deleteCurrentKeyboardDraw()
             }
         )
-    )
+    }
     private val catTitleAdapter = DiyCatTitleAdapter(::selectCatCategory)
     private var currentTool = Tool.CAT
-    private var catCategories: List<CatCategory> = emptyList()
-    private var selectedCatCategory = 0
     private var catDraw: DrawableDraw? = null
     private var eyesDraw: DrawableDraw? = null
+    private var tagDraw: DrawableDraw? = null
     private var backgroundDraw: DrawableDraw? = null
     private var hasChanges = false
     private var isSaving = false
@@ -120,10 +113,10 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
             override fun onAddedDraw(draw: Draw) = refreshDrawList()
             override fun onDeletedDraw(draw: Draw) = handleDeletedDraw(draw)
             override fun onClickedDraw(draw: Draw) = Unit
-            override fun onDragFinishedDraw(draw: Draw) = Unit
+            override fun onDragFinishedDraw(draw: Draw) { hasChanges = true }
             override fun onTouchedDownDraw(draw: Draw) = Unit
-            override fun onZoomFinishedDraw(draw: Draw) = Unit
-            override fun onFlippedDraw(draw: Draw) = Unit
+            override fun onZoomFinishedDraw(draw: Draw) { hasChanges = true }
+            override fun onFlippedDraw(draw: Draw) { hasChanges = true }
             override fun onDoubleTappedDraw(draw: Draw) = Unit
             override fun onHideOptionIconDraw() = Unit
             override fun onUndoDeleteDraw(draw: List<Draw?>) = Unit
@@ -134,33 +127,45 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
             override fun onEditText(draw: DrawableDraw) = Unit
             override fun onReplace(draw: Draw) = Unit
         })
+        binding.rcvSticker.adapter = stickerAdapter
+        binding.rcvStickerTitle.adapter = stickerTitleAdapter
+        binding.lnlSticker.gone()
         binding.rcvCat.adapter = catStickerAdapter
         binding.rcvCatTitle.adapter = catTitleAdapter
         binding.rcvEge.adapter = eyeAdapter
+        binding.recycleTagKeybroad.apply {
+            adapter = tagAdapter
+            itemAnimator = null
+        }
         val keyboardRows = listOf(
             binding.recycleNumber to 10,
             binding.recycleTop to 10,
             binding.recycleMid to 9,
             binding.recycleBottom to 8
         )
-        val keyboardLabels = listOf(
-            "1234567890".map(Char::toString),
-            "QWERTYUIOP".map(Char::toString),
-            "ASDFGHJKL".map(Char::toString),
-            "ZXCVBNM".map(Char::toString)
-        )
         keyboardRows.forEachIndexed { index, (recyclerView, spanCount) ->
             recyclerView.layoutManager = GridLayoutManager(this, spanCount)
-            keyboardAdapters[index].setKeyLabels(keyboardLabels[index])
+            keyboardAdapters[index].setKeyLabels(CustomDiyPetViewModel.KEY_LABELS[index].map(Char::toString))
             recyclerView.adapter = keyboardAdapters[index]
             recyclerView.setHasFixedSize(true)
             recyclerView.itemAnimator = null
             recyclerView.isNestedScrollingEnabled = false
         }
-        binding.lnlCat.isVisible = false
-        binding.lnlEge.isVisible = false
-        binding.lnlKeyBroad.isVisible = false
-        binding.recycleSort.isVisible = true
+        binding.lnlCat.gone()
+        binding.lnlEge.gone()
+        // Keep the keyboard measured off-screen so its first reveal does not have to
+        // inflate and lay out all four rows on the click frame.
+        binding.lnlKeyBroad.invisible()
+        selectKeyboardTab(showTags = false)
+        binding.recycleSort.invisible()
+        viewModel.bindCatalogue(
+            viewModelActivity.keybroadBaseUrl,
+            viewModelActivity.diyCatCategories,
+            viewModelActivity.diyEyesQuantity,
+            viewModelActivity.diyKeyboardQuantity,
+            viewModelActivity.diyTagQuantity
+        )
+        renderCatalogue(viewModel.catalogue.value)
         refreshDrawList()
 
         binding.actionBar.apply {
@@ -170,10 +175,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
             tvRightText.text = getString(R.string.save)
         }
 
-        viewModelActivity.preloadBackgroundsAndStickers()
         viewModelActivity.preloadDiyCatCategories()
-        viewModelActivity.loadStudioCatalogue()
-        refreshDrawList()
         updateNavigation(null)
     }
 
@@ -183,20 +185,18 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
         binding.btnCat.onClick { toggleCatPanel() }
         binding.btnEge.onClick { toggleEyesPanel() }
         binding.btnKeyBroad.onClick { toggleKeyboardPanel() }
+        binding.tagKeyBroad.onClick { selectKeyboardTab(showTags = false) }
+        binding.tagTag.onClick { selectKeyboardTab(showTags = true) }
         binding.btnText.onClick { showTool(Tool.TEXT) }
         binding.btnBackground.onClick { showTool(Tool.BACKGROUND) }
-        binding.btnSticker.onClick { showTool(Tool.STICKER) }
+        binding.btnSticker.onClick { toggleStickerPanel() }
     }
 
     override fun observeData() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModelActivity.templates.collect { refreshCatPanel() } }
-                launch { viewModelActivity.customizedCharacters.collect { refreshCatPanel() } }
-                launch { viewModelActivity.studioCatalogue.collect { refreshCatPanel() } }
-                launch { viewModelActivity.diyCatCategories.collect { refreshCatPanel() } }
-                launch { viewModelActivity.diyEyesQuantity.collect { refreshEyesPanel() } }
-                launch { viewModelActivity.diyKeyboardQuantity.collect { refreshKeyboardPanel() } }
+                launch { viewModel.catalogue.collect(::renderCatalogue) }
+                launch { viewModelActivity.diyStickerCategories.collect(::renderStickers) }
             }
         }
     }
@@ -208,6 +208,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
         if (tool != Tool.CAT) hideCatPanel()
         if (tool != Tool.EYES) hideEyesPanel()
         if (tool != Tool.KEYBOARD) hideKeyboardPanel()
+        if (tool != Tool.STICKER) hideStickerPanel()
     }
 
     private fun toggleCatPanel() {
@@ -248,125 +249,140 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
     }
 
     private fun showCatPanel() {
-        refreshCatPanel()
         hideEyesPanel()
         hideKeyboardPanel()
-        binding.lnlCat.isVisible = true
-        binding.recycleSort.isVisible = false
+        hideStickerPanel()
+        binding.lnlCat.visible()
+        binding.recycleSort.invisible()
     }
 
     private fun hideCatPanel() {
-        binding.lnlCat.isVisible = false
-        binding.recycleSort.isVisible = true
+        binding.lnlCat.gone()
+        binding.recycleSort.visible()
     }
 
     private fun showEyesPanel() {
-        refreshEyesPanel()
         hideCatPanel()
         hideKeyboardPanel()
-        binding.lnlEge.isVisible = true
-        binding.recycleSort.isVisible = false
+        hideStickerPanel()
+        binding.lnlEge.visible()
+        binding.recycleSort.invisible()
     }
 
     private fun hideEyesPanel() {
-        binding.lnlEge.isVisible = false
-        if (!binding.lnlCat.isVisible) binding.recycleSort.isVisible = true
+        binding.lnlEge.gone()
+        if (!binding.lnlCat.isVisible) binding.recycleSort.visible()
     }
 
     private fun showKeyboardPanel() {
-        if (!keyboardPanelLoaded) {
-            refreshKeyboardPanel()
-            keyboardPanelLoaded = true
-        }
         hideCatPanel()
         hideEyesPanel()
-        binding.lnlKeyBroad.isVisible = true
-        binding.recycleSort.isVisible = false
+        hideStickerPanel()
+        binding.lnlKeyBroad.visible()
+        binding.recycleSort.invisible()
     }
 
     private fun hideKeyboardPanel() {
-        binding.lnlKeyBroad.isVisible = false
+        // INVISIBLE keeps the already-created key views warm without intercepting input.
+        binding.lnlKeyBroad.invisible()
         if (!binding.lnlCat.isVisible && !binding.lnlEge.isVisible) {
-            binding.recycleSort.isVisible = true
+            binding.recycleSort.visible()
         }
     }
-
-    private fun refreshEyesPanel() {
-        val quantity = viewModelActivity.diyEyesQuantity.value
-            .takeIf { it > 0 }
-            ?: DEFAULT_EYES_QUANTITY
-        val paths = (1..quantity).map { index ->
-            "${viewModelActivity.keybroadBaseUrl}/Eyes/$index.png"
-        }
-        eyeAdapter.submitList(paths)
-    }
-
-    private fun refreshKeyboardPanel() {
-        val quantity = viewModelActivity.diyKeyboardQuantity.value
-            .takeIf { it > 0 }
-            ?: DEFAULT_KEYBOARD_QUANTITY
-        val paths = (1..quantity).map { index ->
-                "${viewModelActivity.keybroadBaseUrl}/Keybroad/Keybroad/$index.png"
-        }
-        preloadKeyboardImages(paths)
-        val rows = listOf(10, 10, 9, 7)
-        var start = 0
-        keyboardAdapters.forEachIndexed { index, adapter ->
-            val end = minOf(start + rows[index], paths.size)
-            val rowItems = paths.subList(start, end).toMutableList()
-            if (index == keyboardAdapters.lastIndex) {
-                rowItems += DELETE_SENTINEL
-            }
-            adapter.submitKeyboardList(
-                rowItems,
-                showDeleteAtEnd = index == keyboardAdapters.lastIndex
-            )
-            start = end
-        }
-    }
-
-    private fun preloadKeyboardImages(paths: List<String>) {
-        paths.asSequence()
-            .filter { preloadedKeyboardImages.add(it) }
-            .forEach { path ->
-                Glide.with(this)
-                    .load(path)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .override(96, 96)
-                    .preload()
-            }
-    }
-
-    private fun refreshCatPanel() {
-        catCategories = catCategories()
-        if (catCategories.isEmpty()) {
-            catTitleAdapter.submitList(emptyList())
-            catStickerAdapter.submitList(emptyList())
+    private fun toggleStickerPanel() {
+        if (currentTool == Tool.STICKER && binding.lnlSticker.isVisible) {
+            hideStickerPanel()
             return
         }
-
-        selectedCatCategory = selectedCatCategory.coerceIn(0, catCategories.lastIndex)
-        catTitleAdapter.submitList(catCategories.map { it.title })
-        catTitleAdapter.setSelectedPosition(selectedCatCategory)
-        catStickerAdapter.submitList(catCategories[selectedCatCategory].paths)
+        currentTool = Tool.STICKER
+        updateNavigation(Tool.STICKER)
+        refreshDrawList()
+        showStickerPanel()
     }
 
-    private fun selectCatCategory(position: Int) {
-        if (position !in catCategories.indices) return
-        selectedCatCategory = position
-        catStickerAdapter.submitList(catCategories[position].paths)
+    private fun showStickerPanel() {
+        hideCatPanel()
+        hideEyesPanel()
+        hideKeyboardPanel()
+        binding.lnlSticker.visible()
+        binding.recycleSort.invisible()
     }
 
-    private fun catCategories(): List<CatCategory> {
-        return viewModelActivity.diyCatCategories.value.map { category ->
-            val paths = (1..category.quantity).map { index ->
-                "${viewModelActivity.keybroadBaseUrl}/Cat/${category.category}/$index.png"
-            }
-            CatCategory(category.category.replace('_', ' '), paths)
+    private fun hideStickerPanel() {
+        binding.lnlSticker.gone()
+        if (!binding.lnlCat.isVisible && !binding.lnlEge.isVisible &&
+            binding.lnlKeyBroad.visibility != View.VISIBLE
+        ) {
+            binding.recycleSort.visible()
         }
     }
 
-    private data class CatCategory(val title: String, val paths: List<String>)
+    private fun renderStickers(categories: List<DiyAssetCategory>) {
+        stickerCategories = categories
+        selectedStickerCategory = selectedStickerCategory.coerceIn(0, categories.lastIndex.coerceAtLeast(0))
+        stickerTitleAdapter.submitList(categories.map { it.category.replace('_', ' ') })
+        stickerTitleAdapter.setSelectedPosition(selectedStickerCategory)
+        showStickerCategory()
+    }
+
+    private fun showStickerCategory() {
+        val category = stickerCategories.getOrNull(selectedStickerCategory) ?: return
+        stickerAdapter.submitList(
+            (1..category.quantity).map {
+                "${viewModelActivity.keybroadBaseUrl}/Stickers/${category.category}/$it.png"
+            }
+        )
+    }
+
+    private fun selectStickerCategory(position: Int) {
+        selectedStickerCategory = position
+        showStickerCategory()
+    }
+    private fun selectKeyboardTab(showTags: Boolean) {
+        if (showTags) {
+            binding.keyBroad.gone()
+            binding.recycleTagKeybroad.visible()
+            val tags = viewModel.catalogue.value.tags
+            if (tagAdapter.itemCount != tags.size) tagAdapter.submitList(tags)
+            binding.recycleTagKeybroad.post {
+                binding.recycleTagKeybroad.requestLayout()
+                binding.recycleTagKeybroad.scrollToPosition(0)
+            }
+        } else {
+            binding.recycleTagKeybroad.gone()
+            binding.keyBroad.visible()
+        }
+        binding.tagKeyBroad.apply {
+            setTextColor(ContextCompat.getColor(context, if (showTags) R.color.origin2 else R.color.app_color))
+            setBackgroundResource(if (showTags) R.drawable.bg_unselected_key else R.drawable.bg_selected_key)
+        }
+        binding.tagTag.apply {
+            setTextColor(ContextCompat.getColor(context, if (showTags) R.color.app_color else R.color.origin2))
+            setBackgroundResource(if (showTags) R.drawable.bg_selected_key else R.drawable.bg_unselected_key)
+        }
+    }
+
+    private fun renderCatalogue(catalogue: DiyCatalogue) {
+        val previous = renderedCatalogue
+        if (previous == catalogue) return
+        if (previous?.cats != catalogue.cats) {
+            catTitleAdapter.submitList(catalogue.cats.map { it.title })
+        }
+        if (previous?.cats != catalogue.cats || previous?.selectedCatCategory != catalogue.selectedCatCategory) {
+            catTitleAdapter.setSelectedPosition(catalogue.selectedCatCategory)
+            catStickerAdapter.submitList(catalogue.cats.getOrNull(catalogue.selectedCatCategory)?.paths.orEmpty())
+        }
+        if (previous?.eyes != catalogue.eyes) eyeAdapter.submitList(catalogue.eyes)
+        if (previous?.tags != catalogue.tags) tagAdapter.submitList(catalogue.tags)
+        if (previous?.keyboardRows != catalogue.keyboardRows) {
+            keyboardAdapters.forEachIndexed { index, adapter ->
+                adapter.submitKeyboardList(catalogue.keyboardRows.getOrElse(index) { emptyList() }, index == 3)
+            }
+        }
+        renderedCatalogue = catalogue
+    }
+
+    private fun selectCatCategory(position: Int) = viewModel.selectCatCategory(position)
 
     private fun updateNavigation(selected: Tool?) {
         binding.btnCat.setImageResource(
@@ -403,74 +419,59 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
         replaceExisting: Boolean = true,
         keyboardEntry: KeyboardEntry? = null
     ) {
-        Glide.with(this)
-            .asBitmap()
-            .load(path)
-            .override(768, 768)
-            .format(DecodeFormat.PREFER_ARGB_8888)
-            .disallowHardwareConfig()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(
-                    resource: Bitmap,
-                    transition: Transition<in Bitmap>?
-                ) {
-                    if (isFinishing || isDestroyed) return
-                    val drawable = resource.copy(Bitmap.Config.ARGB_8888, true)
-                        .toDrawable(resources)
-                    when (kind) {
-                        LayerKind.CAT -> {
-                            if (replaceExisting) {
-                                catDraw = replaceOrAdd(catDraw, drawable, path, isLarge = true)
-                            } else {
-                                replaceOrAdd(null, drawable, path, isLarge = true)
-                            }
+        val job = lifecycleScope.launch {
+            try {
+                val bitmap = viewModel.loadCanvasImage(
+                    path,
+                    trimPadding = kind == LayerKind.KEYBOARD || kind == LayerKind.TAG
+                )
+                if (isFinishing || isDestroyed) return@launch
+                val drawable = bitmap.toDrawable(resources)
+                when (kind) {
+                    LayerKind.CAT -> {
+                        if (replaceExisting) {
+                            catDraw = replaceOrAdd(catDraw, drawable, path, isLarge = true)
+                        } else {
+                            replaceOrAdd(null, drawable, path, isLarge = true)
                         }
-                        LayerKind.EYES -> {
-                            if (replaceExisting) {
-                                eyesDraw = replaceOrAdd(eyesDraw, drawable, path)
-                            } else {
-                                replaceOrAdd(null, drawable, path)
-                            }
-                        }
-                        LayerKind.KEYBOARD -> {
-                            if (keyboardEntry == null || !keyboardEntries.contains(keyboardEntry)) {
-                                return
-                            }
-                            val draw = replaceOrAdd(null, drawable, path)
-                            keyboardEntry.draw = draw
-                            bringKeyboardTextToFront()
-                        }
-                        LayerKind.BACKGROUND -> {
-                            backgroundDraw = replaceOrAdd(
-                                backgroundDraw,
-                                drawable,
-                                path,
-                                isLarge = true
-                            )
-                            backgroundDraw?.let { draw ->
-                                val position = binding.drawView.getDraws().indexOf(draw)
-                                if (position > 0) {
-                                    binding.drawView.exchangeLayers(position, 0)
-                                }
-                            }
-                        }
-                        LayerKind.STICKER -> replaceOrAdd(null, drawable, path)
                     }
-                    hasChanges = true
-                    binding.drawView.post { refreshDrawList() }
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) = Unit
-
-                override fun onLoadFailed(errorDrawable: Drawable?) {
-                    if (keyboardEntry != null && keyboardEntries.remove(keyboardEntry)) {
-                        updateKeyboardTextDraw()
-                        refreshDrawList()
+                    LayerKind.EYES -> {
+                        if (replaceExisting) {
+                            eyesDraw = replaceOrAdd(eyesDraw, drawable, path)
+                        } else {
+                            replaceOrAdd(null, drawable, path)
+                        }
                     }
-                    showToast(R.string.image_load_failed)
+                    LayerKind.KEYBOARD -> {
+                        if (keyboardEntry == null || !keyboardEntries.contains(keyboardEntry)) return@launch
+                        // `path` is the exact API URL passed to imgKey by the adapter.
+                        keyboardEntry.draw = replaceOrAdd(null, drawable, path)
+                        bringKeyboardTextToFront()
+                    }
+                    LayerKind.TAG -> tagDraw = replaceOrAdd(tagDraw, drawable, path)
+                    LayerKind.BACKGROUND -> {
+                        backgroundDraw = replaceOrAdd(backgroundDraw, drawable, path, isLarge = true)
+                        backgroundDraw?.let { draw ->
+                            val position = binding.drawView.getDraws().indexOf(draw)
+                            if (position > 0) binding.drawView.moveLayer(position, 0)
+                        }
+                    }
+                    LayerKind.STICKER -> replaceOrAdd(null, drawable, path)
                 }
-            })
+                hasChanges = true
+                refreshDrawList()
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                if (keyboardEntry != null && keyboardEntries.remove(keyboardEntry)) {
+                    updateKeyboardTextDraw()
+                    refreshDrawList()
+                }
+                showToast(R.string.image_load_failed)
+            }
+        }
+        imageJobs += job
+        job.invokeOnCompletion { imageJobs.remove(job) }
     }
 
     private fun replaceOrAdd(
@@ -495,31 +496,8 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
     private fun appendKeyboardText(value: String): KeyboardEntry {
         val entry = KeyboardEntry(value)
         keyboardEntries += entry
-        val bitmap = createTextBitmap(
-            keyboardEntries.joinToString("") { it.label },
-            Color.BLACK,
-            tile = false,
-            textSize = 72f
-        )
-        val current = keyboardTextDraw
-        if (current != null && binding.drawView.getDraws().contains(current)) {
-            current.setDrawable(bitmap.toDrawable(resources))
-            current.setOriginalDrawable(bitmap.toDrawable(resources))
-            current.textContent = keyboardEntries.joinToString("") { it.label }
-            binding.drawView.selectCurrentDraw(current)
-        } else {
-            keyboardTextDraw = DrawableDraw(
-                bitmap.toDrawable(resources),
-                "keyboard-text-${System.nanoTime()}"
-            ).apply {
-                isText = true
-                textContent = keyboardEntries.joinToString("") { it.label }
-            }
-            binding.drawView.addDraw(keyboardTextDraw!!)
-        }
-        bringKeyboardTextToFront()
+        updateKeyboardTextDraw(selectText = true)
         hasChanges = true
-        binding.drawView.post { refreshDrawList() }
         return entry
     }
 
@@ -528,7 +506,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
         val draws = binding.drawView.getDraws()
         val textIndex = draws.indexOf(textDraw)
         if (textIndex >= 0 && textIndex != draws.lastIndex) {
-            binding.drawView.exchangeLayers(textIndex, draws.lastIndex)
+            binding.drawView.moveLayer(textIndex, draws.lastIndex)
         }
     }
 
@@ -539,6 +517,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
 
     private fun handleDeletedDraw(draw: Draw) {
         if (draw === keyboardTextDraw) {
+            keyboardTextJob?.cancel()
             val linkedImages = keyboardEntries.mapNotNull { it.draw }
             // Clear links before cascading deletes, including entries still loading.
             keyboardEntries.clear()
@@ -551,20 +530,50 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
         refreshDrawList()
     }
 
-    private fun updateKeyboardTextDraw() {
-        val textDraw = keyboardTextDraw ?: return
+    private fun updateKeyboardTextDraw(selectText: Boolean = false) {
+        keyboardTextJob?.cancel()
         if (keyboardEntries.isEmpty()) {
-            binding.drawView.remove(textDraw)
+            val textDraw = keyboardTextDraw
             keyboardTextDraw = null
+            if (textDraw != null) binding.drawView.remove(textDraw)
             return
         }
         val text = keyboardEntries.joinToString("") { it.label }
-        val bitmap = createTextBitmap(text, Color.BLACK, tile = false, textSize = 72f)
-        textDraw.setDrawable(bitmap.toDrawable(resources))
-        textDraw.setOriginalDrawable(bitmap.toDrawable(resources))
-        textDraw.textContent = text
-        bringKeyboardTextToFront()
-        binding.drawView.invalidate()
+        // Each edit cancels the previous render; a slow render can never overwrite
+        // newer typing or re-create text that the user already deleted.
+        keyboardTextJob = lifecycleScope.launch {
+            val bitmap = viewModel.renderText(text, Color.BLACK, textSize = 72f)
+            val drawable = bitmap.toDrawable(resources)
+            val current = keyboardTextDraw
+            if (current != null && binding.drawView.getDraws().contains(current)) {
+                current.setDrawable(drawable)
+                current.setOriginalDrawable(drawable)
+                current.textContent = text
+                if (selectText) binding.drawView.selectCurrentDraw(current)
+            } else {
+                val draw = DrawableDraw(drawable, "keyboard-text-${System.nanoTime()}").apply {
+                    isText = true
+                    textContent = text
+                }
+                keyboardTextDraw = draw
+                binding.drawView.addDraw(draw, DrawKey.TOP)
+                moveKeyboardTextNearTop(draw)
+            }
+            bringKeyboardTextToFront()
+            binding.drawView.invalidate()
+            refreshDrawList()
+        }
+    }
+
+    private fun moveKeyboardTextNearTop(draw: DrawableDraw) {
+        binding.drawView.post {
+            if (draw !== keyboardTextDraw || !binding.drawView.getDraws().contains(draw)) {
+                return@post
+            }
+            val targetTop = resources.getDimension(R.dimen.dimension_16)
+            draw.getMatrix().postTranslate(0f, targetTop - draw.mappedBound.top)
+            binding.drawView.invalidate()
+        }
     }
 
     private fun showAddTextDialog(textColor: Int) {
@@ -587,10 +596,9 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
                 if (content.isEmpty()) {
                     showToast(R.string.null_edt)
                 } else {
-                    addBitmapLayer(
-                        createTextBitmap(content, textColor, tile = false),
-                        "text"
-                    )
+                    lifecycleScope.launch {
+                        addBitmapLayer(viewModel.renderText(content, textColor), "text")
+                    }
                     dialog.dismiss()
                 }
             }
@@ -614,93 +622,50 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
         binding.drawView.post { refreshDrawList() }
     }
 
-    private fun createTextBitmap(
-        text: String,
-        color: Int,
-        tile: Boolean,
-        textSize: Float = 150f
-    ): Bitmap {
-        val width = if (tile) 240 else 900
-        val height = if (tile) 240 else 260
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            textAlign = Paint.Align.CENTER
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        }
-
-        if (tile) {
-            paint.color = getColor(R.color.app_color2)
-            canvas.drawRoundRect(8f, 8f, width - 8f, height - 8f, 48f, 48f, paint)
-        }
-
-        paint.color = color
-        paint.textSize = textSize
-        val maxTextWidth = width * 0.9f
-        while (paint.measureText(text) > maxTextWidth && paint.textSize > 38f) {
-            paint.textSize -= 4f
-        }
-        val baseline = height / 2f - (paint.ascent() + paint.descent()) / 2f
-        canvas.drawText(text, width / 2f, baseline, paint)
-        return bitmap
-    }
-
     private fun saveDesign() {
         if (isSaving) return
-        if (binding.drawView.getStickerCount() == 0) {
+        if (binding.drawView.getStickerCount() == 0 && imageJobs.isEmpty() && keyboardEntries.isEmpty()) {
             showToast(R.string.nothing_to_save)
             return
         }
 
-        binding.drawView.hideSelect()
         isSaving = true
         showLoadingSafe()
-        binding.drawView.post {
-            val bitmap = runCatching { binding.drawView.save() }.getOrNull()
-            if (bitmap == null) {
-                finishSavingWithError()
-                return@post
-            }
-
-            lifecycleScope.launch {
-                val path = withContext(Dispatchers.IO) {
-                    val savedPath = bitmap.saveToFile(
-                        this@CustomDiyPetActivity,
-                        "diy_pet"
-                    )
-                    if (savedPath != null) {
-                        viewModelActivity.appDataManager.addMyDesignPath(
-                            savedPath,
-                            DesignSource.DIY
-                        )
-                    }
-                    bitmap.recycle()
-                    savedPath
+        lifecycleScope.launch {
+            val path = try {
+                // Export the final image/text, even if Save follows the last tap
+                // before its background decode or text render has finished.
+                imageJobs.toList().joinAll()
+                keyboardTextJob?.join()
+                if (binding.drawView.getStickerCount() == 0) {
+                    null
+                } else {
+                    binding.drawView.hideSelect()
+                    viewModel.saveDesign(binding.drawView.save())
                 }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                null
+            } finally {
                 hideLoadingSafe()
                 isSaving = false
-                if (path == null) {
-                    showToast(R.string.save_failed)
-                    return@launch
-                }
-
-                hasChanges = false
-                startActivity(
-                    Intent(this@CustomDiyPetActivity, ViewActivity::class.java).apply {
-                        putExtra("imagePath", path)
-                        putExtra("idEdit", "")
-                        putExtra("imageType", 0)
-                        putExtra(DesignSource.ARG_SOURCE, DesignSource.DIY)
-                    }
-                )
             }
-        }
-    }
+            if (path == null) {
+                showToast(R.string.save_failed)
+                return@launch
+            }
 
-    private fun finishSavingWithError() {
-        hideLoadingSafe()
-        isSaving = false
-        showToast(R.string.save_failed)
+            hasChanges = false
+            startActivity(
+                Intent(this@CustomDiyPetActivity, ViewActivity::class.java).apply {
+                    putExtra("imagePath", path)
+                    putExtra("idEdit", "")
+                    putExtra("imageType", 0)
+                    putExtra(DesignSource.ARG_SOURCE, DesignSource.DIY)
+                }
+            )
+        }
     }
 
     private fun handleBack() {
@@ -720,11 +685,4 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, AddCharac
         return true
     }
 
-    companion object {
-        private const val MAX_ITEMS = 120
-        private const val DEFAULT_EYES_QUANTITY = 33
-        private const val DEFAULT_KEYBOARD_QUANTITY = 36
-        private const val DELETE_SENTINEL = "__delete__"
-        private const val KEYBOARD_KEYS = "1234567890QWERTYUIOPASDFGHJKLZXCVBNM"
-    }
 }

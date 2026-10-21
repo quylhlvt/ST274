@@ -20,6 +20,7 @@ class DiyKeyboardAdapter(
     }
 
     fun submitKeyboardList(list: List<String>, showDeleteAtEnd: Boolean = false) {
+        if (items == list && this.showDeleteAtEnd == showDeleteAtEnd) return
         this.showDeleteAtEnd = showDeleteAtEnd
         submitList(list)
     }
@@ -38,9 +39,15 @@ class DiyKeyboardAdapter(
         binding.imgKey.tag = item
         val keyLabel = keyLabels.getOrNull(position).orEmpty()
         binding.txtKey.text = keyLabel
+        // Clear recycled content; both imgKey and the click callback use `item`,
+        // which is the same API URL.
+        Glide.with(binding.imgKey).clear(binding.imgKey)
+        binding.imgKey.setImageDrawable(null)
         Glide.with(binding.imgKey)
             .load(item)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
+            // The panel is laid out while invisible, so these small thumbnails
+            // are already decoded when it is first revealed.
             .override(96, 96)
             .dontAnimate()
             .into(binding.imgKey)

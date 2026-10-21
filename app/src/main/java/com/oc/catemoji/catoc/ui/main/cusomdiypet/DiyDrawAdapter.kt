@@ -2,7 +2,9 @@ package com.oc.catemoji.catoc.ui.main.cusomdiypet
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.graphics.drawable.Drawable
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.oc.catemoji.catoc.core.custom.DrawableDraw
 import com.oc.catemoji.catoc.databinding.ItemSortBinding
@@ -12,10 +14,24 @@ class DiyDrawAdapter(
 ) : RecyclerView.Adapter<DiyDrawAdapter.DrawViewHolder>() {
 
     private var items: List<DrawableDraw> = emptyList()
+    private var thumbnails: List<Drawable> = emptyList()
 
     fun submitList(newItems: List<DrawableDraw>) {
+        val newThumbnails = newItems.map { it.drawable }
+        if (items == newItems && thumbnails == newThumbnails) return
+        val previousItems = items
+        val previousThumbnails = thumbnails
+        val changes = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize() = previousItems.size
+            override fun getNewListSize() = newItems.size
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                previousItems[oldItemPosition] === newItems[newItemPosition]
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                previousThumbnails[oldItemPosition] === newThumbnails[newItemPosition]
+        })
         items = newItems.toList()
-        notifyDataSetChanged()
+        thumbnails = newThumbnails
+        changes.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrawViewHolder {
@@ -38,7 +54,6 @@ class DiyDrawAdapter(
             gradientSort.alpha = 1f
             gradientSort.scaleX = 1f
             gradientSort.scaleY = 1f
-            imvImage.background = null
             imvImage.setImageDrawable(draw.drawable)
             imvImage.isVisible = true
             tvLabel.isVisible = false

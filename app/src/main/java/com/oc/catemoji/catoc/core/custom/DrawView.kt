@@ -295,6 +295,14 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
     }
 
+    /** Moves one layer without swapping the relative order of the other layers. */
+    fun moveLayer(from: Int, to: Int) {
+        if (from !in drawList.indices || to !in drawList.indices || from == to) return
+        drawList.add(to, drawList.removeAt(from))
+        saveDrawState()
+        invalidate()
+    }
+
     fun showOrHideDraw(draw: Draw, pos: Int) {
         if (drawList.size > 0) {
             draw.setHide(!draw.isHide)
@@ -547,7 +555,7 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         return drawDrawNew
     }
 
-    private fun addDraw(draw: DrawableDraw, position: Int): DrawView {
+    fun addDraw(draw: DrawableDraw, @Draw.Position position: Int): DrawView {
         if (ViewCompat.isLaidOut(this)) {
             addDrawImmediately(draw, position)
         } else {
