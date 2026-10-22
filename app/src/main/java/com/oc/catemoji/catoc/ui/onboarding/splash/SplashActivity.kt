@@ -42,7 +42,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>(
 
     override fun initView() {
         ResourcesCompat.getFont(this, R.font.baloo2_extrabold)
-        resetAppStateForNewVersion()
+
         mainViewModel.preloadDiyAssets()
 
         interCallBack = object : InterCallback() {

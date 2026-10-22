@@ -2,6 +2,7 @@ package com.oc.catemoji.catoc.ui.main.createPony
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
@@ -13,9 +14,11 @@ import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
 import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
+import com.oc.catemoji.catoc.core.extention.logEvent
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.data.model.custom.CustomModel
 import com.oc.catemoji.catoc.databinding.ActivityChooseCatBinding
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity
@@ -35,11 +38,33 @@ class ChooseCatActivity : BaseActivity<ActivityChooseCatBinding, ChoosePonyViewM
 ) {
     private lateinit var adapter: ChoosePonyAdapter
     private var firstLoad = true
-override fun initView() {
+    private val isPauseChallenge by lazy {
+        intent.getBooleanExtra(EXTRA_PAUSE_CHALLENGE, false)
+    }
+
+    private fun initNativeCollab() {
+        val nativeAdId = if (isPauseChallenge) {
+            R.string.native_cl_categoryPauOC
+        } else {
+            R.string.native_cl_category
+        }
+        Admob.getInstance().loadNativeCollapNotBanner(
+            this@ChooseCatActivity,
+            getString(nativeAdId),
+            binding.flNativeCollab
+        )
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        initNativeCollab()
+    }
+
+    override fun initView() {
         hideGlobalDialogSafe()
-        Admob.getInstance().loadNativeCollapNotBanner(this, getString(R.string.native_cl_category), binding.flNativeCollab)
+        initNativeCollab()
         setImageActionBar(binding.actionBar.btnActionBarLeft, R.drawable.back_app)
-        val titleRes = if (intent.getBooleanExtra(EXTRA_PAUSE_CHALLENGE, false)) {
+        val titleRes = if (isPauseChallenge) {
             R.string.pause_oc_challenge
         } else {
             R.string.category
@@ -67,26 +92,55 @@ override fun initView() {
             val templates = viewModelActivity.templates.value
             val index = templates.indexOfFirst { it.id == character.id }
             if (index < 0 || position < 0) {
-                android.widget.Toast.makeText(this@ChooseCatActivity, R.string.download_failed_please_try_again_later, android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(
+                    this@ChooseCatActivity,
+                    R.string.download_failed_please_try_again_later,
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
                 return@launch
             }
-            val destination = if (intent.getBooleanExtra(EXTRA_PAUSE_CHALLENGE, false)) {
+            val destination = if (isPauseChallenge) {
                 PauseOCChallengeActivity::class.java
             } else {
                 CustomizeActivity::class.java
             }
-            startActivity(Intent(this@ChooseCatActivity, destination).apply {
+            val nextIntent = Intent(this@ChooseCatActivity, destination).apply {
                 putExtra(CustomizeActivity.ARG_TEMPLATE_INDEX, index)
                 putExtra(CustomizeActivity.ARG_TEMPLATE_ID, character.id)
                 if (destination == PauseOCChallengeActivity::class.java) {
                     putExtra("SHOW_TOUCH_GUIDE", true)
                 }
-            })
+            }
+            if (isPauseChallenge) {
+                startActivity(nextIntent)
+            } else {
+                showInter {
+                    val dataName = character.id
+                        .removePrefix("online_")
+                        .removePrefix("template_")
+                    Log.d("logevent2", "click_item_$dataName - ${character.avatar}")
+                    logEvent("click_item_$dataName")
+                    startActivity(nextIntent)
+                }
+            }
         }
     }
 
     override fun viewListener() {
-        binding.actionBar.btnActionBarLeft.onClick { finish() }
+        binding.actionBar.btnActionBarLeft.onClick { handleBackNavigation() }
+    }
+
+    override fun onScreenBackPressed(): Boolean {
+        handleBackNavigation()
+        return true
+    }
+
+    private fun handleBackNavigation() {
+        if (isPauseChallenge) {
+            showInter { finish() }
+        } else {
+            finish()
+        }
     }
 
     companion object {
@@ -127,14 +181,4 @@ override fun initView() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
-    }
-
-    override fun onStop() {
-        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
-        binding.flNativeCollab.removeAllViews()
-        super.onStop()
-    }
 }

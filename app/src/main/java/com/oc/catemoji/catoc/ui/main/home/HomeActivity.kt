@@ -50,14 +50,15 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
 
     private val mainViewModel: ViewModelActivity get() = viewModelActivity
     private var countRate = 0
-private fun initNativeCollab() {
+    private fun initNativeCollab() {
         Log.d("NativeCollab", "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}")
-        Admob.getInstance().loadNativeCollapNotBanner(requireContext(), getString(R.string.native_cl_home), binding.flNativeCollab)
+        Admob.getInstance()
+            .loadNativeCollapNotBanner(this@HomeActivity, getString(R.string.native_cl_home), binding.flNativeCollab)
     }
     override fun initView() {
-        Admob.getInstance().loadNativeAll(requireContext(), getString(R.string.native_all))
+        Admob.getInstance().loadNativeAll(applicationContext, getString(R.string.native_all))
         Log.d("NativeCollab", "▶️ initView")
-        Admob.getInstance().loadInterAll(requireContext(), getString(R.string.inter_all))
+        Admob.getInstance().loadInterAll(applicationContext, getString(R.string.inter_all))
         initNativeCollab()
         binding.rcvMain.adapter = HomeMenuAdapter(::onHomeMenuClick)
         binding.actionBar.apply {
@@ -91,16 +92,20 @@ private fun initNativeCollab() {
 
     private fun onHomeMenuClick(action: HomeMenuAction) {
         when (action) {
-            HomeMenuAction.DIY -> startActivity(
-                android.content.Intent(requireContext(), CustomDiyPetActivity::class.java)
-            )
+            HomeMenuAction.DIY -> {
+                if (!checkOnlineNetworkOrShowDialog()) {
+                    startActivity(
+                        android.content.Intent(this@HomeActivity, CustomDiyPetActivity::class.java)
+                    )
+                }
+            }
             HomeMenuAction.CREATE -> {
                 val hasNetwork = isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
                 when {
                     !hasNetwork -> showUnstableNetworkDialog()
                     viewModelActivity.templates.value.isEmpty() -> showLoadingDataDialog()
                     else -> startActivity(android.content.Intent(
-                        requireContext(),
+                        this@HomeActivity,
                         com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity::class.java
                     ))
                 }
@@ -112,7 +117,7 @@ private fun initNativeCollab() {
                     !hasNetwork -> showUnstableNetworkDialog()
                     viewModelActivity.templates.value.isEmpty() -> showLoadingDataDialog()
                     else -> startActivity(android.content.Intent(
-                        requireContext(),
+                        this@HomeActivity,
                         com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity::class.java
                     ).putExtra(
                         com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity.EXTRA_PAUSE_CHALLENGE,
@@ -138,6 +143,21 @@ private fun initNativeCollab() {
                 navigateStudioWithNetworkCheck()
             }
         }
+    }
+
+    /** Same blocking contract used by CustomizeActivity. */
+    private fun checkOnlineNetworkOrShowDialog(): Boolean = when {
+        !isInternetAvailable(requireContext()) -> {
+            showUnstableNetworkDialog()
+            true
+        }
+
+        !isNetworkConnected(requireContext()) -> {
+            showUnstableNetworkDialog()
+            true
+        }
+
+        else -> false
     }
 
     private fun navigateStudioWithNetworkCheck() {

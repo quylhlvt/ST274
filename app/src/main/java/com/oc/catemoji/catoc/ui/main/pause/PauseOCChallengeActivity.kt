@@ -15,8 +15,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
+import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
+import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
@@ -82,7 +85,17 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
         }
         touchGuideShown = true
     }}
+    private fun initNativeCollab() {
+        Admob.getInstance()
+            .loadNativeCollapNotBanner(this@PauseOCChallengeActivity, getString(R.string.native_cl_playPauOC), binding.flNativeCollab)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        initNativeCollab()
+    }
     override fun initView() {
+        initNativeCollab()
         setImageActionBar(binding.actionBar.btnActionBarLeft, R.drawable.back_app)
         setFrameActionBar(binding.actionBar.btnActionBarRightText,binding.actionBar.tvRightText,getString(R.string.next ))
         binding.actionBar.btnActionBarRightText.invisible()
@@ -127,7 +140,10 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
             }
             if (isPlaying) pausePlayback() else startPlayback()
         }
-        binding.btnSkip.onClick { advanceStage(skip = true) }
+        binding.btnSkip.onClick {
+            if (checkOnlineNetworkOrShowDialog()) return@onClick
+            advanceStage(skip = true)
+        }
         binding.rlCharacterPause.setOnClickListener { advanceStage() }
         binding.root.setOnClickListener { advanceStage() }
     }
@@ -265,6 +281,20 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
         } else {
             prepareCurrentStage()
         }
+    }
+
+    private fun checkOnlineNetworkOrShowDialog(): Boolean {
+        val isOnlineTemplate = viewModel.session
+            ?.template
+            ?.id
+            ?.startsWith("online_") == true
+        if (!isOnlineTemplate) return false
+
+        val hasNetwork = isInternetAvailable(this) && isNetworkConnected(this)
+        if (hasNetwork) return false
+
+        showUnstableNetworkDialog()
+        return true
     }
 
     private fun updateControls() {

@@ -148,7 +148,7 @@ private fun initNativeCollab() {
             R.string.native_cl_bg
         }
         Admob.getInstance().loadNativeCollapNotBanner(
-            requireContext(),
+            this@AddCharacterActivity,
             getString(adUnitId),
             binding.flNativeCollab
         )
@@ -1034,11 +1034,11 @@ private fun initNativeCollab() {
                         }
                     )
                 } else {
-                    Toast.makeText(requireContext(), "Lưu thất bại!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddCharacterActivity, "Lưu thất bại!", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 hideLoadingSafe()
-                Toast.makeText(requireContext(), "Có lỗi: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AddCharacterActivity, "Có lỗi: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -45,6 +45,7 @@ fun Activity.goToSettings() {
         .create()
 
     dialog.show()
+    dialog.hideNavigation(true)
     val positiveButton: Button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
     val negativeButton: Button = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
     positiveButton.setTextColor(getColor(R.color.app_color))

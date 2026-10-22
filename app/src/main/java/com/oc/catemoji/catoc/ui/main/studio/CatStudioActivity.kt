@@ -142,7 +142,7 @@ class CatStudioActivity : BaseActivity<ActivityCatStudioBinding, CatStudioViewMo
         }
     }
 private fun initNativeCollab() {
-        Admob.getInstance().loadNativeCollapNotBanner(requireContext(), getString(R.string.native_cl_catStudio), binding.flNativeCollab)
+        Admob.getInstance().loadNativeCollapNotBanner(this@CatStudioActivity, getString(R.string.native_cl_catStudio), binding.flNativeCollab)
     }
 
     override fun onScreenStart() {

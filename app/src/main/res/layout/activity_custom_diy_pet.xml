@@ -24,16 +24,26 @@
         android:layout_width="@dimen/dimension_0"
         android:layout_height="@dimen/dimension_0"
         android:layout_marginBottom="@dimen/dimension_10"
-        android:background="@color/white"
+        android:elevation="@dimen/dimension_2"
         app:layout_constraintBottom_toTopOf="@+id/recycleSort"
         app:layout_constraintDimensionRatio="3.6:4.8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar" />
+    <View
+            android:layout_width="@dimen/dimension_0"
+          android:layout_height="@dimen/dimension_0"
+          android:background="@color/white"
+          android:elevation="@dimen/dimension_1"
+          app:layout_constraintStart_toStartOf="@+id/drawView"
+          app:layout_constraintBottom_toBottomOf="@+id/drawView"
+          app:layout_constraintTop_toTopOf="@+id/drawView"
+          app:layout_constraintEnd_toEndOf="@+id/drawView"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleSort"
         android:layout_width="match_parent"
+        android:elevation="@dimen/dimension_2"
         android:layout_height="@dimen/dimension_80"
         android:layout_marginBottom="@dimen/dimension_16"
         android:paddingStart="@dimen/dimension_8"
@@ -43,6 +53,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lnlCat"
+        android:elevation="@dimen/dimension_2"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimension_250"
         android:layout_marginBottom="@dimen/dimension_8"
@@ -90,6 +101,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lnlEge"
+        android:elevation="@dimen/dimension_2"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimension_250"
         android:layout_marginBottom="@dimen/dimension_12"
@@ -115,6 +127,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lnlKeyBroad"
+        android:elevation="@dimen/dimension_2"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimension_250"
         android:layout_marginBottom="@dimen/dimension_8"
@@ -250,6 +263,7 @@
         android:layout_marginBottom="@dimen/dimension_8"
         android:orientation="vertical"
         android:visibility="gone"
+        android:elevation="@dimen/dimension_2"
         app:layout_constraintBottom_toTopOf="@+id/nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -260,10 +274,29 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/lnlBackgroundText"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimension_300"
+        android:layout_marginBottom="@dimen/dimension_8"
+        android:orientation="vertical"
+        android:elevation="@dimen/dimension_2"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/nav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include
+            android:id="@+id/lnlBackgroundTextDiy"
+            layout="@layout/layout_text_panel_diy"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lnlSticker"
         android:layout_width="match_parent"
+        android:elevation="@dimen/dimension_2"
         android:layout_height="@dimen/dimension_250"
         android:layout_marginBottom="@dimen/dimension_8"
         android:orientation="vertical"
@@ -371,4 +404,10 @@
                 android:src="@drawable/ic_sticker_pet" />
         </LinearLayout>
     </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+    <com.oc.catemoji.catoc.utils.BlockableFrameLayout
+            android:id="@+id/flNativeCollab"
+            android:elevation="@dimen/dimension_100"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

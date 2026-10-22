@@ -81,6 +81,8 @@ class ViewModelActivity @Inject constructor(
     val diyAssetsReady: StateFlow<Boolean> = _diyAssetsReady.asStateFlow()
     private val _diyBackgroundQuantity = MutableStateFlow(0)
     val diyBackgroundQuantity: StateFlow<Int> = _diyBackgroundQuantity.asStateFlow()
+    private val _diyTextBackgroundQuantity = MutableStateFlow(0)
+    val diyTextBackgroundQuantity: StateFlow<Int> = _diyTextBackgroundQuantity.asStateFlow()
     private var diyAssetsJob: Job? = null
     var bgQuantity: Int = 0
     var stickerQuantity: Int = 0
@@ -199,6 +201,9 @@ class ViewModelActivity @Inject constructor(
         _diyCatCategories.value = jsonObject.diyCategories("Cat")
         _diyStickerCategories.value = jsonObject.diyCategories("Stickers")
         _diyBackgroundQuantity.value = jsonObject.diyCategories("Background").firstOrNull()?.quantity ?: 0
+        _diyTextBackgroundQuantity.value = jsonObject.diyCategories("Background_text")
+            .firstOrNull()?.quantity
+            ?: 0
         _diyEyesQuantity.value = jsonObject.diyCategories("Eyes")
             .firstOrNull()?.quantity
             ?: 0
@@ -588,6 +593,7 @@ class ViewModelActivity @Inject constructor(
     // ── MY DESIGNS ────────────────────────────────────────────────────────────
 
     fun addMyDesign(path: String)    { viewModelScope.launch { appDataManager.addMyDesignPath(path) } }
+    fun addMyDiy(path: String) { viewModelScope.launch { appDataManager.addMyDiyPath(path) } }
     fun removeMyDesign(path: String) { viewModelScope.launch { appDataManager.removeMyDesignPath(path) } }
 
     // ── CLEAR ─────────────────────────────────────────────────────────────────

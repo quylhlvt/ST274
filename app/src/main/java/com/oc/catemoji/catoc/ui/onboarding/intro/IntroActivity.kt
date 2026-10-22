@@ -79,7 +79,7 @@ class IntroActivity : BaseActivity<ActivityIntroBinding, IntroViewModel>(
 override fun initView() {
 //        binding.viewPager2.isUserInputEnabled = false
         Admob.getInstance().loadNativeAd(
-            requireContext(),
+            this@IntroActivity,
             getString(R.string.native_intro),
             binding.nativeAds,
             R.layout.ads_native_medium_btn_bottom

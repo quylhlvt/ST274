@@ -29,6 +29,7 @@ class AppDataManager @Inject constructor(
         private const val KEY_TEMPLATES   = "templates"
         private const val KEY_CUSTOMIZED  = "customized"
         private const val KEY_MY_DESIGNS  = "my_designs"
+        private const val KEY_MY_DIYS = "my_diys"
         private const val KEY_DESIGN_SOURCE_PREFIX = "my_design_source:"
         private const val KEY_API_CACHE   = "api_cache"
 
@@ -70,6 +71,8 @@ class AppDataManager @Inject constructor(
     private val _myDesignPaths        = MutableStateFlow<List<String>>(emptyList())
     val myDesignPaths: StateFlow<List<String>> = _myDesignPaths.asStateFlow()
 
+    private val _myDiyPaths = MutableStateFlow<List<String>>(emptyList())
+    val myDiyPaths: StateFlow<List<String>> = _myDiyPaths.asStateFlow()
     private val _isLoading            = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -113,6 +116,7 @@ class AppDataManager @Inject constructor(
                     launch { loadStickers() }
                     launch { loadSpeechs() }
                     launch { loadMyDesigns() }
+                    launch { loadMyDiys() }
                 }
 
                 isDataLoaded = true
@@ -154,6 +158,7 @@ class AppDataManager @Inject constructor(
             launch { loadStickers() }
             launch { loadSpeechs() }
             launch { loadMyDesigns() }
+            launch { loadMyDiys() }
         }
 
         cached.isNotEmpty()
@@ -485,8 +490,43 @@ class AppDataManager @Inject constructor(
         }.onFailure { Log.e(TAG, "❌ loadSpeechs", it) }
     }
 
-    // ── MY DESIGNS ────────────────────────────────────────────────────────────
+    // ── MyDiys ────────────────────────────────────────────────────────────
+    private suspend fun loadMyDiys() = withContext(Dispatchers.IO) {
+        runCatching {
+            val json = mmkv.decodeString(KEY_MY_DIYS)
+            if (json.isNullOrEmpty()) {
+                _myDiyPaths.value = emptyList()
+                return@withContext
+            }
+            val type = object : TypeToken<List<String>>() {}.type
+            val all: List<String> = gson.fromJson(json, type) ?: emptyList()
+            val existing = all.filter { File(it).exists() }
+            if (existing.size != all.size) saveMyDiyToJson(existing)
+            _myDiyPaths.value = existing
+        }.onFailure { Log.e(TAG, "❌ loadMyDiys", it) }
+    }
 
+    private suspend fun saveMyDiyToJson(paths: List<String>) = withContext(Dispatchers.IO) {
+        runCatching { mmkv.encode(KEY_MY_DIYS, gson.toJson(paths)) }
+            .onFailure { Log.e(TAG, "❌ saveMyDiys", it) }
+    }
+
+    suspend fun addMyDiyPath(imagePath: String) {
+        val list = _myDiyPaths.value.toMutableList()
+        if (!list.contains(imagePath)) {
+            list.add(0, imagePath)
+            _myDiyPaths.value = list
+            saveMyDiyToJson(list)
+        }
+    }
+
+    suspend fun removeMyDiyPath(imagePath: String) {
+        val list = _myDiyPaths.value.toMutableList()
+        if (list.remove(imagePath)) {
+            _myDiyPaths.value = list
+            saveMyDiyToJson(list)
+        }
+    }
     // AppDataManager.kt — loadMyDesigns()
     private suspend fun loadMyDesigns() = withContext(Dispatchers.IO) {
         runCatching {
@@ -567,6 +607,7 @@ class AppDataManager @Inject constructor(
         _stickers.value             = emptyList()
         _speechs.value              = emptyList()
         _myDesignPaths.value        = emptyList()
+        _myDiyPaths.value = emptyList()
         isDataLoaded                = false
         isDataQuickLoaded           = false
     }

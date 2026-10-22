@@ -3,6 +3,7 @@ package com.oc.catemoji.catoc.ui.main.cusomdiypet
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.LruCache
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,11 +11,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.oc.catemoji.catoc.DiyAssetCategory
-import com.oc.catemoji.catoc.core.extention.saveToFile
-import com.oc.catemoji.catoc.data.datalocal.manager.AppDataManager
 import com.oc.catemoji.catoc.data.model.customDiy.DiyCatCategory
 import com.oc.catemoji.catoc.data.model.customDiy.DiyCatalogue
-import com.oc.catemoji.catoc.ui.main.add_character.DesignSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Deferred
@@ -30,14 +28,15 @@ import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import javax.inject.Inject
 
 
 @HiltViewModel
 class CustomDiyPetViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val savedStateHandle: SavedStateHandle,
-    private val appDataManager: AppDataManager
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _catalogue = MutableStateFlow(DiyCatalogue())
     val catalogue = _catalogue.asStateFlow()
@@ -126,15 +125,26 @@ class CustomDiyPetViewModel @Inject constructor(
         }
     }
 
-    suspend fun renderText(text: String, color: Int, textSize: Float = 150f): Bitmap =
-        withContext(Dispatchers.Default) { DiyBitmapRenderer.renderText(text, color, textSize) }
+    suspend fun renderText(
+        text: String,
+        color: Int,
+        textSize: Float = 150f,
+        fontRes: Int? = null,
+        background: Bitmap? = null
+    ): Bitmap = withContext(Dispatchers.Default) {
+        val font = fontRes?.let { ResourcesCompat.getFont(context, it) }
+        DiyBitmapRenderer.renderText(text, color, textSize, font, background)
+    }
 
-    /** Takes ownership of the canvas snapshot and always releases it after saving. */
-    suspend fun saveDesign(bitmap: Bitmap): String? = withContext(NonCancellable + Dispatchers.IO) {
+    /** Writes a transient preview and always releases the owned canvas snapshot. */
+    suspend fun savePreview(bitmap: Bitmap): String? = withContext(NonCancellable + Dispatchers.IO) {
         try {
-            val path = bitmap.saveToFile(context, "diy_pet") ?: return@withContext null
-            appDataManager.addMyDesignPath(path, DesignSource.DIY)
-            path
+            val directory = File(context.cacheDir, "diy_preview").apply { mkdirs() }
+            val file = File(directory, "current.png")
+            val saved = FileOutputStream(file).use { output ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+            }
+            file.takeIf { saved && it.isFile }?.absolutePath
         } finally {
             bitmap.recycle()
         }

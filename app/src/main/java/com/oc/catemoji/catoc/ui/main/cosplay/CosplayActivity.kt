@@ -48,7 +48,7 @@ class CosplayActivity : BaseActivity<ActivityCosplayBinding, CosplayViewModel>(
             "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}"
         )
         Admob.getInstance().loadNativeCollapNotBanner(
-            requireContext(),
+          this@CosplayActivity,
             getString(R.string.native_cl_cosplayCustom),
             binding.flNativeCollab
         )

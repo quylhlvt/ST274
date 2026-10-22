@@ -16,7 +16,7 @@
             app:layout_constraintTop_toTopOf="parent">
         <include
                 android:id="@+id/actionBar"
-                layout="@layout/layout_actionbar" />
+                layout="@layout/layout_actionbar"/>
     </FrameLayout>
 
     <FrameLayout
@@ -30,19 +30,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
             app:layout_constraintBottom_toTopOf="@+id/lnlBottom"
-            android:src="@drawable/img_permission" >
+            android:src="@drawable/img_permission">
 
 
-
-
-                <ImageView
-                        android:id="@+id/imvImage"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/img_permission" />
-
-
+        <ImageView
+                android:id="@+id/imvImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_permission"/>
 
 
     </FrameLayout>
@@ -100,5 +96,10 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+    <com.oc.catemoji.catoc.utils.BlockableFrameLayout
+            android:id="@+id/flNativeCollab"
+            android:elevation="@dimen/dimension_100"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,13 +1,25 @@
 package com.oc.catemoji.catoc.core.extention
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.view.View
+import android.view.Window
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 fun Activity.hideNavigation(isBlack: Boolean = false) {
-    WindowCompat.setDecorFitsSystemWindows(window, false)
+    window.hideNavigation(isBlack)
+}
+
+fun Dialog.hideNavigation(isBlack: Boolean = false) {
+    window?.hideNavigation(isBlack)
+}
+
+private fun Window.hideNavigation(isBlack: Boolean) {
+    WindowCompat.setDecorFitsSystemWindows(this, false)
 
     val flags = if (isBlack) {
         View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
@@ -20,10 +32,17 @@ fun Activity.hideNavigation(isBlack: Boolean = false) {
             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
     }
 
-    window.decorView.systemUiVisibility = flags
-    window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+    val insetsController = WindowInsetsControllerCompat(this, decorView).apply {
+        systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        isAppearanceLightStatusBars = isBlack
+        hide(WindowInsetsCompat.Type.navigationBars())
+    }
+    decorView.systemUiVisibility = flags
+    decorView.setOnSystemUiVisibilityChangeListener { visibility ->
         if (visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 0) {
-            window.decorView.systemUiVisibility = flags
+            decorView.systemUiVisibility = flags
+            insetsController.hide(WindowInsetsCompat.Type.navigationBars())
         }
     }
 }

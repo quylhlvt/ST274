@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
@@ -88,21 +89,26 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
         val message = if (content is Int) getString(content) else content.toString()
         android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
     }
-    protected fun showNoInternetDialog(onOk: (() -> Unit)? = null) = android.app.AlertDialog.Builder(this)
-        .setMessage(R.string.please_connect_to_the_internet_to_download_more_data)
-        .setPositiveButton(R.string.ok) { _, _ -> onOk?.invoke() }.show()
-    protected fun showUnstableNetworkDialog(onOk: (() -> Unit)? = null) = android.app.AlertDialog.Builder(this)
-        .setMessage(R.string.unstable_connection_please_check_your_network_connection)
-        .setPositiveButton(R.string.ok) { _, _ -> onOk?.invoke() }.show()
+    protected fun showNoInternetDialog(onOk: (() -> Unit)? = null) = showInfoDialog(
+
+        message = getString(R.string.please_connect_to_the_internet_to_download_more_data),
+        onOk = onOk
+    )
+    protected fun showUnstableNetworkDialog(onOk: (() -> Unit)? = null) = showInfoDialog(
+        message = getString(R.string.unstable_connection_please_check_your_network_connection),
+        onOk = onOk
+    )
     protected fun showLoadingDataDialog(onOk: (() -> Unit)? = null) = android.app.AlertDialog.Builder(this)
         .setMessage(R.string.please_wait_a_few_seconds_for_data_to_load)
-        .setPositiveButton(R.string.ok) { _, _ -> onOk?.invoke() }.show()
+        .setPositiveButton(R.string.ok) { _, _ -> onOk?.invoke() }
+        .show()
+        .also { it.hideNavigation(true) }
     protected fun showOkDialog(message: String, title: String? = null, onOk: (() -> Unit)? = null) {
         android.app.AlertDialog.Builder(this).apply {
             title?.let(::setTitle)
             setMessage(message)
             setPositiveButton(R.string.ok) { _, _ -> onOk?.invoke() }
-        }.show()
+        }.show().also { it.hideNavigation(true) }
     }
     protected fun showConfirmDialog(message: String, title: String? = null, onYes: () -> Unit, onNo: (() -> Unit)? = null, yesText: String? = null, noText: String? = null) {
         confirmDialog?.dismiss()
@@ -118,6 +124,21 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
         ).also { it.show() }
     }
 
+    private fun showInfoDialog(message: String,tittle : Boolean?=null, onOk: (() -> Unit)? = null): Dialog {
+        confirmDialog?.dismiss()
+        return createScreenDialog(
+            message = message,
+            title = if (tittle==null)getString(R.string.internet)else getString(R.string.notification),
+            showButtons = true,
+            cancelable = true,
+            singleButtonText = getString(R.string.ok),
+            onYes = onOk
+        ).also {
+            confirmDialog = it
+            it.show()
+        }
+    }
+
     private fun createScreenDialog(
         message: String,
         title: String? = null,
@@ -125,6 +146,7 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
         cancelable: Boolean,
         yesText: String? = null,
         noText: String? = null,
+        singleButtonText: String? = null,
         onYes: (() -> Unit)? = null,
         onNo: (() -> Unit)? = null
     ): Dialog {
@@ -135,11 +157,14 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
         dialogBinding.txtNo.isSelected = true
         dialogBinding.txtYes.text = yesText ?: getString(R.string.yes)
         dialogBinding.txtNo.text = noText ?: getString(R.string.no)
+        dialogBinding.txtOk.text = singleButtonText ?: getString(R.string.ok)
         title?.let { dialogBinding.txtTitle.text = it }
         dialogBinding.txtContent.text = message
         if (showButtons) {
-            dialogBinding.btnYes.visibility = View.VISIBLE
-            dialogBinding.btnNo.visibility = View.VISIBLE
+            val isSingleButton = singleButtonText != null
+            dialogBinding.btnYes.visibility = if (isSingleButton) View.GONE else View.VISIBLE
+            dialogBinding.btnNo.visibility = if (isSingleButton) View.GONE else View.VISIBLE
+            dialogBinding.btnOk.visibility = if (isSingleButton) View.VISIBLE else View.GONE
             dialogBinding.btnYes.setOnClickListener {
                 dialog.dismiss()
                 onYes?.invoke()
@@ -148,19 +173,42 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
                 dialog.dismiss()
                 onNo?.invoke()
             }
+            dialogBinding.btnOk.setOnClickListener {
+                dialog.dismiss()
+                onYes?.invoke()
+            }
             dialogBinding.txtContent.visibility = View.VISIBLE
             dialogBinding.animationView.visibility = View.GONE
         } else {
             dialogBinding.btnYes.visibility = View.GONE
             dialogBinding.btnNo.visibility = View.GONE
+            dialogBinding.btnOk.visibility = View.GONE
             dialogBinding.txtContent.visibility = View.GONE
             dialogBinding.animationView.visibility = View.VISIBLE
         }
         dialog.setCancelable(cancelable)
+        val activitySystemUiVisibility = window.decorView.systemUiVisibility
         dialog.window?.apply {
+            // A focusable dialog briefly restores Android's navigation bar before the
+            // Activity can hide it again. That changes system-bar insets and makes the
+            // editor underneath shrink/expand while loading is shown and dismissed.
+            addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+            WindowCompat.setDecorFitsSystemWindows(this, false)
+            decorView.systemUiVisibility = activitySystemUiVisibility
             setBackgroundDrawableResource(android.R.color.transparent)
             setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
             setGravity(Gravity.CENTER)
+        }
+        dialog.setOnShowListener {
+            dialog.window?.apply {
+                setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT
+                )
+                decorView.systemUiVisibility = activitySystemUiVisibility
+                clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+            }
+            dialog.hideNavigation(true)
         }
         return dialog
     }

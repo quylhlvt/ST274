@@ -46,7 +46,7 @@ private fun initNativeCollab() {
             "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}"
         )
         Admob.getInstance().loadNativeCollapNotBanner(
-            requireContext(),
+            this@RandomActivity,
             getString(R.string.native_cl_randon),
             binding.flNativeCollab
         )

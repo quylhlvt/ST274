@@ -29,7 +29,7 @@ class DiyCatStickerAdapter(
 }
 
 class DiyCatTitleAdapter(
-    private val onItemClick: (Int) -> Unit
+    private val onItemClick: (Int) -> Boolean
 ) : BaseAdapter<String, ItemTittlePetBinding>(ItemTittlePetBinding::inflate) {
 
     private var selectedPosition = 0
@@ -52,8 +52,9 @@ class DiyCatTitleAdapter(
         }
 
         binding.root.onClick {
-            setSelectedPosition(position)
-            onItemClick(position)
+            if (onItemClick(position)) {
+                setSelectedPosition(position)
+            }
         }
     }
 }

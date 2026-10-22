@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.widget.Toast
 import android.view.ViewGroup
 import com.oc.catemoji.catoc.R
+import com.oc.catemoji.catoc.core.extention.hideNavigation
 import com.oc.catemoji.catoc.core.extention.strings
 import com.oc.catemoji.catoc.databinding.DialogRateBinding
 
@@ -25,8 +26,14 @@ class RateDialog(activity: Activity) : Dialog(activity) {
             setBackgroundDrawableResource(android.R.color.transparent)
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
+        hideNavigation(true)
         initView()
         initAction()
+    }
+
+    override fun show() {
+        super.show()
+        hideNavigation(true)
     }
 
     private fun initView() {

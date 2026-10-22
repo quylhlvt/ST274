@@ -115,7 +115,7 @@ private fun isOnlineTemplate(): Boolean {
             "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}"
         )
         Admob.getInstance().loadNativeCollapNotBanner(
-            requireContext(),
+            this@ShowActivity,
             getString(R.string.native_cl_cosplaySuccess),
             binding.flNativeCollab
         )

@@ -145,6 +145,29 @@
                             android:textColor="@color/app_color" />
                     </FrameLayout>
 
+                    <FrameLayout
+                        android:id="@+id/btnOk"
+                        android:layout_width="@dimen/dimension_140"
+                        android:layout_height="@dimen/dimension_48"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/txtOk"
+                            style="@style/single_marquee"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_select_dialog"
+                            android:fontFamily="@font/baloo2_bold"
+                            android:gravity="center"
+                            android:text="@string/ok"
+                            android:textColor="@color/app_color"
+                            android:textSize="@dimen/text_size_20" />
+                    </FrameLayout>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 

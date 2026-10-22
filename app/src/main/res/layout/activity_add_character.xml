@@ -8,7 +8,6 @@
     android:background="@color/yellow2"
     tools:context=".ui.main.add_character.AddCharacterActivity">
 
-    <!-- Hidden renderer used to turn the entered text into a bitmap. -->
     <TextView
         android:id="@+id/tvGetText"
         android:layout_width="match_parent"

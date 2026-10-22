@@ -32,6 +32,7 @@ import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.checkPermissions
 import com.oc.catemoji.catoc.core.extention.goToSettings
 import com.oc.catemoji.catoc.core.extention.gone
+import com.oc.catemoji.catoc.core.extention.hideNavigation
 import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.onClick2
@@ -87,6 +88,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
         }
 
     companion object {
+        const val EXTRA_INITIAL_TAB = "initial_creation_tab"
         private const val KEY_SELECTED_TAB = "selected_creation_tab"
         private const val ADD_PACK_REQUEST = 200
         private const val MIN_STICKERS_WHATSAPP = 3
@@ -96,6 +98,8 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
     override fun onCreate(savedInstanceState: Bundle?) {
         selectedTab = MyCreationTab.values().firstOrNull {
             it.name == savedInstanceState?.getString(KEY_SELECTED_TAB)
+        } ?: MyCreationTab.values().firstOrNull {
+            it.name == intent.getStringExtra(EXTRA_INITIAL_TAB)
         } ?: MyCreationTab.AVATAR
         super.onCreate(savedInstanceState)
     }
@@ -117,7 +121,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
             "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}"
         )
         Admob.getInstance().loadNativeCollapNotBanner(
-            requireContext(), getString(R.string.native_cl_creation), binding.flNativeCollab
+            this@MyPonyActivity, getString(R.string.native_cl_creation), binding.flNativeCollab
         )
     }
 
@@ -138,7 +142,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
     override fun initView() {
         initNativeCollab()
         Admob.getInstance().loadNativeAd(
-            requireContext(),
+            this@MyPonyActivity,
             getString(R.string.native_creation),
             binding.nativeAds,
             R.layout.ads_native_banner
@@ -823,6 +827,7 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
                 .setMessage(R.string.invalid_action_msg)
                 .setNegativeButton(R.string.ok, null)
                 .show()
+                .also { it.hideNavigation(true) }
             return
         }
 

@@ -2,17 +2,23 @@ package com.oc.catemoji.catoc.ui.main.cusomdiypet
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.os.Build
+import android.view.MotionEvent
 import android.view.View
-import android.widget.EditText
+import android.view.ViewConfiguration
+import android.view.ViewTreeObserver
+import android.view.inputmethod.EditorInfo
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +26,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.DiyAssetCategory
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
@@ -28,17 +35,26 @@ import com.oc.catemoji.catoc.core.custom.DrawKey
 import com.oc.catemoji.catoc.core.custom.DrawableDraw
 import com.oc.catemoji.catoc.core.custom.listener.listenerdraw.OnDrawListener
 import com.oc.catemoji.catoc.core.dialog.ChooseColorDialog
+import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
+import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
 import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
+import com.oc.catemoji.catoc.core.extention.setFont
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.extention.visible
+import com.oc.catemoji.catoc.data.datalocal.manager.CharacterImageManager
 import com.oc.catemoji.catoc.data.model.customDiy.DiyCatalogue
 import com.oc.catemoji.catoc.databinding.ActivityCustomDiyPetBinding
 import com.oc.catemoji.catoc.ui.main.add_character.AddCharacterViewModel
 import com.oc.catemoji.catoc.ui.main.add_character.DesignSource
 import com.oc.catemoji.catoc.ui.main.add_character.adapter.BackgroundColorAdapter
 import com.oc.catemoji.catoc.ui.main.add_character.adapter.BackgroundImageAdapter
-import com.oc.catemoji.catoc.ui.main.view.ViewActivity
+import com.oc.catemoji.catoc.ui.main.add_character.adapter.TextColorAdapter
+import com.oc.catemoji.catoc.ui.main.add_character.adapter.TextFontAdapter
+import com.oc.catemoji.catoc.ui.main.preview.PreViewActivity
+import com.oc.catemoji.catoc.ui.main.success_diy.SuccessDIYActivity
+import com.oc.catemoji.catoc.utils.DataLocal
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +62,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiyPetViewModel>(
@@ -64,47 +81,82 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
     private val imageJobs = mutableSetOf<Job>()
     private var selectedStickerCategory = 0
     private var renderedCatalogue: DiyCatalogue? = null
+    private var initialCatRequested = false
 
     private val drawAdapter = DiyDrawAdapter { draw ->
         binding.drawView.selectCurrentDraw(draw)
     }
     private val catStickerAdapter = DiyCatStickerAdapter { path ->
-        addImage(path, LayerKind.CAT, replaceExisting = false)
+        runOnlineAction { addImage(path, LayerKind.CAT, replaceExisting = false) }
     }
     private val eyeAdapter = DiyCatStickerAdapter { path ->
-        addImage(path, LayerKind.EYES, replaceExisting = false)
+        runOnlineAction { addImage(path, LayerKind.EYES, replaceExisting = false) }
     }
     private val tagAdapter = DiyCatStickerAdapter { path ->
-        addImage(path, LayerKind.TAG)
+        runOnlineAction { addImage(path, LayerKind.TAG) }
     }
     private val stickerAdapter = DiyCatStickerAdapter { path ->
-        addImage(path, LayerKind.STICKER, replaceExisting = false)
+        runOnlineAction { addImage(path, LayerKind.STICKER, replaceExisting = false) }
     }
     private val bgViewModel: AddCharacterViewModel by viewModels()
     private val bgImageAdapter by lazy { BackgroundImageAdapter() }
     private val bgColorAdapter by lazy { BackgroundColorAdapter() }
+    private val textFontAdapter by lazy { TextFontAdapter(this) }
+    private val textColorAdapter by lazy { TextColorAdapter() }
+    private val textBackgroundAdapter = DiyTextBackgroundAdapter { path ->
+        runOnlineAction { selectedTextBackground = path }
+    }
+    private val textFontItems by lazy {
+        DataLocal.getTextFontDefault().apply { firstOrNull()?.isSelected = true }
+    }
+    private val textColorItems by lazy {
+        DataLocal.getTextColorDefault(this).apply { getOrNull(1)?.isSelected = true }
+    }
     private var loadedBgQuantity = 0
-    private val stickerTitleAdapter = DiyCatTitleAdapter(::selectStickerCategory)
+    private var selectedTextFont = R.font.itim_regular
+    private var selectedTextColor = Color.BLACK
+    private var selectedTextBackground: String? = null
+    private var keyboardLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    private var isTextKeyboardVisible = false
+    private var touchDownRawX = 0f
+    private var touchDownRawY = 0f
+    private val stickerTitleAdapter = DiyCatTitleAdapter { position ->
+        runOnlineAction { selectStickerCategory(position) }
+    }
     private var stickerCategories: List<DiyAssetCategory> = emptyList()
     private val keyboardAdapters = List(4) { row ->
         DiyKeyboardAdapter(
             onItemClick = { path, key ->
-                val entry = appendKeyboardText(key)
-                addImage(path, LayerKind.KEYBOARD, replaceExisting = false, keyboardEntry = entry)
+                runOnlineAction {
+                    val entry = appendKeyboardText(key)
+                    addImage(
+                        path,
+                        LayerKind.KEYBOARD,
+                        replaceExisting = false,
+                        keyboardEntry = entry
+                    )
+                }
             },
             onDeleteClick = {
                 if (row == 3) deleteCurrentKeyboardDraw()
             }
         )
     }
-    private val catTitleAdapter = DiyCatTitleAdapter(::selectCatCategory)
+    private val catTitleAdapter = DiyCatTitleAdapter { position ->
+        runOnlineAction { selectCatCategory(position) }
+    }
     private var currentTool = Tool.CAT
     private var catDraw: DrawableDraw? = null
     private var eyesDraw: DrawableDraw? = null
     private var tagDraw: DrawableDraw? = null
     private var backgroundDraw: DrawableDraw? = null
     private var hasChanges = false
-    private var isSaving = false
+
+    @Inject
+    lateinit var imageManager: CharacterImageManager
+
+    private val diyId = "diy_${System.currentTimeMillis()}"
+    private var isPreparingPreview = false
     private val bgImagePicker =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
@@ -117,11 +169,35 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
                 selectBackgroundImage(uri.toString(), 0)
             }
         }
+
+    private fun initNativeCollab() {
+        Admob.getInstance()
+            .loadNativeCollapNotBanner(
+                this@CustomDiyPetActivity,
+                getString(R.string.native_cl_playDIY),
+                binding.flNativeCollab
+            )
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        initNativeCollab()
+    }
+
     override fun initView() {
+        initNativeCollab()
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                updateTextPanelKeyboardPosition(
+                    insets.isVisible(WindowInsetsCompat.Type.ime())
+                )
+            }
             insets
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            setupLegacyKeyboardListener()
         }
 
         binding.recycleSort.apply {
@@ -137,10 +213,19 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             override fun onAddedDraw(draw: Draw) = refreshDrawList()
             override fun onDeletedDraw(draw: Draw) = handleDeletedDraw(draw)
             override fun onClickedDraw(draw: Draw) = Unit
-            override fun onDragFinishedDraw(draw: Draw) { hasChanges = true }
+            override fun onDragFinishedDraw(draw: Draw) {
+                hasChanges = true
+            }
+
             override fun onTouchedDownDraw(draw: Draw) = Unit
-            override fun onZoomFinishedDraw(draw: Draw) { hasChanges = true }
-            override fun onFlippedDraw(draw: Draw) { hasChanges = true }
+            override fun onZoomFinishedDraw(draw: Draw) {
+                hasChanges = true
+            }
+
+            override fun onFlippedDraw(draw: Draw) {
+                hasChanges = true
+            }
+
             override fun onDoubleTappedDraw(draw: Draw) = Unit
             override fun onHideOptionIconDraw() = Unit
             override fun onUndoDeleteDraw(draw: List<Draw?>) = Unit
@@ -178,12 +263,16 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         binding.lnlCat.gone()
         binding.lnlEge.gone()
         binding.lnlBackground.gone()
+        binding.lnlBackgroundText.gone()
         initBackgroundPanel()
+        initTextPanel()
         // Keep the keyboard measured off-screen so its first reveal does not have to
         // inflate and lay out all four rows on the click frame.
         binding.lnlKeyBroad.invisible()
         selectKeyboardTab(showTags = false)
-        binding.recycleSort.invisible()
+        // The default Cat is added through the same DrawView path as a user tap,
+        // so keep the layer list visible while that image is being loaded.
+        binding.recycleSort.visible()
         viewModel.bindCatalogue(
             viewModelActivity.keybroadBaseUrl,
             viewModelActivity.diyCatCategories,
@@ -198,7 +287,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             tvStart.isSelected = true
             btnActionBarRightText.visibility = View.VISIBLE
             btnActionBarRightText.isClickable = true
-            tvRightText.text = getString(R.string.save)
+            tvRightText.text = getString(R.string.next)
         }
 
         viewModelActivity.preloadDiyCatCategories()
@@ -207,15 +296,139 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
 
     override fun viewListener() {
         binding.actionBar.btnActionBarLeft.onClick { handleBack() }
-        binding.actionBar.btnActionBarRightText.onClick { saveDesign() }
+        binding.actionBar.btnPreview.onClick { openPreview() }
+        binding.actionBar.btnActionBarRightText.onClick {
+            showInter {
+                openNext()
+            }
+        }
         binding.btnCat.onClick { toggleCatPanel() }
         binding.btnEge.onClick { toggleEyesPanel() }
         binding.btnKeyBroad.onClick { toggleKeyboardPanel() }
         binding.tagKeyBroad.onClick { selectKeyboardTab(showTags = false) }
-        binding.tagTag.onClick { selectKeyboardTab(showTags = true) }
-        binding.btnText.onClick { showTool(Tool.TEXT) }
+        binding.tagTag.onClick { runOnlineAction { selectKeyboardTab(showTags = true) } }
+        binding.btnText.onClick { toggleTextPanel() }
         binding.btnBackground.onClick { toggleBackgroundPanel() }
         binding.btnSticker.onClick { toggleStickerPanel() }
+    }
+
+    private fun runOnlineAction(action: () -> Unit): Boolean {
+        if (checkOnlineNetworkOrShowDialog()) return false
+        action()
+        return true
+    }
+
+    /** Same blocking contract used by CustomizeActivity. */
+    private fun checkOnlineNetworkOrShowDialog(): Boolean = when {
+        !isInternetAvailable(requireContext()) -> {
+            showUnstableNetworkDialog()
+            true
+        }
+
+        !isNetworkConnected(requireContext()) -> {
+            showUnstableNetworkDialog()
+            true
+        }
+
+        else -> false
+    }
+
+    private fun openPreview() = exportCanvas { path ->
+        PreViewActivity.newIntent(this, path)
+    }
+
+    private fun openNext() = exportCanvas { path ->
+
+        val saved = withContext(Dispatchers.IO) {
+            val bmp = BitmapFactory.decodeFile(path) ?: return@withContext null
+            imageManager.deleteOldImage(diyId)
+            imageManager.saveBitmap(bmp, diyId).also { bmp.recycle() }
+        } ?: path
+        viewModelActivity.appDataManager.addMyDesignPath(saved, DesignSource.DIY)
+
+        SuccessDIYActivity.newIntent(this@CustomDiyPetActivity, saved)
+    }
+
+
+    private fun exportCanvas(buildIntent: suspend (String) -> Intent) {
+        if (isPreparingPreview) return
+        if (binding.drawView.getStickerCount() == 0 && imageJobs.isEmpty() && keyboardEntries.isEmpty()) {
+            showToast(R.string.nothing_to_save)
+            return
+        }
+
+        isPreparingPreview = true
+        showLoadingSafe()
+        lifecycleScope.launch {
+            val path = try {
+                // Export the complete preview even if Next follows the last tap
+                // before its background decode or text render has finished.
+                imageJobs.toList().joinAll()
+                keyboardTextJob?.join()
+                if (binding.drawView.getStickerCount() == 0) {
+                    null
+                } else {
+                    binding.drawView.hideSelect()
+                    viewModel.savePreview(binding.drawView.save())
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                null
+            } finally {
+                hideLoadingSafe()
+                isPreparingPreview = false
+            }
+            if (path == null) {
+                showToast(R.string.save_failed)
+                return@launch
+            }
+
+            startActivity(buildIntent(path))
+        }
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            touchDownRawX = event.rawX
+            touchDownRawY = event.rawY
+        }
+
+        val isTap = event.actionMasked == MotionEvent.ACTION_UP &&
+                kotlin.math.abs(event.rawX - touchDownRawX) <= touchSlop &&
+                kotlin.math.abs(event.rawY - touchDownRawY) <= touchSlop
+        val keyboardWasVisible = isTextKeyboardVisible
+        val shouldHideTextKeyboard = isTap && keyboardWasVisible &&
+                !isPointInside(binding.lnlBackgroundTextDiy.edtText, event.rawX, event.rawY)
+        val visiblePanel = if (isTap && !keyboardWasVisible) visibleToolPanel() else null
+        val shouldClosePanel = visiblePanel != null &&
+                !isPointInside(visiblePanel, event.rawX, event.rawY) &&
+                !isPointInside(binding.nav, event.rawX, event.rawY)
+
+        val handled = super.dispatchTouchEvent(event)
+        when {
+            shouldHideTextKeyboard -> dismissTextKeyboard()
+            shouldClosePanel -> dismissToolPanels()
+        }
+        return handled
+    }
+
+    private val touchSlop by lazy { ViewConfiguration.get(this).scaledTouchSlop.toFloat() }
+
+    private fun isPointInside(view: View, rawX: Float, rawY: Float): Boolean {
+        if (!view.isShown) return false
+        val bounds = Rect()
+        return view.getGlobalVisibleRect(bounds) && bounds.contains(rawX.toInt(), rawY.toInt())
+    }
+
+    private fun visibleToolPanel(): View? = when {
+        binding.lnlCat.isVisible -> binding.lnlCat
+        binding.lnlEge.isVisible -> binding.lnlEge
+        binding.lnlKeyBroad.isVisible -> binding.lnlKeyBroad
+        binding.lnlBackground.isVisible -> binding.lnlBackground
+        binding.lnlBackgroundText.isVisible -> binding.lnlBackgroundText
+        binding.lnlSticker.isVisible -> binding.lnlSticker
+        else -> null
     }
 
     override fun observeData() {
@@ -224,26 +437,16 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
                 launch { viewModel.catalogue.collect(::renderCatalogue) }
                 launch { viewModelActivity.diyStickerCategories.collect(::renderStickers) }
                 launch { viewModelActivity.diyBackgroundQuantity.collect(::loadBackgroundList) }
-
+                launch {
+                    viewModelActivity.diyTextBackgroundQuantity.collect(::renderTextBackgrounds)
+                }
             }
         }
     }
 
-    private fun showTool(tool: Tool) {
-        currentTool = tool
-        updateNavigation(tool)
-        refreshDrawList()
-        if (tool != Tool.CAT) hideCatPanel()
-        if (tool != Tool.EYES) hideEyesPanel()
-        if (tool != Tool.KEYBOARD) hideKeyboardPanel()
-        if (tool != Tool.STICKER) hideStickerPanel()
-        if (tool != Tool.BACKGROUND) hideBackgroundPanel()
-
-    }
-
     private fun toggleCatPanel() {
         if (currentTool == Tool.CAT && binding.lnlCat.isVisible) {
-            hideCatPanel()
+            dismissToolPanels()
             return
         }
         currentTool = Tool.CAT
@@ -254,7 +457,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
 
     private fun toggleEyesPanel() {
         if (currentTool == Tool.EYES && binding.lnlEge.isVisible) {
-            hideEyesPanel()
+            dismissToolPanels()
             return
         }
         currentTool = Tool.EYES
@@ -265,7 +468,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
 
     private fun toggleKeyboardPanel() {
         if (currentTool == Tool.KEYBOARD && binding.lnlKeyBroad.isVisible) {
-            hideKeyboardPanel()
+            dismissToolPanels()
             return
         }
         currentTool = Tool.KEYBOARD
@@ -283,6 +486,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         hideKeyboardPanel()
         hideStickerPanel()
         hideBackgroundPanel()
+        hideTextPanel()
         binding.lnlCat.visible()
         binding.recycleSort.invisible()
     }
@@ -297,6 +501,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         hideKeyboardPanel()
         hideStickerPanel()
         hideBackgroundPanel()
+        hideTextPanel()
         binding.lnlEge.visible()
         binding.recycleSort.invisible()
     }
@@ -311,6 +516,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         hideEyesPanel()
         hideStickerPanel()
         hideBackgroundPanel()
+        hideTextPanel()
         binding.lnlKeyBroad.visible()
         binding.recycleSort.invisible()
     }
@@ -320,17 +526,34 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         binding.lnlKeyBroad.invisible()
         restoreSortIfIdle()
     }
+
     private fun restoreSortIfIdle() {
         if (!binding.lnlCat.isVisible && !binding.lnlEge.isVisible &&
             !binding.lnlSticker.isVisible && !binding.lnlBackground.isVisible &&
+            !binding.lnlBackgroundText.isVisible &&
             binding.lnlKeyBroad.visibility != View.VISIBLE
         ) {
             binding.recycleSort.visible()
+            binding.nav.visible()
         }
     }
+
+    private fun dismissToolPanels() {
+        binding.lnlCat.gone()
+        binding.lnlEge.gone()
+        binding.lnlKeyBroad.invisible()
+        binding.lnlBackground.gone()
+        binding.lnlBackgroundText.gone()
+        binding.lnlSticker.gone()
+        dismissTextKeyboard()
+        binding.recycleSort.visible()
+        binding.nav.visible()
+        updateNavigation(null)
+    }
+
     private fun toggleStickerPanel() {
         if (currentTool == Tool.STICKER && binding.lnlSticker.isVisible) {
-            hideStickerPanel()
+            dismissToolPanels()
             return
         }
         currentTool = Tool.STICKER
@@ -344,17 +567,14 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         hideEyesPanel()
         hideKeyboardPanel()
         hideBackgroundPanel()
+        hideTextPanel()
         binding.lnlSticker.visible()
         binding.recycleSort.invisible()
     }
 
     private fun hideStickerPanel() {
         binding.lnlSticker.gone()
-        if (!binding.lnlCat.isVisible && !binding.lnlEge.isVisible &&
-            binding.lnlKeyBroad.visibility != View.VISIBLE
-        ) {
-            binding.recycleSort.visible()
-        }
+        restoreSortIfIdle()
     }
 
     private fun renderStickers(categories: List<DiyAssetCategory>) {
@@ -378,6 +598,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         selectedStickerCategory = position
         showStickerCategory()
     }
+
     private fun selectKeyboardTab(showTags: Boolean) {
         if (showTags) {
             binding.keyBroad.gone()
@@ -403,6 +624,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
     }
 
     private fun renderCatalogue(catalogue: DiyCatalogue) {
+        addInitialCatIfAvailable(catalogue)
         val previous = renderedCatalogue
         if (previous == catalogue) return
         if (previous?.cats != catalogue.cats) {
@@ -420,6 +642,17 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             }
         }
         renderedCatalogue = catalogue
+    }
+
+    private fun addInitialCatIfAvailable(catalogue: DiyCatalogue) {
+        if (initialCatRequested) return
+        val firstCatPath = catalogue.cats
+            .getOrNull(catalogue.selectedCatCategory)
+            ?.paths
+            ?.firstOrNull()
+            ?: return
+        initialCatRequested = true
+        addImage(firstCatPath, LayerKind.CAT, replaceExisting = false)
     }
 
     private fun selectCatCategory(position: Int) = viewModel.selectCatCategory(position)
@@ -452,9 +685,162 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             }
         )
     }
+
+    private fun toggleTextPanel() {
+        if (currentTool == Tool.TEXT && binding.lnlBackgroundText.isVisible) {
+            dismissToolPanels()
+            return
+        }
+        currentTool = Tool.TEXT
+        updateNavigation(Tool.TEXT)
+        refreshDrawList()
+        showTextPanel()
+    }
+
+    private fun showTextPanel() {
+        hideCatPanel()
+        hideEyesPanel()
+        hideKeyboardPanel()
+        hideStickerPanel()
+        hideBackgroundPanel()
+        binding.lnlBackgroundText.visible()
+        binding.recycleSort.invisible()
+    }
+
+    private fun hideTextPanel() {
+        binding.lnlBackgroundText.gone()
+        dismissTextKeyboard()
+        restoreSortIfIdle()
+    }
+
+    private fun dismissTextKeyboard() {
+        binding.lnlBackgroundTextDiy.edtText.clearFocus()
+        WindowCompat.getInsetsController(window, binding.main)
+            .hide(WindowInsetsCompat.Type.ime())
+        updateTextPanelKeyboardPosition(false)
+    }
+
+    private fun initTextPanel() {
+        val textPanel = binding.lnlBackgroundTextDiy
+        textPanel.rcvFont.apply {
+            adapter = textFontAdapter
+            itemAnimator = null
+        }
+        textPanel.rcvTextColor.apply {
+            adapter = textColorAdapter
+            itemAnimator = null
+        }
+        textPanel.rcvBackgroundText.apply {
+            adapter = textBackgroundAdapter
+            itemAnimator = null
+        }
+
+        textFontAdapter.submitListReset(textFontItems)
+        textColorAdapter.submitListReset(textColorItems)
+        textBackgroundAdapter.submitList(listOf(null))
+        textPanel.edtText.setFont(selectedTextFont)
+        textPanel.edtText.setTextColor(selectedTextColor)
+
+        textFontAdapter.onTextFontClick = { font, position ->
+            selectedTextFont = font
+            textPanel.edtText.setFont(font)
+            textFontItems.forEachIndexed { index, item -> item.isSelected = index == position }
+            textFontAdapter.submitItem(position, textFontItems)
+        }
+        textColorAdapter.onChooseColorClick = { showTextColorPicker() }
+        textColorAdapter.onTextColorClick = { color, position ->
+            selectedTextColor = color
+            textPanel.edtText.setTextColor(color)
+            textColorItems.forEachIndexed { index, item -> item.isSelected = index == position }
+            textColorAdapter.submitItem(position, textColorItems)
+        }
+        textPanel.edtText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                addTextLayer()
+                true
+            } else {
+                false
+            }
+        }
+        textPanel.btnDoneText.onClick { addTextLayer() }
+    }
+
+    private fun setupLegacyKeyboardListener() {
+        val keyboardThreshold = resources.getDimensionPixelSize(R.dimen.dimension_150)
+        keyboardLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+            val visibleFrame = android.graphics.Rect()
+            binding.main.getWindowVisibleDisplayFrame(visibleFrame)
+            val keyboardHeight = binding.main.rootView.height - visibleFrame.bottom
+            updateTextPanelKeyboardPosition(keyboardHeight > keyboardThreshold)
+        }
+        binding.main.viewTreeObserver.addOnGlobalLayoutListener(keyboardLayoutListener)
+    }
+
+    private fun updateTextPanelKeyboardPosition(isKeyboardVisible: Boolean) {
+        isTextKeyboardVisible = isKeyboardVisible
+        binding.lnlBackgroundText.translationY = if (isKeyboardVisible) {
+            resources.getDimension(R.dimen.dimension_minus_170)
+        } else {
+            0f
+        }
+    }
+
+    private fun renderTextBackgrounds(quantity: Int) {
+        val paths = (1..quantity).map { index ->
+            "${viewModelActivity.keybroadBaseUrl}/Background_text/$index.png"
+        }
+        textBackgroundAdapter.submitList(listOf(null) + paths)
+    }
+
+    private fun showTextColorPicker() {
+        val dialog = ChooseColorDialog(this)
+        dialog.show()
+        dialog.onCloseEvent = { dialog.dismiss() }
+        dialog.onDoneEvent = { color ->
+            selectedTextColor = color
+            binding.lnlBackgroundTextDiy.edtText.setTextColor(color)
+            dialog.dismiss()
+        }
+    }
+
+    private fun addTextLayer() {
+        val textPanel = binding.lnlBackgroundTextDiy
+        val content = textPanel.edtText.text?.toString()?.trim().orEmpty()
+        if (content.isEmpty()) {
+            showToast(R.string.null_edt)
+            return
+        }
+
+        val textColor = selectedTextColor
+        val textFont = selectedTextFont
+        val backgroundPath = selectedTextBackground
+        textPanel.edtText.clearFocus()
+        val job = lifecycleScope.launch {
+            try {
+                val background = backgroundPath?.let {
+                    viewModel.loadCanvasImage(it, trimPadding = false)
+                }
+                val bitmap = viewModel.renderText(
+                    text = content,
+                    color = textColor,
+                    fontRes = textFont,
+                    background = background
+                )
+                addBitmapLayer(bitmap, "text", content)
+                textPanel.edtText.text?.clear()
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                showToast(R.string.image_load_failed)
+            }
+        }
+        imageJobs += job
+        job.invokeOnCompletion { imageJobs.remove(job) }
+    }
+
     private fun toggleBackgroundPanel() {
         if (currentTool == Tool.BACKGROUND && binding.lnlBackground.isVisible) {
-            hideBackgroundPanel()
+            dismissToolPanels()
             return
         }
         currentTool = Tool.BACKGROUND
@@ -468,17 +854,14 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         hideEyesPanel()
         hideKeyboardPanel()
         hideStickerPanel()
+        hideTextPanel()
         binding.lnlBackground.visible()
         binding.recycleSort.invisible()
     }
 
     private fun hideBackgroundPanel() {
         binding.lnlBackground.gone()
-        if (!binding.lnlCat.isVisible && !binding.lnlEge.isVisible &&
-            !binding.lnlSticker.isVisible && binding.lnlKeyBroad.visibility != View.VISIBLE
-        ) {
-            binding.recycleSort.visible()
-        }
+        restoreSortIfIdle()
     }
 
     private fun initBackgroundPanel() {
@@ -508,7 +891,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             selectBackgroundItem(position, isImage = true)
         }
         bgImageAdapter.onBackgroundImageClick = { path, position ->
-            selectBackgroundImage(path, position)
+            runOnlineAction { selectBackgroundImage(path, position) }
         }
         bgColorAdapter.onChooseColorClick = {
             val dialog = ChooseColorDialog(this)
@@ -552,8 +935,13 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             bgBaseUrl = viewModelActivity.keybroadBaseUrl,
             speeches = listOf("")
         )
+        bgViewModel.setBackgroundImage(null)
+        bgViewModel.savedBackgroundColor = null
+        bgViewModel.selectNoneBackground()
         bgImageAdapter.submitList(bgViewModel.backgroundImageList)
         bgColorAdapter.submitList(bgViewModel.backgroundColorList, true)
+        bgImageAdapter.selectItem(1)
+        bgColorAdapter.clearSelection()
     }
 
     private fun selectBackgroundImage(path: String, position: Int) {
@@ -602,6 +990,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             }
         }
     }
+
     private fun addImage(
         path: String,
         kind: LayerKind,
@@ -624,6 +1013,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
                             replaceOrAdd(null, drawable, path, isLarge = true)
                         }
                     }
+
                     LayerKind.EYES -> {
                         if (replaceExisting) {
                             eyesDraw = replaceOrAdd(eyesDraw, drawable, path)
@@ -631,12 +1021,14 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
                             replaceOrAdd(null, drawable, path)
                         }
                     }
+
                     LayerKind.KEYBOARD -> {
                         if (keyboardEntry == null || !keyboardEntries.contains(keyboardEntry)) return@launch
                         // `path` is the exact API URL passed to imgKey by the adapter.
                         keyboardEntry.draw = replaceOrAdd(null, drawable, path)
                         bringKeyboardTextToFront()
                     }
+
                     LayerKind.TAG -> tagDraw = replaceOrAdd(tagDraw, drawable, path)
                     LayerKind.BACKGROUND -> {
                         backgroundDraw = replaceOrAdd(backgroundDraw, drawable, path, isLarge = true)
@@ -645,6 +1037,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
                             if (position > 0) binding.drawView.moveLayer(position, 0)
                         }
                     }
+
                     LayerKind.STICKER -> replaceOrAdd(null, drawable, path)
                 }
                 hasChanges = true
@@ -765,97 +1158,56 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         }
     }
 
-    private fun showAddTextDialog(textColor: Int) {
-        val input = EditText(this).apply {
-            hint = getString(R.string.enter_text)
-            maxLines = 2
-            setTextColor(textColor)
-            setHintTextColor(ContextCompat.getColor(context, R.color.color_draw_unselect))
-            setPadding(32, 16, 32, 16)
-        }
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(R.string.text)
-            .setView(input)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.add, null)
-            .create()
-        dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val content = input.text?.toString()?.trim().orEmpty()
-                if (content.isEmpty()) {
-                    showToast(R.string.null_edt)
-                } else {
-                    lifecycleScope.launch {
-                        addBitmapLayer(viewModel.renderText(content, textColor), "text")
-                    }
-                    dialog.dismiss()
-                }
-            }
-            input.requestFocus()
-            dialog.window?.setSoftInputMode(
-                android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
-            )
-        }
-        dialog.show()
-    }
-
-    private fun addBitmapLayer(bitmap: Bitmap, name: String) {
+    private fun addBitmapLayer(bitmap: Bitmap, name: String, textContent: String? = null) {
         val draw = DrawableDraw(
             bitmap.toDrawable(resources),
             "$name-${System.nanoTime()}"
         ).apply {
             isText = true
+            this.textContent = textContent
         }
         binding.drawView.addDraw(draw)
         hasChanges = true
         binding.drawView.post { refreshDrawList() }
     }
 
-    private fun saveDesign() {
-        if (isSaving) return
-        if (binding.drawView.getStickerCount() == 0 && imageJobs.isEmpty() && keyboardEntries.isEmpty()) {
-            showToast(R.string.nothing_to_save)
-            return
-        }
-
-        isSaving = true
-        showLoadingSafe()
-        lifecycleScope.launch {
-            val path = try {
-                // Export the final image/text, even if Save follows the last tap
-                // before its background decode or text render has finished.
-                imageJobs.toList().joinAll()
-                keyboardTextJob?.join()
-                if (binding.drawView.getStickerCount() == 0) {
-                    null
-                } else {
-                    binding.drawView.hideSelect()
-                    viewModel.saveDesign(binding.drawView.save())
-                }
-            } catch (cancelled: CancellationException) {
-                throw cancelled
-            } catch (_: Exception) {
-                null
-            } finally {
-                hideLoadingSafe()
-                isSaving = false
-            }
-            if (path == null) {
-                showToast(R.string.save_failed)
-                return@launch
-            }
-
-            hasChanges = false
-            startActivity(
-                Intent(this@CustomDiyPetActivity, ViewActivity::class.java).apply {
-                    putExtra("imagePath", path)
-                    putExtra("idEdit", "")
-                    putExtra("imageType", 0)
-                    putExtra(DesignSource.ARG_SOURCE, DesignSource.DIY)
-                }
-            )
-        }
-    }
+//    private fun openPreview() {
+//        if (isPreparingPreview) return
+//        if (binding.drawView.getStickerCount() == 0 && imageJobs.isEmpty() && keyboardEntries.isEmpty()) {
+//            showToast(R.string.nothing_to_save)
+//            return
+//        }
+//
+//        isPreparingPreview = true
+//        showLoadingSafe()
+//        lifecycleScope.launch {
+//            val path = try {
+//                // Export the complete preview even if Next follows the last tap
+//                // before its background decode or text render has finished.
+//                imageJobs.toList().joinAll()
+//                keyboardTextJob?.join()
+//                if (binding.drawView.getStickerCount() == 0) {
+//                    null
+//                } else {
+//                    binding.drawView.hideSelect()
+//                    viewModel.savePreview(binding.drawView.save())
+//                }
+//            } catch (cancelled: CancellationException) {
+//                throw cancelled
+//            } catch (_: Exception) {
+//                null
+//            } finally {
+//                hideLoadingSafe()
+//                isPreparingPreview = false
+//            }
+//            if (path == null) {
+//                showToast(R.string.save_failed)
+//                return@launch
+//            }
+//
+//            startActivity(PreViewActivity.newIntent(this@CustomDiyPetActivity, path))
+//        }
+//    }
 
     private fun handleBack() {
         if (!hasChanges) {
@@ -865,13 +1217,27 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         showConfirmDialog(
             message = getString(R.string.haven_t_saved_it_yet_do_you_want_to_exit),
             title = getString(R.string.exit),
-            onYes = { finish() }
+            onYes = {
+                showInter {
+                    finish()
+                }
+            }
         )
     }
 
     override fun onScreenBackPressed(): Boolean {
         handleBack()
         return true
+    }
+
+    override fun onScreenDestroyed() {
+        keyboardLayoutListener?.let { listener ->
+            if (binding.main.viewTreeObserver.isAlive) {
+                binding.main.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+            }
+        }
+        keyboardLayoutListener = null
+        super.onScreenDestroyed()
     }
 
 }

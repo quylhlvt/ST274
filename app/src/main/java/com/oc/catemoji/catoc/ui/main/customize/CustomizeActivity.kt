@@ -90,7 +90,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding, CustomizeViewMo
     // ── INFLATE ───────────────────────────────────────────────────────────────
 private fun initNativeCollab() {
         Log.d("NativeCollab", "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}")
-        Admob.getInstance().loadNativeCollapNotBanner(requireContext(), getString(R.string.native_cl_custom), binding.flNativeCollab)
+        Admob.getInstance().loadNativeCollapNotBanner(this@CustomizeActivity, getString(R.string.native_cl_custom), binding.flNativeCollab)
     }
 
     override fun onScreenStart() {
@@ -783,19 +783,12 @@ private fun initNativeCollab() {
                 return@launch
             }
 
-            // Bản edit có ID riêng; lấy số template từ thư mục avatar để giữ cùng event.
-            val dataFolder = Uri.parse(savedCharacter.avatar)
-                .pathSegments
-                .dropLast(1)
-                .lastOrNull()
-                .orEmpty()
-            val number = dataFolder.filter { it.isDigit() }
-                .ifEmpty { savedCharacter.templateId?.filter { it.isDigit() }.orEmpty() }
-                .ifEmpty { savedCharacter.id.filter { it.isDigit() } }
-            val eventName = "click_item_${number}_${if (isEdit) "edit" else "done"}"
+            val dataName = (savedCharacter.templateId ?: savedCharacter.id)
+                .removePrefix("online_")
+                .removePrefix("template_")
+            val eventName = "click_item_${dataName}_${if (isEdit) "edit" else "done"}"
             logEvent(eventName, savedCharacter.avatar)
             Log.d("LogEvenA", "$eventName -- ${savedCharacter.avatar}")
-
             // ✅ Navigate trực tiếp trên Main thread, KHÔNG wrap thêm withContext
             if (isAdded && !isDetached) {
                 hideLoadingSafe()

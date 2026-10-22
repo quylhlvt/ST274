@@ -91,7 +91,7 @@ override fun initView() {
                         R.string.native_success
                     }
                     Admob.getInstance().loadNativeAd(
-                        requireContext(),
+                        this@ViewActivity,
                         getString(successAdUnitId),
                         binding.nativeAds,
                         R.layout.ads_native_big_btn_top
@@ -144,7 +144,7 @@ override fun initView() {
         (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
         binding.flNativeCollab.visible()
         Admob.getInstance().loadNativeCollapNotBanner(
-            requireContext(),
+            this@ViewActivity,
             getString(R.string.native_cl_detail),
             binding.flNativeCollab
         )
@@ -257,7 +257,7 @@ override fun initView() {
 
     private fun shareImage() {
         val file = currentImageFile() ?: return
-        val uri = androidx.core.content.FileProvider.getUriForFile(
+        val uri =FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.provider",
             file

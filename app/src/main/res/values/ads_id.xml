@@ -22,6 +22,12 @@
     <string name = "native_creation" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_cl_creation" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_cl_detail" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
+    <string name = "native_cl_categoryPauOC" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
+    <string name = "native_cl_playPauOC" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
+    <string name = "native_cl_playPauseDone" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
+    <string name = "native_cl_playDIY" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
+    <string name = "native_cl_playDIY_view" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
+    <string name = "native_cl_playDIY_done" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "native_all" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name = "reward_random" translatable="false">ca-app-pub-3940256099942544/5224354917</string>
     <string name = "open_resume" translatable="false">ca-app-pub-3940256099942544/9257395921</string>

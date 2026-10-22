@@ -16,30 +16,29 @@
             app:layout_constraintTop_toTopOf="parent">
         <include
                 android:id="@+id/actionBar"
-                layout="@layout/layout_actionbar" />
+                layout="@layout/layout_actionbar"/>
     </FrameLayout>
     <ImageView
             android:id="@+id/imgWallDIY"
-            android:scaleType="fitCenter"
             android:contentDescription="@string/my_diy"
             android:background="@color/white"
             android:layout_width="@dimen/dimension_0"
-               android:layout_height="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
             app:layout_constraintVertical_bias="0"
-               app:layout_constraintDimensionRatio="3.08:5.07"
-               app:layout_constraintBottom_toTopOf="@+id/btnBottomLeft"
-               android:layout_marginHorizontal="@dimen/dimension_26"
-               app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
-               app:layout_constraintStart_toStartOf="parent"
-               app:layout_constraintEnd_toEndOf="parent"
-               android:layout_marginBottom="@dimen/dimension_24"/>
+            app:layout_constraintDimensionRatio="3.6:4.8"
+            app:layout_constraintBottom_toTopOf="@+id/view33"
+            android:layout_marginHorizontal="@dimen/dimension_26"
+            app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="@dimen/dimension_24"/>
 
     <FrameLayout
             android:id="@+id/btnBottomWall"
             android:background="@drawable/frame_btn_view_wall_diy"
             android:layout_width="@dimen/dimension_0"
-            app:layout_constraintBottom_toTopOf="@+id/view33"
-            android:layout_marginBottom="@dimen/dimension_16"
+            app:layout_constraintTop_toBottomOf="@+id/imgWallDIY"
+            android:layout_marginTop="@dimen/dimension_16"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginHorizontal="@dimen/dimension_16"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,14 +54,15 @@
                 android:gravity="center"
                 android:text="@string/set_wallpaper2"
                 android:textColor="@color/app_color"
-                android:textSize="@dimen/text_size_20" />
+                android:textSize="@dimen/text_size_20"/>
     </FrameLayout>
     <View
             android:id="@+id/view33"
             android:layout_width="@dimen/dimension_0"
-          android:layout_height="@dimen/dimension_0"
-          app:layout_constraintDimensionRatio="3.28:0.5"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintBottom_toBottomOf="parent"/>
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="3.28:0.5"
+            android:layout_marginBottom="@dimen/dimension_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,7 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.viewbinding.ViewBinding
 import androidx.core.graphics.drawable.toDrawable
+import com.oc.catemoji.catoc.core.extention.hideNavigation
 import com.oc.catemoji.catoc.core.helper.LanguageHelper
 import kotlin.apply
 
@@ -55,6 +56,12 @@ abstract class BaseDialog<VB : ViewBinding>(
                         View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         }
+        hideNavigation(true)
+    }
+
+    override fun show() {
+        super.show()
+        hideNavigation(true)
     }
 
     override fun dismiss() {

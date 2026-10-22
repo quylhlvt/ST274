@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/main"
+        android:background="@drawable/img_bg_lang"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.main.preview.PreViewActivity">
+
+    <FrameLayout
+            android:id="@+id/layoutActionBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <include
+                android:id="@+id/actionBar"
+                layout="@layout/layout_actionbar" />
+    </FrameLayout>
+    <ImageView
+            android:id="@+id/drawView"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:layout_marginTop="@dimen/dimension_16"
+            android:layout_marginBottom="@dimen/dimension_30"
+            android:layout_marginHorizontal="@dimen/dimension_26"
+            android:contentDescription="@null"
+            android:elevation="@dimen/dimension_2"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintDimensionRatio="3.6:4.8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layoutActionBar" />
+    <View
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:background="@color/white"
+            android:elevation="@dimen/dimension_1"
+            app:layout_constraintStart_toStartOf="@+id/drawView"
+            app:layout_constraintBottom_toBottomOf="@+id/drawView"
+            app:layout_constraintTop_toTopOf="@+id/drawView"
+            app:layout_constraintEnd_toEndOf="@+id/drawView"/>
+    <com.oc.catemoji.catoc.utils.BlockableFrameLayout
+            android:id="@+id/flNativeCollab"
+            android:elevation="@dimen/dimension_100"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

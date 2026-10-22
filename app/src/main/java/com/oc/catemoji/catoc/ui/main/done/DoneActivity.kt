@@ -3,12 +3,14 @@ package com.oc.catemoji.catoc.ui.main.done
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setFrameActionBar
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.databinding.ActivityDoneBinding
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity
 import com.oc.catemoji.catoc.ui.main.pause.PauseOCChallengeActivity
@@ -22,8 +24,21 @@ class DoneActivity : BaseActivity<ActivityDoneBinding, ViewModel>(
     ViewModel::class.java
 ) {
     private var restarting = false
+    private fun initNativeCollab() {
+        Admob.getInstance()
+            .loadNativeCollapNotBanner(
+                this@DoneActivity,
+                getString(R.string.native_cl_playPauseDone),
+                binding.flNativeCollab
+            )
+    }
 
+    override fun onRestart() {
+        super.onRestart()
+        initNativeCollab()
+    }
     override fun initView() {
+        initNativeCollab()
         setImageActionBar(binding.actionBar.btnActionBarLeft, R.drawable.back_app)
         setFrameActionBar(binding.actionBar.btnActionBarRightText,binding.actionBar.tvRightText,getString(R.string.next ))
         binding.txtPlayoragain.isSelected = true
@@ -54,19 +69,21 @@ class DoneActivity : BaseActivity<ActivityDoneBinding, ViewModel>(
     private fun restartChallenge() {
         if (restarting) return
         restarting = true
-        // Tạo Activity mới để bắt đầu một challenge session hoàn toàn mới.
-        startActivity(Intent(this, PauseOCChallengeActivity::class.java).apply {
-            putExtra(
-                CustomizeActivity.ARG_TEMPLATE_ID,
-                intent.getStringExtra(CustomizeActivity.ARG_TEMPLATE_ID)
-            )
-            putExtra(
-                CustomizeActivity.ARG_TEMPLATE_INDEX,
-                intent.getIntExtra(CustomizeActivity.ARG_TEMPLATE_INDEX, 0)
-            )
-            putExtra(PauseOCChallengeActivity.EXTRA_RESTART_FROM_DONE, true)
-        })
-        finish()
+        showInter {
+            // Tạo Activity mới để bắt đầu một challenge session hoàn toàn mới.
+            startActivity(Intent(this@DoneActivity, PauseOCChallengeActivity::class.java).apply {
+                putExtra(
+                    CustomizeActivity.ARG_TEMPLATE_ID,
+                    intent.getStringExtra(CustomizeActivity.ARG_TEMPLATE_ID)
+                )
+                putExtra(
+                    CustomizeActivity.ARG_TEMPLATE_INDEX,
+                    intent.getIntExtra(CustomizeActivity.ARG_TEMPLATE_INDEX, 0)
+                )
+                putExtra(PauseOCChallengeActivity.EXTRA_RESTART_FROM_DONE, true)
+            })
+            finish()
+        }
     }
 
     override fun onScreenBackPressed(): Boolean {

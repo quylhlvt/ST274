@@ -59,13 +59,13 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
 override fun initView() {
         val currentBinding = binding
         updateContinueMargin()
-        Admob.getInstance().loadInterAds(requireContext(), getString(R.string.inter_per), object : InterCallback() {
+        Admob.getInstance().loadInterAds(this@PermissionActivity, getString(R.string.inter_per), object : InterCallback() {
             override fun onAdLoadSuccess(interstitialAd: InterstitialAd?) {
                 super.onAdLoadSuccess(interstitialAd)
                 inter = interstitialAd
             }
         })
-        Admob.getInstance().loadNativeAd(requireContext(), getString(R.string.native_per), object : NativeCallback() {
+        Admob.getInstance().loadNativeAd(this@PermissionActivity, getString(R.string.native_per), object : NativeCallback() {
             override fun onAdFailedToLoad() {
                 super.onAdFailedToLoad()
                 if (view !== currentBinding.root) return
