@@ -7,6 +7,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
+import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.dialog.DialogWallpaper
@@ -30,8 +31,21 @@ class ViewMyDIYActivity : BaseActivity<ActivityViewMyDiyactivityBinding, ViewVie
     private val imagePath: String by lazy { intent.getStringExtra(EXTRA_IMAGE_PATH).orEmpty() }
     private var wallpaperDialog: DialogWallpaper? = null
     private var isSettingWallpaper = false
+    private fun initNativeCollab() {
+        Admob.getInstance()
+            .loadNativeCollapNotBanner(
+                this@ViewMyDIYActivity,
+                getString(R.string.native_cl_detail),
+                binding.flNativeCollab
+            )
+    }
 
+    override fun onRestart() {
+        super.onRestart()
+        initNativeCollab()
+    }
     override fun initView() {
+        initNativeCollab()
         binding.apply {
             setImageActionBar(actionBar.btnActionBarLeft, R.drawable.back_app)
 

@@ -263,9 +263,12 @@ class MyPonyActivity : BaseActivity<ActivityMyPonyBinding, MyPonyViewModel>(
     private fun showCreationPopup(anchor: View, path: String) {
         creationPopup?.dismiss()
         val popupBinding = PopupMyCreationBinding.inflate(layoutInflater)
+        popupBinding.txtWall.isSelected = true
+        popupBinding.txtShare.isSelected = true
+        popupBinding.txtDelete.isSelected = true
         val popup = PopupWindow(
             popupBinding.root,
-            resources.getDimensionPixelSize(R.dimen.dimension_200),
+            resources.getDimensionPixelSize(R.dimen.dimension_170),
             ViewGroup.LayoutParams.WRAP_CONTENT,
             true
         ).apply {

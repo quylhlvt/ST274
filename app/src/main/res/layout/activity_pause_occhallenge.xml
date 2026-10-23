@@ -106,8 +106,8 @@
             android:layout_width="@dimen/dimension_0"
             android:layout_height="@dimen/dimension_0"
             android:layout_marginStart="@dimen/dimension_20"
-            android:layout_marginTop="@dimen/dimension_12"
-            android:layout_marginBottom="@dimen/dimension_16"
+            android:layout_marginTop="@dimen/dimension_8"
+            android:layout_marginBottom="@dimen/dimension_12"
             android:src="@drawable/ic_play_pause"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1"
@@ -116,6 +116,7 @@
 
         <TextView
             android:id="@+id/txt_playoragain"
+            style="@style/single_marquee"
             android:layout_width="@dimen/dimension_0"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dimension_2"

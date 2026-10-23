@@ -12,6 +12,18 @@ class PauseChallengeSessionTest {
         val session = session(part("nav10", 0), part("nav2", 8), part("nav1", 6))
         assertEquals(listOf("nav1", "nav2", "nav10"), session.stages.map { it.nav })
         assertEquals(listOf(2, 1, 0), session.stages.map { it.partIndex })
+        assertEquals(listOf(0, 2, 1), session.drawingPartIndices)
+    }
+
+    @Test fun drawingUsesTheSamePositionOrderAsCustomizeActivity() {
+        val session = session(
+            part("nav1", position = 20, zIndex = 0),
+            part("nav2", position = 0, zIndex = 10),
+            part("nav3", position = 10, zIndex = 5)
+        )
+
+        assertEquals(listOf(1, 2, 0), session.drawingPartIndices)
+        assertEquals(listOf(0, 1, 2), session.stages.map { it.partIndex })
     }
 
     @Test fun randomFramesIncludeColorsAndLayersButNeverSpecialEntries() {
@@ -80,8 +92,8 @@ class PauseChallengeSessionTest {
     private fun session(vararg parts: BodyPartModel) =
         PauseChallengeSession(CustomModel(listPath = ArrayList(parts.toList())))
 
-    private fun part(nav: String, position: Int) = BodyPartModel(
-        nav = nav, position = position, zIndex = position,
+    private fun part(nav: String, position: Int, zIndex: Int = position) = BodyPartModel(
+        nav = nav, position = position, zIndex = zIndex,
         listPath = arrayListOf(ColorModel(listPath = arrayListOf("none", "dice", "$nav.png")))
     )
 }

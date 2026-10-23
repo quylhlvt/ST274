@@ -8,6 +8,14 @@ class PauseChallengeSession(val template: CustomModel) {
     data class Choice(val colorIndex: Int, val pathIndex: Int, val path: String)
     data class Stage(val partIndex: Int, val nav: String, val choices: List<Choice>)
 
+    // Match CustomizeActivity: position controls the FrameLayout child order.
+    // zIndex only breaks ties because CustomizeViewModel normalizes by zIndex first.
+    val drawingPartIndices = template.listPath.indices.sortedWith(
+        compareBy<Int> { template.listPath[it].position }
+            .thenBy { template.listPath[it].zIndex }
+            .thenBy { it }
+    )
+
     val stages = template.listPath.mapIndexedNotNull { partIndex, part ->
         val choices = part.listPath.flatMapIndexed { colorIndex, color ->
             color.listPath.mapIndexedNotNull { pathIndex, path ->

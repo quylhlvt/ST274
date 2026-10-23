@@ -46,7 +46,10 @@ class MainActivity : AppCompatActivity() {
             R.drawable.img_title_home,
             R.drawable.img_bg_lang,
             R.drawable.img_bg_home1,
-            R.drawable.img_bg_rcy_lang
+            R.drawable.img_bg_rcy_lang,
+            R.drawable.img_intro1,
+            R.drawable.img_intro2,
+            R.drawable.img_intro3,
         )
         val remaining = AtomicInteger(images.size)
         images.forEach { resource ->

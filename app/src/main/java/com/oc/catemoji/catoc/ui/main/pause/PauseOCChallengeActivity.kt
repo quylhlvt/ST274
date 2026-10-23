@@ -1,20 +1,18 @@
 package com.oc.catemoji.catoc.ui.main.pause
 
+import android.content.ComponentCallbacks2
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.view.doOnLayout
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.gif.GifDrawable
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
@@ -27,6 +25,7 @@ import com.oc.catemoji.catoc.core.extention.saveToFile
 import com.oc.catemoji.catoc.core.extention.setFrameActionBar
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
+import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.databinding.ActivityPauseOcchallengeBinding
 import com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity
@@ -36,14 +35,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
@@ -52,6 +49,7 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
     PauseChallengeViewModel::class.java
 ) {
     private val layerViews = mutableMapOf<Int, ImageView>()
+    private var previewImage: ImageView? = null
     private var runner: Job? = null
     private var isPlaying = false
     private var isLoadingFrame = false
@@ -66,38 +64,49 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
             return
         }
         // Hiển thị ImageView
-        if (!touchGuideShown){
-        binding.touch.visibility = View.VISIBLE
-        // Load GIF
-        Glide.with(this)
-            .asGif()
-            .load(R.drawable.touch)
-            .into(binding.touch)
+        if (!touchGuideShown) {
+            binding.touch.visibility = View.VISIBLE
+            // Load GIF
+            Glide.with(this)
+                .asGif()
+                .load(R.drawable.touch)
+                .into(binding.touch)
 
-        // Tự ẩn sau 3 giây
-        lifecycleScope.launch {
-            delay(3000L)
+            // Tự ẩn sau 3 giây
+            lifecycleScope.launch {
+                delay(3000L)
 
-            binding.touch.visibility = View.GONE
+                binding.touch.visibility = View.GONE
 
-            Glide.with(this@PauseOCChallengeActivity)
-                .clear(binding.touch)
+                Glide.with(this@PauseOCChallengeActivity)
+                    .clear(binding.touch)
+            }
+            touchGuideShown = true
         }
-        touchGuideShown = true
-    }}
+    }
+
     private fun initNativeCollab() {
         Admob.getInstance()
-            .loadNativeCollapNotBanner(this@PauseOCChallengeActivity, getString(R.string.native_cl_playPauOC), binding.flNativeCollab)
+            .loadNativeCollapNotBanner(
+                this@PauseOCChallengeActivity,
+                getString(R.string.native_cl_playPauOC),
+                binding.flNativeCollab
+            )
     }
 
     override fun onRestart() {
         super.onRestart()
         initNativeCollab()
     }
+
     override fun initView() {
         initNativeCollab()
         setImageActionBar(binding.actionBar.btnActionBarLeft, R.drawable.back_app)
-        setFrameActionBar(binding.actionBar.btnActionBarRightText,binding.actionBar.tvRightText,getString(R.string.next ))
+        setFrameActionBar(
+            binding.actionBar.btnActionBarRightText,
+            binding.actionBar.tvRightText,
+            getString(R.string.next)
+        )
         binding.actionBar.btnActionBarRightText.invisible()
         binding.txtPlayoragain.isSelected = true
         updateControls()
@@ -130,8 +139,12 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
 
     override fun viewListener() {
         binding.actionBar.btnActionBarLeft.onClick { handlePauseBack() }
-        binding.actionBar.btnActionBarRightText.onClick { exportResult() }
+        binding.actionBar.btnActionBarRightText.onClick {
+            if (checkOnlineNetworkOrShowDialog()) return@onClick
+            exportResult()
+        }
         binding.btnPlayOrPause.onClick {
+            if (checkOnlineNetworkOrShowDialog()) return@onClick
             val session = viewModel.session ?: return@onClick
             if (isSaving) return@onClick
             if (session.isComplete) {
@@ -152,7 +165,7 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
         val session = viewModel.session ?: return
         binding.rlCharacterPause.removeAllViews()
         layerViews.clear()
-        session.template.listPath.withIndex().sortedBy { it.value.position }.forEach { (index, _) ->
+        session.drawingPartIndices.forEach { index ->
             val image = ImageView(this).apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
@@ -163,19 +176,45 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
             layerViews[index] = image
             binding.rlCharacterPause.addView(image)
         }
+        previewImage = ImageView(this).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            isClickable = false
+            isFocusable = false
+            contentDescription = null
+            setImageBitmap(
+                viewModel.previewBitmap.takeIf {
+                    viewModel.previewPartIndex == session.currentStage?.partIndex
+                }
+            )
+        }
+        // Added last so random frames are always drawn above every confirmed layer.
+        binding.rlCharacterPause.addView(previewImage)
     }
 
     private fun prepareCurrentStage() {
         val session = viewModel.session ?: return
         val stage = session.currentStage ?: return
+        if (checkOnlineNetworkOrShowDialog()) return
         updateControls()
-        if (viewModel.displayedBitmaps[stage.partIndex] != null) return
+        if (viewModel.previewPartIndex == stage.partIndex && viewModel.previewBitmap != null) {
+            viewModel.prefetchFrames()
+            return
+        }
         runner?.cancel()
         runner = lifecycleScope.launch {
             try {
                 isLoadingFrame = true
                 updateControls()
-                session.randomChoice()?.let { displayFrame(it) }
+                // Fill several candidates and show whichever image becomes ready first.
+                // A slow URL must not block the first preview behind that one request.
+                viewModel.awaitNextFrame()?.let { (choice, bitmap) ->
+                    displayFrame(choice, bitmap)
+                }
+                viewModel.prefetchFrames()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -201,14 +240,17 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
         runner = lifecycleScope.launch {
             try {
                 while (isActive && isPlaying) {
-                    val choice = viewModel.session?.randomChoice() ?: break
-                    displayFrame(choice)
+                    val (choice, bitmap) = viewModel.awaitNextFrame() ?: break
+                    displayFrame(choice, bitmap)
+                    viewModel.prefetchFrames()
                     delay(FRAME_DELAY_MS)
                 }
+                // Thoát vòng lặp mà không còn ảnh: trả nút về Play.
+                if (isPlaying) pausePlayback(byUser = true)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                isPlaying = false
+                pausePlayback(byUser = true)
                 showFrameError(e)
             } finally {
                 updateControls()
@@ -224,50 +266,38 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
         updateControls()
     }
 
-    private suspend fun displayFrame(choice: PauseChallengeSession.Choice) {
+    private suspend fun displayFrame(choice: PauseChallengeSession.Choice, bitmap: Bitmap) {
         val session = viewModel.session ?: return
         val stage = session.currentStage ?: return
-        val bitmap = loadFrame(choice.path)
         currentCoroutineContext().ensureActive()
         if (session.currentStage?.partIndex != stage.partIndex) return
         // This runs on Main, together with the touch handler. A pending request never
         // overwrites a layer that the player has already frozen or skipped.
         session.show(choice)
-        viewModel.displayedBitmaps[stage.partIndex] = bitmap
-        layerViews[stage.partIndex]?.setImageBitmap(bitmap)
+        viewModel.previewPartIndex = stage.partIndex
+        viewModel.previewBitmap = bitmap
+        previewImage?.setImageBitmap(bitmap)
         updateControls()
-    }
-
-    private suspend fun loadFrame(path: String): Bitmap {
-        viewModel.frames.get(path)?.let { return it }
-        val manager = Glide.with(applicationContext)
-        val target = manager.asBitmap().load(path)
-            .diskCacheStrategy(DiskCacheStrategy.DATA)
-            .timeout(10_000)
-            .submit(FRAME_SIZE, FRAME_SIZE)
-        try {
-            val bitmap = runInterruptible(Dispatchers.IO) {
-                target.get().copy(Bitmap.Config.ARGB_8888, false)
-                    ?: error("Cannot copy challenge frame")
-            }
-            viewModel.frames.put(path, bitmap)
-            return bitmap
-        } finally {
-            withContext(NonCancellable + Dispatchers.Main.immediate) { manager.clear(target) }
-        }
     }
 
     private fun advanceStage(skip: Boolean = false) {
         val session = viewModel.session ?: return
         if (isSaving || session.isComplete || (!skip && !isPlaying)) return
         val stage = session.currentStage ?: return
+        val selectedBitmap = viewModel.previewBitmap
+            ?.takeIf { viewModel.previewPartIndex == stage.partIndex }
+        if (!skip && selectedBitmap == null) return
         if (!session.advance(skip)) return
-
+        viewModel.resultPath = null
         if (!skip) {
+            viewModel.displayedBitmaps[stage.partIndex] = selectedBitmap!!
+            layerViews[stage.partIndex]?.setImageBitmap(selectedBitmap)
             hasSelectedFirstImage = true
         }
+        clearPreview()
 
         runner?.cancel()
+        viewModel.promoteNextStageFrame(session.stageIndex)
         updateControls()
         if (skip) {
             viewModel.displayedBitmaps.remove(stage.partIndex)
@@ -283,6 +313,12 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
         }
     }
 
+    private fun clearPreview() {
+        previewImage?.setImageDrawable(null)
+        viewModel.previewPartIndex = null
+        viewModel.previewBitmap = null
+    }
+
     private fun checkOnlineNetworkOrShowDialog(): Boolean {
         val isOnlineTemplate = viewModel.session
             ?.template
@@ -295,6 +331,29 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
 
         showUnstableNetworkDialog()
         return true
+    }
+
+    private fun isOnlineTemplate(): Boolean =
+        viewModel.session?.template?.id?.startsWith("online_") == true
+
+    override fun observeData() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModelActivity.networkOnline.collect { online ->
+                    if (online || !isPlaying || !isOnlineTemplate()) return@collect
+                    // networkOnline khởi tạo bằng false nên kiểm tra lại bằng kết nối thật.
+                    val reallyOffline = withContext(Dispatchers.IO) {
+                        !(isInternetAvailable(this@PauseOCChallengeActivity) &&
+                                isNetworkConnected(this@PauseOCChallengeActivity))
+                    }
+                    if (reallyOffline) {
+                        pausePlayback(byUser = true)
+                        viewModel.cancelPrefetchedFrames()
+                        showUnstableNetworkDialog()
+                    }
+                }
+            }
+        }
     }
 
     private fun updateControls() {
@@ -327,6 +386,7 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
     }
 
     private fun exportResult() {
+
         val session = viewModel.session ?: return
         if (isSaving || isFinishing || isDestroyed) return
         val root = binding.rlCharacterPause
@@ -335,6 +395,7 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
             return
         }
         isSaving = true
+        viewModel.cancelPrefetchedFrames()
         // Freeze the visible result before capturing, including when Next ends a run early.
         pausePlayback()
         updateControls()
@@ -344,7 +405,7 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
                 val path = viewModel.resultPath ?: run {
                     // The current nav is still a preview until advanceStage confirms it.
                     // Exclude it only from the export; Pause keeps the visible preview intact.
-                    val previewLayer = session.currentStage?.partIndex?.let(layerViews::get)
+                    val previewLayer = previewImage
                     val bitmap = Bitmap.createBitmap(root.width, root.height, Bitmap.Config.ARGB_8888)
                     val canvas = Canvas(bitmap)
                     for (index in 0 until root.childCount) {
@@ -389,17 +450,19 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
     }
 
     private fun handlePauseBack() {
-        if (!intent.getBooleanExtra(EXTRA_RESTART_FROM_DONE, false)) {
-            finish()
-            return
-        }
+        showInter {
+            if (!intent.getBooleanExtra(EXTRA_RESTART_FROM_DONE, false)) {
+                finish()
+                return@showInter
+            }
 
-        // Try Again tạo một Pause mới; xoá Pause cũ và quay về danh mục chọn mèo.
-        startActivity(Intent(this, ChooseCatActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            putExtra(ChooseCatActivity.EXTRA_PAUSE_CHALLENGE, true)
-        })
-        finish()
+            // Try Again tạo một Pause mới; xoá Pause cũ và quay về danh mục chọn mèo.
+            startActivity(Intent(this, ChooseCatActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                putExtra(ChooseCatActivity.EXTRA_PAUSE_CHALLENGE, true)
+            })
+            finish()
+        }
     }
 
     override fun onScreenBackPressed(): Boolean {
@@ -413,9 +476,18 @@ class PauseOCChallengeActivity : BaseActivity<ActivityPauseOcchallengeBinding, P
         pausePlayback(byUser = true)
     }
 
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        when {
+            level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> {
+                pausePlayback(byUser = isPausedByUser)
+            }
+        }
+        viewModel.onTrimMemory(level)
+    }
+
     companion object {
         const val EXTRA_RESTART_FROM_DONE = "restart_from_done"
-        const val FRAME_SIZE = 768
         const val FRAME_DELAY_MS = 180L
     }
 }

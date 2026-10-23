@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -33,11 +34,35 @@ class PauseChallengeDoneFlowTest {
 
     @Test fun nextExportsConfirmedLayersWhilePauseKeepsPreviewAndTryAgainRestarts() = withChallenge {
         val challenge = resumed<PauseOCChallengeActivity>()
-        await { model(challenge).displayedBitmaps.size == 1 }
+        await { model(challenge).previewBitmap != null }
+        assertTrue(model(challenge).displayedBitmaps.isEmpty())
+        lateinit var firstLayer: View
+        lateinit var previewLayer: ImageView
+        instrumentation.runOnMainSync {
+            val firstPartIndex = model(challenge).session!!.currentStage!!.partIndex
+            firstLayer = layer(challenge, firstPartIndex)
+            val root = challenge.findViewById<ViewGroup>(R.id.rlCharacterPause)
+            assertEquals(model(challenge).session!!.drawingPartIndices.size + 1, root.childCount)
+            previewLayer = root.getChildAt(root.childCount - 1) as ImageView
+            assertNull("A random frame must not be committed before the tap", (firstLayer as ImageView).drawable)
+            assertNotNull("The random frame must be shown in the top preview", previewLayer.drawable)
+        }
         val expected = capturePreview(challenge)
         click(challenge, R.id.btnPlayOrPause)
         click(challenge, R.id.rlCharacterPause)
-        await { model(challenge).session?.stageIndex == 1 && model(challenge).displayedBitmaps.size == 2 }
+        await {
+            model(challenge).session?.stageIndex == 1 &&
+                model(challenge).displayedBitmaps.size == 1 &&
+                model(challenge).previewBitmap != null
+        }
+        instrumentation.runOnMainSync {
+            val nextPartIndex = model(challenge).session!!.currentStage!!.partIndex
+            val root = challenge.findViewById<ViewGroup>(R.id.rlCharacterPause)
+            assertNotNull("The tap must commit the frame into its real layer", (firstLayer as ImageView).drawable)
+            assertSame("The same preview ImageView must be reused", previewLayer, root.getChildAt(root.childCount - 1))
+            assertNull("The next frame must remain outside its real layer", (layer(challenge, nextPartIndex) as ImageView).drawable)
+            assertNotNull("The next frame must be visible in the top preview", previewLayer.drawable)
+        }
         val playingPreview = capturePreview(challenge)
         click(challenge, R.id.btnPlayOrPause)
         await { challenge.findViewById<View>(R.id.btnActionBarRightText).visibility == View.VISIBLE }
@@ -46,7 +71,8 @@ class PauseChallengeDoneFlowTest {
         assertFalse("The unfinished layer must be distinguishable from the confirmed image", expected.sameAs(pausedPreview))
         instrumentation.runOnMainSync {
             assertEquals(1, model(challenge).session!!.stageIndex)
-            assertEquals(2, model(challenge).displayedBitmaps.size)
+            assertEquals(1, model(challenge).displayedBitmaps.size)
+            assertNotNull(model(challenge).previewBitmap)
         }
         click(challenge, R.id.btnActionBarRightText)
         val done = resumed<DoneActivity>()
@@ -57,12 +83,13 @@ class PauseChallengeDoneFlowTest {
 
         click(done, R.id.btnTryAgain)
         val replay = resumed<PauseOCChallengeActivity>()
-        await { model(replay).session != null && model(replay).displayedBitmaps.isNotEmpty() }
+        await { model(replay).session != null && model(replay).previewBitmap != null }
         instrumentation.runOnMainSync {
             assertNotSame(challenge, replay)
             assertEquals(TEMPLATE_ID, model(replay).session!!.template.id)
             assertEquals(0, model(replay).session!!.stageIndex)
-            assertEquals(1, model(replay).displayedBitmaps.size)
+            assertTrue(model(replay).displayedBitmaps.isEmpty())
+            assertNotNull(model(replay).previewBitmap)
             assertNull(model(replay).resultPath)
             replay.finish()
         }
@@ -70,10 +97,14 @@ class PauseChallengeDoneFlowTest {
 
     @Test fun selectingTheLastNavigationAutomaticallyOpensDoneWithTheImage() = withChallenge {
         val challenge = resumed<PauseOCChallengeActivity>()
-        await { model(challenge).displayedBitmaps.size == 1 }
+        await { model(challenge).previewBitmap != null }
         click(challenge, R.id.btnPlayOrPause)
         click(challenge, R.id.rlCharacterPause)
-        await { model(challenge).session?.stageIndex == 1 && model(challenge).displayedBitmaps.size == 2 }
+        await {
+            model(challenge).session?.stageIndex == 1 &&
+                model(challenge).displayedBitmaps.size == 1 &&
+                model(challenge).previewBitmap != null
+        }
         val expected = capturePreview(challenge)
         click(challenge, R.id.rlCharacterPause)
         val done = resumed<DoneActivity>()
@@ -144,6 +175,12 @@ class PauseChallengeDoneFlowTest {
 
     private fun model(activity: PauseOCChallengeActivity) =
         ViewModelProvider(activity)[PauseChallengeViewModel::class.java]
+
+    private fun layer(activity: PauseOCChallengeActivity, partIndex: Int): View {
+        val session = model(activity).session!!
+        val childIndex = session.drawingPartIndices.indexOf(partIndex)
+        return activity.findViewById<ViewGroup>(R.id.rlCharacterPause).getChildAt(childIndex)
+    }
 
     private fun click(activity: android.app.Activity, id: Int) {
         // App click listeners share a 200 ms debounce across controls.

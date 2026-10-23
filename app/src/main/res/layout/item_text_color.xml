@@ -4,36 +4,34 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_marginEnd="@dimen/dimension_10"
-
     >
 
-    <com.google.android.material.card.MaterialCardView
+    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
         android:visibility="gone"
         android:id="@+id/frameShadown"
         android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        app:strokeWidth="@dimen/dimension_0"
-        app:strokeColor="@color/app_color"
-        app:cardCornerRadius="@dimen/dimension_100"
-        android:layout_marginStart="@dimen/dimension_3"
+        android:layout_height="match_parent"
+        app:gslStartColor="@color/app_color"
+        app:gslCenterColor="@color/app_color"
+        app:gslEndColor="@color/app_color"
+        app:gslStrokeWidth="@dimen/dimension_2"
+        app:gslCornerRadius="@dimen/dimension_1000"
         app:cardBackgroundColor="@color/shadown_item_cate"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-    <com.google.android.material.card.MaterialCardView
-        android:layout_marginBottom="@dimen/dimension_1_5"
-        android:layout_marginEnd="@dimen/dimension_1"
+    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
         android:id="@+id/frame"
+        app:gslStartColor="@color/app_color"
+        app:gslCenterColor="@color/app_color"
+        app:gslEndColor="@color/app_color"
         android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        app:strokeWidth="@dimen/dimension_2"
-        app:strokeColor="@color/app_color"
-        app:cardCornerRadius="@dimen/dimension_100"
+        android:layout_height="match_parent"
+        app:gslStrokeWidth="@dimen/dimension_2"
+        app:gslCornerRadius="@dimen/dimension_1000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -56,6 +54,6 @@
         <!--        vFocus-->
 
 
-    </com.google.android.material.card.MaterialCardView>
+    </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

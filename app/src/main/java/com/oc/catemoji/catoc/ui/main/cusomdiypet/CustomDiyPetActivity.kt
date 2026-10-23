@@ -25,7 +25,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.DiyAssetCategory
 import com.oc.catemoji.catoc.R
@@ -78,14 +80,13 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
     private val keyboardEntries = mutableListOf<KeyboardEntry>()
     private var keyboardTextDraw: DrawableDraw? = null
     private var keyboardTextJob: Job? = null
+    private var backgroundImageJob: Job? = null
     private val imageJobs = mutableSetOf<Job>()
     private var selectedStickerCategory = 0
     private var renderedCatalogue: DiyCatalogue? = null
     private var initialCatRequested = false
 
-    private val drawAdapter = DiyDrawAdapter { draw ->
-        binding.drawView.selectCurrentDraw(draw)
-    }
+    private val drawAdapter = DiyDrawAdapter(::selectDrawLayer)
     private val catStickerAdapter = DiyCatStickerAdapter { path ->
         runOnlineAction { addImage(path, LayerKind.CAT, replaceExisting = false) }
     }
@@ -186,9 +187,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
 
     override fun initView() {
         initNativeCollab()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { _, insets ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 updateTextPanelKeyboardPosition(
                     insets.isVisible(WindowInsetsCompat.Type.ime())
@@ -209,15 +208,16 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             adapter = drawAdapter
             itemAnimator = null
         }
+        setupLayerSorting()
         binding.drawView.setOnDrawListener(object : OnDrawListener {
             override fun onAddedDraw(draw: Draw) = refreshDrawList()
             override fun onDeletedDraw(draw: Draw) = handleDeletedDraw(draw)
-            override fun onClickedDraw(draw: Draw) = Unit
+            override fun onClickedDraw(draw: Draw) = selectDrawInLayerList(draw)
             override fun onDragFinishedDraw(draw: Draw) {
                 hasChanges = true
             }
 
-            override fun onTouchedDownDraw(draw: Draw) = Unit
+            override fun onTouchedDownDraw(draw: Draw) = selectDrawInLayerList(draw)
             override fun onZoomFinishedDraw(draw: Draw) {
                 hasChanges = true
             }
@@ -227,7 +227,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             }
 
             override fun onDoubleTappedDraw(draw: Draw) = Unit
-            override fun onHideOptionIconDraw() = Unit
+            override fun onHideOptionIconDraw() = drawAdapter.selectDraw(null)
             override fun onUndoDeleteDraw(draw: List<Draw?>) = Unit
             override fun onUndoUpdateDraw(draw: List<Draw?>) = Unit
             override fun onUndoDeleteAll() = Unit
@@ -287,7 +287,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
             tvStart.isSelected = true
             btnActionBarRightText.visibility = View.VISIBLE
             btnActionBarRightText.isClickable = true
-            tvRightText.text = getString(R.string.next)
+            tvRightText.text = getString(R.string.save)
         }
 
         viewModelActivity.preloadDiyCatCategories()
@@ -478,7 +478,55 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
     }
 
     private fun refreshDrawList() {
-        drawAdapter.submitList(binding.drawView.getDraws().toList())
+        drawAdapter.submitList(
+            binding.drawView.getDraws().toList(),
+            binding.drawView.getCurrentDraw()
+        )
+    }
+
+    private fun selectDrawLayer(draw: DrawableDraw) {
+        binding.drawView.selectCurrentDraw(draw)
+        drawAdapter.selectDraw(draw)
+    }
+
+    private fun selectDrawInLayerList(draw: Draw) {
+        drawAdapter.selectDraw(draw as? DrawableDraw)
+    }
+
+    private fun setupLayerSorting() {
+        val callback = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT,
+            0
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val from = viewHolder.bindingAdapterPosition
+                val to = target.bindingAdapterPosition
+                val draws = binding.drawView.getDraws()
+                if (from !in draws.indices || to !in draws.indices || from == to) return false
+
+                binding.drawView.moveLayer(from, to)
+                if (!drawAdapter.moveItem(from, to)) return false
+                hasChanges = true
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit
+
+            override fun isLongPressDragEnabled(): Boolean = true
+
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+                super.clearView(recyclerView, viewHolder)
+                refreshDrawList()
+            }
+        }
+        ItemTouchHelper(callback).attachToRecyclerView(binding.recycleSort)
     }
 
     private fun showCatPanel() {
@@ -749,10 +797,7 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         }
         textColorAdapter.onChooseColorClick = { showTextColorPicker() }
         textColorAdapter.onTextColorClick = { color, position ->
-            selectedTextColor = color
-            textPanel.edtText.setTextColor(color)
-            textColorItems.forEachIndexed { index, item -> item.isSelected = index == position }
-            textColorAdapter.submitItem(position, textColorItems)
+            selectTextColor(color, position)
         }
         textPanel.edtText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -797,10 +842,16 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         dialog.show()
         dialog.onCloseEvent = { dialog.dismiss() }
         dialog.onDoneEvent = { color ->
-            selectedTextColor = color
-            binding.lnlBackgroundTextDiy.edtText.setTextColor(color)
+            selectTextColor(color, CUSTOM_TEXT_COLOR_POSITION)
             dialog.dismiss()
         }
+    }
+
+    private fun selectTextColor(color: Int, position: Int) {
+        selectedTextColor = color
+        binding.lnlBackgroundTextDiy.edtText.setTextColor(color)
+        textColorItems.forEachIndexed { index, item -> item.isSelected = index == position }
+        textColorAdapter.submitItem(position, textColorItems)
     }
 
     private fun addTextLayer() {
@@ -945,6 +996,8 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
     }
 
     private fun selectBackgroundImage(path: String, position: Int) {
+        cancelBackgroundImageLoad()
+        bgViewModel.setBackgroundImage(path)
         bgViewModel.savedBackgroundColor = null
         selectBackgroundItem(position, isImage = true)
         val job = lifecycleScope.launch {
@@ -959,11 +1012,17 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
                 showToast(R.string.image_load_failed)
             }
         }
+        backgroundImageJob = job
         imageJobs += job
-        job.invokeOnCompletion { imageJobs.remove(job) }
+        job.invokeOnCompletion {
+            imageJobs.remove(job)
+            if (backgroundImageJob === job) backgroundImageJob = null
+        }
     }
 
     private fun selectBackgroundColor(color: Int, position: Int) {
+        cancelBackgroundImageLoad()
+        bgViewModel.setBackgroundImage(null)
         bgViewModel.savedBackgroundColor = color
         binding.drawView.setBackgroundColor(color)
         hasChanges = true
@@ -971,8 +1030,16 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
     }
 
     private fun removeBackground() {
-        binding.drawView.setBackgroundColor(Color.WHITE)
+        cancelBackgroundImageLoad()
+        bgViewModel.setBackgroundImage(null)
+        bgViewModel.savedBackgroundColor = null
+        binding.drawView.background = null
         hasChanges = true
+    }
+
+    private fun cancelBackgroundImageLoad() {
+        backgroundImageJob?.cancel()
+        backgroundImageJob = null
     }
 
     private fun selectBackgroundItem(position: Int, isImage: Boolean) {
@@ -1238,6 +1305,10 @@ class CustomDiyPetActivity : BaseActivity<ActivityCustomDiyPetBinding, CustomDiy
         }
         keyboardLayoutListener = null
         super.onScreenDestroyed()
+    }
+
+    private companion object {
+        const val CUSTOM_TEXT_COLOR_POSITION = 0
     }
 
 }

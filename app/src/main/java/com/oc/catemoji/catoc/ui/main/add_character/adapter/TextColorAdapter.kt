@@ -1,9 +1,7 @@
 package com.oc.catemoji.catoc.ui.main.add_character.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseAdapter
 import com.oc.catemoji.catoc.core.extention.gone
@@ -11,8 +9,6 @@ import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.data.model.addcharacter.SelectedAddModel
 import com.oc.catemoji.catoc.databinding.ItemTextColorBinding
-import kotlin.collections.addAll
-import kotlin.text.clear
 
 
 class TextColorAdapter :
@@ -40,13 +36,11 @@ class TextColorAdapter :
 
             // ── Sau đó mới apply selected state ────────────────
 
-            if (item.isSelected) {
-//                frameShadown.visible()
-                frame.strokeColor = ContextCompat.getColor(context, R.color.app_color)
-            } else {
-//                frameShadown.gone()
-                frame.strokeColor = ContextCompat.getColor(context, R.color.transparent)
-            }
+            val strokeColor = ContextCompat.getColor(
+                context,
+                if (item.isSelected) R.color.app_color else R.color.transparent
+            )
+            frame.setGradientColors(strokeColor, strokeColor, strokeColor)
         }
     }
 

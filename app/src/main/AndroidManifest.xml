@@ -36,6 +36,7 @@
                 android:exported="false"
                 android:screenOrientation="portrait"/>
         <activity
+                android:screenOrientation="portrait"
                 android:name=".ui.main.successchallenge.SuccessChallengeActivity"
                 android:exported="false"/>
         <activity

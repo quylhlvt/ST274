@@ -54,7 +54,7 @@ class DoneActivity : BaseActivity<ActivityDoneBinding, ViewModel>(
     }
 
     override fun viewListener() {
-        binding.actionBar.btnActionBarLeft.onClick { restartChallenge() }
+        binding.actionBar.btnActionBarLeft.onClick { goBack() }
         binding.actionBar.btnActionBarRightText.onClick {
             val imagePath = intent.getStringExtra(EXTRA_IMAGE_PATH) ?: return@onClick
             startActivity(Intent(this, SuccessChallengeActivity::class.java).apply {
@@ -65,7 +65,10 @@ class DoneActivity : BaseActivity<ActivityDoneBinding, ViewModel>(
             restartChallenge()
         }
     }
-
+    // Back: quay về Pause cũ, giữ nguyên ảnh đã chọn. Không tạo session mới.
+    private fun goBack() {
+        finish()
+    }
     private fun restartChallenge() {
         if (restarting) return
         restarting = true
@@ -87,7 +90,7 @@ class DoneActivity : BaseActivity<ActivityDoneBinding, ViewModel>(
     }
 
     override fun onScreenBackPressed(): Boolean {
-        restartChallenge()
+        goBack()
         return true
     }
 

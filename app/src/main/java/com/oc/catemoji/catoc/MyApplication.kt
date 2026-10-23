@@ -35,8 +35,8 @@ class MyApplication : AdsApplication() {
             SharedPreferencesManager.editor = preferences.edit()
         }
         LanguageHelper.setLocale(this)
-        Admob.getInstance().setTimeLimitShowAds(3_000)
-        Admob.getInstance().setOpenShowAllAds(false)
+        Admob.getInstance().setTimeLimitShowAds(30_000)
+//        Admob.getInstance().setOpenShowAllAds(false)
         Admob.getInstance().setTimeCountdownNativeCollab(20_000)
         val mmkvDir = java.io.File(filesDir, "mmkv_store").also { it.mkdirs() }
         MMKV.initialize(this, mmkvDir.absolutePath)

@@ -10,10 +10,10 @@
         android:layout_width="@dimen/dimension_0"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="@dimen/dimension_8"
-        app:gslCenterColor="@color/app_color"
+        app:gslCenterColor="@color/transparent"
         app:gslCornerRadius="@dimen/dimension_10"
-        app:gslEndColor="@color/app_color"
-        app:gslStartColor="@color/app_color"
+        app:gslEndColor="@color/transparent"
+        app:gslStartColor="@color/transparent"
         app:gslStrokeWidth="@dimen/dimension_2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
@@ -22,10 +22,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-                android:background="@color/white"
             android:id="@+id/imvImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/white"
             android:contentDescription="@null"
             android:padding="@dimen/dimension_4"
             android:scaleType="centerInside"

@@ -1,10 +1,14 @@
 package com.oc.catemoji.catoc.ui.main.success_diy
 
+import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
@@ -15,6 +19,8 @@ import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.dialog.DialogWallpaper
+import com.oc.catemoji.catoc.core.extention.checkPermissions
+import com.oc.catemoji.catoc.core.extention.goToSettings
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.onClick2
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
@@ -26,6 +32,7 @@ import com.oc.catemoji.catoc.databinding.ActivitySuccessDiyactivityBinding
 import com.oc.catemoji.catoc.ui.main.home.HomeActivity
 import com.oc.catemoji.catoc.ui.main.myPony.MyCreationTab
 import com.oc.catemoji.catoc.ui.main.myPony.MyPonyActivity
+import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +48,18 @@ class SuccessDIYActivity : BaseActivity<ActivitySuccessDiyactivityBinding, ViewM
     private val imagePath by lazy { intent.getStringExtra(EXTRA_IMAGE_PATH).orEmpty() }
     private var wallpaperDialog: DialogWallpaper? = null
     private var isDownloading = false
+    private val permissionViewModel: PermissionViewModel by viewModels()
+
+    private val storagePermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            if (result.values.all { it }) {
+                permissionViewModel.onStorageGranted()
+                performDownload()
+            } else {
+                permissionViewModel.onStorageDenied()
+                showToast(R.string.download_failed_please_try_again_later)
+            }
+        }
     private var isSettingWallpaper = false
     private fun initNativeCollab() {
         Admob.getInstance()
@@ -122,6 +141,20 @@ class SuccessDIYActivity : BaseActivity<ActivitySuccessDiyactivityBinding, ViewM
     }
 
     private fun downloadImage() {
+        if (isDownloading) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            performDownload()
+            return
+        }
+        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        when {
+            checkPermissions(arrayOf(permission)) -> performDownload()
+            permissionViewModel.shouldGoToSettings(isStorage = true) -> goToSettings()
+            else -> storagePermissionLauncher.launch(arrayOf(permission))
+        }
+    }
+
+    private fun performDownload() {
         if (isDownloading) return
         val file = currentImageFile() ?: return
         isDownloading = true

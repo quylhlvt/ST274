@@ -37,6 +37,7 @@
     <dimen name="dimension_18">27dp</dimen>
     <dimen name="dimension_19">28.5dp</dimen>
     <dimen name="dimension_20">30dp</dimen>
+    <dimen name="dimension_20_">40dp</dimen>
     <dimen name="dimension_21">31.5dp</dimen>
     <dimen name="dimension_22">33dp</dimen>
     <dimen name="dimension_23">34.5dp</dimen>

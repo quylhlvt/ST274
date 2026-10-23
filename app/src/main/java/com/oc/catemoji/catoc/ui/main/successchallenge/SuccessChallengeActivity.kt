@@ -1,8 +1,12 @@
 package com.oc.catemoji.catoc.ui.main.successchallenge
 
+import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.Intent
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
@@ -10,6 +14,8 @@ import com.bumptech.glide.Glide
 import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
+import com.oc.catemoji.catoc.core.extention.checkPermissions
+import com.oc.catemoji.catoc.core.extention.goToSettings
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.onClick2
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
@@ -18,6 +24,7 @@ import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.helper.DownloadHelper
 import com.oc.catemoji.catoc.databinding.ActivitySuccessChallengeBinding
 import com.oc.catemoji.catoc.ui.main.home.HomeActivity
+import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +38,18 @@ class SuccessChallengeActivity : BaseActivity<ActivitySuccessChallengeBinding, V
 ) {
     private val imagePath by lazy { intent.getStringExtra(EXTRA_IMAGE_PATH).orEmpty() }
     private var isDownloading = false
+    private val permissionViewModel: PermissionViewModel by viewModels()
+
+    private val storagePermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            if (result.values.all { it }) {
+                permissionViewModel.onStorageGranted()
+                performDownload()
+            } else {
+                permissionViewModel.onStorageDenied()
+                showToast(R.string.download_failed_please_try_again_later)
+            }
+        }
     private fun initNativeCollab() {
         Admob.getInstance()
             .loadNativeCollapNotBanner(
@@ -81,6 +100,20 @@ class SuccessChallengeActivity : BaseActivity<ActivitySuccessChallengeBinding, V
 
     private fun downloadImage() {
         if (isDownloading) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            performDownload()
+            return
+        }
+        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        when {
+            checkPermissions(arrayOf(permission)) -> performDownload()
+            permissionViewModel.shouldGoToSettings(isStorage = true) -> goToSettings()
+            else -> storagePermissionLauncher.launch(arrayOf(permission))
+        }
+    }
+
+    private fun performDownload() {
+        if (isDownloading) return
         val file = currentImageFile() ?: return
         isDownloading = true
         binding.btnBottomRight.isEnabled = false
@@ -94,8 +127,11 @@ class SuccessChallengeActivity : BaseActivity<ActivitySuccessChallengeBinding, V
             isDownloading = false
             binding.btnBottomRight.isEnabled = true
             showToast(
-                if (success) getString(R.string.download_success, getString(R.string.app_name))
-                else getString(R.string.download_failed_please_try_again_later)
+                if (success) {
+                    getString(R.string.download_success, getString(R.string.app_name))
+                } else {
+                    getString(R.string.download_failed_please_try_again_later)
+                }
             )
         }
     }
