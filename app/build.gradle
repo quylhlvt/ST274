@@ -19,8 +19,8 @@ android {
         applicationId "com.oc.catemoji.catoc"
         minSdk 24
         targetSdk 36
-        versionCode 9
-        versionName "1.0.8"
+        versionCode 10
+        versionName "1.0.9"
         testInstrumentationRunner= "androidx.test.runner.AndroidJUnitRunner"
         def formattedDate = new Date().format('MM.dd.yyyy')
         archivesBaseName = "ST229_Cat_Avatar_Cat_Maker_v${versionName}_${formattedDate}"
