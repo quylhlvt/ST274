@@ -9,13 +9,15 @@
     <dimen name="text_size_14">21sp</dimen>
     <dimen name="text_size_15">22.5sp</dimen>
     <dimen name="text_size_16">24sp</dimen>
+    <dimen name="text_size_16_">28sp</dimen>
     <dimen name="text_size_18">27sp</dimen>
-    <dimen name="text_size_18_">24sp</dimen>
     <dimen name="text_size_20">30sp</dimen>
     <dimen name="text_size_22">33sp</dimen>
     <dimen name="text_size_24">36sp</dimen>
     <dimen name="text_size_26">39sp</dimen>
     <dimen name="text_size_28">42sp</dimen>
+    <dimen name="text_size_28_">34sp</dimen>
+    <dimen name="text_size_30">47sp</dimen>
     <dimen name="text_size_35">52.5sp</dimen>
     <dimen name="text_size_40">60sp</dimen>
     <dimen name="text_size_50">75sp</dimen>

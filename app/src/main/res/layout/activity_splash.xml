@@ -1,129 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.onboarding.splash.SplashActivity">
-    <View
-        android:id="@+id/view"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        app:layout_constraintHeight_default="percent"
-        app:layout_constraintHeight_percent="0.17"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-    <View
-        android:id="@+id/view2"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        app:layout_constraintHeight_default="percent"
-        app:layout_constraintHeight_percent="0.5"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/appCompatImageView"
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/img_bg_splash" />
+        android:background="@drawable/img_bg_lang"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        tools:context=".ui.onboarding.splash.SplashActivity">
+    <View
+            android:id="@+id/view"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="3.6:0.8"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    <View
+            android:id="@+id/view2"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="3.6:1.1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    <View
+            android:id="@+id/view3"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="3.6:6.1"
+            app:layout_constraintTop_toBottomOf="@+id/view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/view2"/>
+
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/appCompatImageView4"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:src="@drawable/img_title_splash"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
+            android:id="@+id/appCompatImageView4"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:adjustViewBounds="true"
+            app:layout_constraintDimensionRatio="3.6:3"
+            android:src="@drawable/img_title_splash"
+            app:layout_constraintEnd_toEndOf="@+id/view2"
+            app:layout_constraintBottom_toTopOf="@+id/imageAvatar"
+            app:layout_constraintStart_toStartOf="@+id/view2"
+            app:layout_constraintTop_toTopOf="@+id/view3"/>
 
-    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
-        android:id="@+id/progressWrapper"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        android:layout_marginHorizontal="@dimen/dimension_20"
-        android:clipChildren="true"
-        app:gslCornerRadius="@dimen/dimension_100"
-        app:gslStrokeWidth="@dimen/dimension_2"
-        app:gslStartColor="@color/app_color"
-        app:gslCenterColor="@color/app_color"
-        app:gslEndColor="@color/app_color"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintDimensionRatio="3.2:0.24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appCompatImageView4">
-
-        <!-- Fill xanh đầy 100% -->
-        <View
-            android:id="@+id/progressFill"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_progress_fill" />
-
-        <!-- Container clip cho overlay + cap -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="true"
-            android:clipToPadding="true">
-
-            <!-- Overlay tối -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:cardBackgroundColor="@color/transparent"
-                app:strokeWidth="@dimen/dimension_0">
-
-                <View
-                    android:id="@+id/progressOverlay"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="start"
-                    android:layout_marginStart="@dimen/dimension_18"
-                    android:background="@drawable/bg_progress_dark_overlay" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- capRight di chuyển ở START -->
-            <ImageView
-                android:id="@+id/progressCap"
-                android:layout_width="@dimen/dimension_12"
-                android:layout_height="match_parent"
-                android:layout_gravity="start|center_vertical"
-                android:layout_marginStart="@dimen/dimension_6"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_progress_cap_right" />
-        </FrameLayout>
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageAvatar"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:adjustViewBounds="true"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatImageView4"
+            app:layout_constraintDimensionRatio="3.6:3.1"
+            android:src="@drawable/image_avatar_splash"
+            app:layout_constraintEnd_toEndOf="@+id/view3"
+            app:layout_constraintStart_toStartOf="@+id/view3"
+            app:layout_constraintBottom_toBottomOf="@+id/view3"/>
+    <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animationView"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:layout_marginBottom="@dimen/dimension_50"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/view2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/json_loading"/>
 
 
-
-    </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
-
-    <ImageView
-        android:id="@+id/imageAvatar"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        android:src="@drawable/image_splash"
-        app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView"
-        app:layout_constraintDimensionRatio="3.6:4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="@dimen/dimension_32"
-        app:layout_constraintTop_toBottomOf="@+id/view2" />
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/appCompatTextView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_regular"
-        android:gravity="center"
-        android:text="@string/this_action_may_contain_advertising"
-        android:textColor="@color/black2"
-        android:textSize="@dimen/text_size_16"
-        app:outerStrokeColor="@color/app_color"
-        app:outerStrokeWidth="@dimen/dimension_1"
-        app:layout_constraintBottom_toBottomOf="@+id/imageAvatar" />
+            android:id="@+id/appCompatTextView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_regular"
+            android:gravity="center"
+            android:text="@string/this_action_may_contain_advertising"
+            android:textColor="@color/black2"
+            android:textSize="@dimen/text_size_16"
+            app:outerStrokeColor="@color/app_color"
+            app:outerStrokeWidth="@dimen/dimension_1"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintTop_toBottomOf="@+id/animationView"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

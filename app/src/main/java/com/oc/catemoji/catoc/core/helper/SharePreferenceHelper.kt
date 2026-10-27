@@ -21,6 +21,7 @@ object SharedPreferencesManager {
     private const val LANGUAGE_SCREEN = "language_screen"
     private const val LANGUAGE_KEY = "language_key"
     private const val PERMISSION_SCREEN = "permission_screen"
+    private const val INFORMATION_SCREEN = "information_screen"
     private const val PERMISSION_NOTIFICATION = "NOTIFICATION_KEY"
     private const val PERMISSION_STORAGE = "STORAGE_KEY"
     private const val PERMISSION_CAMERA = "CAMERA_KEY"
@@ -65,6 +66,12 @@ object SharedPreferencesManager {
     fun isPermissionScreen(): Boolean = getBooleanDataByKey(PERMISSION_SCREEN)
     fun setPermissionScreen(isSkipped: Boolean) {
         saveBooleanDataByKey(PERMISSION_SCREEN, isSkipped)
+    }
+
+    fun isInformationScreen(): Boolean = getBooleanDataByKey(INFORMATION_SCREEN)
+
+    fun setInformationScreen(isCompleted: Boolean) {
+        saveBooleanDataByKey(INFORMATION_SCREEN, isCompleted)
     }
 
     fun isPermissionNotiRequest(): Int = getIntDataByKey(PERMISSION_NOTIFICATION)

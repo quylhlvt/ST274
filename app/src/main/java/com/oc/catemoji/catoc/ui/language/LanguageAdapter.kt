@@ -2,6 +2,7 @@ package com.oc.catemoji.catoc.ui.language
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.core.content.ContextCompat
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseAdapter
 import com.oc.catemoji.catoc.core.extention.gone
@@ -30,12 +31,14 @@ class LanguageAdapter (val context: Context) : BaseAdapter<LanguageModel, ItemLa
                 btnRadio.setImageResource(
                     R.drawable.ic_select_lang)
                 bgLang.setImageResource(R.drawable.frame_select_language)
+                tvLang.setTextColor(ContextCompat.getColor(context,R.color.white))
             }else{
                 btnRadio.setImageResource(
                     R.drawable.ic_un_select_lang)
                 bgLang.setImageResource(R.drawable.frame_unselect_language)
+                tvLang.setTextColor(ContextCompat.getColor(context, R.color.app_color))
             }
-            bgLang
+
 
 
             root.onClick { onItemClick.invoke(item.code) }

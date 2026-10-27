@@ -1,32 +1,17 @@
 package com.oc.catemoji.catoc.ui.onboarding.intro
 
-import android.content.Intent
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.lvt.ads.util.Admob
-import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
-import com.oc.catemoji.catoc.core.extention.gone
-import com.oc.catemoji.catoc.core.extention.invisible
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.toHome
-import com.oc.catemoji.catoc.core.extention.toIntro
+import com.oc.catemoji.catoc.core.extention.toInformation
 import com.oc.catemoji.catoc.core.extention.toPermission
-import com.oc.catemoji.catoc.core.extention.visible
-import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager.isPermissionScreen
 import com.oc.catemoji.catoc.databinding.ActivityIntroBinding
-import com.oc.catemoji.catoc.databinding.ActivityPermissionBinding
-import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionViewModel
-import com.oc.catemoji.catoc.utils.DataLocal
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.text.compareTo
 
 @AndroidEntryPoint
 class IntroActivity : BaseActivity<ActivityIntroBinding, IntroViewModel>(
@@ -41,10 +26,6 @@ class IntroActivity : BaseActivity<ActivityIntroBinding, IntroViewModel>(
             android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
             viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
         }
-        binding.btnContinue.onClick(200) {
-            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
-            viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
-        }
 
 //         binding.btnNextPager.tvButton.onClick(200) {
 //            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
@@ -56,20 +37,18 @@ class IntroActivity : BaseActivity<ActivityIntroBinding, IntroViewModel>(
                 ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
-                    btnContinue.gone()
-                    if (position == 1) {
-                        btnNextPager.tvButton.visible()
-                        nativeAds.gone()
-                    } else {
-                        if (position ==2){
-                            btnContinue.visible()
-                            btnNextPager.tvButton.invisible()
-                        }else{
-
-                            btnNextPager.tvButton.visible()
-                        }
-                        nativeAds.visible()
-                    }
+//                    btnContinue.gone()
+//                    if (position == 1) {
+//                        btnNextPager.tvButton.visible()
+//                    } else {
+//                        if (position ==2){
+//                            btnContinue.visible()
+//                            btnNextPager.tvButton.invisible()
+//                        }else{
+//
+//                            btnNextPager.tvButton.visible()
+//                        }
+//                    }
 
                 }
             })
@@ -78,12 +57,7 @@ class IntroActivity : BaseActivity<ActivityIntroBinding, IntroViewModel>(
     }
 override fun initView() {
 //        binding.viewPager2.isUserInputEnabled = false
-        Admob.getInstance().loadNativeAd(
-            this@IntroActivity,
-            getString(R.string.native_intro),
-            binding.nativeAds,
-            R.layout.ads_native_medium_btn_bottom
-        )
+
         binding.viewPager2.adapter = introAdapter
         binding.dotsIndicator.attachTo(binding.viewPager2)
         setOnChangeViewPager2()
@@ -114,11 +88,11 @@ override fun initView() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.singleEvent.collect { event ->
                 when (event) {
-                    is IntroSingleEvent.NavigateToNextScreen ->
-                        if (sharedPreferences.isPermissionScreen())
-                            toHome()
-                        else
-                            toPermission()
+                    is IntroSingleEvent.NavigateToNextScreen -> when {
+                        !sharedPreferences.isPermissionScreen() -> toPermission()
+                        !sharedPreferences.isInformationScreen() -> toInformation()
+                        else -> toHome()
+                    }
                 }
             }
         }
@@ -130,7 +104,7 @@ override fun initView() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
 
-                viewModel.getPage(binding.viewPager2.currentItem, introAdapter.itemCount)
+                viewModel.getPage(binding.viewPager2.currentItem)
             }
         })
     }

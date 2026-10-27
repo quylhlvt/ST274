@@ -2,17 +2,17 @@
 <!-- values-fr/strings.xml -->
 <resources>
     <string name="app_name">Cat Avatar: Cat Maker</string>
-    <string name="next">Suivant</string>
+    <string name="next">\u00A0Suivant\u00A0</string>
     <string name="language">Langue</string>
-    <string name="title_1">Créez différents styles comme vous le souhaitez</string>
-    <string name="title_2">Créez votre avatar parfait</string>
-    <string name="title_3">Collection d’éléments variés</string>
+    <string name="title_1">🐶 Aboie jusqu’à la victoire !</string>
+    <string name="title_2">🏆 Chaque aboiement compte !</string>
+    <string name="title_3">🔥 Qui a l’aboiement le plus puissant ?</string>
     <string name="not_select_lang">Veuillez sélectionner une langue</string>
     <string name="pony_maker">Créateur de chats</string>
 
     <string name="permission">Autorisation</string>
     <string name="storage">Stockage</string>
-    <string name="continue_per">Continuer</string>
+    <string name="continue_per">\u00A0Continuer\u00A0</string>
     <string name="notification">Notification</string>
     <string name="granted_notification">Autorisation de notification accordée</string>
     <string name="granted_storage">Autorisation de stockage accordée</string>

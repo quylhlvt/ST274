@@ -4,16 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+                                                   android:background="@drawable/img_bg_lang2"
     tools:context=".ui.language.LanguageActivity">
 
-    <ImageView
-        android:id="@+id/imageBgLang"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:elevation="@dimen/dimension_minus_1"
-        android:src="@drawable/img_bg_lang"
-        android:scaleType="fitXY" />
+
 
     <FrameLayout
         android:id="@+id/layoutActionBar"
@@ -43,16 +37,7 @@
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- native_ads cố định dưới cùng -->
-        <FrameLayout
-                android:id="@+id/native_ads"
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-             app:layout_constraintTop_toTopOf="parent">
-            <include layout="@layout/ads_native_big_btn_bottom_shimmer"/>
-        </FrameLayout>
+
 
         <!--
             RecyclerView fill phần còn lại:
@@ -70,7 +55,7 @@
             android:layout_marginVertical="@dimen/dimension_3"
             android:clipToPadding="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/native_ads"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

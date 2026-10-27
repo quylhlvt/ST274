@@ -2,17 +2,17 @@
 <!-- values-hi/strings.xml -->
 <resources>
     <string name="app_name">Cat Avatar: Cat Maker</string>
-    <string name="next">आगे</string>
+    <string name="next">\u00A0आगे\u00A0</string>
     <string name="language">भाषा</string>
-    <string name="title_1">अपनी पसंद के अनुसार अलग-अलग स्टाइल बनाएं</string>
-    <string name="title_2">अपना परफेक्ट अवतार बनाएं</string>
-    <string name="title_3">विभिन्न आइटम्स का संग्रह</string>
+    <string name="title_1">🐶 भौंकते हुए जीत हासिल करो!</string>
+    <string name="title_2">🏆 हर भौंक की अहमियत है!</string>
+    <string name="title_3">🔥 सबसे दमदार भौंक किसकी है?</string>
     <string name="not_select_lang">कृपया एक भाषा चुनें</string>
     <string name="pony_maker">कैट मेकर</string>
 
     <string name="permission">अनुमति</string>
     <string name="storage">स्टोरेज</string>
-    <string name="continue_per">जारी रखें</string>
+    <string name="continue_per">\u00A0जारी रखें\u00A0</string>
     <string name="notification">सूचना</string>
     <string name="granted_notification">सूचना की अनुमति दी गई</string>
     <string name="granted_storage">स्टोरेज की अनुमति दी गई</string>

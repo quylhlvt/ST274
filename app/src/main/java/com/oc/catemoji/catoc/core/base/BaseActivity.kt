@@ -18,12 +18,11 @@ import com.google.android.material.snackbar.Snackbar
 import android.content.Context
 import android.content.res.Configuration
 import java.util.Locale
-import com.oc.catemoji.catoc.MyApplication
 import com.oc.catemoji.catoc.core.extention.hideNavigation
 import com.oc.catemoji.catoc.R
-import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
 import com.oc.catemoji.catoc.databinding.DialogbaseBinding
+import com.oc.catemoji.catoc.ui.main.home.HomeActivity
 import javax.inject.Inject
 
 /** Common lifecycle and binding support for screens implemented as Activities. */
@@ -42,9 +41,6 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
     protected val isAdded: Boolean get() = !isFinishing && !isDestroyed
     protected val isDetached: Boolean get() = false
     protected val viewModel: VM by lazy { ViewModelProvider(this)[viewModelClass] }
-    protected val viewModelActivity: ViewModelActivity by lazy {
-        (application as MyApplication).sharedViewModel(this)
-    }
     private var appliedLanguage = ""
     private val router by lazy { ActivityRouter(this) }
 
@@ -268,8 +264,6 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hideNavigation(true)
-        // Start loading even when Android restores a screen without the launcher.
-        viewModelActivity
         logScreenView()
         _binding = inflateBinding(layoutInflater, null, savedInstanceState)
         setContentView(binding.root)
@@ -342,48 +336,16 @@ class ActivityRouter(private val activity: AppCompatActivity) {
     fun popBackStack(): Boolean = navigateUp()
     fun safeNavigate(actionId: Int, args: Bundle? = null) = navigate(actionId, args)
     fun navigate(actionId: Int, args: Bundle? = null) {
-        if (actionId == R.id.action_successCosplay_back_show) {
-            activity.finish()
-            return
-        }
         val target: Class<out android.app.Activity> = when (actionId) {
-            R.id.homeActivity -> com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java
-            R.id.myPony, R.id.action_home_to_myPony, R.id.action_view_to_myPony,
-            R.id.action_custom_to_myPony -> com.oc.catemoji.catoc.ui.main.myPony.MyPonyActivity::class.java
-            R.id.viewActivity -> com.oc.catemoji.catoc.ui.main.view.ViewActivity::class.java
-            R.id.random, R.id.action_home_to_random -> com.oc.catemoji.catoc.ui.main.random.RandomActivity::class.java
-            R.id.action_my_pony_to_home -> com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java
-            R.id.action_home_to_createPony -> com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity::class.java
-            R.id.action_home_to_cosplay -> com.oc.catemoji.catoc.ui.main.cosplay.CosplayActivity::class.java
-            R.id.action_home_to_studio -> com.oc.catemoji.catoc.ui.main.studio.CatStudioActivity::class.java
+            R.id.homeActivity -> HomeActivity::class.java
             R.id.action_home_to_setting -> com.oc.catemoji.catoc.ui.main.setting.SettingActivity::class.java
-            R.id.action_createPony_to_custom, R.id.action_random_to_custom,
-            R.id.action_mypony_to_custom, R.id.action_view_to_customize -> com.oc.catemoji.catoc.ui.main.customize.CustomizeActivity::class.java
-            R.id.action_customize_to_addCharacter -> com.oc.catemoji.catoc.ui.main.add_character.AddCharacterActivity::class.java
-            R.id.action_addCharacter_to_viewImage,
-            R.id.action_mypony_to_view -> com.oc.catemoji.catoc.ui.main.view.ViewActivity::class.java
-            R.id.action_cosplay_to_show -> com.oc.catemoji.catoc.ui.main.show.ShowActivity::class.java
-            R.id.action_show_to_successCosplay -> com.oc.catemoji.catoc.ui.main.successcosplay.SuccessCosplayActivity::class.java
-            R.id.action_successCosplay_to_home -> com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java
             else -> throw IllegalArgumentException("Unknown Activity action: $actionId")
         }
         val intent = android.content.Intent(activity, target).apply {
             args?.let { putExtras(it) }
-            if (target == com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java ||
-                target == com.oc.catemoji.catoc.ui.main.myPony.MyPonyActivity::class.java
-            ) {
+            if (target == HomeActivity::class.java) {
                 addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
-        }
-        if (target == com.oc.catemoji.catoc.ui.main.myPony.MyPonyActivity::class.java &&
-            actionId in setOf(R.id.action_view_to_myPony, R.id.action_custom_to_myPony)
-        ) {
-            // Complete the creation flow so Back from the album returns to Home.
-            androidx.core.app.TaskStackBuilder.create(activity)
-                .addNextIntent(android.content.Intent(activity, com.oc.catemoji.catoc.ui.main.home.HomeActivity::class.java))
-                .addNextIntent(intent)
-                .startActivities()
-            return
         }
         activity.startActivity(intent)
     }

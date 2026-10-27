@@ -2,14 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dimension_90"
+    android:layout_height="@dimen/dimension_80"
     android:background="@color/transparent">
 
     <!--    btnActionBarLeft-->
     <ImageView
         android:id="@+id/btnActionBarLeft"
-        android:layout_width="@dimen/dimension_36"
-        android:layout_height="@dimen/dimension_36"
+        android:layout_width="@dimen/dimension_40"
+        android:layout_height="@dimen/dimension_40"
         android:layout_marginStart="@dimen/dimension_16"
         android:layout_marginBottom="@dimen/dimension_10"
         android:src="@drawable/back_app"
@@ -20,8 +20,8 @@
     <!--    cvLogo-->
     <androidx.cardview.widget.CardView
         android:id="@+id/cvLogo"
-        android:layout_width="@dimen/dimension_36"
-        android:layout_height="@dimen/dimension_36"
+        android:layout_width="@dimen/dimension_40"
+        android:layout_height="@dimen/dimension_40"
         android:layout_marginStart="@dimen/dimension_16"
         android:layout_marginBottom="@dimen/dimension_10"
         android:visibility="invisible"
@@ -39,51 +39,58 @@
     </androidx.cardview.widget.CardView>
 
     <!--    tvStart-->
-    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
         android:id="@+id/tvStart"
-        style="@style/single_marquee"
+        style="@style/Widget.Catoc.ExtrudedTitle"
         android:layout_width="@dimen/dimension_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dimension_16"
         android:gravity="center_vertical"
         android:text="@string/language"
-        android:textSize="@dimen/text_size_28"
-        android:fontFamily="@font/baloo2_extrabold"
+        android:textSize="@dimen/text_size_30"
         android:visibility="gone"
+        android:fontFamily="@font/illita_one_regular"
         app:layout_constraintBottom_toBottomOf="@+id/cvLogo"
         app:layout_constraintEnd_toStartOf="@+id/contrainSelect"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/cvLogo"
-        app:outerStrokeColor="@color/app_color"
-        app:outerStrokeWidth="@dimen/dimension_1_5"
-        android:textColor="@color/app_color2"
-        />
+        app:outerStrokeColor="@color/white"
+        app:outerStrokeWidth="@dimen/dimension_1"
+        android:textColor="@color/app_color"
+        app:outerStrokeJoinStyle="round"
+        app:extrusionColor="@color/title_extrusion"
+        app:extrusionDx="0dp"
+        app:extrusionDy="@dimen/dimension_2"
+    />
 
     <!--    tvCenter-->
-    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
         android:id="@+id/tvCenter"
-        style="@style/single_marquee"
+        style="@style/Widget.Catoc.ExtrudedTitle"
         android:layout_width="@dimen/dimension_0"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/language"
-        android:textSize="@dimen/text_size_28"
-        android:fontFamily="@font/baloo2_extrabold"
+        android:textSize="@dimen/text_size_30"
+        android:fontFamily="@font/illita_one_regular"
         android:visibility="gone"
         android:layout_marginHorizontal="@dimen/dimension_minus_10"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toStartOf="@+id/contrainSelect"
         app:layout_constraintStart_toEndOf="@+id/contrainSelect1"
         app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft"
-        app:outerStrokeColor="@color/app_color"
-        app:outerStrokeWidth="@dimen/dimension_1_5"
-        android:textColor="@color/app_color2"/>
+        app:outerStrokeJoinStyle="round"
+        app:outerStrokeColor="@color/white"
+        app:outerStrokeWidth="@dimen/dimension_1"
+        app:extrusionColor="@color/title_extrusion"
+        app:extrusionDx="0dp"
+        app:extrusionDy="@dimen/dimension_2"/>
 
     <!--    btnActionBarCenter-->
     <ImageView
         android:id="@+id/btnActionCenter"
-        android:layout_width="@dimen/dimension_36"
-        android:layout_height="@dimen/dimension_36"
+        android:layout_width="@dimen/dimension_40"
+        android:layout_height="@dimen/dimension_40"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toEndOf="parent"
@@ -92,8 +99,8 @@
     <!--    btnActionBarCenter-->
     <ImageView
         android:id="@+id/btnActionBarCenter"
-        android:layout_width="@dimen/dimension_36"
-        android:layout_height="@dimen/dimension_36"
+        android:layout_width="@dimen/dimension_40"
+        android:layout_height="@dimen/dimension_40"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toStartOf="@+id/btnActionBarCenter1"
@@ -101,8 +108,8 @@
         app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
     <ImageView
         android:id="@+id/btnActionBarCenter1"
-        android:layout_width="@dimen/dimension_36"
-        android:layout_height="@dimen/dimension_36"
+        android:layout_width="@dimen/dimension_40"
+        android:layout_height="@dimen/dimension_40"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toStartOf="@+id/btnActionBarCenter2"
@@ -111,8 +118,8 @@
     <!--    btnActionBarCenter-->
     <ImageView
         android:id="@+id/btnActionBarCenter2"
-        android:layout_width="@dimen/dimension_36"
-        android:layout_height="@dimen/dimension_36"
+        android:layout_width="@dimen/dimension_40"
+        android:layout_height="@dimen/dimension_40"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toStartOf="@+id/btnEnd"
@@ -120,8 +127,8 @@
         app:layout_constraintTop_toTopOf="@+id/btnActionBarLeft" />
     <ImageView
         android:id="@+id/btnEnd"
-        android:layout_width="@dimen/dimension_36"
-        android:layout_height="@dimen/dimension_36"
+        android:layout_width="@dimen/dimension_40"
+        android:layout_height="@dimen/dimension_40"
         android:layout_marginEnd="@dimen/dimension_13"
         android:layout_marginBottom="@dimen/dimension_10"
         android:visibility="invisible"
@@ -139,8 +146,8 @@
         app:layout_constraintStart_toStartOf="parent">
         <ImageView
 
-            android:layout_width="@dimen/dimension_36"
-            android:layout_height="@dimen/dimension_36"
+            android:layout_width="@dimen/dimension_40"
+            android:layout_height="@dimen/dimension_40"
             android:layout_marginEnd="@dimen/dimension_5"
             android:layout_marginBottom="@dimen/dimension_10"
             android:visibility="invisible"
@@ -151,8 +158,8 @@
 
         <ImageView
             android:id="@+id/btnActionBarRight1"
-            android:layout_width="@dimen/dimension_36"
-            android:layout_height="@dimen/dimension_36"
+            android:layout_width="@dimen/dimension_40"
+            android:layout_height="@dimen/dimension_40"
             android:layout_marginEnd="@dimen/dimension_13"
             android:layout_marginBottom="@dimen/dimension_10"
             android:visibility="invisible"
@@ -173,8 +180,8 @@
 
         <ImageView
             android:id="@+id/btnActionBarNextToRight"
-            android:layout_width="@dimen/dimension_36"
-            android:layout_height="@dimen/dimension_36"
+            android:layout_width="@dimen/dimension_40"
+            android:layout_height="@dimen/dimension_40"
             android:layout_marginEnd="@dimen/dimension_5"
             android:layout_marginBottom="@dimen/dimension_10"
             android:visibility="invisible"
@@ -185,8 +192,8 @@
 
         <ImageView
             android:id="@+id/btnActionBarRight"
-            android:layout_width="@dimen/dimension_36"
-            android:layout_height="@dimen/dimension_36"
+            android:layout_width="@dimen/dimension_40"
+            android:layout_height="@dimen/dimension_40"
             android:layout_marginEnd="@dimen/dimension_13"
             android:layout_marginBottom="@dimen/dimension_10"
             android:visibility="invisible"
@@ -197,7 +204,7 @@
         <FrameLayout
             android:id="@+id/btnActionBarRightText"
             android:layout_width="@dimen/dimension_64"
-            android:layout_height="@dimen/dimension_36"
+            android:layout_height="@dimen/dimension_40"
             android:layout_marginEnd="@dimen/dimension_16"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/btnActionBarRight"
@@ -206,7 +213,7 @@
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/btnAction"
                 android:layout_width="@dimen/dimension_64"
-                android:layout_height="@dimen/dimension_36"
+                android:layout_height="@dimen/dimension_40"
                 android:layout_marginEnd="@dimen/dimension_16"
                 android:src="@drawable/frame_save_custom"
                 android:scaleType="fitXY" />

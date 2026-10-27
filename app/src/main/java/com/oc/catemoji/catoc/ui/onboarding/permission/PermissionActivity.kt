@@ -1,91 +1,42 @@
 package com.oc.catemoji.catoc.ui.onboarding.permission
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Bundle
 import android.text.TextUtils
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdView
-import com.lvt.ads.callback.InterCallback
-import com.lvt.ads.callback.NativeCallback
-import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
-import com.oc.catemoji.catoc.core.extention.gone
-import com.oc.catemoji.catoc.core.extention.onClick
-import com.oc.catemoji.catoc.core.extention.select
-import com.oc.catemoji.catoc.core.extention.toHomeFromPermission
-import com.oc.catemoji.catoc.core.extention.visible
+import com.oc.catemoji.catoc.core.extention.*
+import com.oc.catemoji.catoc.core.helper.PermissionHelper
 import com.oc.catemoji.catoc.core.helper.StringHelper
 import com.oc.catemoji.catoc.databinding.ActivityPermissionBinding
 import com.oc.catemoji.catoc.utils.key.RequestKey
-import com.oc.catemoji.catoc.core.extention.checkPermissions
-import com.oc.catemoji.catoc.core.extention.goToSettings
-import com.oc.catemoji.catoc.core.extention.requestPermission
-import com.oc.catemoji.catoc.core.extention.setImageActionBar
-import com.oc.catemoji.catoc.core.extention.setTextActionBar
-import com.oc.catemoji.catoc.core.helper.PermissionHelper
-import com.oc.catemoji.catoc.core.helper.PermissionRequestHelper
-import com.oc.catemoji.catoc.databinding.ActivitySettingBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionViewModel>(
     ActivityPermissionBinding::inflate,
     PermissionViewModel::class.java
 ) {
-    private var inter: InterstitialAd? = null
+
     override fun viewListener() {
         val currentView = binding.root
         binding.swPermission.onClick(1500) { handlePermissionRequest(isStorage = true) }
         binding.swNotification.onClick(1500) { handlePermissionRequest(isStorage = false) }
         binding.tvContinue.onClick(1000) {
-            Admob.getInstance().showInterAds(requireActivity(), inter, object : InterCallback() {
-            override fun onNextAction() {
-                super.onNextAction()
-                if (!isAdded || view !== currentView) return
-                handleContinue()
-            }
-        })}
+//            Admob.getInstance().showInterAds(requireActivity(), inter, object : InterCallback() {
+//            override fun onNextAction() {
+//                super.onNextAction()
+//                if (!isAdded || view !== currentView) return
+            handleContinue()
+//            }
+//        })
+        }
     }
-override fun initView() {
-        val currentBinding = binding
-        updateContinueMargin()
-        Admob.getInstance().loadInterAds(this@PermissionActivity, getString(R.string.inter_per), object : InterCallback() {
-            override fun onAdLoadSuccess(interstitialAd: InterstitialAd?) {
-                super.onAdLoadSuccess(interstitialAd)
-                inter = interstitialAd
-            }
-        })
-        Admob.getInstance().loadNativeAd(this@PermissionActivity, getString(R.string.native_per), object : NativeCallback() {
-            override fun onAdFailedToLoad() {
-                super.onAdFailedToLoad()
-                if (view !== currentBinding.root) return
-                binding.nativeAds.gone()
-            }
 
-            override fun onNativeAdLoaded(nativeAd: NativeAd?) {
-                super.onNativeAdLoaded(nativeAd)
-                if (!isAdded || view !== currentBinding.root) {
-                    nativeAd?.destroy()
-                    return
-                }
-                binding.nativeAds.visible()
-                val adView =
-                    LayoutInflater.from(requireContext()).inflate(R.layout.ads_native_big_btn_top, null) as NativeAdView
-                binding.nativeAds.removeAllViews()
-                binding.nativeAds.addView(adView)
-                Admob.getInstance().pushAdsToViewCustom(nativeAd, adView)
-            }
-        })
+    override fun initView() {
+//        updateContinueMargin()
+
         binding.setupActionBar()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             binding.btnStorage.visible()
@@ -105,6 +56,7 @@ override fun initView() {
             setTextActionBar(tvStart, getString(R.string.permission))
         }
     }
+
     private fun isNetworkAvailable(): Boolean {
         val cm = requireContext().getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
                 as android.net.ConnectivityManager
@@ -150,6 +102,7 @@ override fun initView() {
             )
         }
     }
+
     override fun onResume() {
         super.onResume()
         // ✅ Cập nhật lại UI khi quay về từ Settings hoặc sau khi grant
@@ -162,6 +115,7 @@ override fun initView() {
             false
         )
     }
+
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults: IntArray
@@ -180,6 +134,7 @@ override fun initView() {
                 // ✅ Luôn update UI dù granted hay denied
                 updatePermissionUI(granted, true)
             }
+
             RequestKey.NOTIFICATION_PERMISSION_CODE -> {
                 if (granted) {
                     viewModel.onNotificationGranted()
@@ -202,20 +157,27 @@ override fun initView() {
 
     override fun initText() {
         binding.actionBar.tvCenter.select()
-        val textRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            R.string.to_access_13 else R.string.to_access
-        binding.txtPermission.text = TextUtils.concat(
-            createColoredText(R.string.allow, R.color.app_color),
-            " ",
-            createColoredText(R.string.app_name, R.color.app_color),
-            " ",
-            createColoredText(textRes, R.color.app_color)
-        )
+
+        val textRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            R.string.to_access_13
+        } else {
+            R.string.to_access
+        }
+
+        binding.txtPermission.text = listOf(
+            getString(R.string.allow),
+            getString(R.string.app_name),
+            getString(textRes)
+        ).joinToString(" ")
     }
 
     private fun handleContinue() {
         sharedPreferences.setPermissionScreen(true)
-        toHomeFromPermission()
+        if (sharedPreferences.isInformationScreen()) {
+            toHomeFromPermission()
+        } else {
+            toInformation()
+        }
     }
 
     override fun bindViewModel() {}

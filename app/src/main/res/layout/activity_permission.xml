@@ -40,15 +40,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar" />
 
-    <TextView
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeTextView
         android:id="@+id/txtPermission"
         android:layout_width="@dimen/dimension_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dimension_20"
-        android:fontFamily="@font/baloo2_bold"
         android:gravity="center"
-        android:textColor="@color/app_color"
-        android:textSize="@dimen/text_size_16"
+        android:fontFamily="@font/illita_one_regular"
+        android:textColor="@color/white"
+        app:outerStrokeWidth="@dimen/dimension_1"
+        android:textSize="@dimen/dimension_18"
+        app:outerStrokeColor="@color/app_color"
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -77,16 +79,15 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/dimension_3"
-                    android:layout_marginTop="@dimen/dimension_3"
                     android:scaleType="fitXY"
                     android:src="@drawable/bg_frame_permission_shadown" />
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginEnd="@dimen/dimension_3"
-                    android:layout_marginBottom="@dimen/dimension_3"
+                    android:layout_marginEnd="@dimen/dimension_2"
+                    android:layout_marginBottom="@dimen/dimension_2"
+                    android:layout_marginStart="@dimen/dimension_1"
                     android:scaleType="fitXY"
                     android:src="@drawable/bg_frame_permission" />
 
@@ -99,11 +100,11 @@
                     android:layout_marginStart="@dimen/dimension_16"
                     android:layout_marginTop="@dimen/dimension_7"
                     android:layout_marginBottom="@dimen/dimension_10"
-                    android:fontFamily="@font/baloo2_bold"
+                    android:fontFamily="@font/illita_one_regular"
                     android:gravity="center_vertical"
                     android:text="@string/storage"
-                    android:textColor="@color/app_color"
-                    android:textSize="@dimen/text_size_20" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_22" />
 
                 <ImageView
                     android:id="@+id/swPermission"
@@ -127,16 +128,15 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/dimension_3"
-                    android:layout_marginTop="@dimen/dimension_3"
                     android:scaleType="fitXY"
                     android:src="@drawable/bg_frame_permission_shadown" />
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginEnd="@dimen/dimension_3"
-                    android:layout_marginBottom="@dimen/dimension_3"
+                    android:layout_marginEnd="@dimen/dimension_2"
+                    android:layout_marginBottom="@dimen/dimension_2"
+                    android:layout_marginStart="@dimen/dimension_1"
                     android:scaleType="fitXY"
                     android:src="@drawable/bg_frame_permission" />
 
@@ -149,11 +149,11 @@
                     android:layout_marginStart="@dimen/dimension_16"
                     android:layout_marginTop="@dimen/dimension_7"
                     android:layout_marginBottom="@dimen/dimension_10"
-                    android:fontFamily="@font/baloo2_bold"
+                    android:fontFamily="@font/illita_one_regular"
                     android:gravity="center_vertical"
                     android:text="@string/notification"
-                    android:textColor="@color/app_color"
-                    android:textSize="@dimen/text_size_20" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_22" />
 
                 <ImageView
                     android:id="@+id/swNotification"
@@ -171,28 +171,22 @@
 
     </ScrollView>
 
-    <TextView
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeTextView
         android:id="@+id/tvContinue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dimension_12"
-        android:layout_marginBottom="@dimen/dimension_10"
-        android:fontFamily="@font/baloo2_bold"
+        android:layout_marginBottom="@dimen/dimension_180"
+        android:letterSpacing="0.05"
+        android:fontFamily="@font/illita_one_regular"
         android:gravity="center"
         android:text="@string/continue_per"
-        android:textColor="@color/app_color"
-        android:textSize="@dimen/text_size_16"
-        app:layout_constraintBottom_toTopOf="@+id/native_ads"
+        app:outerStrokeColor="@color/app_color"
+        app:outerStrokeWidth="@dimen/dimension_1"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_24"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <FrameLayout
-        android:id="@+id/native_ads"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <include layout="@layout/ads_native_big_btn_top_shimmer" />
-    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -60,6 +60,18 @@
         <attr name="outerStrokeJoinStyle" />
     </declare-styleable>
 
+    <declare-styleable name="OuterStrokeShadowTextView">
+        <attr name="outerStrokeColor" />
+        <attr name="outerStrokeWidth" />
+        <attr name="outerStrokeJoinStyle" />
+        <attr name="extrusionColor" format="color" />
+        <attr name="extrusionDx" format="dimension" />
+        <attr name="extrusionDy" format="dimension" />
+        <attr name="useGradient" />
+        <attr name="gradientStartColor" />
+        <attr name="gradientEndColor" />
+    </declare-styleable>
+
     <!-- ==================== CROP IMAGE VIEW ==================== -->
     <declare-styleable name="CropImageView">
         <attr name="cropGuidelines">

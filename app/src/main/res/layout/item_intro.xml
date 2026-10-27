@@ -13,17 +13,19 @@
         app:layout_constraintBottom_toTopOf="@+id/tvContent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeTextView
         android:id="@+id/tvContent"
         style="@style/single_marquee"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dimension_25"
         android:gravity="center"
-        android:fontFamily="@font/baloo2_bold"
-        android:textColor="@color/app_color"
+        android:fontFamily="@font/illita_one_regular"
+        android:textColor="@color/white"
+        app:outerStrokeWidth="@dimen/dimension_1"
+        app:outerStrokeColor="@color/app_color"
         android:textSize="@dimen/text_size_20"
-        android:maxLines="2"
+        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

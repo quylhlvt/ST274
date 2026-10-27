@@ -1,0 +1,16 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ✅ Layer 1: Viền gradient -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="-90"
+                android:startColor="#FFFFFF"
+                android:endColor="#FFEBCC"
+                android:type="linear" />
+            <corners android:radius="@dimen/dimension_0" />
+        </shape>
+    </item>
+
+
+</layer-list>

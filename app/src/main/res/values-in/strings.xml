@@ -2,17 +2,17 @@
 <!-- values-id/strings.xml -->
 <resources>
     <string name="app_name">Cat Avatar: Cat Maker</string>
-    <string name="next">Lanjut</string>
+    <string name="next">\u00A0Lanjut\u00A0</string>
     <string name="language">Bahasa</string>
-    <string name="title_1">Buat berbagai gaya sesuai keinginanmu</string>
-    <string name="title_2">Buat avatar sempurnamu</string>
-    <string name="title_3">Koleksi berbagai item</string>
+    <string name="title_1">🐶 Gonggong untuk meraih kemenangan!</string>
+    <string name="title_2">🏆 Setiap gonggongan berarti!</string>
+    <string name="title_3">🔥 Siapa yang punya gonggongan terkuat?</string>
     <string name="not_select_lang">Silakan pilih bahasa</string>
     <string name="pony_maker">Pembuat Kucing</string>
 
     <string name="permission">Izin</string>
     <string name="storage">Penyimpanan</string>
-    <string name="continue_per">Lanjutkan</string>
+    <string name="continue_per">\u00A0Lanjutkan\u00A0</string>
     <string name="notification">Notifikasi</string>
     <string name="granted_notification">Izin notifikasi diberikan</string>
     <string name="granted_storage">Izin penyimpanan diberikan</string>

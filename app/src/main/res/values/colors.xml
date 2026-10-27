@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="text_gradient_cream">#FFEBCC</color>
 
     <color name="color_text_intro">#1F2F4F</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white2">#80FFFFFF</color>
     <color name="black">#000000</color>
     <color name="_FAF3E3">#FAF3E3</color>
+    <color name="_4D1A1A1A">#4D1A1A1A</color>
     <color name="_4D3F3E3F">#4D3F3E3F</color>
+    <color name="_E88D42">#E88D42</color>
+    <color name="_22C55E">#22C55E</color>
+    <color name="_BF6023">#BF6023</color>
+    <color name="_692901">#692901</color>
     <color name="_FFDEAC">#FFDEAC</color>
     <color name="_D05F5A">#D05F5A</color>
     <color name="_3F3E3F">#3F3E3F</color>
     <color name="black2">#CC000000</color>
+    <color name="lost">#EF4444</color>
+    <color name="win">#22C55E</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="orange_F6">#F68300</color>
     <color name="purple_F0">#F091F5</color>
     <color name="red_BA">#8D67D6</color>
     <color name="yellow_F6">#F6CD46</color>
-    <color name="app_color">#4A2711</color>
-    <color name="app_color2">#F7AE41</color>
-    <color name="app_color3">#91553D</color>
-    <color name="app_color4">#E28D35</color>
-    <color name="app_color5">#FDF5B9</color>
-    <color name="app_color6">#FBD893</color>
+    <color name="app_color">#4B1E00</color>
+    <color name="app_color2">#7A3400</color>
+    <color name="app_color3">#410D00</color>
+    <color name="app_color4">#351102</color>
+    <color name="app_color5">#F8CB8E</color>
+    <color name="app_color6">#FFF6D9</color>
     <color name="app_color7">#935229</color>
     <color name="app_color8">#EEBD5A</color>
     <color name="app_color9">#FEFBE3</color>

@@ -1,16 +1,16 @@
 <resources>
     <string name="app_name">Cat Avatar: Cat Maker</string>
-    <string name="next">Next</string>
+    <string name="next">\u00A0Next\u00A0</string>
     <string name="language">Language</string>
-    <string name="title_1">Create Unique Cat Avatars</string>
-    <string name="title_2">Mix &amp; Match Hundreds of Items</string>
-    <string name="title_3">Decorate and Share Your Creations</string>
+    <string name="title_1">🐶 Bark your way to victory!</string>
+    <string name="title_2">🏆 Every bark counts!</string>
+    <string name="title_3">🔥 Who has the strongest bark?</string>
     <string name="not_select_lang">Please select a language</string>
     <string name="pony_maker">Cat Maker</string>
 
     <string name="permission">Permission</string>
     <string name="storage">Storage</string>
-    <string name="continue_per">Continue</string>
+    <string name="continue_per">\u00A0Continue\u00A0</string>
     <string name="notification">Notification</string>
     <string name="granted_notification">Notification permission granted</string>
     <string name="granted_storage">Storage permission granted</string>
@@ -158,4 +158,23 @@
     <string name="save_failed">Could not save the image. Please try again.</string>
     <string name="image_load_failed">Could not load this item</string>
     <string name="tag">Tag</string>
+    <string name="type_your_name">Type your name...</string>
+    <string name="create_profile">Create Profile</string>
+    <string name="profile_name_required">Please enter your name.</string>
+    <string name="profile_save_failed">Could not save your profile. Please try again.</string>
+    <string name="dog_skin">Dog Skin</string>
+    <string name="battle_rank">Battle Rank</string>
+    <string name="training">Training</string>
+    <string name="home_change_name">Change name</string>
+    <string name="home_add_bones_failed">Could not add Bones. Please try again.</string>
+    <string name="home_profile_load_failed">Could not load your profile. Please reopen this screen.</string>
+    <string name="home_battle_rank_title">Battle Rank %1$d</string>
+    <string name="home_rank_description">Rank %1$d</string>
+    <string name="home_name_description">%1$s. Tap to change name.</string>
+    <string name="profile">Profile</string>
+    <string name="name">Name</string>
+    <string name="statistics">Statistics</string>
+    <string name="match_history">Match History</string>
+    <string name="vs">Vs</string>
+    <string name="victory">Victory</string>
 </resources>

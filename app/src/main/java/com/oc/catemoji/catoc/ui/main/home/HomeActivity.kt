@@ -1,201 +1,168 @@
 package com.oc.catemoji.catoc.ui.main.home
 
-import android.Manifest
-import android.content.IntentFilter
-import android.content.pm.PackageManager
-import android.net.ConnectivityManager
-import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
-import com.oc.catemoji.catoc.ViewModelActivity
+import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.oc.catemoji.catoc.core.base.BaseActivity
-import com.oc.catemoji.catoc.core.extention.InternetExtension.isInternetAvailable
-import com.oc.catemoji.catoc.core.extention.InternetExtension.isNetworkConnected
-import com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
-import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
-import com.oc.catemoji.catoc.core.extention.showInter
 import com.oc.catemoji.catoc.core.extention.toSettingFromHome
-import com.oc.catemoji.catoc.core.helper.RateHelper
+import com.oc.catemoji.catoc.core.extention.toInformation
 import com.oc.catemoji.catoc.core.helper.RateHelper.showRateDialog
 import com.oc.catemoji.catoc.databinding.ActivityHomeBinding
-import com.oc.catemoji.catoc.ui.main.cusomdiypet.CustomDiyPetActivity
-import com.oc.catemoji.catoc.utils.BlockableFrameLayout
+import com.oc.catemoji.catoc.databinding.DialogHomeNameBinding
 import com.oc.catemoji.catoc.utils.state.RateState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 @AndroidEntryPoint
 class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
     ActivityHomeBinding::inflate,
     HomeViewModel::class.java
 ) {
 
-    private val mainViewModel: ViewModelActivity get() = viewModelActivity
     private var countRate = 0
-    private fun initNativeCollab() {
-        Log.d("NativeCollab", "🔄 initNativeCollab called, stack: ${Thread.currentThread().stackTrace[3]}")
-        Admob.getInstance()
-            .loadNativeCollapNotBanner(this@HomeActivity, getString(R.string.native_cl_home), binding.flNativeCollab)
-    }
+    private var openingInformation = false
+    private var loadErrorShown = false
+    private var nameDialog: AlertDialog? = null
+    private var nameInput: EditText? = null
+
     override fun initView() {
-        Admob.getInstance().loadNativeAll(applicationContext, getString(R.string.native_all))
-        Log.d("NativeCollab", "▶️ initView")
-        Admob.getInstance().loadInterAll(applicationContext, getString(R.string.inter_all))
-        initNativeCollab()
-        binding.rcvMain.adapter = HomeMenuAdapter(::onHomeMenuClick)
-        binding.actionBar.apply {
-            setImageActionBar(btnActionBarRight, R.drawable.ic_settings)
+        binding.apply {
+            txtBattleRank.isSelected = true
+            txtCoinRank.isSelected = true
+            txtDogSkin.isSelected = true
+            txtName.isSelected = true
+        }
+
+        binding.btnEnd.apply {
+            setImageActionBar(binding.btnEnd, R.drawable.ic_settings)
         }
     }
-    override fun onScreenStart() {
-        if (!isAdded || isDetached) return
-        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = false
-        initNativeCollab()
-    }
-
-    override fun onScreenStop() {
-        if (!isAdded || isDetached) return
-        (binding.flNativeCollab as? BlockableFrameLayout)?.isBlocked = true
-        binding.flNativeCollab.removeAllViews()
-    }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.d("PERF2", "HomeActivity onViewCreated: ${System.currentTimeMillis()}")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("PERF2", "HomeActivity onResume: ${System.currentTimeMillis()}")
-    }
-
     override fun viewListener() {
-        binding.actionBar.btnActionBarRight.onClick { toSettingFromHome() }
-    }
-
-    private fun onHomeMenuClick(action: HomeMenuAction) {
-        when (action) {
-            HomeMenuAction.DIY -> {
-                if (!checkOnlineNetworkOrShowDialog()) {
-                    startActivity(
-                        android.content.Intent(this@HomeActivity, CustomDiyPetActivity::class.java)
-                    )
-                }
-            }
-            HomeMenuAction.CREATE -> {
-                val hasNetwork = isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
-                when {
-                    !hasNetwork -> showUnstableNetworkDialog()
-                    viewModelActivity.templates.value.isEmpty() -> showLoadingDataDialog()
-                    else -> startActivity(android.content.Intent(
-                        this@HomeActivity,
-                        com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity::class.java
-                    ))
-                }
-            }
-
-            HomeMenuAction.Pause -> {
-                val hasNetwork = isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
-                when {
-                    !hasNetwork -> showUnstableNetworkDialog()
-                    viewModelActivity.templates.value.isEmpty() -> showLoadingDataDialog()
-                    else -> startActivity(android.content.Intent(
-                        this@HomeActivity,
-                        com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity::class.java
-                    ).putExtra(
-                        com.oc.catemoji.catoc.ui.main.createPony.ChooseCatActivity.EXTRA_PAUSE_CHALLENGE,
-                        true
-                    ))
-                }
-            }
-            HomeMenuAction.MY_ALBUM -> {
-                showInter {
-                    activityRouter().navigate(R.id.action_home_to_myPony)
-                }
-            }
-
-            HomeMenuAction.RANDOM -> {
-                navigateWithCheck(R.id.action_home_to_random)
-            }
-
-            HomeMenuAction.COSPLAY -> {
-                navigateWithCheck(R.id.action_home_to_cosplay)
-            }
-
-            HomeMenuAction.STUDIO -> {
-                navigateStudioWithNetworkCheck()
-            }
-        }
-    }
-
-    /** Same blocking contract used by CustomizeActivity. */
-    private fun checkOnlineNetworkOrShowDialog(): Boolean = when {
-        !isInternetAvailable(requireContext()) -> {
-            showUnstableNetworkDialog()
-            true
+        binding.apply {
+            btnEnd.onClick { toSettingFromHome() }
+            btnAddBone.onClick { viewModel.add100Bones() }
+            txtName.onClick { showChangeNameDialog() }
         }
 
-        !isNetworkConnected(requireContext()) -> {
-            showUnstableNetworkDialog()
-            true
-        }
-
-        else -> false
     }
 
-    private fun navigateStudioWithNetworkCheck() {
-        val hasNetwork =
-            isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
-
-        if (!hasNetwork) {
-            showUnstableNetworkDialog()
-            return
-        }
-
-        activityRouter().navigate(R.id.action_home_to_studio)
-    }
-
-    private fun navigateWithCheck(destination: Int) {
-        val hasNetwork = isInternetAvailable(requireContext()) && isNetworkConnected(requireContext())
-        val hasData = viewModelActivity.templates.value.isNotEmpty() // ← bỏ dấu !
-
-        when {
-            !hasNetwork -> showUnstableNetworkDialog()
-            !hasData -> showLoadingDataDialog()
-            else -> activityRouter().navigate(destination)
-        }
-    }
     override fun observeData() {
-        binding.root.post {
-            Log.d("PERF2", "HomeActivity first frame: ${System.currentTimeMillis()}")
-            if (!isAdded || isDetached) return@post
-
-
-            viewLifecycleOwner.lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    mainViewModel.error.collect { error ->
-                        error?.let { Log.e("HomeActivity", "❌ $it") }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.uiState.collect(::renderHome)
+                }
+                launch {
+                    viewModel.events.collect { event ->
+                        when (event) {
+                            HomeEvent.NAME_SAVED -> nameDialog?.dismiss()
+                            HomeEvent.NAME_REQUIRED -> nameInput?.error = getString(R.string.profile_name_required)
+                            HomeEvent.SAVE_FAILED -> showSnackbar(getString(R.string.profile_save_failed))
+                            HomeEvent.BONE_ADD_FAILED -> showSnackbar(getString(R.string.home_add_bones_failed))
+                        }
+                    }
+                }
+                launch {
+                    viewModel.renaming.collect { saving ->
+                        nameInput?.isEnabled = !saving
+                        nameDialog?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = !saving
+                        nameDialog?.getButton(AlertDialog.BUTTON_NEGATIVE)?.isEnabled = !saving
+                        nameDialog?.setCancelable(!saving)
+                        nameDialog?.setCanceledOnTouchOutside(!saving)
                     }
                 }
             }
         }
+    }
+
+    private fun renderHome(state: HomeUiState) {
+        binding.txtName.isEnabled = !state.loading && !state.loadFailed && state.user != null
+        binding.btnAddBone.isEnabled = !state.loading && !state.loadFailed && state.user != null
+        if (state.loading) return
+        if (state.loadFailed) {
+            if (!loadErrorShown) {
+                loadErrorShown = true
+                showSnackbar(getString(R.string.home_profile_load_failed))
+            }
+            return
+        }
+        val user = state.user
+        if (user == null) {
+            if (!openingInformation) {
+                openingInformation = true
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) { sharedPreferences.setInformationScreen(false) }
+                    toInformation()
+                }
+            }
+            return
+        }
+        binding.txtName.text = user.name
+        binding.txtName.contentDescription = getString(R.string.home_name_description, user.name)
+        binding.txtCoinBone.text = user.coinbone.toString()
+        binding.txtBattleRank.text = getString(R.string.home_battle_rank_title, user.rank)
+        binding.txtCoinRank.text = user.rankbatter.toString()
+        binding.imgRank.contentDescription = getString(R.string.home_rank_description, user.rank)
+
+        Glide.with(this)
+            .load(user.imageAvatar.ifBlank { null })
+            .placeholder(R.drawable.image_avatar_infor)
+            .error(R.drawable.image_avatar_infor)
+            .into(binding.imgProfileAvatar)
+        Glide.with(this)
+            .load(user.imageFrame.ifBlank { null })
+            .placeholder(R.drawable.img_frame_avatar)
+            .error(R.drawable.img_frame_avatar)
+            .into(binding.imgFrameAvatar)
+        Glide.with(this)
+            .load(state.dogPreview)
+            .placeholder(R.drawable.a)
+            .error(R.drawable.a)
+            .into(binding.imgAvatar)
+    }
+
+    private fun showChangeNameDialog() {
+        val user = viewModel.uiState.value.user ?: return
+        if (nameDialog?.isShowing == true) return
+        val dialogBinding = DialogHomeNameBinding.inflate(layoutInflater)
+        nameInput = dialogBinding.editProfileName.apply {
+            setText(user.name)
+            setSelection(text?.length ?: 0)
+        }
+        nameDialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.home_change_name)
+            .setView(dialogBinding.root)
+            .setPositiveButton(R.string.save, null)
+            .setNegativeButton(R.string.cancel, null)
+            .create()
+            .also { dialog ->
+                dialog.setOnShowListener {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).onClick {
+                        viewModel.renameUser(dialogBinding.editProfileName.text.toString())
+                    }
+                }
+                dialog.setOnDismissListener {
+                    nameDialog = null
+                    nameInput = null
+                }
+                dialog.show()
+            }
+    }
+
+    override fun onScreenDestroyed() {
+        nameDialog?.dismiss()
+        nameDialog = null
+        nameInput = null
+        super.onScreenDestroyed()
     }
 
     override fun bindViewModel() {}

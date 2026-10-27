@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_marginHorizontal="@dimen/dimension_4"
+        android:layout_height="match_parent">
+<View
+        android:id="@+id/view1"
+        android:layout_width="@dimen/dimension_0"
+      android:layout_height="@dimen/dimension_0"
+      app:layout_constraintDimensionRatio="5.6:8.6"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"/>
+    <ImageView
+            android:layout_width="@dimen/dimension_0"
+                  android:layout_height="@dimen/dimension_0"
+                  app:gslStrokeWidth="@dimen/dimension_0"
+                  app:layout_constraintDimensionRatio="5.6:2.8"
+                  android:id="@+id/imageBgFrameTitleSmall"
+                  app:gslCornerRadius="@dimen/dimension_4"
+                  app:layout_constraintStart_toStartOf="@+id/view1"
+                  app:layout_constraintEnd_toEndOf="@+id/view1"
+                  app:layout_constraintBottom_toBottomOf="@+id/view1"
+                  android:background="@drawable/img_bg_frame_small"/>
+    <ImageView android:layout_width="@dimen/dimension_0" android:layout_height="@dimen/dimension_0"
+               app:layout_constraintDimensionRatio="1"
+               app:layout_constraintStart_toStartOf="@+id/imageBgFrameTitleSmall"
+               app:layout_constraintTop_toTopOf="@+id/view1"
+               app:layout_constraintEnd_toEndOf="@+id/imageBgFrameTitleSmall"
+               app:layout_constraintBottom_toTopOf="@+id/titleStatis"
+               android:src="@drawable/img_rank"
+               android:id="@+id/imageStatis"/>
+    <TextView android:layout_width="@dimen/dimension_0"
+              android:layout_height="@dimen/dimension_0"
+              app:layout_constraintDimensionRatio="5.6:1.6"
+              app:layout_constraintStart_toStartOf="@+id/imageBgFrameTitleSmall"
+              app:layout_constraintEnd_toEndOf="@+id/imageBgFrameTitleSmall"
+              app:layout_constraintBottom_toTopOf="@+id/imageBgFrameTitleSmall"
+              android:text="@string/set"
+              android:gravity="center"
+              android:textSize="@dimen/text_size_14"
+              android:id="@+id/titleStatis"
+              android:textColor="@color/app_color"
+              android:fontFamily="@font/illita_one_regular"
+              style="@style/single_marquee"/>
+    <com.google.android.material.card.MaterialCardView
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+               android:id="@+id/imageFrameTitleSmall"
+            app:strokeWidth="@dimen/dimension_0"
+            app:cardBackgroundColor="@color/app_color6"
+            android:layout_margin="@dimen/dimension_2"
+            app:cardCornerRadius="@dimen/dimension_4"
+            app:layout_constraintTop_toTopOf="@+id/imageBgFrameTitleSmall"
+            app:layout_constraintStart_toStartOf="@+id/imageBgFrameTitleSmall"
+            app:layout_constraintEnd_toEndOf="@+id/imageBgFrameTitleSmall"
+            app:layout_constraintBottom_toBottomOf="@+id/imageBgFrameTitleSmall">
+        <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+                android:id="@+id/txtCountData"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="@dimen/dimension_1"
+                android:text="111"
+                style="@style/Widget.Catoc.ExtrudedTitle"
+                android:textSize="@dimen/text_size_12"
+                android:gravity="center"
+                android:fontFamily="@font/illita_one_regular"
+                android:includeFontPadding="false"
+                app:useGradient="true"
+                app:outerStrokeColor="@color/app_color4"
+                app:outerStrokeWidth="@dimen/dimension_1"
+                app:outerStrokeJoinStyle="round"
+                app:extrusionColor="@color/title_extrusion"
+                app:extrusionDy="@dimen/dimension_0"
+        />
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:paddingHorizontal="@dimen/dimension_12"
+        android:paddingVertical="@dimen/dimension_8"
+        android:id="@+id/main"
+        android:background="@color/win"
+        android:layout_height="wrap_content">
+    <View android:layout_width="match_parent" android:layout_height="@dimen/dimension_0"
+          app:layout_constraintDimensionRatio="3.28:0.4"
+          app:layout_constraintTop_toTopOf="parent"
+          android:id="@+id/view1"
+    />
+
+    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+            android:layout_width="@dimen/dimension_0"
+            app:gslCornerRadius="@dimen/dimension_4"
+            app:gslStrokeWidth="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintStart_toStartOf="@+id/view1"
+            app:layout_constraintTop_toTopOf="@+id/view1"
+            app:layout_constraintBottom_toBottomOf="@+id/view1"
+
+            android:id="@+id/stokerImgAvatar1"
+            app:layout_constraintDimensionRatio="1">
+        <ImageView
+                android:id="@+id/imgAvatar1"
+                android:src="@drawable/image_avatar_infor"
+                android:layout_width="match_parent" android:layout_height="match_parent"/>
+    </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+    <TextView android:layout_width="wrap_content" android:layout_height="0dp"
+              android:text="@string/vs"
+              android:textColor="@color/app_color"
+              android:gravity="center_vertical"
+              android:paddingHorizontal="@dimen/dimension_6"
+              android:fontFamily="@font/illita_one_regular"
+              android:textSize="@dimen/text_size_12"
+              app:layout_constraintTop_toTopOf="@+id/stokerImgAvatar1"
+              app:layout_constraintBottom_toBottomOf="@+id/stokerImgAvatar1"
+              app:layout_constraintStart_toEndOf="@+id/stokerImgAvatar1"
+              android:id="@+id/txtVs"/>
+    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+            app:gslCornerRadius="@dimen/dimension_4"
+            app:gslStrokeWidth="@dimen/dimension_0"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintStart_toEndOf="@+id/txtVs"
+            app:layout_constraintTop_toTopOf="@+id/view1"
+            app:layout_constraintBottom_toBottomOf="@+id/view1"
+            android:src="@drawable/image_avatar_infor"
+            android:id="@+id/stokerImgAvatar2"
+            app:layout_constraintDimensionRatio="1">
+        <ImageView
+                android:id="@+id/imgAvatar2"
+                android:src="@drawable/image_avatar_infor"
+                android:layout_width="match_parent" android:layout_height="match_parent"/>
+    </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+
+    <LinearLayout android:layout_width="@dimen/dimension_0"
+                  android:layout_height="@dimen/dimension_0"
+                  android:layout_marginStart="@dimen/dimension_8"
+                  app:layout_constraintStart_toEndOf="@+id/stokerImgAvatar2"
+                  app:layout_constraintTop_toTopOf="@+id/view1"
+                  app:layout_constraintEnd_toStartOf="@+id/txtTypeWar"
+                  app:layout_constraintBottom_toBottomOf="@+id/view1"
+                  android:orientation="vertical"
+                  android:gravity="center">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:text="@string/name"
+                  android:textColor="@color/app_color"
+                  android:textSize="@dimen/text_size_12"
+                  android:fontFamily="@font/illita_one_regular"/>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:text="@string/name"
+                  android:textColor="@color/white"
+                  android:textSize="@dimen/text_size_10"
+                  android:fontFamily="@font/illita_one_regular"/>
+
+    </LinearLayout>
+    <TextView android:layout_width="@dimen/dimension_80"
+              android:layout_height="@dimen/dimension_0"
+              android:gravity="center"
+              android:id="@+id/txtTypeWar"
+              app:layout_constraintEnd_toEndOf="parent"
+              android:textSize="@dimen/text_size_12"
+              android:textColor="@color/white"
+              app:layout_constraintTop_toTopOf="@+id/view1"
+              app:layout_constraintBottom_toBottomOf="@+id/view1"
+              android:fontFamily="@font/illita_one_regular"
+              android:text="@string/victory"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

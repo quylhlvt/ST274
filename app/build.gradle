@@ -23,7 +23,7 @@ android {
         versionName "1.0.9"
         testInstrumentationRunner= "androidx.test.runner.AndroidJUnitRunner"
         def formattedDate = new Date().format('MM.dd.yyyy')
-        archivesBaseName = "ST229_Cat_Avatar_Cat_Maker_v${versionName}_${formattedDate}"
+        archivesBaseName = "ST274_Bow_Wow_Battle_v${versionName}_${formattedDate}"
     }
 
     buildTypes {
@@ -38,6 +38,9 @@ android {
     buildFeatures {
         viewBinding true
         dataBinding true
+    }
+    sourceSets {
+        androidTest.assets.srcDirs += files("$projectDir/schemas")
     }
     bundle {
         language {
@@ -59,7 +62,17 @@ android {
     }
 }
 
+kapt {
+    arguments {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
+}
+
 dependencies {
+    def roomVersion = "2.8.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -131,18 +144,18 @@ dependencies {
     implementation("com.google.firebase:firebase-config-ktx")
 
     // Ads - QUAN TRỌNG: Sử dụng version tương thích
-    implementation("com.github.LVTapp:AdsLibrary:1.5.6")
-    implementation("com.google.android.gms:play-services-ads:23.6.0")
-
-    // Ad Mediation - Downgrade để tương thích với Kotlin mới
-    implementation("com.google.ads.mediation:facebook:6.17.0.0")
-    implementation("com.google.ads.mediation:applovin:13.0.1.0")
-    implementation("com.google.ads.mediation:ironsource:8.4.0.0")
-    implementation("com.unity3d.ads:unity-ads:4.12.3")
-    implementation("com.google.ads.mediation:unity:4.12.3.0")
-    implementation("com.google.ads.mediation:pangle:7.8.5.2.0")
-    implementation("com.google.ads.mediation:mintegral:16.5.91.1")
-    implementation 'com.google.ads.mediation:pangle:7.8.5.2.0'
+//    implementation("com.github.LVTapp:AdsLibrary:1.5.6")
+//    implementation("com.google.android.gms:play-services-ads:23.6.0")
+//
+//    // Ad Mediation - Downgrade để tương thích với Kotlin mới
+//    implementation("com.google.ads.mediation:facebook:6.17.0.0")
+//    implementation("com.google.ads.mediation:applovin:13.0.1.0")
+//    implementation("com.google.ads.mediation:ironsource:8.4.0.0")
+//    implementation("com.unity3d.ads:unity-ads:4.12.3")
+//    implementation("com.google.ads.mediation:unity:4.12.3.0")
+//    implementation("com.google.ads.mediation:pangle:7.8.5.2.0")
+//    implementation("com.google.ads.mediation:mintegral:16.5.91.1")
+//    implementation 'com.google.ads.mediation:pangle:7.8.5.2.0'
     //datastore
     implementation "androidx.datastore:datastore-preferences:1.1.1"
 //mmkv
@@ -151,14 +164,4 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:3.0.0"
     implementation "com.squareup.okhttp3:okhttp:4.12.0"
     implementation "com.squareup.okhttp3:logging-interceptor:4.12.0"
-}
-
-configurations.all {
-    resolutionStrategy {
-        force "androidx.room:room-ktx:2.6.1"
-        force "androidx.room:room-runtime:2.6.1"
-        force "androidx.room:room-common:2.6.1"
-        force "androidx.sqlite:sqlite:2.4.0"
-        force "androidx.sqlite:sqlite-framework:2.4.0"
-    }
 }

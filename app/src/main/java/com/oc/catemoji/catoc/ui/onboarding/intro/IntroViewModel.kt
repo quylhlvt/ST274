@@ -1,9 +1,7 @@
 package com.oc.catemoji.catoc.ui.onboarding.intro
 
 import androidx.lifecycle.ViewModel
-import androidx.work.Data
 import com.oc.catemoji.catoc.R
-import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
 import com.oc.catemoji.catoc.utils.DataLocal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -13,8 +11,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 @HiltViewModel
-class IntroViewModel @Inject constructor( private val sharedPreferences: SharedPreferencesManager
-) : ViewModel() {
+class IntroViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(IntroUiState())
     val uiState: StateFlow<IntroUiState> get() = _uiState
@@ -24,7 +21,6 @@ class IntroViewModel @Inject constructor( private val sharedPreferences: SharedP
 
     init {
         getData()
-//        checkSplashScreenStatus()
     }
 
     private fun getData() {
@@ -32,7 +28,7 @@ class IntroViewModel @Inject constructor( private val sharedPreferences: SharedP
         _uiState.update { state ->
             state.copy(pagesSplash = list)
         }
-        getPage(currentPage = 0, totalPages = list.size)
+        getPage(currentPage = 0)
     }
 
 
@@ -40,17 +36,11 @@ class IntroViewModel @Inject constructor( private val sharedPreferences: SharedP
         _singleEvent.value = IntroSingleEvent.NavigateToNextScreen
     }
 
-    fun getPage(currentPage: Int, totalPages: Int) {
-        val textRes =
-            if (currentPage >= totalPages - 1)
-                R.string.continue_per
-            else
-                R.string.next
-
+    fun getPage(currentPage: Int) {
         _uiState.update {
             it.copy(
                 page = currentPage,
-                textButtonRes = textRes
+                textButtonRes = R.string.next
             )
         }
     }

@@ -1,23 +1,20 @@
 package com.oc.catemoji.catoc
 
+import android.app.Application
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import com.lvt.ads.util.AdsApplication
-import com.lvt.ads.util.AppOpenManager
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
 import com.oc.catemoji.catoc.core.helper.LanguageHelper
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
-import com.oc.catemoji.catoc.ui.onboarding.splash.SplashActivity
 import com.tencent.mmkv.MMKV
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import com.lvt.ads.util.Admob
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp                     // QUAN TRỌNG NHẤT – KHÔNG ĐƯỢC THIẾU
-class MyApplication : AdsApplication() {
+class MyApplication : Application() {
     private val screenViewModelStore = ViewModelStore()
 
     // Every Activity uses the same process-scoped state, including restored screens.
@@ -35,12 +32,12 @@ class MyApplication : AdsApplication() {
             SharedPreferencesManager.editor = preferences.edit()
         }
         LanguageHelper.setLocale(this)
-        Admob.getInstance().setTimeLimitShowAds(30_000)
-//        Admob.getInstance().setOpenShowAllAds(false)
-        Admob.getInstance().setTimeCountdownNativeCollab(20_000)
+//        Admob.getInstance().setTimeLimitShowAds(30_000)
+////        Admob.getInstance().setOpenShowAllAds(false)
+//        Admob.getInstance().setTimeCountdownNativeCollab(20_000)
         val mmkvDir = java.io.File(filesDir, "mmkv_store").also { it.mkdirs() }
         MMKV.initialize(this, mmkvDir.absolutePath)
-        AppOpenManager.getInstance().disableAppResumeWithActivity(SplashActivity::class.java)
+//        AppOpenManager.getInstance().disableAppResumeWithActivity(SplashActivity::class.java)
         Log.d("MyApplication", "MMKV initialized at: ${mmkvDir.absolutePath}")
         Thread {
             try {
@@ -66,21 +63,6 @@ class MyApplication : AdsApplication() {
         }.start()
     }
 
-    override fun enableAdsResume(): Boolean {
-        return true
-    }
-
-    override fun getListTestDeviceId(): MutableList<String>? {
-        return null
-    }
-
-    override fun getResumeAdId(): String {
-        return getString(R.string.open_resume)
-    }
-
-    override fun buildDebug(): Boolean {
-        return true
-    }
 
     companion object {
         var isTablet: Boolean = false

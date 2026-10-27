@@ -36,5 +36,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ST229 Cat Avatar Cat Maker"
+rootProject.name = "ST274 Bow Wow Battle"
 include ':app'

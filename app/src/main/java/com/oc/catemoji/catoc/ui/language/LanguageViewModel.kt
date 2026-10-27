@@ -1,6 +1,5 @@
 package com.oc.catemoji.catoc.ui.language
 
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LanguageViewModel @Inject constructor( sharedPreferences: SharedPreferences) : ViewModel() {
+class LanguageViewModel @Inject constructor() : ViewModel() {
     private val _languageList = MutableStateFlow<List<LanguageModel>>(emptyList())
     val languageList: StateFlow<List<LanguageModel>> = _languageList.asStateFlow()
 

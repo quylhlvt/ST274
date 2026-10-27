@@ -69,9 +69,9 @@ class OuterStrokeTextView : AppCompatTextView {
         if (extraPadding > 0) {
             setPadding(
                 paddingLeft + extraPadding,
-                paddingTop + extraPadding,
+                paddingTop,
                 paddingRight + extraPadding,
-                paddingBottom + extraPadding
+                paddingBottom
             )
             extraPadding = 0  // reset tránh apply 2 lần
         }

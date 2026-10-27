@@ -1,356 +1,455 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/img_bg_lang"
-    tools:context=".ui.main.home.HomeActivity">
-
-
-    <!--    layoutActionBar-->
-    <FrameLayout
-        android:id="@+id/layoutActionBar"
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <include
-            android:id="@+id/actionBar"
-            layout="@layout/layout_actionbar" />
-    </FrameLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contrain"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar">
-
-        <ImageView
-            android:id="@+id/title_home"
-            android:layout_width="@dimen/dimension_0"
-            android:elevation="@dimen/dimension_3"
-            android:layout_height="@dimen/dimension_0"
-            android:scaleType="fitXY"
-            android:src="@drawable/img_title_home"
-            app:layout_constraintDimensionRatio="3.6:1.2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/imgFirst"
-            android:layout_width="@dimen/dimension_0"
-            android:layout_height="@dimen/dimension_0"
-            android:layout_marginBottom="@dimen/dimension_minus_22"
-            android:elevation="@dimen/dimension_2"
-            android:scaleType="fitXY"
-            android:src="@drawable/img_bg_tittle_recle_home"
-            app:layout_constraintBottom_toTopOf="@id/layoutMainMenu"
-            app:layout_constraintDimensionRatio="3.2:0.73"
-            app:layout_constraintEnd_toEndOf="@id/layoutMainMenu"
-            app:layout_constraintStart_toStartOf="@id/layoutMainMenu" />
-
+        android:layout_height="match_parent"
+        android:background="@drawable/img_bg_lang"
+        tools:context=".ui.main.home.HomeActivity">
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutMainMenu"
-            android:layout_width="@dimen/dimension_0"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/dimension_20"
-            android:elevation="@dimen/dimension_1"
-            app:layout_constrainedHeight="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_home"
-            app:layout_constraintVertical_bias="0">
-
-            <com.google.android.material.card.MaterialCardView
                 android:layout_width="@dimen/dimension_0"
-                android:layout_height="@dimen/dimension_0"
-                android:layout_marginEnd="@dimen/dimension_2"
-                android:layout_marginBottom="@dimen/dimension_2"
-                app:cardBackgroundColor="@color/transparent"
-                app:cardCornerRadius="@dimen/dimension_0"
-                app:layout_constraintBottom_toBottomOf="@id/cardMainMenu"
-                app:layout_constraintEnd_toEndOf="@id/cardMainMenu"
-                app:layout_constraintStart_toStartOf="@id/cardMainMenu"
-                app:layout_constraintTop_toTopOf="@id/cardMainMenu"
-                app:strokeColor="@color/app_color"
-                app:strokeWidth="@dimen/dimension_0">
+                android:layout_marginHorizontal="@dimen/dimension_16"
+                app:layout_constraintDimensionRatio="7.8:6.4"
+                app:layout_constraintTop_toTopOf="@+id/imgBone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imgBone"
+                android:layout_height="@dimen/dimension_64">
+            <View
+                    android:id="@+id/view9"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="7.8:1.2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+            <View
+                    android:id="@+id/view10"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="7.8:0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+            <View
+                    android:id="@+id/view11"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="0.7:6.4"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+            <View
+                    android:id="@+id/view12"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="0.8:6.4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
+            <ImageView
+                    android:id="@+id/bgFrameAvatarHome"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="7.8:2"
+                    android:elevation="@dimen/dimension_3"
+                    android:src="@drawable/img_bg_avatar_infor_home"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            <ImageView
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    android:id="@+id/imgFrameAvatar"
+                    android:src="@drawable/img_frame_avatar"
+                    app:layout_constraintStart_toEndOf="@+id/view11"
+                    app:layout_constraintEnd_toStartOf="@+id/view12"
+                    app:layout_constraintDimensionRatio="1"
+                    android:elevation="@dimen/dimension_1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/view9"/>
+            <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    android:id="@+id/cardImgAvatar"
+                    app:layout_constraintStart_toStartOf="@+id/imgFrameAvatar"
+                    app:layout_constraintEnd_toEndOf="@+id/imgFrameAvatar"
+                    app:layout_constraintDimensionRatio="1"
+                    android:layout_margin="@dimen/dimension_1"
+                    app:gslStrokeWidth="@dimen/dimension_0"
+                    android:elevation="@dimen/dimension_0"
+                    app:gslCornerRadius="@dimen/dimension_8"
+                    app:layout_constraintTop_toTopOf="@+id/imgFrameAvatar"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgFrameAvatar">
                 <ImageView
-                    android:id="@+id/bgScoll"
+                        android:id="@+id/imgProfileAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/image_avatar_infor"
+                        android:adjustViewBounds="true"
+                        android:background="@color/white"/>
+            </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+            <TextView
+                    android:id="@+id/txtName"
+                    style="@style/single_marquee"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:enabled="false"
+                    android:elevation="@dimen/dimension_5"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintStart_toEndOf="@+id/view11"
+                    tools:text="Player"
+                    android:gravity="center"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:paddingHorizontal="@dimen/dimension_1"
+                    android:textSize="@dimen/text_size_11"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toStartOf="@+id/view12"
+                    app:layout_constraintBottom_toTopOf="@+id/view10"
+                    app:layout_constraintTop_toTopOf="@+id/bgFrameAvatarHome"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+                android:id="@+id/btnEnd"
+                android:layout_width="@dimen/dimension_40"
+                android:layout_height="@dimen/dimension_40"
+                android:layout_marginEnd="@dimen/dimension_17"
+                android:layout_marginTop="@dimen/dimension_40"
+                android:src="@drawable/ic_settings"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        <ImageView
+                android:id="@+id/imgBone"
+                android:layout_width="@dimen/dimension_40"
+                android:layout_height="@dimen/dimension_40"
+                android:layout_marginEnd="@dimen/dimension_minus_20"
+                android:elevation="@dimen/dimension_2"
+                android:src="@drawable/img_bone_coin"
+                app:layout_constraintTop_toTopOf="@+id/stroker"
+                app:layout_constraintBottom_toBottomOf="@+id/stroker"
+                app:layout_constraintEnd_toStartOf="@+id/stroker"/>
+        <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+                android:id="@+id/stroker"
+                android:layout_width="@dimen/dimension_0"
+                android:elevation="@dimen/dimension_1"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="1.6:0.4"
+                app:layout_constraintTop_toTopOf="@+id/btnEnd"
+                app:layout_constraintBottom_toBottomOf="@+id/btnEnd"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:gslCornerRadius="@dimen/dimension_8"
+                app:gslStrokeWidth="@dimen/dimension_0"
+                android:layout_marginVertical="@dimen/dimension_2"
+                android:layout_marginStart="@dimen/dimension_20">
+            <View android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:background="@color/white"/>
+            <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/img_bg_recycle_home" />
-            </com.google.android.material.card.MaterialCardView>
+                    android:layout_margin="@dimen/dimension_2"
+                    app:gslStrokeWidth="@dimen/dimension_1"
+                    app:gslCornerRadius="@dimen/dimension_6"
+                    app:gslStartColor="@color/app_color4"
+                    app:gslCenterColor="@color/app_color4"
+                    app:gslEndColor="@color/app_color4">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:background="@drawable/bg_linear_color2"
+                        android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/btnAddBone"
+                            android:layout_width="@dimen/dimension_0"
+                            android:layout_height="match_parent"
+                            app:layout_constraintDimensionRatio="1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:background="@color/_22C55E"
+                            android:src="@drawable/img_plus_bone"/>
+                    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+                            android:id="@+id/txtCoinBone"
+                            android:layout_width="@dimen/dimension_0"
+                              android:layout_height="match_parent"
+                            android:paddingStart="@dimen/dimension_10"
+                              app:layout_constraintStart_toStartOf="parent"
+                              app:layout_constraintEnd_toStartOf="@+id/btnAddBone"
+                              android:layout_margin="@dimen/dimension_2"
+                              android:background="@color/white"
+                            style="@style/Widget.Catoc.ExtrudedTitle"
+                            android:textSize="@dimen/text_size_16"
+                            android:text="0"
+                            android:fontFamily="@font/illita_one_regular"
+                            android:textColor="@color/white"
+                            android:includeFontPadding="false"
+                            app:useGradient="true"
+                            app:gradientStartColor="@color/white"
+                            app:gradientEndColor="@color/text_gradient_cream"
+                            app:outerStrokeColor="@color/black"
+                            app:outerStrokeWidth="@dimen/dimension_1"
+                            app:outerStrokeJoinStyle="round"
+                            app:extrusionColor="@color/title_extrusion"
+                            app:extrusionDy="@dimen/dimension_0"/>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardMainMenu"
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/transparent"
-                app:cardCornerRadius="@dimen/dimension_0"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:strokeWidth="@dimen/dimension_0">
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+        </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rcvMain"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:overScrollMode="never"
-                    android:paddingHorizontal="@dimen/dimension_24"
-                    android:layout_marginTop="@dimen/dimension_30"
-                    android:layout_marginBottom="@dimen/dimension_20_"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:itemCount="5"
-                    tools:listitem="@layout/item_home_menu" />
-            </com.google.android.material.card.MaterialCardView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!--
-        <ScrollView
-            android:id="@+id/scvMain"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginVertical="0dp"
-            android:elevation="1dp"
-            android:scrollbars="none"
-            app:layout_constrainedHeight="true"
-            app:layout_constraintBottom_toBottomOf="parent"
+    <FrameLayout
+            android:id="@+id/btnDogSkin"
+            android:layout_width="@dimen/dimension_64"
+            android:layout_height="@dimen/dimension_64"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_home"
-            app:layout_constraintVertical_bias="0">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_marginTop="@dimen/dimension_12"
+            android:layout_marginEnd="@dimen/dimension_17"
+            android:background="@drawable/img_bg_dog_skin"
+            app:layout_constraintTop_toBottomOf="@+id/btnEnd">
+        <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="24dp">
-
-                <FrameLayout
-                    android:id="@+id/btnCreate"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintDimensionRatio="2.72:0.68"
-                    app:layout_constraintTop_toBottomOf="@+id/viewTop">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="3dp"
-                        android:layout_marginBottom="3dp"
-                        android:src="@drawable/img_bg_home1" />
-
-                    <ImageView
-                        android:src="@drawable/bg_frame_permission_shadown"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginTop="3dp" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv1"
-                        style="@style/single_marquee"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/img_bg_home1"
-                        android:fontFamily="@font/baloo2_extrabold"
-                        android:gravity="center"
-                        android:paddingHorizontal="2dp"
-                        android:text="@string/pony_maker"
-                        android:textColor="@color/app_color"
-                        android:textSize="24sp"
-                        app:outerStrokeColor="@color/app_color"
-                        app:outerStrokeWidth="1dp" />
-
-                </FrameLayout>
-                <FrameLayout
-                    android:id="@+id/btnStudio"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintDimensionRatio="2.72:0.68"
-                    app:layout_constraintTop_toBottomOf="@+id/btnCreate">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="3dp"
-                        android:layout_marginBottom="3dp"
-                        android:src="@drawable/img_bg_home1" />
-
-                    <ImageView
-                        android:src="@drawable/bg_frame_permission_shadown"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginTop="3dp" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv5"
-                        style="@style/single_marquee"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/img_bg_home1"
-                        android:fontFamily="@font/baloo2_extrabold"
-                        android:gravity="center"
-                        android:paddingHorizontal="2dp"
-                        android:text="@string/pony_maker"
-                        android:textColor="@color/app_color"
-                        android:textSize="24sp"
-                        app:outerStrokeColor="@color/app_color"
-                        app:outerStrokeWidth="1dp" />
-
-                </FrameLayout>
-                <FrameLayout
-                    android:id="@+id/btnCosPlay"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@+id/btnStudio"
-                    app:layout_constraintDimensionRatio="2.72:0.68">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="3dp"
-                        android:layout_marginBottom="3dp"
-                        android:src="@drawable/img_bg_home1" />
-
-                    <ImageView
-                        android:src="@drawable/bg_frame_permission_shadown"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginTop="3dp" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv2"
-                        style="@style/single_marquee"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/img_bg_home1"
-                        android:fontFamily="@font/baloo2_extrabold"
-                        android:gravity="center"
-                        android:paddingHorizontal="2dp"
-
-                        android:text="@string/cosplay"
-                        android:textColor="@color/app_color"
-                        android:textSize="24sp"
-                        app:outerStrokeColor="@color/app_color"
-                        app:outerStrokeWidth="1dp" />
-
-                </FrameLayout>
-                <FrameLayout
-                    android:id="@+id/btnRandom"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@+id/btnCosPlay"
-                    app:layout_constraintDimensionRatio="2.72:0.68">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="3dp"
-                        android:layout_marginBottom="3dp"
-                        android:src="@drawable/img_bg_home1" />
-
-                    <ImageView
-                        android:src="@drawable/bg_frame_permission_shadown"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginTop="3dp" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv3"
-                        style="@style/single_marquee"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/img_bg_home1"
-                        android:fontFamily="@font/baloo2_extrabold"
-                        android:gravity="center"
-                        android:paddingHorizontal="2dp"
-
-                        android:text="@string/cat_random"
-                        android:textColor="@color/app_color"
-                        android:textSize="24sp"
-                        app:outerStrokeColor="@color/app_color"
-                        app:outerStrokeWidth="1dp" />
-
-                </FrameLayout>
-                <FrameLayout
-                    android:id="@+id/btnMyAlbum"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintDimensionRatio="2.72:0.68"
-                    app:layout_constraintTop_toBottomOf="@+id/btnRandom">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="3dp"
-                        android:layout_marginBottom="3dp"
-                        android:src="@drawable/img_bg_home1" />
-
-                    <ImageView
-                        android:src="@drawable/bg_frame_permission_shadown"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginTop="3dp" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv4"
-                        style="@style/single_marquee"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/img_bg_home1"
-                        android:fontFamily="@font/baloo2_extrabold"
-                        android:gravity="center"
-                        android:paddingHorizontal="2dp"
-
-                        android:text="@string/my_creation"
-                        android:textColor="@color/app_color"
-                        android:textSize="24sp"
-                        app:outerStrokeColor="@color/app_color"
-                        app:outerStrokeWidth="1dp" />
-
-                </FrameLayout>
-
-                <View
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintDimensionRatio="3.2:0.2"
-                    android:id="@+id/viewTop"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </ScrollView>
-        -->
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_height="@dimen/dimension_22"
+                android:text="@string/dog_skin"
+                android:textSize="@dimen/text_size_16"
+                android:textColor="@color/app_color"
+                android:gravity="center"
+                android:layout_gravity="bottom"
+                android:fontFamily="@font/illita_one_regular"
+                android:layout_marginHorizontal="@dimen/dimension_1"
+                style="@style/single_marquee"
+                android:id="@+id/txtDogSkin"/>
+    </FrameLayout>
+    <ImageView
+            android:id="@+id/imgBgPodium"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_marginTop="@dimen/dimension_10"
+            android:layout_height="@dimen/dimension_0"
+            android:src="@drawable/img_bg_podium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="3.6:3.65"
+            app:layout_constraintBottom_toTopOf="@+id/view1"
+            app:layout_constraintTop_toBottomOf="@+id/btnDogSkin"/>
 
     <!--    scvMain-->
+    <View
+            android:id="@+id/view1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="3.6:1.8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
+    <View
+            android:id="@+id/view2"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="3.6:2"
+            app:layout_constraintStart_toStartOf="@+id/view1"
+            android:layout_marginBottom="@dimen/dimension_64"
+            app:layout_constraintEnd_toEndOf="@+id/view1"
+            android:layout_marginTop="@dimen/dimension_17"
+            app:layout_constraintTop_toBottomOf="@+id/imgBgPodium"
+            app:layout_constraintBottom_toBottomOf="@+id/view1"/>
 
-    <!--        flNativeCollab-->
-    <com.oc.catemoji.catoc.utils.BlockableFrameLayout
-        android:id="@+id/flNativeCollab"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="@dimen/dimension_100"
-        app:layout_constraintBottom_toBottomOf="parent" />
+    <View
+            android:id="@+id/view3"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="3.6:0.8"
+            app:layout_constraintStart_toStartOf="@+id/imgBgPodium"
+            app:layout_constraintEnd_toEndOf="@+id/imgBgPodium"
+            app:layout_constraintBottom_toBottomOf="@+id/imgBgPodium"/>
+    <View
+            android:id="@+id/view4"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="0.5:3.65"
+            app:layout_constraintStart_toStartOf="@+id/imgBgPodium"
+            app:layout_constraintTop_toTopOf="@+id/imgBgPodium"
+            app:layout_constraintBottom_toBottomOf="@+id/imgBgPodium"/>
+    <View
+            android:id="@+id/view5"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="0.5:3.65"
+            app:layout_constraintEnd_toEndOf="@+id/imgBgPodium"
+            app:layout_constraintTop_toTopOf="@+id/imgBgPodium"
+            app:layout_constraintBottom_toBottomOf="@+id/imgBgPodium"/>
+    <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintDimensionRatio="1"
+            android:src="@drawable/a"
+            app:layout_constraintStart_toEndOf="@+id/view4"
+            app:layout_constraintEnd_toStartOf="@+id/view5"
+            app:layout_constraintBottom_toTopOf="@+id/view3"/>
+    <ImageView
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:background="@drawable/bg_frame_permission_shadown"
+            app:layout_constraintDimensionRatio="2.8:0.96"
+            app:layout_constraintStart_toStartOf="@+id/view2"
+            app:layout_constraintEnd_toEndOf="@+id/view2"
+            app:layout_constraintTop_toTopOf="@+id/view2"
+            app:layout_constraintBottom_toTopOf="@+id/shadownTraining"
+            android:id="@+id/shadownBattle"/>
+    <ImageView android:layout_width="@dimen/dimension_0"
+               android:layout_height="@dimen/dimension_0"
+               app:layout_constraintStart_toStartOf="@+id/shadownBattle"
+               app:layout_constraintEnd_toEndOf="@+id/shadownBattle"
+               app:layout_constraintTop_toTopOf="@+id/shadownBattle"
+               app:layout_constraintBottom_toBottomOf="@+id/shadownBattle"
+               android:layout_marginBottom="@dimen/dimension_2"
+               android:layout_marginStart="@dimen/dimension_1"
+               android:layout_marginEnd="@dimen/dimension_1_6"
+               android:id="@+id/imgBgBattle"
+               android:src="@drawable/img_bg_battle"/>
+    <ImageView
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:layout_marginTop="@dimen/dimension_8"
+            android:background="@drawable/bg_frame_permission_shadown"
+            app:layout_constraintDimensionRatio="2.8:0.96"
+            app:layout_constraintStart_toStartOf="@+id/view2"
+            app:layout_constraintEnd_toEndOf="@+id/view2"
+            app:layout_constraintTop_toBottomOf="@+id/shadownBattle"
+            app:layout_constraintBottom_toBottomOf="@+id/view2"
+            android:id="@+id/shadownTraining"/>
+    <ImageView android:layout_width="@dimen/dimension_0"
+               android:layout_height="@dimen/dimension_0"
+               app:layout_constraintStart_toStartOf="@+id/shadownTraining"
+               app:layout_constraintEnd_toEndOf="@+id/shadownTraining"
+               app:layout_constraintTop_toTopOf="@+id/shadownTraining"
+               app:layout_constraintBottom_toBottomOf="@+id/shadownTraining"
+               android:layout_marginBottom="@dimen/dimension_2"
+               android:layout_marginStart="@dimen/dimension_1"
+               android:layout_marginEnd="@dimen/dimension_1_6"
+               android:id="@+id/imgBgTraining"
+               android:src="@drawable/img_bg_battle"/>
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="wrap_content"
+            style="@style/Widget.Catoc.ExtrudedTitle"
+            android:id="@+id/txtBattleRank"
+            android:textColor="@color/app_color"
+            android:textSize="@dimen/text_size_28_"
+            android:layout_marginTop="@dimen/dimension_3"
+            android:text="@string/battle_rank"
+            app:layout_constraintStart_toStartOf="@+id/imgBgBattle"
+            app:layout_constraintEnd_toEndOf="@+id/imgBgBattle"
+            app:layout_constraintTop_toTopOf="@+id/imgBgBattle"
+            android:gravity="center"
+            android:fontFamily="@font/illita_one_regular"
+            app:outerStrokeColor="@color/white"
+            app:outerStrokeWidth="@dimen/dimension_1"
+            app:outerStrokeJoinStyle="round"
+            app:extrusionColor="@color/title_extrusion"
+            app:extrusionDx="0dp"
+            app:extrusionDy="@dimen/dimension_2"/>
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            style="@style/Widget.Catoc.ExtrudedTitle"
+            android:id="@+id/txtTraining"
+            android:textColor="@color/app_color"
+            android:textSize="@dimen/text_size_28_"
+            android:layout_marginTop="@dimen/dimension_3"
+            android:text="@string/training"
+            app:layout_constraintBottom_toBottomOf="@+id/imgBgTraining"
+            app:layout_constraintStart_toStartOf="@+id/imgBgTraining"
+            app:layout_constraintEnd_toEndOf="@+id/imgBgTraining"
+            app:layout_constraintTop_toTopOf="@+id/imgBgTraining"
+            android:gravity="center"
+            android:fontFamily="@font/illita_one_regular"
+            app:outerStrokeColor="@color/white"
+            app:outerStrokeWidth="@dimen/dimension_1"
+            app:outerStrokeJoinStyle="round"
+            app:extrusionColor="@color/title_extrusion"
+            app:extrusionDx="0dp"
+            app:extrusionDy="@dimen/dimension_2"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/contrainBattleRank"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintBottom_toBottomOf="@+id/imgBgBattle"
+            app:layout_constraintTop_toBottomOf="@+id/txtBattleRank"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="@dimen/dimension_4"
+            app:layout_constraintDimensionRatio="1.58:0.42">
+        <ImageView
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.6:4.2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/imgRank"
+                android:elevation="@dimen/dimension_4"
+                android:src="@drawable/img_rank"/>
+        <View
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="1.8:4.2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/view6"/>
+        <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+                android:layout_width="@dimen/dimension_0"
+                android:elevation="@dimen/dimension_3"
+                app:layout_constraintStart_toEndOf="@+id/view6"
+                app:layout_constraintBottom_toBottomOf="@+id/view6"
+                app:layout_constraintTop_toTopOf="@+id/view6"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginVertical="@dimen/dimension_3"
+                app:gslCornerRadius="@dimen/dimension_4"
+                app:gslStrokeWidth="@dimen/dimension_1"
+                app:gslStartColor="@color/_E88D42"
+                app:gslCenterColor="@color/_BF6023"
+                app:gslEndColor="@color/_692901"
+                android:layout_height="@dimen/dimension_0">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_linear_color1">
+                <View
+                        android:id="@+id/view7"
+                        android:layout_width="@dimen/dimension_0"
+                        android:layout_height="match_parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintDimensionRatio="1.5:3.2"/>
+                <ImageView
+                        android:id="@+id/img_star_coin_rank"
+                        android:layout_width="@dimen/dimension_0"
+                        android:layout_height="@dimen/dimension_0"
+                        app:layout_constraintDimensionRatio="1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginVertical="@dimen/dimension_2"
+                        android:layout_marginEnd="@dimen/dimension_3"
+                        android:src="@drawable/img_star_coin_rank"/>
+                <TextView
+                        android:id="@+id/txtCoinRank"
+                        android:layout_width="@dimen/dimension_0"
+                        android:layout_height="match_parent"
+                        app:layout_constraintStart_toEndOf="@+id/view7"
+                        app:layout_constraintEnd_toStartOf="@+id/img_star_coin_rank"
+                        android:text="0"
+                        android:fontFamily="@font/illita_one_regular"
+                        android:textSize="@dimen/text_size_16_"
+                        android:textColor="@color/app_color"
+                        android:gravity="center"
+                        android:layout_marginHorizontal="@dimen/dimension_3"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

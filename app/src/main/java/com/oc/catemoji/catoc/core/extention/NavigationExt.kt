@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import com.oc.catemoji.catoc.ui.language.LanguageActivity
 import com.oc.catemoji.catoc.ui.main.home.HomeActivity
+import com.oc.catemoji.catoc.ui.main.information.InformationActivity
 import com.oc.catemoji.catoc.ui.main.setting.SettingActivity
 import com.oc.catemoji.catoc.ui.onboarding.intro.IntroActivity
 import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionActivity
@@ -20,6 +21,7 @@ private fun Activity.startOnboardingScreen(target: Class<out Activity>) {
 fun Activity.toLanguage() = startOnboardingScreen(LanguageActivity::class.java)
 fun Activity.toIntro() = startOnboardingScreen(IntroActivity::class.java)
 fun Activity.toPermission() = startOnboardingScreen(PermissionActivity::class.java)
+fun Activity.toInformation() = startOnboardingScreen(InformationActivity::class.java)
 
 fun Activity.toHome() {
     startActivity(Intent(this, HomeActivity::class.java).apply {

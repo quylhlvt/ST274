@@ -7,19 +7,17 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.lvt.ads.util.Admob
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
-import com.oc.catemoji.catoc.core.extention.toHome
 import com.oc.catemoji.catoc.core.extention.toHomeAfterLanguageChange
 import com.oc.catemoji.catoc.core.extention.toIntroFromLanguage
 import com.oc.catemoji.catoc.databinding.ActivityLanguageBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.util.Locale
+import java.util.*
 
 @AndroidEntryPoint
 class LanguageActivity : BaseActivity<ActivityLanguageBinding, LanguageViewModel>(
@@ -74,12 +72,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding, LanguageViewModel
         binding.actionBar.btnActionBarLeft.setImageResource(R.drawable.back_app)
         binding.actionBar.btnActionBarRight.setImageResource(R.drawable.select_language)
         updateActionBar(viewModel.isFirstLanguage.value, viewModel.codeLang.value)
-        Admob.getInstance().loadNativeAd(
-            this,
-            getString(R.string.native_language),
-            binding.nativeAds,
-            R.layout.ads_native_big_btn_bottom
-        )
+
     }
 
     private fun updateActionBar(isFirst: Boolean, code: String) {

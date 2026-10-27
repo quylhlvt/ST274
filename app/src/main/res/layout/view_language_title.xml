@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.Catoc.ExtrudedTitle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/language"
+    app:outerStrokeColor="@color/white"
+    app:outerStrokeWidth="@dimen/dimension_1"
+    app:outerStrokeJoinStyle="round"
+    app:extrusionColor="@color/title_extrusion"
+    app:extrusionDx="0dp"
+    app:extrusionDy="@dimen/title_extrusion_depth" />
