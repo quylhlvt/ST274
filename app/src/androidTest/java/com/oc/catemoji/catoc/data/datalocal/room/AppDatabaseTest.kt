@@ -186,7 +186,8 @@ class AppDatabaseTest {
                 legacy.version = 1
             }
             val migrated = Room.databaseBuilder(context, AppDatabase::class.java, filename)
-                .addMigrations(AppDatabase.MIGRATION_1_2).build()
+                .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3,
+                    AppDatabase.MIGRATION_3_4).build()
             try {
                 assertEquals(25, migrated.userDao().getUser()?.coinbone)
                 assertEquals(50, migrated.userDao().getUser()?.iddog)
@@ -232,7 +233,7 @@ class AppDatabaseTest {
     fun historyGeneratesIdsAndOrdersNewestFirstIncludingTies() = runBlocking {
         val history = HistoryEntity(
             nameBatter = "Match", date = 1000L, imageAvatar1 = "a.webp",
-            imageAvatar2 = "b.webp", typePlay = "solo",
+            imageAvatar2 = "b.webp", typePlay = true,
         )
         val olderId = database.historyDao().insert(history)
         val newerId = database.historyDao().insert(history.copy(date = 2000L))

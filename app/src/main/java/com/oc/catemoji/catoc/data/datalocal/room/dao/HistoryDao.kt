@@ -13,6 +13,9 @@ interface HistoryDao {
     @Query("SELECT * FROM history ORDER BY date DESC, id DESC")
     fun observeHistory(): Flow<List<HistoryEntity>>
 
+    @Query("SELECT COUNT(*) FROM history")
+    suspend fun count(): Int
+
     @Query("SELECT * FROM history WHERE id = :id")
     suspend fun getHistory(id: Long): HistoryEntity?
 

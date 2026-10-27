@@ -32,9 +32,11 @@
                 android:exported="false"/>
         <activity
                 android:name=".ui.main.profile.ProfileActivity"
+                android:configChanges="orientation|screenSize|keyboardHidden"
                 android:exported="false"/>
         <activity
                 android:name=".ui.main.information.InformationActivity"
+                android:configChanges="orientation|screenSize|keyboardHidden"
                 android:exported="false"
                 android:screenOrientation="portrait"/>
 
@@ -68,26 +70,32 @@
         </activity>
         <activity
                 android:name=".ui.main.setting.SettingActivity"
+                android:configChanges="orientation|screenSize|keyboardHidden"
                 android:exported="false"
                 android:screenOrientation="portrait"/>
         <activity
                 android:name=".ui.language.LanguageActivity"
+                android:configChanges="orientation|screenSize|keyboardHidden"
                 android:exported="false"
                 android:screenOrientation="portrait"/>
         <activity
                 android:name=".ui.main.home.HomeActivity"
+                android:configChanges="orientation|screenSize|keyboardHidden"
                 android:exported="false"
                 android:screenOrientation="portrait"/>
         <activity
                 android:name=".ui.onboarding.splash.SplashActivity"
+                android:configChanges="orientation|screenSize|keyboardHidden"
                 android:exported="false"
                 android:screenOrientation="portrait"/>
         <activity
                 android:name=".ui.onboarding.intro.IntroActivity"
+                android:configChanges="orientation|screenSize|keyboardHidden"
                 android:exported="false"
                 android:screenOrientation="portrait"/>
         <activity
                 android:name=".ui.onboarding.permission.PermissionActivity"
+                android:configChanges="orientation|screenSize|keyboardHidden"
                 android:exported="false"
                 android:screenOrientation="portrait"/>
 

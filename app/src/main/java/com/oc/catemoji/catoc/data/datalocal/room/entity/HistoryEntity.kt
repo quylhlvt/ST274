@@ -11,5 +11,6 @@ data class HistoryEntity(
     val date: Long,
     val imageAvatar1: String,
     val imageAvatar2: String,
-    val typePlay: String,
+    /** true = victory, false = defeat. */
+    val typePlay: Boolean,
 )

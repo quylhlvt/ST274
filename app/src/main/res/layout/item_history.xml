@@ -67,11 +67,13 @@
                   android:orientation="vertical"
                   android:gravity="center">
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:id="@+id/txtBattleName"
                   android:text="@string/name"
                   android:textColor="@color/app_color"
                   android:textSize="@dimen/text_size_12"
                   android:fontFamily="@font/illita_one_regular"/>
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:id="@+id/txtBattleDate"
                   android:text="@string/name"
                   android:textColor="@color/white"
                   android:textSize="@dimen/text_size_10"

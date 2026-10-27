@@ -1,7 +1,9 @@
 package com.oc.catemoji.catoc.core.base
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.app.Dialog
+import android.util.SparseArray
 import android.view.Gravity
 import android.view.View
 import android.view.LayoutInflater
@@ -12,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.android.material.snackbar.Snackbar
@@ -47,6 +50,7 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
     }
     protected val viewModel: VM by lazy { ViewModelProvider(this)[viewModelClass] }
     private var appliedLanguage = ""
+    private var restoredRetainedViewState = false
     private val router by lazy { ActivityRouter(this) }
 
     @Inject
@@ -60,6 +64,16 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
     protected open fun observeData() {}
     protected open fun onScreenStart() {}
     protected open fun onScreenStop() {}
+    protected open fun onScreenConfigurationChanged(newConfig: Configuration) {}
+    /**
+     * Retains lightweight View hierarchy state while the app process is alive.
+     * Domain data and large objects must still live in Room or a ViewModel.
+     */
+    protected open val retainScreenViewState: Boolean get() = true
+    protected open fun retainedScreenStateKey(): String = javaClass.name
+    protected fun clearRetainedScreenState() {
+        retainedViewStates.remove(retainedScreenStateKey())
+    }
     protected open fun inflateBinding(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -276,6 +290,7 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
         initView()
         initText()
         onViewCreated(binding.root, savedInstanceState)
+        configureRecyclerStateRestoration(binding.root)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (!this@BaseActivity.onScreenBackPressed()) finish()
@@ -283,6 +298,7 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
         })
         binding.root.post {
             if (isFinishing || isDestroyed) return@post
+            restoreRetainedViewState(savedInstanceState)
             viewListener()
             bindViewModel()
             observeData()
@@ -317,14 +333,44 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
         if (hasFocus) hideNavigation(true)
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        val viewState = if (retainScreenViewState && ::_binding.isInitialized) {
+            SparseArray<Parcelable>().also(binding.root::saveHierarchyState)
+        } else {
+            null
+        }
+        super.onConfigurationChanged(newConfig)
+        hideNavigation(true)
+        if (!::_binding.isInitialized) {
+            onScreenConfigurationChanged(newConfig)
+            return
+        }
+        binding.root.requestLayout()
+        binding.root.invalidate()
+        viewState?.let { state ->
+            binding.root.post {
+                if (!isFinishing && !isDestroyed) {
+                    binding.root.restoreHierarchyState(state)
+                }
+            }
+        }
+        onScreenConfigurationChanged(newConfig)
+    }
+
     override fun onStart() {
         super.onStart()
         onScreenStart()
     }
 
     override fun onStop() {
+        saveRetainedViewState()
         onScreenStop()
         super.onStop()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        saveRetainedViewState()
+        super.onSaveInstanceState(outState)
     }
 
     protected open fun onScreenDestroyed() {}
@@ -333,6 +379,45 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
         hideGlobalDialogSafe()
         onScreenDestroyed()
         super.onDestroy()
+    }
+
+    private fun configureRecyclerStateRestoration(view: View) {
+        if (view is RecyclerView) {
+            view.adapter?.let { adapter ->
+                if (adapter.stateRestorationPolicy == RecyclerView.Adapter.StateRestorationPolicy.ALLOW) {
+                    adapter.stateRestorationPolicy =
+                        RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+                }
+            }
+        }
+        if (view is ViewGroup) {
+            for (index in 0 until view.childCount) {
+                configureRecyclerStateRestoration(view.getChildAt(index))
+            }
+        }
+    }
+
+    private fun saveRetainedViewState() {
+        if (!retainScreenViewState || !::_binding.isInitialized) return
+        val state = SparseArray<Parcelable>()
+        binding.root.saveHierarchyState(state)
+        retainedViewStates[retainedScreenStateKey()] = state
+    }
+
+    private fun restoreRetainedViewState(savedInstanceState: Bundle?) {
+        if (restoredRetainedViewState || savedInstanceState != null || !retainScreenViewState) return
+        restoredRetainedViewState = true
+        retainedViewStates[retainedScreenStateKey()]?.let(binding.root::restoreHierarchyState)
+    }
+
+    companion object {
+        private const val MAX_RETAINED_SCREEN_STATES = 20
+        private val retainedViewStates = object :
+            LinkedHashMap<String, SparseArray<Parcelable>>(MAX_RETAINED_SCREEN_STATES, 0.75f, true) {
+            override fun removeEldestEntry(
+                eldest: MutableMap.MutableEntry<String, SparseArray<Parcelable>>?,
+            ): Boolean = size > MAX_RETAINED_SCREEN_STATES
+        }
     }
 }
 

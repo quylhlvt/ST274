@@ -20,6 +20,7 @@
                 layout="@layout/layout_actionbar"/>
     </FrameLayout>
     <ScrollView
+            android:id="@+id/scrollProfile"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimension_0"
             app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
@@ -310,6 +311,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/view8"
                     android:layout_marginTop="@dimen/dimension_4"/>
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycleStatis"
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"
                     android:layout_marginHorizontal="@dimen/dimension_4"
@@ -408,7 +410,7 @@
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"
-
+                    android:id="@+id/recycleHistory"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:layout_constraintStart_toStartOf="@+id/view13"
                     app:layout_constraintEnd_toEndOf="@+id/view13"
@@ -507,6 +509,7 @@
                     app:layout_constraintStart_toStartOf="@+id/view14"
                     app:layout_constraintEnd_toEndOf="@+id/view14"
                     app:spanCount="1"
+                android:id="@+id/recycleAchi"
                     tools:itemCount="6"
                     tools:listitem="@layout/item_achieverment"
                 app:layout_constraintDimensionRatio="3.28:0.98"

@@ -178,4 +178,15 @@
     <string name="vs">Vs</string>
     <string name="victory">Victory</string>
     <string name="achievement">Achievement</string>
+    <string name="profile_matches">Matches</string>
+    <string name="profile_wins">Wins</string>
+    <string name="profile_losses">Losses</string>
+    <string name="profile_bones">Bones</string>
+    <string name="profile_rank">Rank</string>
+    <string name="profile_defeat">Defeat</string>
+    <string name="profile_demo_load_failed">Could not load profile demo data. Please reopen this screen.</string>
+    <string name="total">Total</string>
+    <string name="win">Win</string>
+    <string name="lost">Lost</string>
+    <string name="streak">Streak</string>
 </resources>
