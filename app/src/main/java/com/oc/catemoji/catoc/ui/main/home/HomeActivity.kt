@@ -1,26 +1,34 @@
 package com.oc.catemoji.catoc.ui.main.home
 
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.oc.catemoji.catoc.R
 import com.bumptech.glide.Glide
+import com.facebook.shimmer.Shimmer
+import com.facebook.shimmer.ShimmerDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.oc.catemoji.catoc.RoomLoadState
+import com.oc.catemoji.catoc.SharedHomeData
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.toSettingFromHome
 import com.oc.catemoji.catoc.core.extention.toInformation
+import com.oc.catemoji.catoc.core.extention.toProfileFromHome
 import com.oc.catemoji.catoc.core.helper.RateHelper.showRateDialog
 import com.oc.catemoji.catoc.databinding.ActivityHomeBinding
 import com.oc.catemoji.catoc.databinding.DialogHomeNameBinding
+import com.oc.catemoji.catoc.utils.DataLocal
 import com.oc.catemoji.catoc.utils.state.RateState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.cancellation.CancellationException
 
 @AndroidEntryPoint
 class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
@@ -49,8 +57,28 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
     override fun viewListener() {
         binding.apply {
             btnEnd.onClick { toSettingFromHome() }
-            btnAddBone.onClick { viewModel.add100Bones() }
+            btnAddBone.onClick {
+                lifecycleScope.launch {
+                    try {
+                        viewModelActivity.addBones(100)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        showSnackbar(
+                            getString(R.string.home_add_bones_failed)
+                        )
+                    }
+                }
+            }
             txtName.onClick { showChangeNameDialog() }
+            btnEditProfile.onClick {
+                toProfileFromHome()
+            }
+            imgBgBattle.onClick {
+                lifecycleScope.launch {
+                    viewModelActivity.addBattleRank(1000)
+                }
+            }
         }
 
     }
@@ -58,80 +86,108 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
     override fun observeData() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.uiState.collect(::renderHome)
-                }
-                launch {
-                    viewModel.events.collect { event ->
-                        when (event) {
-                            HomeEvent.NAME_SAVED -> nameDialog?.dismiss()
-                            HomeEvent.NAME_REQUIRED -> nameInput?.error = getString(R.string.profile_name_required)
-                            HomeEvent.SAVE_FAILED -> showSnackbar(getString(R.string.profile_save_failed))
-                            HomeEvent.BONE_ADD_FAILED -> showSnackbar(getString(R.string.home_add_bones_failed))
+                viewModelActivity.homeState.collect { state ->
+                    when (state) {
+                        RoomLoadState.Loading -> {
+                            binding.txtName.isEnabled = false
+                            binding.btnAddBone.isEnabled = false
                         }
-                    }
-                }
-                launch {
-                    viewModel.renaming.collect { saving ->
-                        nameInput?.isEnabled = !saving
-                        nameDialog?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = !saving
-                        nameDialog?.getButton(AlertDialog.BUTTON_NEGATIVE)?.isEnabled = !saving
-                        nameDialog?.setCancelable(!saving)
-                        nameDialog?.setCanceledOnTouchOutside(!saving)
+
+                        is RoomLoadState.Error -> {
+                            binding.txtName.isEnabled = false
+                            binding.btnAddBone.isEnabled = false
+
+                            if (!loadErrorShown) {
+                                loadErrorShown = true
+                                showSnackbar(
+                                    getString(R.string.home_profile_load_failed)
+                                )
+                            }
+                        }
+
+                        is RoomLoadState.Success -> {
+                            renderHome(state.data)
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun renderHome(state: HomeUiState) {
-        binding.txtName.isEnabled = !state.loading && !state.loadFailed && state.user != null
-        binding.btnAddBone.isEnabled = !state.loading && !state.loadFailed && state.user != null
-        if (state.loading) return
-        if (state.loadFailed) {
-            if (!loadErrorShown) {
-                loadErrorShown = true
-                showSnackbar(getString(R.string.home_profile_load_failed))
-            }
-            return
-        }
+    private fun renderHome(state: SharedHomeData) {
         val user = state.user
+
+        binding.txtName.isEnabled = user != null
+        binding.btnAddBone.isEnabled = user != null
+
         if (user == null) {
             if (!openingInformation) {
                 openingInformation = true
+
                 lifecycleScope.launch {
-                    withContext(Dispatchers.IO) { sharedPreferences.setInformationScreen(false) }
+                    withContext(Dispatchers.IO) {
+                        sharedPreferences.setInformationScreen(false)
+                    }
                     toInformation()
                 }
             }
             return
         }
-        binding.txtName.text = user.name
-        binding.txtName.contentDescription = getString(R.string.home_name_description, user.name)
-        binding.txtCoinBone.text = user.coinbone.toString()
-        binding.txtBattleRank.text = getString(R.string.home_battle_rank_title, user.rank)
-        binding.txtCoinRank.text = user.rankbatter.toString()
-        binding.imgRank.contentDescription = getString(R.string.home_rank_description, user.rank)
+
+        binding.apply {
+            txtName.text = user.name
+
+            txtName.contentDescription = getString(
+                R.string.home_name_description,
+                user.name
+            )
+
+            txtCoinBone.text = user.coinbone.toString()
+
+            txtBattleRank.text = getString(
+                R.string.home_battle_rank_title,
+                user.rank
+            )
+
+            txtCoinRank.text = user.rankbatter.toString()
+
+            imgRank.contentDescription = getString(
+                R.string.home_rank_description,
+                user.rank
+            )
+        }
 
         Glide.with(this)
             .load(user.imageAvatar.ifBlank { null })
-            .placeholder(R.drawable.image_avatar_infor)
-            .error(R.drawable.image_avatar_infor)
+            .placeholder(shimmer)
             .into(binding.imgProfileAvatar)
-        Glide.with(this)
-            .load(user.imageFrame.ifBlank { null })
-            .placeholder(R.drawable.img_frame_avatar)
-            .error(R.drawable.img_frame_avatar)
-            .into(binding.imgFrameAvatar)
-        Glide.with(this)
-            .load(state.dogPreview)
-            .placeholder(R.drawable.a)
-            .error(R.drawable.a)
-            .into(binding.imgAvatar)
+
+        loadOrClear(
+            binding.imgFrameAvatar,
+            user.imageFrame
+        )
+
+        loadOrClear(
+            binding.imgAvatar,
+            state.dogPreview
+        )
+    }
+    private fun loadOrClear(view: ImageView, model: Any?) {
+        if (model == null || (model is String && model.isBlank())) {
+            Glide.with(this).clear(view)
+            view.setImageDrawable(null)
+        } else {
+            Glide.with(this).load(model).into(view)
+        }
     }
 
     private fun showChangeNameDialog() {
-        val user = viewModel.uiState.value.user ?: return
+        val user = when (
+            val state = viewModelActivity.homeState.value
+        ) {
+            is RoomLoadState.Success -> state.data.user
+            else -> null
+        } ?: return
         if (nameDialog?.isShowing == true) return
         val dialogBinding = DialogHomeNameBinding.inflate(layoutInflater)
         nameInput = dialogBinding.editProfileName.apply {
@@ -146,8 +202,36 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
             .create()
             .also { dialog ->
                 dialog.setOnShowListener {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).onClick {
-                        viewModel.renameUser(dialogBinding.editProfileName.text.toString())
+                    dialog.getButton(
+                        AlertDialog.BUTTON_POSITIVE
+                    ).onClick {
+                        val name = dialogBinding.editProfileName.text
+                            .toString()
+                            .trim()
+
+                        if (name.isBlank()) {
+                            nameInput?.error = getString(
+                                R.string.profile_name_required
+                            )
+                            return@onClick
+                        }
+
+                        lifecycleScope.launch {
+                            setNameDialogSaving(true)
+
+                            try {
+                                viewModelActivity.renameUser(name)
+                                dialog.dismiss()
+                            } catch (e: CancellationException) {
+                                throw e
+                            } catch (e: Exception) {
+                                showSnackbar(
+                                    getString(R.string.profile_save_failed)
+                                )
+                            } finally {
+                                setNameDialogSaving(false)
+                            }
+                        }
                     }
                 }
                 dialog.setOnDismissListener {
@@ -157,7 +241,22 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
                 dialog.show()
             }
     }
+    private fun setNameDialogSaving(saving: Boolean) {
+        nameInput?.isEnabled = !saving
 
+        nameDialog?.apply {
+            getButton(
+                AlertDialog.BUTTON_POSITIVE
+            )?.isEnabled = !saving
+
+            getButton(
+                AlertDialog.BUTTON_NEGATIVE
+            )?.isEnabled = !saving
+
+            setCancelable(!saving)
+            setCanceledOnTouchOutside(!saving)
+        }
+    }
     override fun onScreenDestroyed() {
         nameDialog?.dismiss()
         nameDialog = null
@@ -179,5 +278,9 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
             finishAffinity()
         }
         return true
+    }
+    companion object {
+        private val shimmer  = ShimmerDrawable().apply { setShimmer(DataLocal.shimmer) }
+
     }
 }

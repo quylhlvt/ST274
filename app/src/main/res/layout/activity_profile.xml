@@ -110,6 +110,7 @@
                                     android:id="@+id/txtCoinRank"
                                     android:layout_width="@dimen/dimension_0"
                                     android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/dimension_minus_5"
                                     app:layout_constraintStart_toEndOf="@+id/img_star_coin_rank2"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     style="@style/Widget.Catoc.ExtrudedTitle"
@@ -397,7 +398,8 @@
             <View
                     android:id="@+id/view13"
                     android:layout_width="@dimen/dimension_0"
-                    android:layout_height="@dimen/dimension_200"
+                    android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.28:1.94"
                     app:layout_constraintStart_toStartOf="@+id/view9"
                     android:background="@color/white2"
                     app:layout_constraintEnd_toEndOf="@+id/view9"
@@ -406,13 +408,14 @@
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"
+
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:layout_constraintStart_toStartOf="@+id/view13"
                     app:layout_constraintEnd_toEndOf="@+id/view13"
                     app:layout_constraintBottom_toBottomOf="@+id/view13"
                     app:spanCount="1"
                     tools:listitem="@layout/item_history"
-                    app:layout_constraintTop_toBottomOf="@+id/view9"/>
+                    app:layout_constraintTop_toTopOf="@+id/view13"/>
             <View
                     android:id="@+id/view14"
                     android:layout_width="match_parent"
@@ -459,7 +462,7 @@
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"
                     android:textColor="@color/app_color"
-                    android:text="@string/match_history"
+                    android:text="@string/achievement"
                     style="@style/single_marquee"
                     android:gravity="center"
                     android:fontFamily="@font/illita_one_regular"
@@ -487,19 +490,28 @@
                        app:layout_constraintBottom_toBottomOf="@+id/view14"
                        android:src="@drawable/img_crossbar"
                        android:scaleType="fitXY"/>
+            <View
+                android:id="@+id/view19"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                android:background="@color/white2"
+                android:layout_marginTop="@dimen/dimension_8"
+                app:layout_constraintStart_toStartOf="@+id/view14"
+                app:layout_constraintEnd_toEndOf="@+id/view14"
+                app:layout_constraintDimensionRatio="3.28:0.98"
+                app:layout_constraintTop_toBottomOf="@+id/view14"/>
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:layout_constraintStart_toStartOf="@+id/view13"
-                    app:layout_constraintEnd_toEndOf="@+id/view13"
-                    app:layout_constraintBottom_toBottomOf="@+id/view13"
+                    app:layout_constraintStart_toStartOf="@+id/view14"
+                    app:layout_constraintEnd_toEndOf="@+id/view14"
                     app:spanCount="1"
-                    tools:listitem="@layout/item_history"
-                    app:layout_constraintTop_toTopOf="@+id/view13"/>
-            <androidx.recyclerview.widget.RecyclerView android:layout_width="@dimen/dimension_0"
-                                                       android:layout_height="@dimen/dimension_0"
-                                                       app:layout_constraintTop_toBottomOf="@+id/view14"
+                    tools:itemCount="6"
+                    tools:listitem="@layout/item_achieverment"
+                app:layout_constraintDimensionRatio="3.28:0.98"
+                    app:layout_constraintTop_toTopOf="@+id/view19"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

@@ -11,6 +11,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="@dimen/dimension_0"
                 android:layout_marginHorizontal="@dimen/dimension_16"
+            android:id="@+id/btnEditProfile"
                 app:layout_constraintDimensionRatio="7.8:6.4"
                 app:layout_constraintTop_toTopOf="@+id/imgBone"
                 app:layout_constraintStart_toStartOf="parent"
@@ -282,7 +283,6 @@
             android:layout_width="@dimen/dimension_0"
             android:layout_height="@dimen/dimension_0"
             app:layout_constraintDimensionRatio="1"
-            android:src="@drawable/a"
             app:layout_constraintStart_toEndOf="@+id/view4"
             app:layout_constraintEnd_toStartOf="@+id/view5"
             app:layout_constraintBottom_toTopOf="@+id/view3"/>

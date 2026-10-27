@@ -5,12 +5,16 @@ import android.content.Intent
 import com.oc.catemoji.catoc.ui.language.LanguageActivity
 import com.oc.catemoji.catoc.ui.main.home.HomeActivity
 import com.oc.catemoji.catoc.ui.main.information.InformationActivity
+import com.oc.catemoji.catoc.ui.main.profile.ProfileActivity
 import com.oc.catemoji.catoc.ui.main.setting.SettingActivity
 import com.oc.catemoji.catoc.ui.onboarding.intro.IntroActivity
 import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionActivity
 
 fun Activity.toSettingFromHome() {
-    startActivity(Intent(this, SettingActivity::class.java))
+    startActivity(Intent(this@toSettingFromHome, SettingActivity::class.java))
+}
+fun Activity.toProfileFromHome() {
+    startActivity(Intent(this@toProfileFromHome, ProfileActivity::class.java))
 }
 
 private fun Activity.startOnboardingScreen(target: Class<out Activity>) {

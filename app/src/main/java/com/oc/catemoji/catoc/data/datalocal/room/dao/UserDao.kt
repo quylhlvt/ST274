@@ -23,6 +23,11 @@ interface UserDao {
         WHERE id = :id AND coinbone <= 2147483647 - :amount
     """)
     suspend fun addBones(amount: Int, id: Int = 1): Int
+ @Query("""
+        UPDATE user SET rankbatter = rankbatter + :amount
+        WHERE id = :id AND rankbatter <= 2147483647 - :amount
+    """)
+    suspend fun addBattleRank(amount: Int, id: Int = 1): Int
 
     @Upsert
     suspend fun upsert(user: UserEntity)

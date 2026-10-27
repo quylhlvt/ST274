@@ -52,6 +52,10 @@ class BattleRepository @Inject constructor(
         require(amount > 0)
         check(userDao.addBones(amount) == 1) { "User missing or coin balance limit reached" }
     }
+    suspend fun addBattleRank(amount: Int) {
+        require(amount > 0)
+        check(userDao.addBattleRank(amount) == 1) { "User missing or coin balance limit reached" }
+    }
     suspend fun renameUser(name: String) {
         val trimmedName = name.trim()
         require(trimmedName.isNotEmpty())

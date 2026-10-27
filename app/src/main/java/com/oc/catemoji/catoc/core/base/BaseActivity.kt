@@ -17,9 +17,11 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.android.material.snackbar.Snackbar
 import android.content.Context
 import android.content.res.Configuration
+import com.oc.catemoji.catoc.MyApplication
 import java.util.Locale
 import com.oc.catemoji.catoc.core.extention.hideNavigation
 import com.oc.catemoji.catoc.R
+import com.oc.catemoji.catoc.ViewModelActivity
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
 import com.oc.catemoji.catoc.databinding.DialogbaseBinding
 import com.oc.catemoji.catoc.ui.main.home.HomeActivity
@@ -40,6 +42,9 @@ abstract class BaseActivity<VB : ViewBinding, VM : ViewModel>(
     protected val arguments: Bundle? get() = intent.extras
     protected val isAdded: Boolean get() = !isFinishing && !isDestroyed
     protected val isDetached: Boolean get() = false
+    protected val viewModelActivity: ViewModelActivity by lazy {
+        (application as MyApplication).sharedViewModel(this)
+    }
     protected val viewModel: VM by lazy { ViewModelProvider(this)[viewModelClass] }
     private var appliedLanguage = ""
     private val router by lazy { ActivityRouter(this) }
