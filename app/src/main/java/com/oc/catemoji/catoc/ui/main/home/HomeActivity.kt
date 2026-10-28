@@ -1,16 +1,12 @@
 package com.oc.catemoji.catoc.ui.main.home
 
-import android.widget.EditText
 import android.widget.ImageView
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.oc.catemoji.catoc.R
 import com.bumptech.glide.Glide
-import com.facebook.shimmer.Shimmer
 import com.facebook.shimmer.ShimmerDrawable
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.oc.catemoji.catoc.RoomLoadState
 import com.oc.catemoji.catoc.SharedHomeData
 import com.oc.catemoji.catoc.core.base.BaseActivity
@@ -18,10 +14,10 @@ import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.toSettingFromHome
 import com.oc.catemoji.catoc.core.extention.toInformation
+import com.oc.catemoji.catoc.core.extention.toPlayFromHome
 import com.oc.catemoji.catoc.core.extention.toProfileFromHome
 import com.oc.catemoji.catoc.core.helper.RateHelper.showRateDialog
 import com.oc.catemoji.catoc.databinding.ActivityHomeBinding
-import com.oc.catemoji.catoc.databinding.DialogHomeNameBinding
 import com.oc.catemoji.catoc.utils.DataLocal
 import com.oc.catemoji.catoc.utils.state.RateState
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,8 +35,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
     private var countRate = 0
     private var openingInformation = false
     private var loadErrorShown = false
-    private var nameDialog: AlertDialog? = null
-    private var nameInput: EditText? = null
 
     override fun initView() {
         binding.apply {
@@ -70,14 +64,11 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
                     }
                 }
             }
-            txtName.onClick { showChangeNameDialog() }
             btnEditProfile.onClick {
                 toProfileFromHome()
             }
             imgBgBattle.onClick {
-                lifecycleScope.launch {
-                    viewModelActivity.addBattleRank(1000)
-                }
+                toPlayFromHome()
             }
         }
 
@@ -180,91 +171,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
             Glide.with(this).load(model).into(view)
         }
     }
-
-    private fun showChangeNameDialog() {
-        val user = when (
-            val state = viewModelActivity.homeState.value
-        ) {
-            is RoomLoadState.Success -> state.data.user
-            else -> null
-        } ?: return
-        if (nameDialog?.isShowing == true) return
-        val dialogBinding = DialogHomeNameBinding.inflate(layoutInflater)
-        nameInput = dialogBinding.editProfileName.apply {
-            setText(user.name)
-            setSelection(text?.length ?: 0)
-        }
-        nameDialog = MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.home_change_name)
-            .setView(dialogBinding.root)
-            .setPositiveButton(R.string.save, null)
-            .setNegativeButton(R.string.cancel, null)
-            .create()
-            .also { dialog ->
-                dialog.setOnShowListener {
-                    dialog.getButton(
-                        AlertDialog.BUTTON_POSITIVE
-                    ).onClick {
-                        val name = dialogBinding.editProfileName.text
-                            .toString()
-                            .trim()
-
-                        if (name.isBlank()) {
-                            nameInput?.error = getString(
-                                R.string.profile_name_required
-                            )
-                            return@onClick
-                        }
-
-                        lifecycleScope.launch {
-                            setNameDialogSaving(true)
-
-                            try {
-                                viewModelActivity.renameUser(name)
-                                dialog.dismiss()
-                            } catch (e: CancellationException) {
-                                throw e
-                            } catch (e: Exception) {
-                                showSnackbar(
-                                    getString(R.string.profile_save_failed)
-                                )
-                            } finally {
-                                setNameDialogSaving(false)
-                            }
-                        }
-                    }
-                }
-                dialog.setOnDismissListener {
-                    nameDialog = null
-                    nameInput = null
-                }
-                dialog.show()
-            }
-    }
-    private fun setNameDialogSaving(saving: Boolean) {
-        nameInput?.isEnabled = !saving
-
-        nameDialog?.apply {
-            getButton(
-                AlertDialog.BUTTON_POSITIVE
-            )?.isEnabled = !saving
-
-            getButton(
-                AlertDialog.BUTTON_NEGATIVE
-            )?.isEnabled = !saving
-
-            setCancelable(!saving)
-            setCanceledOnTouchOutside(!saving)
-        }
-    }
-    override fun onScreenDestroyed() {
-        nameDialog?.dismiss()
-        nameDialog = null
-        nameInput = null
-        super.onScreenDestroyed()
-    }
-
-    override fun bindViewModel() {}
 
     override fun onScreenBackPressed(): Boolean {
         countRate = sharedPreferences.isBackRequest() + 1

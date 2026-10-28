@@ -1,13 +1,9 @@
 package com.oc.catemoji.catoc.core.helper
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
-import android.os.Bundle
 
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import javax.inject.Singleton
 import androidx.core.content.edit
 
@@ -16,8 +12,6 @@ import androidx.core.content.edit
 object SharedPreferencesManager {
     lateinit var sharedPreferences: SharedPreferences
     lateinit var editor: Editor
-    lateinit var bundle: Bundle
-    private const val SPLASH_SCREEN = "splash_screen"
     private const val LANGUAGE_SCREEN = "language_screen"
     private const val LANGUAGE_KEY = "language_key"
     private const val PERMISSION_SCREEN = "permission_screen"

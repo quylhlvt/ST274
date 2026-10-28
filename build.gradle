@@ -6,7 +6,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.51.1'
-        classpath "io.objectbox:objectbox-gradle-plugin:4.0.0"
     }
 }
 

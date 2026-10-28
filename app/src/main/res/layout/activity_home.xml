@@ -64,7 +64,7 @@
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"
                     android:id="@+id/imgFrameAvatar"
-                    android:src="@drawable/img_frame_avatar"
+                    tools:src="@drawable/img_frame_avatar"
                     app:layout_constraintStart_toEndOf="@+id/view11"
                     app:layout_constraintEnd_toStartOf="@+id/view12"
                     app:layout_constraintDimensionRatio="1"
@@ -88,7 +88,7 @@
                         android:id="@+id/imgProfileAvatar"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/image_avatar_infor"
+                        tools:src="@drawable/image_avatar_infor"
                         android:adjustViewBounds="true"
                         android:background="@color/white"/>
             </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>

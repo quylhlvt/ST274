@@ -10,10 +10,9 @@ import androidx.lifecycle.ViewModelStore
 import com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
 import com.oc.catemoji.catoc.core.helper.LanguageHelper
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
-import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 
-@HiltAndroidApp                     // QUAN TRỌNG NHẤT – KHÔNG ĐƯỢC THIẾU
+@HiltAndroidApp
 class MyApplication : Application() {
     private val screenViewModelStore = ViewModelStore()
 
@@ -26,19 +25,11 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        isTablet = resources.configuration.smallestScreenWidthDp >= 600
         getSharedPreferences("DEFAULT", MODE_PRIVATE).also { preferences ->
             SharedPreferencesManager.sharedPreferences = preferences
             SharedPreferencesManager.editor = preferences.edit()
         }
         LanguageHelper.setLocale(this)
-//        Admob.getInstance().setTimeLimitShowAds(30_000)
-////        Admob.getInstance().setOpenShowAllAds(false)
-//        Admob.getInstance().setTimeCountdownNativeCollab(20_000)
-        val mmkvDir = java.io.File(filesDir, "mmkv_store").also { it.mkdirs() }
-        MMKV.initialize(this, mmkvDir.absolutePath)
-//        AppOpenManager.getInstance().disableAppResumeWithActivity(SplashActivity::class.java)
-        Log.d("MyApplication", "MMKV initialized at: ${mmkvDir.absolutePath}")
         Thread {
             try {
                 // 1. Font — giảm ~100-300ms cho lần đầu
@@ -64,14 +55,4 @@ class MyApplication : Application() {
     }
 
 
-    companion object {
-        var isTablet: Boolean = false
-            private set
-
-        val editorGridSpanCount: Int
-            get() = if (isTablet) 7 else 5
-
-        val speechGridSpanCount: Int
-            get() = if (isTablet) 6 else 4
-    }
 }

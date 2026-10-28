@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="@dimen/dimension_88" xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:focusable="true"
+        android:layout_marginEnd="@dimen/dimension_8"
+        android:layout_height="match_parent">
+<com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+        android:id="@+id/stoker"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
+           app:layout_constraintDimensionRatio="1"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           app:layout_constraintBottom_toBottomOf="parent"
+           android:layout_marginVertical="@dimen/dimension_10"
+        app:gslCornerRadius="@dimen/dimension_8"
+        app:gslStrokeWidth="@dimen/dimension_1"
+        app:gslStartColor="@color/app_color4"
+        app:gslCenterColor="@color/app_color4"
+        app:gslEndColor="@color/app_color4">
+    <ImageView
+            android:layout_width="match_parent"
+               android:layout_height="match_parent"
+            android:elevation="@dimen/dimension_1"
+               android:background="@color/white"
+               android:id="@+id/imgAvatar"/>
+    <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+               android:id="@+id/key" android:src="@drawable/img_key_unlock"
+               android:elevation="@dimen/dimension_2"
+               android:visibility="gone"/>
+
+</com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+
+    <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+            android:id="@+id/stokerSelect"
+            android:visibility="gone"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintStart_toStartOf="@+id/stoker"
+            app:layout_constraintTop_toTopOf="@+id/stoker"
+            app:layout_constraintEnd_toEndOf="@+id/stoker"
+            app:layout_constraintBottom_toBottomOf="@+id/stoker"
+            app:gslCornerRadius="@dimen/dimension_8"
+            app:gslStrokeWidth="@dimen/dimension_4"
+            app:gslStartColor="@color/_22C55E"
+            app:gslCenterColor="@color/_22C55E"
+            app:gslEndColor="@color/_22C55E">
+        <View android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:translationX="@dimen/dimension_2"
+              android:translationY="@dimen/dimension_minus_3"
+                   android:background="@drawable/img_selected"/>
+    </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,7 +30,7 @@ class OuterStrokeShadowTextViewTest {
                 while (parser.eventType != XmlPullParser.END_DOCUMENT) {
                     if (parser.eventType == XmlPullParser.START_TAG &&
                         parser.name == OuterStrokeShadowTextView::class.java.name &&
-                        parser.getAttributeValue("http://schemas.android.com/apk/res/android", "text") == "9999"
+                        parser.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0) == R.id.txtCoinBone
                     ) {
                         break
                     }
@@ -39,6 +39,7 @@ class OuterStrokeShadowTextViewTest {
                 check(parser.eventType != XmlPullParser.END_DOCUMENT)
                 OuterStrokeShadowTextView(context, Xml.asAttributeSet(parser))
             }
+            view.text = "9999"
             view.setTextSize(TypedValue.COMPLEX_UNIT_PX, 80f)
             // This view is rendered without a window/pre-draw scroll adjustment.
             view.setHorizontallyScrolling(false)

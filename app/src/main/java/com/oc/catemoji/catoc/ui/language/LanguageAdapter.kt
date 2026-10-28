@@ -7,7 +7,6 @@ import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseAdapter
 import com.oc.catemoji.catoc.core.extention.gone
 import com.oc.catemoji.catoc.core.extention.invisible
-import com.oc.catemoji.catoc.core.extention.loadImage
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.visible
 import com.oc.catemoji.catoc.data.model.language.LanguageModel

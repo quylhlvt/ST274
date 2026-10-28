@@ -189,4 +189,29 @@
     <string name="win">Win</string>
     <string name="lost">Lost</string>
     <string name="streak">Streak</string>
+    <string name="no_match_history_yet">No match history yet.</string>
+    <string name="complete_challenges_to_unlock_your_first_badge">Complete challenges to unlock your first badge!
+    </string>
+    <string name="avatar">Avatar</string>
+    <string name="border_frame">Border Frame</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="profile_avatar_option">Avatar %1$d</string>
+    <string name="profile_frame_option">Border frame %1$d</string>
+    <string name="profile_frame_locked_option">Frame %1$d, locked</string>
+    <string name="profile_avatar_locked_option">Avatar %1$d, locked</string>
+    <string name="play_microphone_title">Bark into the microphone</string>
+    <string name="play_microphone_ready">Tap Start and make a barking sound.</string>
+    <string name="play_microphone_start">Start microphone</string>
+    <string name="play_microphone_stop">Stop microphone</string>
+    <string name="play_microphone_starting">Starting microphone…</string>
+    <string name="play_microphone_listening">Listening…</string>
+    <string name="play_bark_detected">Bark detected!</string>
+    <string name="play_bark_not_detected">No bark detected. Try again.</string>
+    <string name="play_microphone_permission">Allow microphone access to check your barking sound.</string>
+    <string name="play_microphone_settings">Open microphone settings</string>
+    <string name="play_microphone_error">Could not start sound detection. Check your microphone and try again.</string>
+    <string name="play_microphone_level">Microphone sound level</string>
+    <string name="play_sound_result">%1$s · %2$d%%</string>
+    <string name="play_waveform_legend">Orange: your microphone · Green: simulated opponent</string>
+    <string name="play_bark_count">Barks: %1$d</string>
 </resources>

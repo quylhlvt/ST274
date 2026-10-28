@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.oc.catemoji.catoc.core.base.BaseAdapter
-import com.oc.catemoji.catoc.core.extention.loadImage
 import com.oc.catemoji.catoc.core.extention.select
 import com.oc.catemoji.catoc.core.extention.strings
 import com.oc.catemoji.catoc.data.model.intro.IntroModel

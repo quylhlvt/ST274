@@ -1,7 +1,6 @@
 package com.oc.catemoji.catoc.ui.onboarding.intro
 
 import androidx.lifecycle.lifecycleScope
-import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.extention.onClick
@@ -27,51 +26,13 @@ class IntroActivity : BaseActivity<ActivityIntroBinding, IntroViewModel>(
             viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
         }
 
-//         binding.btnNextPager.tvButton.onClick(200) {
-//            android.util.Log.d("PERF", "1. Button clicked: ${System.currentTimeMillis()}")
-//            viewModel.nextPage(binding.viewPager2.currentItem, introAdapter.itemCount)
-//        }
-
-        binding.apply {
-           viewPager2.registerOnPageChangeCallback(object :
-                ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    super.onPageSelected(position)
-//                    btnContinue.gone()
-//                    if (position == 1) {
-//                        btnNextPager.tvButton.visible()
-//                    } else {
-//                        if (position ==2){
-//                            btnContinue.visible()
-//                            btnNextPager.tvButton.invisible()
-//                        }else{
-//
-//                            btnNextPager.tvButton.visible()
-//                        }
-//                    }
-
-                }
-            })
-        }
-
     }
-override fun initView() {
-//        binding.viewPager2.isUserInputEnabled = false
+
+    override fun initView() {
 
         binding.viewPager2.adapter = introAdapter
         binding.dotsIndicator.attachTo(binding.viewPager2)
         setOnChangeViewPager2()
-
-//        binding.textView.text = "Home Activity"
-//        binding.btnTest.setOnClickListener {
-//            showSnackbar("Xin chào từ Home!")
-//        }
-    }
-
-    override fun observeData() {
-//        viewModel.data.observe(viewLifecycleOwner) { text ->
-//            binding.textView.text = text
-//        }
     }
 
     override fun bindViewModel() {

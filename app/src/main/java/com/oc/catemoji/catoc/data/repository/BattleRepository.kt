@@ -8,6 +8,9 @@ import com.oc.catemoji.catoc.data.datalocal.room.dao.UserDao
 import com.oc.catemoji.catoc.data.datalocal.room.entity.DogEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.HistoryEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
+import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity
+import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity.Companion.AVATAR
+import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity.Companion.FRAME
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,6 +37,8 @@ class BattleRepository @Inject constructor(
             val dogId = dogDao.insert(
                 DogEntity(stepRank = 1, progress = 0, unlock = true, selected = true),
             ).toInt()
+            database.appearanceDao().insertIfMissing(AppearanceStateEntity(AVATAR, "1", selected = true, unlock = true))
+            database.appearanceDao().insertIfMissing(AppearanceStateEntity(FRAME, "1", selected = true, unlock = true))
             UserEntity(
                 name = trimmedName,
                 imageAvatar = "file:///android_asset/1/avatar.png",
@@ -61,6 +66,25 @@ class BattleRepository @Inject constructor(
         require(trimmedName.isNotEmpty())
         check(userDao.updateName(trimmedName) == 1) { "User profile does not exist" }
     }
+    suspend fun updateProfile(name: String, avatar: String, frame: String) {
+        val trimmedName = name.trim()
+        require(trimmedName.isNotEmpty())
+        require(avatar.isNotBlank() && frame.isNotBlank())
+        database.withTransaction {
+            check(userDao.getUser() != null) { "User profile does not exist" }
+            val avatarId = checkNotNull(appearanceAssetId(AVATAR, avatar)) { "Unknown avatar asset" }
+            val frameId = checkNotNull(appearanceAssetId(FRAME, frame)) { "Unknown frame asset" }
+            val dao = database.appearanceDao()
+            check(dao.getState(AVATAR, avatarId)?.unlock == true) { "Avatar is locked" }
+            check(dao.getState(FRAME, frameId)?.unlock == true) { "Frame is locked" }
+            dao.clearSelection(AVATAR)
+            dao.clearSelection(FRAME)
+            check(dao.selectUnlocked(AVATAR, avatarId) == 1)
+            check(dao.selectUnlocked(FRAME, frameId) == 1)
+            check(userDao.updateProfile(trimmedName, avatar, frame) == 1) { "User profile does not exist" }
+        }
+    }
+
     suspend fun deleteUser(user: UserEntity) = userDao.delete(user)
     suspend fun saveDog(dog: DogEntity) = dogDao.upsert(dog)
     suspend fun saveDogs(dogs: List<DogEntity>) = dogDao.upsertAll(dogs)

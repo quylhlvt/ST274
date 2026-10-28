@@ -1,11 +1,240 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:focusableInTouchMode="true"
+        android:background="@drawable/img_bg_lang4"
         tools:context=".ui.main.editProfile.EditProfileActivity">
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <FrameLayout
+                android:id="@+id/layoutActionBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent">
+
+            <include
+                    android:id="@+id/actionBar"
+                    layout="@layout/layout_actionbar"/>
+        </FrameLayout>
+        <View
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.6:1.2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/dimension_16"
+                app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
+                android:id="@+id/view1"/>
+        <FrameLayout
+                android:id="@+id/frameAvatar"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintStart_toStartOf="@+id/view1"
+                app:layout_constraintTop_toTopOf="@+id/view1"
+                app:layout_constraintEnd_toEndOf="@+id/view1"
+                app:layout_constraintDimensionRatio="1"
+                android:elevation="@dimen/dimension_2"
+                app:layout_constraintBottom_toBottomOf="@+id/view1">
+            <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+                    android:layout_width="match_parent"
+                    app:gslStrokeWidth="@dimen/dimension_0"
+                    android:layout_margin="@dimen/dimension_4"
+                    app:gslCornerRadius="@dimen/dimension_8"
+                    android:elevation="@dimen/dimension_1"
+                    android:layout_height="match_parent">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/imgAvatar"
+                        tools:src="@drawable/image_avatar_infor"
+                />
+            </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+
+            <ImageView android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       android:id="@+id/imgFrameAvatar"
+                       tools:src="@drawable/img_frame_avatar"
+                       android:elevation="@dimen/dimension_2"/>
+
+        </FrameLayout>
+        <ProgressBar
+                android:id="@+id/progressProfile"
+                android:layout_width="@dimen/dimension_40"
+                android:layout_height="@dimen/dimension_40"
+                android:elevation="@dimen/dimension_8"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/frameAvatar"
+                app:layout_constraintEnd_toEndOf="@id/frameAvatar"
+                app:layout_constraintTop_toTopOf="@id/frameAvatar"
+                app:layout_constraintBottom_toBottomOf="@id/frameAvatar"/>
+        <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+                android:id="@+id/txtName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="@dimen/dimension_16"
+                android:text="@string/name"
+                android:elevation="@dimen/dimension_8"
+                app:layout_constraintTop_toBottomOf="@+id/frameAvatar"
+                style="@style/Widget.Catoc.ExtrudedTitle"
+                android:textSize="@dimen/text_size_20"
+                android:gravity="center_vertical"
+                android:fontFamily="@font/illita_one_regular"
+                android:layout_marginTop="@dimen/dimension_10"
+                android:includeFontPadding="false"
+                app:useGradient="true"
+                app:outerStrokeColor="@color/app_color4"
+                app:outerStrokeWidth="@dimen/dimension_1"
+                app:outerStrokeJoinStyle="round"
+                app:extrusionColor="@color/title_extrusion"
+                app:extrusionDy="@dimen/dimension_0"
+        />
+
+
+        <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.28:0.4"
+                android:layout_marginHorizontal="@dimen/dimension_16"
+                android:layout_marginTop="@dimen/dimension_6"
+                app:layout_constraintTop_toBottomOf="@+id/txtName"
+                app:gslCornerRadius="@dimen/dimension_8"
+                android:id="@+id/stroker1"
+                app:gslStrokeWidth="@dimen/dimension_1"
+                app:gslStartColor="@color/white"
+                app:gslCenterColor="@color/white"
+                app:gslEndColor="@color/white">
+            <EditText
+                    android:id="@+id/editName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/app_color6"
+                    android:textColor="@color/app_color"
+                    android:hint="@string/type_your_name"
+                    android:contentDescription="@string/name"
+                    android:inputType="textPersonName|textCapWords"
+                    android:singleLine="true"
+                    android:imeOptions="actionDone"
+                    android:saveEnabled="false"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:textSize="@dimen/text_size_14"
+                    android:paddingHorizontal="@dimen/dimension_16"/>
+
+        </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
+
+        <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+                android:id="@+id/txtAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="@dimen/dimension_16"
+                android:text="@string/avatar"
+                android:elevation="@dimen/dimension_8"
+                app:layout_constraintTop_toBottomOf="@+id/stroker1"
+                style="@style/Widget.Catoc.ExtrudedTitle"
+                android:textSize="@dimen/text_size_20"
+                android:gravity="center_vertical"
+                android:fontFamily="@font/illita_one_regular"
+                android:layout_marginTop="@dimen/dimension_10"
+                android:includeFontPadding="false"
+                app:useGradient="true"
+                app:outerStrokeColor="@color/app_color4"
+                app:outerStrokeWidth="@dimen/dimension_1"
+                app:outerStrokeJoinStyle="round"
+                app:extrusionColor="@color/title_extrusion"
+                app:extrusionDy="@dimen/dimension_0"
+        />
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.28:1"
+                app:layout_constraintTop_toBottomOf="@+id/txtAvatar"
+                tools:itemCount="5"
+                android:id="@+id/recycleAvatar"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_avatar"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="@dimen/dimension_16"/>
+        <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+                android:id="@+id/txtFrameAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="@dimen/dimension_16"
+                android:text="@string/border_frame"
+                android:elevation="@dimen/dimension_8"
+                app:layout_constraintTop_toBottomOf="@+id/recycleAvatar"
+                style="@style/Widget.Catoc.ExtrudedTitle"
+                android:textSize="@dimen/text_size_20"
+                android:gravity="center_vertical"
+                android:fontFamily="@font/illita_one_regular"
+                android:layout_marginTop="@dimen/dimension_10"
+                android:includeFontPadding="false"
+                app:useGradient="true"
+                app:outerStrokeColor="@color/app_color4"
+                app:outerStrokeWidth="@dimen/dimension_1"
+                app:outerStrokeJoinStyle="round"
+                app:extrusionColor="@color/title_extrusion"
+                app:extrusionDy="@dimen/dimension_0"
+        />
+        <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.28:1"
+                app:layout_constraintTop_toBottomOf="@+id/txtFrameAvatar"
+                tools:itemCount="5"
+                android:id="@+id/recycleBorderFrame"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_frame_avatar"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="@dimen/dimension_16"/>
+        <View android:layout_width="match_parent" android:layout_height="@dimen/dimension_0"
+              app:layout_constraintDimensionRatio="3.28:0.44"
+              android:layout_marginTop="@dimen/dimension_40"
+              app:layout_constraintTop_toBottomOf="@+id/recycleBorderFrame"
+              android:id="@+id/view3"
+        />
+        <FrameLayout
+                android:id="@+id/btnSave"
+                android:contentDescription="@string/save"
+                android:focusable="true"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="1.56:0.44"
+                app:layout_constraintStart_toStartOf="@+id/view3"
+                app:layout_constraintEnd_toEndOf="@+id/view3"
+                android:background="@drawable/bg_frame_permission_shadown"
+                app:layout_constraintBottom_toBottomOf="@+id/view3"
+                app:layout_constraintTop_toTopOf="@+id/view3">
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/dimension_1_6"
+                    android:layout_marginEnd="@dimen/dimension_1"
+                    android:background="@drawable/bg_frame_create"
+                    android:layout_marginStart="@dimen/dimension_0_5"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_20"
+                    android:text="@string/save"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:gravity="center"/>
+
+        </FrameLayout>
+        <View android:layout_width="match_parent"
+              app:layout_constraintTop_toBottomOf="@+id/view3"
+              android:layout_height="@dimen/dimension_100"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

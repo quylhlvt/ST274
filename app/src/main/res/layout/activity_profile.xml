@@ -111,10 +111,13 @@
                                     android:id="@+id/txtCoinRank"
                                     android:layout_width="@dimen/dimension_0"
                                     android:layout_height="match_parent"
-                                android:layout_marginStart="@dimen/dimension_minus_5"
+                                android:layout_marginStart="@dimen/dimension_minus_3"
                                     app:layout_constraintStart_toEndOf="@+id/img_star_coin_rank2"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     style="@style/Widget.Catoc.ExtrudedTitle"
+                                    android:ellipsize="marquee"
+                                    android:paddingHorizontal="@dimen/dimension_1"
+                                    android:marqueeRepeatLimit="marquee_forever"
                                     android:textSize="@dimen/text_size_16"
                                     android:text="9999"
                                     android:fontFamily="@font/illita_one_regular"
@@ -165,14 +168,14 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:id="@+id/imgAvatar"
-                                    android:src="@drawable/image_avatar_infor"
+                                    tools:src="@drawable/image_avatar_infor"
                             />
                         </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
 
                         <ImageView android:layout_width="match_parent"
                                    android:layout_height="match_parent"
                                    android:id="@+id/imgFrameAvatar"
-                                   android:src="@drawable/img_frame_avatar"
+                                   tools:src="@drawable/img_frame_avatar"
                                    android:elevation="@dimen/dimension_2"/>
 
                     </FrameLayout>
@@ -407,6 +410,21 @@
                     app:layout_constraintEnd_toEndOf="@+id/view9"
                     app:layout_constraintTop_toBottomOf="@+id/view9"
                     android:layout_marginTop="@dimen/dimension_4"/>
+            <TextView
+                    android:id="@+id/noHistory"
+                    android:visibility="gone"
+                    android:elevation="@dimen/dimension_8"
+                    app:layout_constraintStart_toStartOf="@+id/view13"
+                    app:layout_constraintEnd_toEndOf="@+id/view13"
+                    app:layout_constraintBottom_toBottomOf="@+id/view13"
+                    app:layout_constraintTop_toTopOf="@+id/view13"
+                    android:layout_width="@dimen/dimension_0"
+                      android:layout_height="@dimen/dimension_0"
+                      android:gravity="center"
+                      android:textSize="@dimen/text_size_12"
+                      android:text="@string/no_match_history_yet"
+                      android:textColor="@color/app_color"
+                      android:fontFamily="@font/illita_one_regular"/>
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"
@@ -502,6 +520,21 @@
                 app:layout_constraintEnd_toEndOf="@+id/view14"
                 app:layout_constraintDimensionRatio="3.28:0.98"
                 app:layout_constraintTop_toBottomOf="@+id/view14"/>
+            <TextView
+                    android:id="@+id/noAchievement"
+                    android:visibility="gone"
+                    android:elevation="@dimen/dimension_8"
+                    app:layout_constraintStart_toStartOf="@+id/view19"
+                    app:layout_constraintEnd_toEndOf="@+id/view19"
+                    app:layout_constraintBottom_toBottomOf="@+id/view19"
+                    app:layout_constraintTop_toTopOf="@+id/view19"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    android:gravity="center"
+                    android:textSize="@dimen/text_size_12"
+                    android:text="@string/complete_challenges_to_unlock_your_first_badge"
+                    android:textColor="@color/app_color"
+                    android:fontFamily="@font/illita_one_regular"/>
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"

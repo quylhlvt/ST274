@@ -1,17 +1,12 @@
 package com.oc.catemoji.catoc.utils
 
-import android.content.Context
-import androidx.core.content.ContextCompat
 import com.oc.catemoji.catoc.R
-import com.oc.catemoji.catoc.data.model.addcharacter.SelectedAddModel
-import com.oc.catemoji.catoc.data.model.color.SelectedModel
 import com.oc.catemoji.catoc.data.model.intro.IntroModel
 import com.oc.catemoji.catoc.data.model.language.LanguageModel
 import com.facebook.shimmer.Shimmer
 import com.oc.catemoji.catoc.data.model.statistics.Statistics
 
 object DataLocal {
-    val KEY_LAST_CLICK_TIME = -101
     val shimmer = Shimmer.ColorHighlightBuilder()
         .setDuration(1200)
         .setBaseColor(0xFFCCCCCC.toInt()) // màu nền đậm hơn (xám đậm)
@@ -43,6 +38,21 @@ object DataLocal {
         Statistics(R.drawable.lost, R.string.lost),
         Statistics(R.drawable.rate, R.string.rate),
         Statistics(R.drawable.streak, R.string.streak),
+    )
+    val rankList = arrayListOf(
+        R.drawable.rank1,
+        R.drawable.rank2,
+        R.drawable.rank3,
+        R.drawable.rank4,
+        R.drawable.rank5,
+        R.drawable.rank6,
+        R.drawable.rank7,
+        R.drawable.rank8
+    )
+val stepRankList = arrayListOf(
+        R.drawable.step_rank1,
+        R.drawable.step_rank2,
+        R.drawable.step_rank3,
     )
 
 }

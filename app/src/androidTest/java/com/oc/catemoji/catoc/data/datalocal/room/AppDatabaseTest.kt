@@ -9,8 +9,9 @@ import com.oc.catemoji.catoc.data.datalocal.room.entity.DogEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.HistoryEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
 import com.oc.catemoji.catoc.data.repository.BattleRepository
-import com.oc.catemoji.catoc.ui.main.home.HomeEvent
-import com.oc.catemoji.catoc.ui.main.home.HomeViewModel
+import com.oc.catemoji.catoc.RoomLoadState
+import com.oc.catemoji.catoc.SharedHomeData
+import com.oc.catemoji.catoc.ViewModelActivity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -47,38 +48,44 @@ class AppDatabaseTest {
     )
 
     @Test
-    fun homeObservesRoomAndRenamePreservesCoinsAndRank() = runBlocking {
+    fun sharedHomeObservesRoomAndRenamePreservesCoinsAndRank() = runBlocking {
         val repository = repository()
         val user = repository.createProfile("Player")
         repository.saveUser(user.copy(coinbone = 250, rank = 3, rankbatter = 80))
-        val viewModel = HomeViewModel(repository, context)
+        val viewModel = ViewModelActivity(repository, context)
         val store = ViewModelStore().apply { put("home", viewModel) }
+        suspend fun awaitHome(predicate: (SharedHomeData) -> Boolean): SharedHomeData =
+            (withTimeout(5_000) {
+                viewModel.homeState.first { it is RoomLoadState.Success && predicate(it.data) }
+            } as RoomLoadState.Success).data
         try {
-            val initial = withTimeout(5_000) { viewModel.uiState.first { !it.loading } }
+            val initial = awaitHome { it.user != null }
             assertEquals(250, initial.user?.coinbone)
             assertEquals(3, initial.user?.rank)
             assertEquals(80, initial.user?.rankbatter)
-            assertEquals(user.iddog, initial.dog?.iddog)
+            assertEquals(user.iddog, initial.selectedDog?.iddog)
             assertEquals("file:///android_asset/1/state/puppy/1.png", initial.dogPreview)
 
-            InstrumentationRegistry.getInstrumentation().runOnMainSync {
-                viewModel.renameUser("   Renamed   ")
-            }
-            assertEquals(HomeEvent.NAME_SAVED, withTimeout(5_000) { viewModel.events.first() })
-            val updated = withTimeout(5_000) { viewModel.uiState.first { it.user?.name == "Renamed" } }
+            viewModel.renameUser("   Renamed   ")
+            val updated = awaitHome { it.user?.name == "Renamed" }
             assertEquals(250, updated.user?.coinbone)
             assertEquals(3, updated.user?.rank)
             assertEquals(80, updated.user?.rankbatter)
 
-            InstrumentationRegistry.getInstrumentation().runOnMainSync { viewModel.add100Bones() }
-            val rewarded = withTimeout(5_000) { viewModel.uiState.first { it.user?.coinbone == 350 } }
+            viewModel.addBones(100)
+            val rewarded = awaitHome { it.user?.coinbone == 350 }
             assertEquals(350, database.userDao().getUser()?.coinbone)
             assertEquals("Renamed", rewarded.user?.name)
             assertEquals(3, rewarded.user?.rank)
             assertEquals(80, rewarded.user?.rankbatter)
 
-            InstrumentationRegistry.getInstrumentation().runOnMainSync { viewModel.renameUser("  ") }
-            assertEquals(HomeEvent.NAME_REQUIRED, withTimeout(5_000) { viewModel.events.first() })
+            var blankNameRejected = false
+            try {
+                viewModel.renameUser("  ")
+            } catch (error: IllegalArgumentException) {
+                blankNameRejected = true
+            }
+            assertTrue(blankNameRejected)
             assertEquals("Renamed", database.userDao().getUser()?.name)
         } finally {
             InstrumentationRegistry.getInstrumentation().runOnMainSync { store.clear() }
@@ -187,7 +194,7 @@ class AppDatabaseTest {
             }
             val migrated = Room.databaseBuilder(context, AppDatabase::class.java, filename)
                 .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3,
-                    AppDatabase.MIGRATION_3_4).build()
+                    AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5).build()
             try {
                 assertEquals(25, migrated.userDao().getUser()?.coinbone)
                 assertEquals(50, migrated.userDao().getUser()?.iddog)

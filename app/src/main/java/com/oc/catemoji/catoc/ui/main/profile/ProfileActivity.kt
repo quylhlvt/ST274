@@ -1,15 +1,20 @@
 package com.oc.catemoji.catoc.ui.main.profile
 
 import android.widget.Toast
+import com.bumptech.glide.Glide
+import com.facebook.shimmer.ShimmerDrawable
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
+import com.oc.catemoji.catoc.core.extention.loadImage
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
+import com.oc.catemoji.catoc.core.extention.toEditProfile
 import com.oc.catemoji.catoc.databinding.ActivityProfileBinding
+import com.oc.catemoji.catoc.utils.DataLocal
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -20,7 +25,6 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding, ProfileViewModel>(
     ProfileViewModel::class.java
 ) {
 
-    private val name = "name"
     private val statisticAdapter = ProfileStatisticAdapter()
     private val historyAdapter = ProfileHistoryAdapter()
     private val achievementAdapter = ProfileAchievementAdapter()
@@ -40,6 +44,8 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding, ProfileViewModel>(
             txtTitle1.isSelected = true
             txtTitle2.isSelected = true
             txtTitle3.isSelected = true
+            imgAvatar.setImageDrawable(ShimmerDrawable().apply { setShimmer(DataLocal.shimmer) })
+            imgFrameAvatar.setImageDrawable(null)
         }
     }
 
@@ -47,9 +53,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding, ProfileViewModel>(
         binding.actionBar.btnActionBarLeft.onClick { finish() }
         binding.apply {
             btnEditProfile.onClick {
-                lifecycleScope.launch {
-                    viewModelActivity.renameUser(name)
-                }
+                toEditProfile()
             }
         }
     }
@@ -83,6 +87,13 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding, ProfileViewModel>(
                     binding.apply {
                         txtNameData.text = user.name
                         txtCoinRank.text = user.rankbatter.toString()
+                        Glide.with(this@ProfileActivity).clear(imgAvatar)
+                        loadImage(this@ProfileActivity, user.imageAvatar, imgAvatar)
+                        Glide.with(this@ProfileActivity).clear(imgFrameAvatar)
+                        imgFrameAvatar.setImageDrawable(null)
+                        Glide.with(this@ProfileActivity).load(user.imageFrame.ifBlank { null })
+                            .dontAnimate()
+                            .into(imgFrameAvatar)
                     }
                 }
             }

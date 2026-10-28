@@ -2,13 +2,10 @@ package com.oc.catemoji.catoc.ui.onboarding.permission
 
 import android.content.pm.PackageManager
 import android.os.Build
-import android.text.TextUtils
-import android.view.ViewGroup
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.extention.*
 import com.oc.catemoji.catoc.core.helper.PermissionHelper
-import com.oc.catemoji.catoc.core.helper.StringHelper
 import com.oc.catemoji.catoc.databinding.ActivityPermissionBinding
 import com.oc.catemoji.catoc.utils.key.RequestKey
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,22 +17,14 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
 ) {
 
     override fun viewListener() {
-        val currentView = binding.root
         binding.swPermission.onClick(1500) { handlePermissionRequest(isStorage = true) }
         binding.swNotification.onClick(1500) { handlePermissionRequest(isStorage = false) }
         binding.tvContinue.onClick(1000) {
-//            Admob.getInstance().showInterAds(requireActivity(), inter, object : InterCallback() {
-//            override fun onNextAction() {
-//                super.onNextAction()
-//                if (!isAdded || view !== currentView) return
             handleContinue()
-//            }
-//        })
         }
     }
 
     override fun initView() {
-//        updateContinueMargin()
 
         binding.setupActionBar()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -45,7 +34,6 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
             binding.btnNotification.visible()
             binding.btnStorage.gone()
         }
-        // cập nhật UI switch khi vào màn
         updatePermissionUI(requireContext().checkPermissions(PermissionHelper.storagePermission), true)
         updatePermissionUI(requireContext().checkPermissions(PermissionHelper.notificationPermission), false)
     }
@@ -57,33 +45,6 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
         }
     }
 
-    private fun isNetworkAvailable(): Boolean {
-        val cm = requireContext().getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
-                as android.net.ConnectivityManager
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = cm.activeNetwork ?: return false
-            val caps = cm.getNetworkCapabilities(network) ?: return false
-            caps.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        } else {
-            @Suppress("DEPRECATION")
-            cm.activeNetworkInfo?.isConnected == true
-        }
-    }
-
-    private fun updateContinueMargin() {
-        val marginPx = if (!isNetworkAvailable()) {
-            resources.getDimensionPixelSize(R.dimen.dimension_200)
-        } else {
-            resources.getDimensionPixelSize(R.dimen.dimension_10)
-        }
-        val params = binding.tvContinue.layoutParams as? ViewGroup.MarginLayoutParams
-        params?.bottomMargin = marginPx  // hoặc topMargin tuỳ layout
-        binding.tvContinue.layoutParams = params
-    }
-// ❌ Xóa 2 dòng này
-// private var storageDenyCount = 0
-// private var notificationDenyCount = 0
-
     private fun handlePermissionRequest(isStorage: Boolean) {
         val perms = if (isStorage) PermissionHelper.storagePermission
         else PermissionHelper.notificationPermission
@@ -91,8 +52,6 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
         when {
             requireContext().checkPermissions(perms) ->
                 showToast(if (isStorage) R.string.granted_storage else R.string.granted_notification)
-
-            // ✅ Dùng ViewModel thay vì local count
             viewModel.shouldGoToSettings(isStorage) -> goToSettings()
 
             else -> requestPermission(
@@ -105,7 +64,6 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
 
     override fun onResume() {
         super.onResume()
-        // ✅ Cập nhật lại UI khi quay về từ Settings hoặc sau khi grant
         updatePermissionUI(
             requireContext().checkPermissions(PermissionHelper.storagePermission),
             true
@@ -131,7 +89,6 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
                 } else {
                     viewModel.onStorageDenied()
                 }
-                // ✅ Luôn update UI dù granted hay denied
                 updatePermissionUI(granted, true)
             }
 
@@ -141,7 +98,6 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
                 } else {
                     viewModel.onNotificationDenied()
                 }
-                // ✅ Luôn update UI dù granted hay denied
                 updatePermissionUI(granted, false)
             }
         }
@@ -181,12 +137,6 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
     }
 
     override fun bindViewModel() {}
-
-    private fun createColoredText(
-        @androidx.annotation.StringRes textRes: Int,
-        @androidx.annotation.ColorRes colorRes: Int,
-        font: Int = R.font.baloo2_bold
-    ) = StringHelper.changeColor(requireContext(), getString(textRes), colorRes, font)
 
     override fun onScreenBackPressed(): Boolean {
         finishAffinity()

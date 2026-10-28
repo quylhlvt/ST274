@@ -18,6 +18,9 @@ interface UserDao {
     @Query("UPDATE user SET name = :name WHERE id = :id")
     suspend fun updateName(name: String, id: Int = 1): Int
 
+    @Query("UPDATE user SET name = :name, imageAvatar = :avatar, imageFrame = :frame WHERE id = :id")
+    suspend fun updateProfile(name: String, avatar: String, frame: String, id: Int = 1): Int
+
     @Query("""
         UPDATE user SET coinbone = coinbone + :amount
         WHERE id = :id AND coinbone <= 2147483647 - :amount

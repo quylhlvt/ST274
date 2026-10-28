@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import com.oc.catemoji.catoc.ui.language.LanguageActivity
 import com.oc.catemoji.catoc.ui.main.home.HomeActivity
+import com.oc.catemoji.catoc.ui.main.editProfile.EditProfileActivity
 import com.oc.catemoji.catoc.ui.main.information.InformationActivity
+import com.oc.catemoji.catoc.ui.main.play.PlayActivity
 import com.oc.catemoji.catoc.ui.main.profile.ProfileActivity
 import com.oc.catemoji.catoc.ui.main.setting.SettingActivity
 import com.oc.catemoji.catoc.ui.onboarding.intro.IntroActivity
@@ -15,6 +17,14 @@ fun Activity.toSettingFromHome() {
 }
 fun Activity.toProfileFromHome() {
     startActivity(Intent(this@toProfileFromHome, ProfileActivity::class.java))
+}
+
+fun Activity.toPlayFromHome() {
+    startActivity(Intent(this, PlayActivity::class.java))
+}
+
+fun Activity.toEditProfile() {
+    startActivity(Intent(this, EditProfileActivity::class.java))
 }
 
 private fun Activity.startOnboardingScreen(target: Class<out Activity>) {
@@ -43,12 +53,4 @@ fun Activity.toHomeAfterLanguageChange() {
 }
 
 fun Activity.toHomeFromPermission() = toHome()
-fun Activity.toHomeFromLanguage() = finish()
-fun Activity.toSettingFromLang() = finish()
-fun Activity.toLangFromSetting() {
-    startActivity(Intent(this, LanguageActivity::class.java).apply {
-        putExtra(LanguageActivity.EXTRA_FROM_SETTING, true)
-    })
-}
 fun Activity.toIntroFromLanguage() = startOnboardingScreen(IntroActivity::class.java)
-fun Activity.toHomeFromSetting() = toHome()
