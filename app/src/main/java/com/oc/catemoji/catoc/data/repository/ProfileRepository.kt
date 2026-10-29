@@ -25,7 +25,7 @@ class ProfileRepository @Inject constructor(private val database: AppDatabase) {
                 "Invincible Hound", "Speed Barker", "Call the Cops!")
             dao.insertAchievements(titles.mapIndexed { index, title ->
                 AchievementEntity(index + 1, title,
-                    "file:///android_asset/Achievement/${index + 1}. $title.png")
+                    "file:///android_asset/Achievement/${index + 1}. $title.webp")
             })
         }
         if (database.historyDao().count() == 0) {
@@ -34,8 +34,8 @@ class ProfileRepository @Inject constructor(private val database: AppDatabase) {
                 database.historyDao().insert(HistoryEntity(
                     nameBatter = name,
                     date = now - index * 86_400_000L,
-                    imageAvatar1 = "file:///android_asset/1/avatar.png",
-                    imageAvatar2 = "file:///android_asset/${index + 2}/avatar.png",
+                    imageAvatar1 = "file:///android_asset/1/avatar.webp",
+                    imageAvatar2 = "file:///android_asset/${index + 2}/avatar.webp",
                     typePlay = index != 2,
                 ))
             }

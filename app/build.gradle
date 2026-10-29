@@ -38,6 +38,7 @@ android {
         viewBinding true
         dataBinding true
     }
+    androidResources { noCompress += "tflite" }
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas")
     }

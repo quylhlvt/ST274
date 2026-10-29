@@ -1,0 +1,390 @@
+
+> Configure project :app
+WARNING: API 'variant.getMergeResources()' is obsolete and has been replaced with 'variant.getMergeResourcesProvider()'.
+It will be removed in version 9.0 of the Android Gradle plugin.
+For more information, see https://d.android.com/r/tools/task-configuration-avoidance.
+To determine what is calling variant.getMergeResources(), use -Pandroid.debug.obsoleteApi=true on the command line to display more information.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugResValues
+> Task :app:dataBindingMergeDependencyArtifactsDebug
+> Task :app:generateDebugResources
+> Task :app:injectCrashlyticsMappingFileIdDebug
+
+> Task :app:processDebugGoogleServices
+Parsing json file: /home/lequy/LVT/ST274_Bow Wow Battle_Research/app/google-services.json
+
+> Task :app:packageDebugResources
+> Task :app:dataBindingTriggerDebug
+> Task :app:mapDebugSourceSetPaths
+> Task :app:checkDebugAarMetadata
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:mergeDebugResources
+> Task :app:processDebugMainManifest
+> Task :app:dataBindingGenBaseClassesDebug
+> Task :app:processDebugManifest
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeDebugJniLibFolders
+> Task :app:checkDebugDuplicateClasses
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugNativeLibs
+> Task :app:mergeLibDexDebug
+> Task :app:stripDebugDebugSymbols
+> Task :app:processDebugResources
+> Task :app:mergeExtDexDebug
+
+> Task :app:kaptGenerateStubsDebugKotlin
+w: Support for language version 2.0+ in kapt is in Alpha and must be enabled explicitly. Falling back to 1.9.
+
+> Task :app:kaptDebugKotlin
+Note: [1] Wrote GeneratedAppGlideModule with: []
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/main/training/TrainingEffect.java:4: error: duplicate class: com.oc.catemoji.catoc.ui.main.training.TrainingEffect
+public final class TrainingEffect {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/repository/BattleRepository.java:5: error: duplicate class: com.oc.catemoji.catoc.data.repository.BattleRepository
+public final class BattleRepository {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/AppDatabase.java:5: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.AppDatabase
+public abstract class AppDatabase extends androidx.room.RoomDatabase {
+                ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/dao/AppearanceDao.java:5: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.dao.AppearanceDao
+public abstract interface AppearanceDao {
+                ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/dao/ProfileDao.java:5: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.dao.ProfileDao
+public abstract interface ProfileDao {
+                ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/dao/DogDao.java:5: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.dao.DogDao
+public abstract interface DogDao {
+                ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/dao/HistoryDao.java:5: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.dao.HistoryDao
+public abstract interface HistoryDao {
+                ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/dao/UserDao.java:5: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.dao.UserDao
+public abstract interface UserDao {
+                ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/entity/DogEntity.java:5: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.entity.DogEntity
+public final class DogEntity {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/entity/UserEntity.java:5: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
+public final class UserEntity {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/entity/AchievementEntity.java:5: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.entity.AchievementEntity
+public final class AchievementEntity {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/entity/AppearanceStateEntity.java:8: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity
+public final class AppearanceStateEntity {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/datalocal/room/entity/HistoryEntity.java:5: error: duplicate class: com.oc.catemoji.catoc.data.datalocal.room.entity.HistoryEntity
+public final class HistoryEntity {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/audio/DeviceSoundClassifier.java:7: error: duplicate class: com.oc.catemoji.catoc.data.audio.DeviceSoundClassifier
+public final class DeviceSoundClassifier {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/audio/SoundScore.java:4: error: duplicate class: com.oc.catemoji.catoc.data.audio.SoundScore
+public final class SoundScore {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/audio/SoundPrediction.java:4: error: duplicate class: com.oc.catemoji.catoc.data.audio.SoundPrediction
+public final class SoundPrediction {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/data/audio/BarkEventCounter.java:7: error: duplicate class: com.oc.catemoji.catoc.data.audio.BarkEventCounter
+public final class BarkEventCounter {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/RoomLoadState.java:4: error: duplicate class: com.oc.catemoji.catoc.RoomLoadState
+public abstract interface RoomLoadState<T extends java.lang.Object> {
+                ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/core/extention/OuterStrokeShadowTextView.java:9: error: duplicate class: com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+public final class OuterStrokeShadowTextView extends androidx.appcompat.widget.AppCompatTextView {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/core/helper/SharedPreferencesManager.java:5: error: duplicate class: com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
+public final class SharedPreferencesManager {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/core/base/BaseActivity.java:7: error: duplicate class: com.oc.catemoji.catoc.core.base.BaseActivity
+public abstract class BaseActivity<VB extends androidx.viewbinding.ViewBinding, VM extends androidx.lifecycle.ViewModel> extends androidx.appcompat.app.AppCompatActivity {
+                ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ViewModelActivity.java:5: error: duplicate class: com.oc.catemoji.catoc.ViewModelActivity
+public final class ViewModelActivity extends androidx.lifecycle.ViewModel {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/SharedHomeData.java:4: error: duplicate class: com.oc.catemoji.catoc.SharedHomeData
+public final class SharedHomeData {
+             ^
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/main/training/TrainingActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class TrainingActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivityTrainingBinding, com.oc.catemoji.catoc.ui.main.training.TrainingViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/main/profile/ProfileActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class ProfileActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivityProfileBinding, com.oc.catemoji.catoc.ui.main.profile.ProfileViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/main/home/HomeActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class HomeActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivityHomeBinding, com.oc.catemoji.catoc.ui.main.home.HomeViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/main/information/InformationActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class InformationActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivityInformationBinding, com.oc.catemoji.catoc.ui.main.information.InformationViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/main/setting/SettingActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class SettingActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivitySettingBinding, com.oc.catemoji.catoc.ui.main.setting.SettingViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/main/play/PlayActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class PlayActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivityPlayBinding, com.oc.catemoji.catoc.ui.main.play.PlayViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/main/editProfile/EditProfileActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class EditProfileActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivityEditProfileBinding, com.oc.catemoji.catoc.ui.main.editProfile.EditProfileViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/language/LanguageActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class LanguageActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivityLanguageBinding, com.oc.catemoji.catoc.ui.language.LanguageViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/onboarding/intro/IntroActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class IntroActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivityIntroBinding, com.oc.catemoji.catoc.ui.onboarding.intro.IntroViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/onboarding/permission/PermissionActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class PermissionActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivityPermissionBinding, com.oc.catemoji.catoc.ui.onboarding.permission.PermissionViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+/home/lequy/LVT/ST274_Bow Wow Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/onboarding/splash/SplashActivity.java:5: error: [Hilt] @AndroidEntryPoint base class must extend ComponentActivity, (support) Fragment, View, Service, or BroadcastReceiver.
+public final class SplashActivity extends com.oc.catemoji.catoc.core.base.BaseActivity<com.oc.catemoji.catoc.databinding.ActivitySplashBinding, com.oc.catemoji.catoc.ui.onboarding.splash.SplashViewModel> {
+             ^
+  [1;31m[Hilt] Processing did not complete. See error above for details.[0m
+[WARN] 
+Running non-incrementally because analyzing file:///home/lequy/LVT/ST274_Bow%20Wow%20Battle_Research/app/build/tmp/kapt3/stubs/debug/com/oc/catemoji/catoc/ui/main/training/TrainingActivity.java failed.
+
+> Task :app:kaptDebugKotlin FAILED
+
+[Incubating] Problems report is available at: file:///home/lequy/LVT/ST274_Bow%20Wow%20Battle_Research/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:kaptDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask$KaptExecutionWorkAction
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:kaptDebugKotlin'.
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExecuter.java:130)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:293)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:128)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:116)
+	at org.gradle.api.internal.tasks.execution.ProblemsTaskPathTrackingTaskExecuter.execute(ProblemsTaskPathTrackingTaskExecuter.java:40)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:42)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:331)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:318)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:303)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:459)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:376)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask$KaptExecutionWorkAction
+	at org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java:287)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.java:130)
+	at org.gradle.internal.Factories$1.create(Factories.java:31)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLocks(DefaultWorkerLeaseService.java:335)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLocks(DefaultWorkerLeaseService.java:318)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLock(DefaultWorkerLeaseService.java:323)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:126)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:92)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForAll(DefaultAsyncWorkTracker.java:78)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForCompletion(DefaultAsyncWorkTracker.java:66)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$3.run(TaskExecution.java:252)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeAction(TaskExecution.java:229)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeActions(TaskExecution.java:212)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeWithPreviousOutputFiles(TaskExecution.java:195)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.execute(TaskExecution.java:162)
+	at org.gradle.internal.execution.steps.ExecuteStep.executeInternal(ExecuteStep.java:105)
+	at org.gradle.internal.execution.steps.ExecuteStep.access$000(ExecuteStep.java:44)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:59)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:56)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:56)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:44)
+	at org.gradle.internal.execution.steps.CancelExecutionStep.execute(CancelExecutionStep.java:42)
+	at org.gradle.internal.execution.steps.TimeoutStep.executeWithoutTimeout(TimeoutStep.java:75)
+	at org.gradle.internal.execution.steps.TimeoutStep.execute(TimeoutStep.java:55)
+	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:50)
+	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:28)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.execute(RemovePreviousOutputsStep.java:67)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.execute(RemovePreviousOutputsStep.java:37)
+	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:61)
+	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:26)
+	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:69)
+	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:46)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.execute(ResolveInputChangesStep.java:40)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.execute(ResolveInputChangesStep.java:29)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:189)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$1(BuildCacheStep.java:75)
+	at org.gradle.internal.Either$Right.fold(Either.java:175)
+	at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:62)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:73)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:48)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:46)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:35)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:75)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:35)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
+	at org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCachingStateStep.java:49)
+	at org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCachingStateStep.java:27)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:71)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:39)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:65)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:36)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:107)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:56)
+	at org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeExecutionStep.java:64)
+	at org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeExecutionStep.java:43)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.executeWithNonEmptySources(AbstractSkipEmptyWorkStep.java:125)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:56)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:36)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:36)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:23)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.execute(HandleStaleOutputsStep.java:75)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.execute(HandleStaleOutputsStep.java:41)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$execute$0(AssignMutableWorkspaceStep.java:35)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:289)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:31)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:22)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:39)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:48)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:35)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:61)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:127)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:116)
+	at org.gradle.api.internal.tasks.execution.ProblemsTaskPathTrackingTaskExecuter.execute(ProblemsTaskPathTrackingTaskExecuter.java:40)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:42)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:331)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:318)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:303)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:459)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:376)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+Caused by: java.lang.reflect.InvocationTargetException
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at org.jetbrains.kotlin.gradle.internal.KaptExecution.run(KaptWithoutKotlincTask.kt:325)
+	at org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask$KaptExecutionWorkAction.execute(KaptWithoutKotlincTask.kt:266)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62)
+	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59)
+	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169)
+	at org.gradle.internal.Factories$1.create(Factories.java:31)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133)
+	... 2 more
+Caused by: org.jetbrains.kotlin.kapt3.base.util.KaptBaseError: Error while annotation processing
+	at org.jetbrains.kotlin.kapt3.base.AnnotationProcessingKt.doAnnotationProcessing(annotationProcessing.kt:145)
+	at org.jetbrains.kotlin.kapt3.base.AnnotationProcessingKt.doAnnotationProcessing(annotationProcessing.kt:36)
+	at org.jetbrains.kotlin.kapt3.base.Kapt.kapt(Kapt.kt:46)
+	... 31 more
+
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 29s
+34 actionable tasks: 34 executed

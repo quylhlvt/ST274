@@ -1,6 +1,7 @@
 package com.oc.catemoji.catoc.ui.main.home
 
 import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -16,6 +17,7 @@ import com.oc.catemoji.catoc.core.extention.toSettingFromHome
 import com.oc.catemoji.catoc.core.extention.toInformation
 import com.oc.catemoji.catoc.core.extention.toPlayFromHome
 import com.oc.catemoji.catoc.core.extention.toProfileFromHome
+import com.oc.catemoji.catoc.core.extention.toTrainingFromHome
 import com.oc.catemoji.catoc.core.helper.RateHelper.showRateDialog
 import com.oc.catemoji.catoc.databinding.ActivityHomeBinding
 import com.oc.catemoji.catoc.utils.DataLocal
@@ -69,6 +71,21 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
             }
             imgBgBattle.onClick {
                 toPlayFromHome()
+            }
+            txtTraining.onClick {
+                AlertDialog.Builder(this@HomeActivity)
+                    .setTitle(R.string.training_mode_title)
+                    .setItems(arrayOf(
+                        getString(R.string.training_mode_microphone),
+                        getString(R.string.training_mode_touch),
+                    )) { _, selection ->
+                        when (selection) {
+                            0 -> toTrainingFromHome(useMicrophone = true)
+                            1 -> toTrainingFromHome()
+                        }
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
             }
         }
 

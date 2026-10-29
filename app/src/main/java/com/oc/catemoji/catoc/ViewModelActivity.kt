@@ -37,6 +37,13 @@ class ViewModelActivity @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
+    private val _barkEvents = MutableSharedFlow<Unit>(extraBufferCapacity = 32)
+    val barkEvents = _barkEvents.asSharedFlow()
+
+    fun notifyBarkDetected() {
+        _barkEvents.tryEmit(Unit)
+    }
+
     // ROOM - DÙNG CHUNG
     val user = repository.user.stateIn(
         viewModelScope,
@@ -109,13 +116,14 @@ class ViewModelActivity @Inject constructor(
 
         val preview = withContext(Dispatchers.IO) {
             try {
-                val path = "$directory/state/puppy"
-                val files = context.assets.list(path).orEmpty()
-
-                if ("1.png" in files) {
-                    "$prefix$path/1.png"
-                } else {
-                    null
+                // The first two dogs use "puppy"; the remaining assets use "1. puppy".
+                listOf("puppy", "1. puppy").firstNotNullOfOrNull { stage ->
+                    val path = "$directory/state/$stage"
+                    if ("1.webp" in context.assets.list(path).orEmpty()) {
+                        "$prefix$path/1.webp"
+                    } else {
+                        null
+                    }
                 }
             } catch (e: java.io.IOException) {
                 null

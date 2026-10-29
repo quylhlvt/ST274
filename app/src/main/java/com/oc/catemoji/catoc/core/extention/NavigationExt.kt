@@ -9,6 +9,7 @@ import com.oc.catemoji.catoc.ui.main.information.InformationActivity
 import com.oc.catemoji.catoc.ui.main.play.PlayActivity
 import com.oc.catemoji.catoc.ui.main.profile.ProfileActivity
 import com.oc.catemoji.catoc.ui.main.setting.SettingActivity
+import com.oc.catemoji.catoc.ui.main.training.TrainingActivity
 import com.oc.catemoji.catoc.ui.onboarding.intro.IntroActivity
 import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionActivity
 
@@ -21,6 +22,9 @@ fun Activity.toProfileFromHome() {
 
 fun Activity.toPlayFromHome() {
     startActivity(Intent(this, PlayActivity::class.java))
+}
+fun Activity.toTrainingFromHome(useMicrophone: Boolean = false) {
+    startActivity(Intent(this, TrainingActivity::class.java).putExtra(TrainingActivity.EXTRA_USE_MICROPHONE, useMicrophone))
 }
 
 fun Activity.toEditProfile() {

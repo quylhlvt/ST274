@@ -111,7 +111,7 @@ class ProfileRepositoryTest {
                 legacy.version = 3
             }
             val migrated = Room.databaseBuilder(context, AppDatabase::class.java, filename)
-                .addMigrations(AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5).build()
+                .addMigrations(AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5, AppDatabase.MIGRATION_5_6).build()
             try {
                 val results = migrated.historyDao().observeHistory().first().sortedBy { it.id }
                 assertEquals(listOf(true, false, true, false, true, false), results.map { it.typePlay })

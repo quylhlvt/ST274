@@ -17,8 +17,8 @@ data class ProfileAppearanceOptions(val avatars: List<String>, val frames: List<
 data class ProfileAppearanceState(val type: String, val image: String, val selected: Boolean, val unlock: Boolean)
 
 internal fun appearanceAssetId(type: String, image: String): String? {
-    val id = image.removePrefix("file:///android_asset/").removeSuffix("/$type.png")
-    return id.takeIf { it.toIntOrNull() != null && image == "file:///android_asset/$it/$type.png" }
+    val id = image.removePrefix("file:///android_asset/").removeSuffix("/$type.webp")
+    return id.takeIf { it.toIntOrNull() != null && image == "file:///android_asset/$it/$type.webp" }
 }
 
 class ProfileAppearanceRepository @Inject constructor(
@@ -26,7 +26,7 @@ class ProfileAppearanceRepository @Inject constructor(
     private val database: AppDatabase,
 ) {
     val states = database.appearanceDao().observeStates().map { items ->
-        items.map { ProfileAppearanceState(it.type, "file:///android_asset/${it.assetId}/${it.type}.png", it.selected, it.unlock) }
+        items.map { ProfileAppearanceState(it.type, "file:///android_asset/${it.assetId}/${it.type}.webp", it.selected, it.unlock) }
     }
 
     suspend fun loadOptions(): ProfileAppearanceOptions = withContext(Dispatchers.IO) {
@@ -37,8 +37,8 @@ class ProfileAppearanceRepository @Inject constructor(
             .sortedBy { it.toInt() }
             .forEach { directory ->
                 val files = context.assets.list(directory).orEmpty()
-                if ("avatar.png" in files) avatars += "file:///android_asset/$directory/avatar.png"
-                if ("frame.png" in files) frames += "file:///android_asset/$directory/frame.png"
+                if ("avatar.webp" in files) avatars += "file:///android_asset/$directory/avatar.webp"
+                if ("frame.webp" in files) frames += "file:///android_asset/$directory/frame.webp"
             }
         check(avatars.isNotEmpty() && frames.isNotEmpty()) { "Profile appearance assets missing" }
         ProfileAppearanceOptions(avatars, frames)

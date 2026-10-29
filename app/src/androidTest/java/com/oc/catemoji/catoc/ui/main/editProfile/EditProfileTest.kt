@@ -53,8 +53,8 @@ class EditProfileTest {
         val loaded = await(model) { it.ready }
         assertEquals("Player", loaded.name)
         assertEquals(15, loaded.avatars.size)
-        assertEquals((1..15).map { "file:///android_asset/$it/avatar.png" }, loaded.avatars)
-        assertEquals((1..15).map { "file:///android_asset/$it/frame.png" }, loaded.frames)
+        assertEquals((1..15).map { "file:///android_asset/$it/avatar.webp" }, loaded.avatars)
+        assertEquals((1..15).map { "file:///android_asset/$it/frame.webp" }, loaded.frames)
 
         assertEquals(setOf(loaded.avatars[0]), loaded.unlockedAvatars)
         assertEquals(setOf(loaded.frames[0]), loaded.unlockedFrames)
@@ -87,8 +87,8 @@ class EditProfileTest {
         val model = model()
         val loaded = await(model) { it.ready }
         onMain {
-            model.selectAvatar("missing.png")
-            model.selectFrame("missing.png")
+            model.selectAvatar("missing.webp")
+            model.selectFrame("missing.webp")
             model.setName("  \n  ")
             model.save()
         }

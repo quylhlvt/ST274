@@ -41,8 +41,8 @@ class BattleRepository @Inject constructor(
             database.appearanceDao().insertIfMissing(AppearanceStateEntity(FRAME, "1", selected = true, unlock = true))
             UserEntity(
                 name = trimmedName,
-                imageAvatar = "file:///android_asset/1/avatar.png",
-                imageFrame = "file:///android_asset/1/frame.png",
+                imageAvatar = "file:///android_asset/1/avatar.webp",
+                imageFrame = "file:///android_asset/1/frame.webp",
                 coinbone = 100,
                 rank = 1,
                 rankbatter = 0,

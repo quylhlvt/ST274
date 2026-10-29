@@ -64,7 +64,7 @@ class AppDatabaseTest {
             assertEquals(3, initial.user?.rank)
             assertEquals(80, initial.user?.rankbatter)
             assertEquals(user.iddog, initial.selectedDog?.iddog)
-            assertEquals("file:///android_asset/1/state/puppy/1.png", initial.dogPreview)
+            assertEquals("file:///android_asset/1/state/puppy/1.webp", initial.dogPreview)
 
             viewModel.renameUser("   Renamed   ")
             val updated = awaitHome { it.user?.name == "Renamed" }
@@ -87,6 +87,28 @@ class AppDatabaseTest {
             }
             assertTrue(blankNameRejected)
             assertEquals("Renamed", database.userDao().getUser()?.name)
+        } finally {
+            InstrumentationRegistry.getInstrumentation().runOnMainSync { store.clear() }
+        }
+    }
+
+    @Test
+    fun homeResolvesDogPreviewForEveryBundledAvatar() = runBlocking {
+        val repository = repository()
+        val original = repository.createProfile("Player")
+        val viewModel = ViewModelActivity(repository, context)
+        val store = ViewModelStore().apply { put("home", viewModel) }
+        try {
+            for (id in 1..15) {
+                val avatar = "file:///android_asset/$id/avatar.webp"
+                repository.saveUser(original.copy(imageAvatar = avatar))
+                val state = withTimeout(5_000) {
+                    viewModel.homeState.first { it is RoomLoadState.Success && it.data.user?.imageAvatar == avatar }
+                } as RoomLoadState.Success
+                val stage = if (id <= 2) "puppy" else "1. puppy"
+                assertEquals("file:///android_asset/$id/state/$stage/1.webp", state.data.dogPreview)
+                context.assets.open(checkNotNull(state.data.dogPreview).removePrefix("file:///android_asset/")).close()
+            }
         } finally {
             InstrumentationRegistry.getInstrumentation().runOnMainSync { store.clear() }
         }
@@ -125,10 +147,10 @@ class AppDatabaseTest {
         assertEquals(100, user.coinbone)
         assertEquals(1, user.rank)
         assertEquals(0, user.rankbatter)
-        assertEquals("file:///android_asset/1/avatar.png", user.imageAvatar)
-        assertEquals("file:///android_asset/1/frame.png", user.imageFrame)
-        context.assets.open("1/avatar.png").use { assertTrue(it.read() >= 0) }
-        context.assets.open("1/frame.png").use { assertTrue(it.read() >= 0) }
+        assertEquals("file:///android_asset/1/avatar.webp", user.imageAvatar)
+        assertEquals("file:///android_asset/1/frame.webp", user.imageFrame)
+        context.assets.open("1/avatar.webp").use { assertTrue(it.read() >= 0) }
+        context.assets.open("1/frame.webp").use { assertTrue(it.read() >= 0) }
         assertEquals(
             DogEntity(user.iddog, stepRank = 1, progress = 0, unlock = true, selected = true),
             database.dogDao().getDog(user.iddog),
@@ -194,7 +216,7 @@ class AppDatabaseTest {
             }
             val migrated = Room.databaseBuilder(context, AppDatabase::class.java, filename)
                 .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3,
-                    AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5).build()
+                    AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5, AppDatabase.MIGRATION_5_6).build()
             try {
                 assertEquals(25, migrated.userDao().getUser()?.coinbone)
                 assertEquals(50, migrated.userDao().getUser()?.iddog)

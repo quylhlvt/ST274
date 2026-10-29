@@ -165,6 +165,9 @@
     <string name="dog_skin">Dog Skin</string>
     <string name="battle_rank">Battle Rank</string>
     <string name="training">Training</string>
+    <string name="training_mode_title">Choose how to play</string>
+    <string name="training_mode_microphone">Use microphone</string>
+    <string name="training_mode_touch">Tap the screen</string>
     <string name="home_change_name">Change name</string>
     <string name="home_add_bones_failed">Could not add Bones. Please try again.</string>
     <string name="home_profile_load_failed">Could not load your profile. Please reopen this screen.</string>
@@ -214,4 +217,5 @@
     <string name="play_sound_result">%1$s · %2$d%%</string>
     <string name="play_waveform_legend">Orange: your microphone · Green: simulated opponent</string>
     <string name="play_bark_count">Barks: %1$d</string>
+    <string name="play_bark_count_initial">Barks: 0</string>
 </resources>

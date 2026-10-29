@@ -17,7 +17,7 @@ import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity
 
 @Database(
     entities = [UserEntity::class, DogEntity::class, HistoryEntity::class, AchievementEntity::class, AppearanceStateEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -28,6 +28,29 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun appearanceDao(): AppearanceDao
 
     companion object {
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Assets were converted to WebP; repair only the bundled paths we own.
+                // Appearance unlocks/selections use stable IDs and need no changes.
+                for (id in 1..15) {
+                    listOf("user" to "imageAvatar", "history" to "imageAvatar1",
+                        "history" to "imageAvatar2", "user" to "imageFrame").forEach { (table, column) ->
+                        val type = if (column == "imageFrame") "frame" else "avatar"
+                        val path = "file:///android_asset/$id/$type"
+                        db.execSQL("UPDATE $table SET $column = ? WHERE $column = ?",
+                            arrayOf("$path.webp", "$path.png"))
+                    }
+                }
+                val titles = listOf("First Bark", "Battle Pup", "Top Dog", "Bark King",
+                    "Invincible Hound", "Speed Barker", "Call the Cops!")
+                titles.forEachIndexed { index, title ->
+                    val path = "file:///android_asset/Achievement/${index + 1}. $title"
+                    db.execSQL("UPDATE achievement SET image = ? WHERE image = ?",
+                        arrayOf("$path.webp", "$path.png"))
+                }
+            }
+        }
+
         val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("""

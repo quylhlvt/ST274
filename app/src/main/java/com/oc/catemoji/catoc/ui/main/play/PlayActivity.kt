@@ -123,8 +123,16 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.microphone.collect(::renderMicrophone) }
                 launch {
+                    var previousCount: Int? = null
                     viewModel.barkCount.collect { count ->
                         binding.txtBarkCount.text = getString(R.string.play_bark_count, count)
+                        val previous = previousCount
+                        if (previous != null && count > previous) {
+                            repeat((count - previous).coerceAtMost(MAX_BARK_EVENTS_PER_UPDATE)) {
+                                viewModelActivity.notifyBarkDetected()
+                            }
+                        }
+                        previousCount = count
                     }
                 }
                 launch {
@@ -388,7 +396,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
 
     override fun onScreenDestroyed() {
         binding.dualWaveform.stop()
-        waveformAvatarTarget?.let { Glide.with(this).clear(it) }
+        waveformAvatarTarget?.let { Glide.with(this@PlayActivity).clear(it) }
         waveformAvatarTarget = null
         appearanceGeneration++
         entrancePending = false
@@ -400,6 +408,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     private companion object {
+        const val MAX_BARK_EVENTS_PER_UPDATE = 12
         const val SLIDE_DURATION_MS = 500L
         const val VS_DURATION_MS = 280L
         const val VS_DELAY_MS = SLIDE_DURATION_MS - VS_DURATION_MS
