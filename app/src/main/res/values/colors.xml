@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="text_gradient_cream">#FFEBCC</color>
+    <color name="play_voice_player_background">#FFECAD</color>
+    <color name="play_voice_opponent_background">#DBFFCA</color>
 
     <color name="color_text_intro">#1F2F4F</color>
     <color name="white">#FFFFFFFF</color>

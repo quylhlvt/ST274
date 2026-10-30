@@ -74,6 +74,7 @@
     <dimen name="dimension_64">64dp</dimen>
     <dimen name="dimension_minus_20">-20dp</dimen>
     <dimen name="dimension_65">65dp</dimen>
+    <dimen name="dimension_66">66dp</dimen>
     <dimen name="dimension_68">68dp</dimen>
     <dimen name="dimension_70">70dp</dimen>
     <dimen name="dimension_72">72dp</dimen>

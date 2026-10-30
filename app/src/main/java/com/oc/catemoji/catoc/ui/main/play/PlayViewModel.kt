@@ -10,6 +10,7 @@ import com.oc.catemoji.catoc.data.audio.BarkDetectionPolicy
 import com.oc.catemoji.catoc.data.audio.DeviceSoundClassifier
 import com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
 import com.oc.catemoji.catoc.data.repository.BattleRepository
+import com.oc.catemoji.catoc.data.repository.TrainingAssetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -29,6 +30,7 @@ import javax.inject.Inject
 class PlayViewModel @Inject constructor(
     repository: BattleRepository,
     @ApplicationContext appContext: Context,
+    trainingAssets: TrainingAssetRepository,
 ) : ViewModel() {
     // Hilt injects the application Context; classifier is owned by this ViewModel.
     // This avoids the unresolved DeviceSoundClassifier type in KAPT constructor stubs.
@@ -47,9 +49,18 @@ class PlayViewModel @Inject constructor(
     private val _barkCount = MutableStateFlow(0)
     val barkCount = _barkCount.asStateFlow()
 
+    private val _background = MutableStateFlow<String?>(null)
+    val background = _background.asStateFlow()
+
     private val microphoneSession = Mutex()
     private var microphoneJob: Job? = null
     private var sessionId = 0
+
+    init {
+        viewModelScope.launch {
+            _background.value = trainingAssets.loadBackgrounds().randomOrNull()
+        }
+    }
 
     fun startListening() {
         if (microphoneJob?.isActive == true) return
@@ -62,15 +73,17 @@ class PlayViewModel @Inject constructor(
                 // Prevent overlapping AudioRecord instances on Stop / Start.
                 microphoneSession.withLock {
                     val policy = BarkDetectionPolicy(
-                        barkClassIndex = BARK_CLASS_INDEX,
-                        threshold = 0.75f,
-                        requiredMatches = 1
+                        barkClassIndex = DeviceSoundClassifier.BARK_CLASS_INDEX,
+                        threshold = DeviceSoundClassifier.BARK_SCORE_THRESHOLD,
+                        requiredMatches = 2
                     )
                     soundClassifier.listenScored().collect { update ->
                         if (session != sessionId) return@collect
                         val detection = policy.evaluate(update.prediction)
                         // Count comes from separate PCM bursts, not AI's TRUE state.
-                        _barkCount.value = baseCount + update.totalPoints
+                        // PCM levels and inference results arrive from two workers.
+                        // An older level snapshot must not lower/replay the count.
+                        _barkCount.value = maxOf(_barkCount.value, baseCount + update.totalPoints)
                         _microphone.value = MicrophoneUiState(
                             MicrophoneStatus.LISTENING,
                             detection
@@ -104,11 +117,6 @@ class PlayViewModel @Inject constructor(
             MicrophoneStatus.PERMISSION_REQUIRED,
             error = R.string.play_microphone_permission
         )
-    }
-
-    companion object {
-        // Confirmed with the current labels.txt: 1 Class 3 = human bark.
-        const val BARK_CLASS_INDEX = 1
     }
 }
 

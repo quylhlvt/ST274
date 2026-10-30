@@ -1,5 +1,8 @@
 package com.oc.catemoji.catoc.core.custom
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -26,6 +29,7 @@ class DualWaveformView @JvmOverloads constructor(
     private val barStep = dp(5f)
     private val avatarRadius = dp(20f)
     private val avatarGap = dp(5f)
+    private val trackEdgePadding = dp(3f)
     private val minimumBar = dp(4f)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val border = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -33,7 +37,14 @@ class DualWaveformView @JvmOverloads constructor(
     }
     private val rect = RectF()
     private val avatarClip = Path()
+    private val battleProgress = DualWaveformBattleProgress()
     private var avatar: Drawable? = null
+    private var avatarTranslationX = 0f
+    private var displayedBattleProgress = battleProgress.value
+    private var balanceAnimator: ValueAnimator? = null
+    private var finishDispatched = false
+    private var onBattleFinished: (() -> Unit)? = null
+    private var onAvatarPositionChanged: ((Float) -> Unit)? = null
     private var realBars = FloatArray(1)
     private var fakeBars = FloatArray(1)
     private var head = 0
@@ -59,6 +70,13 @@ class DualWaveformView @JvmOverloads constructor(
             postDelayed(this, 50L)
         }
     }
+    private val opponentTick = object : Runnable {
+        override fun run() {
+            if (!running || !isAttachedToWindow || !isShown || battleProgress.isFinished) return
+            animateBattleProgress(battleProgress.addOpponentPoint())
+            if (!battleProgress.isFinished) postDelayed(this, OPPONENT_POINT_INTERVAL_MS)
+        }
+    }
 
     init { minimumHeight = dp(56f).toInt() }
 
@@ -67,18 +85,17 @@ class DualWaveformView @JvmOverloads constructor(
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        val capacity = ((w / 2f - avatarRadius - avatarGap - dp(6f)) / barStep).toInt().coerceAtLeast(1)
+        val capacity = ((w - avatarRadius - avatarGap - dp(12f)) / barStep)
+            .toInt().coerceAtLeast(1)
         realBars = FloatArray(capacity)
         fakeBars = FloatArray(capacity)
         head = 0; count = 0
-        avatarClip.reset()
-        avatarClip.addCircle(w / 2f, h / 2f, avatarRadius - dp(2f), Path.Direction.CW)
-        updateAvatarBounds()
+        updateAvatarGeometry()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val cx = width / 2f
+        val cx = width / 2f + avatarTranslationX
         val cy = height / 2f
         rect.set(dp(1f), dp(1f), width - dp(1f), height - dp(1f))
         canvas.drawRoundRect(rect, dp(3f), dp(3f), border)
@@ -130,30 +147,130 @@ class DualWaveformView @JvmOverloads constructor(
     }
 
     private fun updateAvatarBounds() {
-        avatar?.setBounds((width / 2f - avatarRadius).toInt(), (height / 2f - avatarRadius).toInt(),
-            (width / 2f + avatarRadius).toInt(), (height / 2f + avatarRadius).toInt())
+        val cx = width / 2f + avatarTranslationX
+        avatar?.setBounds((cx - avatarRadius).toInt(), (height / 2f - avatarRadius).toInt(),
+            (cx + avatarRadius).toInt(), (height / 2f + avatarRadius).toInt())
+    }
+
+    private fun updateAvatarGeometry() {
+        val maximumTranslation = (width / 2f - avatarRadius - trackEdgePadding).coerceAtLeast(0f)
+        avatarTranslationX = (displayedBattleProgress - 0.5f) * 2f * maximumTranslation
+        val cx = width / 2f + avatarTranslationX
+        avatarClip.reset()
+        avatarClip.addCircle(cx, height / 2f, avatarRadius - dp(2f), Path.Direction.CW)
+        updateAvatarBounds()
+        onAvatarPositionChanged?.invoke(if (width > 0) (cx / width).coerceIn(0f, 1f) else 0.5f)
+        invalidate()
+    }
+
+    private fun animateBattleProgress(target: Float) {
+        balanceAnimator?.cancel()
+        val animator = ValueAnimator.ofFloat(displayedBattleProgress, target)
+        animator.duration = BALANCE_ANIMATION_DURATION_MS
+        animator.addUpdateListener { animation ->
+            displayedBattleProgress = animation.animatedValue as Float
+            updateAvatarGeometry()
+        }
+        animator.addListener(object : AnimatorListenerAdapter() {
+            private var cancelled = false
+
+            override fun onAnimationCancel(animation: Animator) {
+                cancelled = true
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                if (cancelled || balanceAnimator !== animation) return
+                balanceAnimator = null
+                displayedBattleProgress = target
+                updateAvatarGeometry()
+                if (battleProgress.isFinished && !finishDispatched) {
+                    finishDispatched = true
+                    onBattleFinished?.invoke()
+                }
+            }
+        })
+        balanceAnimator = animator
+        animator.start()
+    }
+
+    /** One confirmed player bark occupies another 2% of the track. */
+    fun addPlayerPoint() {
+        if (!battleProgress.isFinished) animateBattleProgress(battleProgress.addPlayerPoint())
+    }
+
+    fun setOnBattleFinishedListener(listener: (() -> Unit)?) {
+        onBattleFinished = listener
+    }
+
+    fun setOnAvatarPositionChangedListener(listener: ((Float) -> Unit)?) {
+        onAvatarPositionChanged = listener
+        if (listener != null) {
+            val cx = width / 2f + avatarTranslationX
+            listener(if (width > 0) (cx / width).coerceIn(0f, 1f) else 0.5f)
+        }
     }
 
     fun start() {
         if (running) return
         running = true
         removeCallbacks(tick)
-        if (isAttachedToWindow && isShown) post(tick)
+        removeCallbacks(opponentTick)
+        if (isAttachedToWindow && isShown) {
+            post(tick)
+            if (!battleProgress.isFinished) postDelayed(opponentTick, OPPONENT_POINT_INTERVAL_MS)
+        }
     }
 
-    fun stop() { running = false; removeCallbacks(tick); latestLevel = 0f }
+    fun stop() {
+        running = false
+        removeCallbacks(tick)
+        removeCallbacks(opponentTick)
+        balanceAnimator?.cancel()
+        balanceAnimator = null
+        displayedBattleProgress = battleProgress.value
+        updateAvatarGeometry()
+        latestLevel = 0f
+    }
 
     fun clear() {
+        balanceAnimator?.cancel()
+        balanceAnimator = null
+        finishDispatched = false
+        displayedBattleProgress = battleProgress.reset()
         realBars.fill(0f); fakeBars.fill(0f)
         head = 0; count = 0; latestLevel = 0f; smoothLevel = 0f; fakePhase = 0f; fakeLevel = 0.45f
-        invalidate()
+        updateAvatarGeometry()
     }
 
-    override fun onAttachedToWindow() { super.onAttachedToWindow(); if (running && isShown) post(tick) }
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (running && isShown) {
+            post(tick)
+            if (!battleProgress.isFinished) postDelayed(opponentTick, OPPONENT_POINT_INTERVAL_MS)
+        }
+    }
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
         super.onVisibilityChanged(changedView, visibility)
         // Visibility may be dispatched from View's constructor before tick is initialized.
-        if (isAttachedToWindow) { removeCallbacks(tick); if (running && isShown) post(tick) }
+        if (isAttachedToWindow) {
+            removeCallbacks(tick)
+            removeCallbacks(opponentTick)
+            if (running && isShown) {
+                post(tick)
+                if (!battleProgress.isFinished) postDelayed(opponentTick, OPPONENT_POINT_INTERVAL_MS)
+            }
+        }
     }
-    override fun onDetachedFromWindow() { removeCallbacks(tick); super.onDetachedFromWindow() }
+    override fun onDetachedFromWindow() {
+        removeCallbacks(tick)
+        removeCallbacks(opponentTick)
+        balanceAnimator?.cancel()
+        balanceAnimator = null
+        super.onDetachedFromWindow()
+    }
+
+    private companion object {
+        const val OPPONENT_POINT_INTERVAL_MS = 1_500L
+        const val BALANCE_ANIMATION_DURATION_MS = 180L
+    }
 }

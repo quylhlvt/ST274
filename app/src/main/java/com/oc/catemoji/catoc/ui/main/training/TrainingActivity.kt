@@ -26,10 +26,14 @@ import com.bumptech.glide.request.transition.Transition
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.RoomLoadState
+import com.oc.catemoji.catoc.core.extention.onClick
+import com.oc.catemoji.catoc.core.extention.setImageActionBar
+import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.databinding.ActivityTrainingBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
 import android.os.Bundle
 import android.os.SystemClock
@@ -66,6 +70,11 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
     }
 
     override fun initView() {
+        binding.actionBar.apply {
+            setImageActionBar(btnActionBarLeft, R.drawable.back_app)
+            setTextActionBar(tvCenter, getString(R.string.training))
+            btnActionBarLeft.contentDescription = getString(R.string.navigate_back)
+        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
@@ -90,6 +99,9 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
     }
 
     override fun viewListener() {
+        binding.actionBar.btnActionBarLeft.onClick {
+            onBackPressedDispatcher.onBackPressed()
+        }
         // Each training tap can produce an effect, including rapid consecutive taps.
         binding.imgAvatar.setOnClickListener { showRandomEffect() }
     }
@@ -159,21 +171,18 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
                         val count = baseCount + update.totalPoints
 
                         if (count > previousBarkCount) {
-                            val delta = count - previousBarkCount
-                            previousBarkCount = count
+                            while (previousBarkCount < count) {
+                                previousBarkCount++
+                                binding.txtBarkCount.text =
+                                    getString(R.string.play_bark_count, previousBarkCount)
 
-                            // Cập nhật điểm trước, không chờ Glide/animation.
-                            binding.txtBarkCount.text =
-                                getString(R.string.play_bark_count, count)
-
-                            // Các hiệu ứng hình ảnh được lên lịch riêng để
-                            // tránh block collector khi tải hình bằng Glide.
-                            repeat(delta.coerceAtMost(MAX_ACTIVE_EFFECTS)) {
+                                // Each confirmed bark owns one visual event.
                                 binding.root.post {
                                     if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
                                         showRandomEffect()
                                     }
                                 }
+                                if (previousBarkCount < count) delay(BARK_COUNT_STEP_DELAY_MS)
                             }
                         }
                     }
@@ -342,6 +351,7 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
     companion object {
         private const val TAG = "TrainingAudio"
         private const val SLOW_PREDICTION_GAP_MS = 700L
+        private const val BARK_COUNT_STEP_DELAY_MS = 80L
         const val EXTRA_USE_MICROPHONE = "training_use_microphone"
 
         private const val MAX_ACTIVE_EFFECTS = 12

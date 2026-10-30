@@ -15,7 +15,6 @@ import org.junit.Assert.*
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.tensorflow.lite.task.audio.classifier.AudioClassifier
 import kotlin.math.sin
 import kotlin.math.PI
 
@@ -24,33 +23,26 @@ class BarkAudioModelTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Test fun bundledModelLoadsItsRealMetadataAndClassifiesAudio() {
-        val classifier = AudioClassifier.createFromFile(context, DeviceSoundClassifier.MODEL_PATH)
-        try {
-            assertEquals(44_100, classifier.requiredTensorAudioFormat.sampleRate)
-            assertEquals(1, classifier.requiredTensorAudioFormat.channels)
-            assertEquals(44_032L, classifier.requiredInputBufferSize)
-            val tensor = classifier.createInputTensorAudio()
-            tensor.load(FloatArray(classifier.requiredInputBufferSize.toInt()))
-            val silence = classifier.classify(tensor).single().categories
+        BarkAudioModel.create(context).use { model ->
+            assertEquals(44_100, model.sampleRate)
+            assertEquals(44_032, model.inputSamples)
+            val silence = model.classifyPcm16(ShortArray(model.inputSamples))
             val silentPolicy = BarkDetectionPolicy(0)
             repeat(3) {
-                assertFalse(silentPolicy.evaluate(SoundPrediction(silence.map {
-                    SoundScore(it.index, it.label, it.score)
-                }, 0f)).isBark)
+                assertFalse(silentPolicy.evaluate(SoundPrediction(silence, 0f)).isBark)
             }
-            tensor.load(FloatArray(classifier.requiredInputBufferSize.toInt()) { sample ->
-                (0.04 * sin(2 * PI * 440 * sample / 44_100) +
-                    0.02 * sin(2 * PI * 880 * sample / 44_100)).toFloat()
-            })
-            val categories = classifier.classify(tensor).single().categories
-            assertEquals(setOf(0, 1, 2), categories.map { it.index }.toSet())
+            val tone = ShortArray(model.inputSamples) { sample ->
+                ((0.04 * sin(2 * PI * 440 * sample / 44_100) +
+                    0.02 * sin(2 * PI * 880 * sample / 44_100)) * Short.MAX_VALUE)
+                    .toInt().toShort()
+            }
+            val categories = model.classifyPcm16(tone)
+            assertEquals(setOf(0, 1), categories.map { it.index }.toSet())
             assertTrue("Model scores: ${categories.map { it.label to it.score }}", categories.all { it.score.isFinite() && it.score in 0f..1f })
-            assertEquals(setOf("0 Background Noise", "1 Class 3", "2 Other Sounds"), categories.map { it.label }.toSet())
-            val prediction = SoundPrediction(categories.map { SoundScore(it.index, it.label, it.score) }, 0f)
+            assertEquals(setOf("0 Background Noise", "1 sua"), categories.map { it.label }.toSet())
+            val prediction = SoundPrediction(categories, 0f)
             val policy = BarkDetectionPolicy(0)
             repeat(3) { assertFalse(policy.evaluate(prediction).isBark) }
-        } finally {
-            classifier.close()
         }
     }
 

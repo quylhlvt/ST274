@@ -32,18 +32,23 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.RoomLoadState
 import com.oc.catemoji.catoc.core.base.BaseActivity
+import com.oc.catemoji.catoc.core.custom.VoiceTrackDivider
 import com.oc.catemoji.catoc.core.extention.toInformation
 import com.oc.catemoji.catoc.core.extention.onClick
+import com.oc.catemoji.catoc.core.extention.setImageActionBar
+import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
 import com.oc.catemoji.catoc.databinding.ActivityPlayBinding
 import com.oc.catemoji.catoc.utils.DataLocal
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -63,6 +68,9 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     private var microphonePermissionBlocked = false
     private var microphoneAutoRequested = false
     private var waveformAvatarTarget: CustomTarget<Drawable>? = null
+    private var backgroundPath: String? = null
+    private var backgroundTarget: CustomViewTarget<View, Drawable>? = null
+    private var voiceTrackDivider: VoiceTrackDivider? = null
     private val microphonePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         microphonePermissionPending = false
         if (granted) {
@@ -75,6 +83,11 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     override fun initView() {
+        binding.actionBar.apply {
+            setImageActionBar(btnActionBarLeft, R.drawable.back_app)
+            setTextActionBar(tvCenter, getString(R.string.play))
+            btnActionBarLeft.contentDescription = getString(R.string.navigate_back)
+        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -82,6 +95,15 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         }
         binding.namePlay1.isSelected = true
         binding.txtCoinRank1.isSelected = true
+        binding.dualWaveform.setOnBattleFinishedListener {
+            viewModel.stopListening()
+        }
+        val divider = VoiceTrackDivider(
+            binding.dualWaveform, binding.changeVoice,
+            binding.bgVoiceAvatar1, binding.bgVoiceAvatar2,
+        )
+        voiceTrackDivider = divider
+        binding.dualWaveform.setOnAvatarPositionChangedListener(divider::updateAvatarPosition)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -101,6 +123,9 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     override fun viewListener() {
+        binding.actionBar.btnActionBarLeft.onClick {
+            onBackPressedDispatcher.onBackPressed()
+        }
         binding.btnMicrophone.onClick {
             when (viewModel.microphone.value.status) {
                 MicrophoneStatus.STARTING, MicrophoneStatus.LISTENING -> viewModel.stopListening()
@@ -123,16 +148,34 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.microphone.collect(::renderMicrophone) }
                 launch {
-                    var previousCount: Int? = null
-                    viewModel.barkCount.collect { count ->
-                        binding.txtBarkCount.text = getString(R.string.play_bark_count, count)
-                        val previous = previousCount
-                        if (previous != null && count > previous) {
-                            repeat((count - previous).coerceAtMost(MAX_BARK_EVENTS_PER_UPDATE)) {
-                                viewModelActivity.notifyBarkDetected()
-                            }
+                    viewModel.background.collect { path ->
+                        if (path != null && path != backgroundPath) loadBackground(path)
+                    }
+                }
+                launch {
+                    var displayedCount: Int? = null
+                    viewModel.barkCount.collect { targetCount ->
+                        val current = displayedCount
+                        if (current == null || targetCount <= current) {
+                            displayedCount = targetCount
+                            binding.txtBarkCount.text =
+                                getString(R.string.play_bark_count, targetCount)
+                            return@collect
                         }
-                        previousCount = count
+
+                        // One inference window may confirm several queued barks.
+                        // Present every point separately so battle movement can
+                        // consume exactly one left/right push per bark event.
+                        var nextCount = current
+                        while (nextCount < targetCount) {
+                            nextCount++
+                            displayedCount = nextCount
+                            binding.txtBarkCount.text =
+                                getString(R.string.play_bark_count, nextCount)
+                            binding.dualWaveform.addPlayerPoint()
+                            viewModelActivity.notifyBarkDetected()
+                            if (nextCount < targetCount) delay(BARK_COUNT_STEP_DELAY_MS)
+                        }
                     }
                 }
                 launch {
@@ -250,6 +293,27 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         }
         waveformAvatarTarget = target
         Glide.with(this).load(path.ifBlank { null }).dontAnimate().into(target)
+    }
+
+    private fun loadBackground(path: String) {
+        if (isFinishing || isDestroyed) return
+        backgroundPath = path
+        backgroundTarget?.let { Glide.with(applicationContext).clear(it) }
+        val target = object : CustomViewTarget<View, Drawable>(binding.root) {
+            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+                view.background = resource
+            }
+
+            override fun onLoadFailed(errorDrawable: Drawable?) {
+                view.background = errorDrawable
+            }
+
+            override fun onResourceCleared(placeholder: Drawable?) {
+                view.background = placeholder
+            }
+        }
+        backgroundTarget = target
+        Glide.with(this).load(path).centerCrop().dontAnimate().into(target)
     }
 
     private fun loadAppearance(
@@ -395,8 +459,16 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     override fun onScreenDestroyed() {
+        binding.dualWaveform.setOnBattleFinishedListener(null)
+        binding.dualWaveform.setOnAvatarPositionChangedListener(null)
+        voiceTrackDivider?.dispose()
+        voiceTrackDivider = null
         binding.dualWaveform.stop()
-        waveformAvatarTarget?.let { Glide.with(this@PlayActivity).clear(it) }
+        backgroundTarget?.let { Glide.with(applicationContext).clear(it) }
+        backgroundTarget = null
+        // BaseActivity invokes this from onDestroy(), when Glide no longer allows
+        // retrieving the RequestManager associated with this Activity.
+        waveformAvatarTarget?.let { Glide.with(applicationContext).clear(it) }
         waveformAvatarTarget = null
         appearanceGeneration++
         entrancePending = false
@@ -408,7 +480,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     private companion object {
-        const val MAX_BARK_EVENTS_PER_UPDATE = 12
+        const val BARK_COUNT_STEP_DELAY_MS = 80L
         const val SLIDE_DURATION_MS = 500L
         const val VS_DURATION_MS = 280L
         const val VS_DELAY_MS = SLIDE_DURATION_MS - VS_DURATION_MS

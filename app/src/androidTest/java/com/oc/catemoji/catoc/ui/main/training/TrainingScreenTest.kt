@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -38,6 +39,11 @@ class TrainingScreenTest {
             awaitCondition(scenario) { it.findViewById<View>(R.id.main).background != null }
             lateinit var image: ImageView
             scenario.onActivity { activity ->
+                assertEquals(View.VISIBLE, activity.findViewById<View>(R.id.btnActionBarLeft).visibility)
+                assertEquals(
+                    activity.getString(R.string.training),
+                    activity.findViewById<TextView>(R.id.tvCenter).text.toString(),
+                )
                 val root = activity.findViewById<android.view.ViewGroup>(R.id.main)
                 val avatar = activity.findViewById<ImageView>(R.id.imgAvatar)
                 val layer = activity.findViewById<FrameLayout>(R.id.effectLayer)

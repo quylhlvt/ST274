@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.tensorflow.lite.task.audio.classifier.AudioClassifier
 import kotlin.math.sqrt
 
 /** One score is awarded for each separated PCM sound burst CONFIRMED by the audio model. */
@@ -54,12 +53,10 @@ class DeviceSoundClassifier(
         check(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) { "RECORD_AUDIO permission not granted" }
 
-        Log.i(TAG, "STAGE 1/4: Loading $MODEL_FILE")
-        val classifier = withContext(Dispatchers.Default) {
+        Log.i(TAG, "STAGE 1/4: Loading $MODEL_PATH")
+        val model = withContext(Dispatchers.Default) {
             try {
-                // Distinguishes a missing asset from a model/metadata incompatibility.
-                context.assets.open(MODEL_FILE).use { }
-                AudioClassifier.createFromFile(context, MODEL_FILE)
+                BarkAudioModel.create(context)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -67,29 +64,24 @@ class DeviceSoundClassifier(
                 throw IllegalStateException("MODEL_INIT: ${e.message ?: e.javaClass.simpleName}", e)
             }
         }
-        val tensor: org.tensorflow.lite.support.audio.TensorAudio
         val sampleRate: Int
         val windowSamples: Int
         try {
-            tensor = classifier.createInputTensorAudio()
-            val format = classifier.requiredTensorAudioFormat
-            sampleRate = format.sampleRate
-            val channels = format.channels
-            require(channels == 1) { "Only mono audio supported (channels=$channels)" }
-            windowSamples = tensor.tensorBuffer.flatSize / channels
+            sampleRate = model.sampleRate
+            windowSamples = model.inputSamples
             require(sampleRate > 0 && windowSamples > 0) {
                 "Invalid model input: rate=$sampleRate, samples=$windowSamples"
             }
-            Log.i(TAG, "STAGE 2/4: Model OK rate=$sampleRate channels=$channels samples=$windowSamples")
+            Log.i(TAG, "STAGE 2/4: Model OK rate=$sampleRate channels=1 samples=$windowSamples")
         } catch (e: Exception) {
             Log.e(TAG, "MODEL_FORMAT failed: ${e.message}", e)
-            classifier.close()
+            model.close()
             throw IllegalStateException("MODEL_FORMAT: ${e.message ?: e.javaClass.simpleName}", e)
         }
         val hopSamples = (sampleRate / 5).coerceAtLeast(1) // ~200ms
         val tracker = BarkBurstScoreTracker(
             sampleRate = sampleRate,
-            minimumModelScore = MODEL_THRESHOLD
+            minimumModelScore = BARK_SCORE_THRESHOLD
         )
         val windows = Channel<AudioWindow>(Channel.CONFLATED)
 
@@ -97,16 +89,9 @@ class DeviceSoundClassifier(
             try {
                 for (window in windows) {
                     val startedAt = SystemClock.elapsedRealtime()
-                    // load(short[]) converts PCM16 to floating-point model input.
-                    tensor.load(window.pcm)
-                    val classifications = classifier.classify(tensor)
-                    val scores = classifications.flatMap { group ->
-                        group.categories.map { cat ->
-                            SoundScore(cat.index, cat.label, cat.score)
-                        }
-                    }
-                    // IMPORTANT: 0=Background Noise, 1=Class 3 (Human Bark).
-                    val barkScore = scores.firstOrNull { it.index == BARK_INDEX }?.score ?: 0f
+                    val scores = model.classifyPcm16(window.pcm)
+                    // The bundled model maps 0=Background Noise and 1=sua (bark).
+                    val barkScore = scores.firstOrNull { it.index == BARK_CLASS_INDEX }?.score ?: 0f
                     val update = tracker.offerAiPrediction(
                         barkScore, window.startMs, window.endMs
                     )
@@ -125,7 +110,7 @@ class DeviceSoundClassifier(
                 Log.e(TAG, "INFERENCE failed: ${e.message}", e)
                 throw IllegalStateException("INFERENCE: ${e.message ?: e.javaClass.simpleName}", e)
             } finally {
-                classifier.close()
+                model.close()
             }
         }
 
@@ -270,10 +255,11 @@ class DeviceSoundClassifier(
         return record
     }
 
-    private companion object {
-        const val TAG = "BarkClassifier"
-        const val MODEL_FILE = "tflite/soundclassifier_with_metadata.tflite"
-        const val BARK_INDEX = 1
-        const val MODEL_THRESHOLD = 0.75f
+    companion object {
+        const val MODEL_PATH = BarkAudioModel.MODEL_PATH
+        const val BARK_CLASS_INDEX = 1
+        const val BARK_SCORE_THRESHOLD = 0.85f
+
+        private const val TAG = "BarkClassifier"
     }
 }

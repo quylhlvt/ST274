@@ -33,6 +33,7 @@
     <string name="do_you_want_to_reset_all">Do you want to reset all?</string>
     <string name="reset">Reset</string>
     <string name="exit">Exit</string>
+    <string name="navigate_back">Back</string>
     <string name="rate_us">Rate Us</string>
     <string name="share_app">Share App</string>
     <string name="image_has_been_saved_successfully">Image has been saved successfully!</string>

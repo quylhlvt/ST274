@@ -116,7 +116,8 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-config-ktx")
 
-    implementation("org.tensorflow:tensorflow-lite-task-audio:0.4.4")
+    // LiteRT 1.4.1 keeps the Interpreter API and ships 16 KB-aligned native binaries.
+    implementation("com.google.ai.edge.litert:litert:1.4.1")
 
 
 }
