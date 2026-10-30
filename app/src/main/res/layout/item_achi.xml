@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimension_8"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <View android:layout_width="@dimen/dimension_0" android:layout_height="@dimen/dimension_0"
+          app:layout_constraintDimensionRatio="2.08:0.8"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+
+          app:layout_constraintEnd_toEndOf="parent"
+          android:id="@+id/view1"/>
+    <ImageView android:layout_width="@dimen/dimension_0" android:layout_height="@dimen/dimension_0"
+               app:layout_constraintDimensionRatio="1"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintBottom_toBottomOf="@+id/view1"
+               android:src="@drawable/achi1"
+               android:id="@+id/avatarAchi"/>
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintStart_toEndOf="@+id/avatarAchi"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/name"
+            android:id="@+id/namne"
+            android:gravity="center_vertical"
+            android:layout_marginStart="@dimen/dimension_25"
+            android:layout_marginEnd="@dimen/dimension_5"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/view1"
+            android:textSize="@dimen/text_size_18"
+            android:fontFamily="@font/illita_one_regular"
+            android:textColor="@color/app_color"
+            app:extrusionDy="@dimen/dimension_0"
+            app:outerStrokeWidth="@dimen/dimension_1"
+            app:outerStrokeColor="@color/white"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

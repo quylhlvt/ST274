@@ -4,7 +4,7 @@ import android.graphics.Rect
 import android.view.View
 import kotlin.math.roundToInt
 
-/** Keeps the translated marker and the two XML color views aligned with the avatar. */
+/** Maps battle progress to the full marker track and its two colored regions. */
 class VoiceTrackDivider(
     private val waveform: View,
     private val marker: View,
@@ -13,7 +13,7 @@ class VoiceTrackDivider(
 ) {
     private val playerClip = Rect()
     private val opponentClip = Rect()
-    private var avatarFraction = 0.5f
+    private var battleFraction = 0.5f
     private val layoutListener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
         updateGeometry()
     }
@@ -26,8 +26,8 @@ class VoiceTrackDivider(
         updateGeometry()
     }
 
-    fun updateAvatarPosition(fraction: Float) {
-        avatarFraction = fraction.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: 0.5f
+    fun updateBattleProgress(fraction: Float) {
+        battleFraction = fraction.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: 0.5f
         updateGeometry()
     }
 
@@ -35,7 +35,7 @@ class VoiceTrackDivider(
         if (waveform.width <= 0) return
         // All four views share the same parent. Use their measured positions
         // so margins, tablets and a later layout pass cannot offset the split.
-        val centerX = waveform.left + waveform.width * avatarFraction
+        val centerX = waveform.left + waveform.width * battleFraction
         marker.translationX = centerX - marker.left - marker.width / 2f
 
         val playerEnd = (centerX - playerBackground.left).roundToInt()

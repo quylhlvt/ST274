@@ -7,3 +7,11 @@
 # Keep useful locations in Crashlytics stack traces while hiding source names.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+
+# JNA resolves the Vosk direct-mapped native methods by their original names.
+-keep class org.vosk.LibVosk { *; }
+# JNA also looks up its own JNI support and PointerType constructors reflectively.
+# Matches the rules recommended by the official Vosk Android demo.
+-keep class com.sun.jna.* { *; }
+-keepclassmembers class * extends com.sun.jna.* { public *; }
+-dontwarn java.awt.**

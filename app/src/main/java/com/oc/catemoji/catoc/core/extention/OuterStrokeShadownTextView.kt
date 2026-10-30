@@ -1,13 +1,14 @@
 package com.oc.catemoji.catoc.core.extention
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Paint.Join
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.oc.catemoji.catoc.R
-import kotlin.text.toInt
-
+import kotlin.math.ceil
 
 class OuterStrokeShadownTextView : AppCompatTextView {
 
@@ -15,12 +16,12 @@ class OuterStrokeShadownTextView : AppCompatTextView {
     private var outerStrokeColor: Int = Color.WHITE
     private var outerStrokeJoin: Join = Join.ROUND
     private var strokeMiter = 3f
-    private var extraPadding = 5
     private var isDrawingStroke = false
 
     constructor(context: Context) : super(context) { init(null) }
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { init(attrs) }
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { init(attrs) }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
+            super(context, attrs, defStyleAttr) { init(attrs) }
 
     private fun init(attrs: AttributeSet?) {
         if (attrs == null) return
@@ -37,16 +38,17 @@ class OuterStrokeShadownTextView : AppCompatTextView {
             a.recycle()
         }
         if (outerStrokeWidth > 0f) {
-            extraPadding = (outerStrokeWidth * resources.getDimension(R.dimen.dimension_2)).toInt()
+            // Nét viền tràn ra ngoài mép chữ một nửa độ dày, ở cả 4 phía.
+            val extra = ceil(outerStrokeWidth / 2f).toInt()
+            setPadding(
+                paddingLeft + extra, paddingTop + extra,
+                paddingRight + extra, paddingBottom + extra
+            )
         }
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        if (extraPadding > 0) {
-            setPadding(paddingLeft + extraPadding, paddingTop, paddingRight + extraPadding, paddingBottom)
-            extraPadding = 0
-        }
         if (outerStrokeWidth > 0f) {
             post { setLayerType(LAYER_TYPE_SOFTWARE, null) }
         }
@@ -63,35 +65,48 @@ class OuterStrokeShadownTextView : AppCompatTextView {
         val originalStyle = p.style
         val originalStrokeWidth = p.strokeWidth
         val originalJoin = p.strokeJoin
+        val originalMiter = p.strokeMiter
 
-        // ── Vẽ stroke ──────────────────────────────────────
+        // Lưu shadow của người dùng trước khi đổi.
+        val sr = shadowRadius
+        val sdx = shadowDx
+        val sdy = shadowDy
+        val sc = shadowColor
+
+        // Chặn invalidate trong suốt onDraw (setTextColor/setShadowLayer đều gọi invalidate).
         isDrawingStroke = true
-        super.setTextColor(outerStrokeColor)
-        p.clearShadowLayer()
-        p.style = Paint.Style.STROKE
-        p.strokeWidth = outerStrokeWidth
-        p.strokeJoin = outerStrokeJoin
-        p.strokeMiter = strokeMiter
-        p.isAntiAlias = true
-        super.onDraw(canvas)
+        try {
+            // ── Lượt 1: vẽ viền ─────────────────────────────────────
+            super.setTextColor(outerStrokeColor)
+            // Shadow trong suốt chỉ để TextView nới vùng cắt ra thêm nửa nét viền.
+            super.setShadowLayer(maxOf(sr, outerStrokeWidth / 2f), 0f, 0f, Color.TRANSPARENT)
+            p.style = Paint.Style.STROKE
+            p.strokeWidth = outerStrokeWidth
+            p.strokeJoin = outerStrokeJoin
+            p.strokeMiter = strokeMiter
+            p.isAntiAlias = true
+            super.onDraw(canvas)
 
-        // ── Vẽ fill + shadow ────────────────────────────────
-        isDrawingStroke = false
-        super.setTextColor(originalColors)
-        p.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor)
-        p.style = originalStyle
-        p.strokeWidth = originalStrokeWidth
-        p.strokeJoin = originalJoin
-        super.onDraw(canvas)
+            // ── Lượt 2: vẽ chữ + shadow thật ────────────────────────
+            super.setTextColor(originalColors)
+            super.setShadowLayer(sr, sdx, sdy, sc)
+            p.style = originalStyle
+            p.strokeWidth = originalStrokeWidth
+            p.strokeJoin = originalJoin
+            p.strokeMiter = originalMiter
+            super.onDraw(canvas)
+        } finally {
+            isDrawingStroke = false
+        }
     }
 
     override fun invalidate() {
-        if (isDrawingStroke) return          // ✅ chặn loop
+        if (isDrawingStroke) return
         super.invalidate()
     }
 
     override fun postInvalidate() {
-        if (isDrawingStroke) return          // ✅ chặn thêm postInvalidate
+        if (isDrawingStroke) return
         super.postInvalidate()
     }
 }

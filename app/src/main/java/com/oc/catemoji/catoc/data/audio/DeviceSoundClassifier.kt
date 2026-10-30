@@ -97,7 +97,8 @@ class DeviceSoundClassifier(
                     )
                     val inferenceMs = SystemClock.elapsedRealtime() - startedAt
                     Log.d(TAG, "inference=${inferenceMs}ms bark=${"%.2f".format(barkScore)} " +
-                            "events=+${update.newPoints} total=${update.totalPoints}")
+                            "events=+${update.newPoints} total=${update.totalPoints} " +
+                            tracker.diagnosticSummary())
                     trySend(BarkListeningUpdate(
                         prediction = SoundPrediction(scores, window.recentLevel, true),
                         newPoints = update.newPoints,

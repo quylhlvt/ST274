@@ -32,9 +32,8 @@ class DualWaveformView @JvmOverloads constructor(
     private val trackEdgePadding = dp(3f)
     private val minimumBar = dp(4f)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val border = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.DKGRAY; style = Paint.Style.STROKE; strokeWidth = dp(1f)
-    }
+    private val playerBarColor = Color.rgb(255, 137, 28)
+    private val opponentBarColor = Color.rgb(8, 184, 50)
     private val rect = RectF()
     private val avatarClip = Path()
     private val battleProgress = DualWaveformBattleProgress()
@@ -44,7 +43,7 @@ class DualWaveformView @JvmOverloads constructor(
     private var balanceAnimator: ValueAnimator? = null
     private var finishDispatched = false
     private var onBattleFinished: (() -> Unit)? = null
-    private var onAvatarPositionChanged: ((Float) -> Unit)? = null
+    private var onBattleProgressChanged: ((Float) -> Unit)? = null
     private var realBars = FloatArray(1)
     private var fakeBars = FloatArray(1)
     private var head = 0
@@ -54,9 +53,14 @@ class DualWaveformView @JvmOverloads constructor(
     private var fakePhase = 0f
     private var fakeLevel = 0.45f
     private var running = false
+    private var simulateOpponent = true
+    private var staticWaveform = false
+    private var tapOpponentIntervalMs = 300L
+    private val opponentPointIntervalMs: Long
+        get() = if (staticWaveform) tapOpponentIntervalMs else OPPONENT_POINT_INTERVAL_MS
     private val tick = object : Runnable {
         override fun run() {
-            if (!running || !isAttachedToWindow || !isShown) return
+            if (!running || staticWaveform || !isAttachedToWindow || !isShown) return
             smoothLevel = smoothLevel * 0.35f + latestLevel * 0.65f
             fakePhase += 0.22f
             val target = (0.12f + abs(sin(fakePhase * 0.41f)) * 0.43f +
@@ -72,9 +76,9 @@ class DualWaveformView @JvmOverloads constructor(
     }
     private val opponentTick = object : Runnable {
         override fun run() {
-            if (!running || !isAttachedToWindow || !isShown || battleProgress.isFinished) return
+            if (!running || !simulateOpponent || !isAttachedToWindow || !isShown || battleProgress.isFinished) return
             animateBattleProgress(battleProgress.addOpponentPoint())
-            if (!battleProgress.isFinished) postDelayed(this, OPPONENT_POINT_INTERVAL_MS)
+            if (!battleProgress.isFinished) postDelayed(this, opponentPointIntervalMs)
         }
     }
 
@@ -97,10 +101,10 @@ class DualWaveformView @JvmOverloads constructor(
         super.onDraw(canvas)
         val cx = width / 2f + avatarTranslationX
         val cy = height / 2f
-        rect.set(dp(1f), dp(1f), width - dp(1f), height - dp(1f))
-        canvas.drawRoundRect(rect, dp(3f), dp(3f), border)
-        drawBars(canvas, realBars, cx, cy, true, Color.rgb(255, 137, 28))
-        drawBars(canvas, fakeBars, cx, cy, false, Color.rgb(8, 184, 50))
+        if (!staticWaveform) {
+            drawBars(canvas, realBars, cx, cy, true, playerBarColor)
+            drawBars(canvas, fakeBars, cx, cy, false, opponentBarColor)
+        }
         paint.color = Color.WHITE
         canvas.drawCircle(cx, cy, avatarRadius, paint)
         val image = avatar
@@ -115,7 +119,6 @@ class DualWaveformView @JvmOverloads constructor(
             rect.set(cx - dp(12f), cy + dp(3f), cx + dp(12f), cy + dp(17f))
             canvas.drawOval(rect, paint)
         }
-        canvas.drawCircle(cx, cy, avatarRadius, border)
     }
 
     private fun drawBars(canvas: Canvas, values: FloatArray, cx: Float, cy: Float, leftSide: Boolean, color: Int) {
@@ -133,6 +136,7 @@ class DualWaveformView @JvmOverloads constructor(
 
     /** PCM 16-bit equivalent RMS, 0..32767, delivered on the main thread. */
     fun addRealAmplitude(rawAmplitude: Int) {
+        if (staticWaveform) return
         val amplitude = rawAmplitude.coerceIn(0, 32767)
         latestLevel = if (amplitude == 0) 0f else
             ((20.0 * log10(amplitude / 32767.0) + 55.0) / 55.0).toFloat().coerceIn(0f, 1f)
@@ -159,7 +163,9 @@ class DualWaveformView @JvmOverloads constructor(
         avatarClip.reset()
         avatarClip.addCircle(cx, height / 2f, avatarRadius - dp(2f), Path.Direction.CW)
         updateAvatarBounds()
-        onAvatarPositionChanged?.invoke(if (width > 0) (cx / width).coerceIn(0f, 1f) else 0.5f)
+        // The avatar must remain fully inside the waveform, while the external
+        // divider and color split are allowed to reach both absolute edges.
+        onBattleProgressChanged?.invoke(displayedBattleProgress.coerceIn(0f, 1f))
         invalidate()
     }
 
@@ -198,27 +204,69 @@ class DualWaveformView @JvmOverloads constructor(
         if (!battleProgress.isFinished) animateBattleProgress(battleProgress.addPlayerPoint())
     }
 
+    val isBattleFinished: Boolean
+        get() = battleProgress.isFinished
+
+    fun addOpponentPoint() {
+        if (!battleProgress.isFinished) animateBattleProgress(battleProgress.addOpponentPoint())
+    }
+
     fun setOnBattleFinishedListener(listener: (() -> Unit)?) {
         onBattleFinished = listener
     }
 
-    fun setOnAvatarPositionChangedListener(listener: ((Float) -> Unit)?) {
-        onAvatarPositionChanged = listener
-        if (listener != null) {
-            val cx = width / 2f + avatarTranslationX
-            listener(if (width > 0) (cx / width).coerceIn(0f, 1f) else 0.5f)
-        }
+    fun setOnBattleProgressChangedListener(listener: ((Float) -> Unit)?) {
+        onBattleProgressChanged = listener
+        listener?.invoke(displayedBattleProgress.coerceIn(0f, 1f))
     }
 
-    fun start() {
+    fun start(simulateOpponent: Boolean = true) {
+        staticWaveform = false
+        if (this.simulateOpponent != simulateOpponent) {
+            this.simulateOpponent = simulateOpponent
+            removeCallbacks(opponentTick)
+            if (running && simulateOpponent && isAttachedToWindow && isShown && !battleProgress.isFinished) {
+                postDelayed(opponentTick, opponentPointIntervalMs)
+            }
+        }
         if (running) return
         running = true
         removeCallbacks(tick)
         removeCallbacks(opponentTick)
         if (isAttachedToWindow && isShown) {
             post(tick)
-            if (!battleProgress.isFinished) postDelayed(opponentTick, OPPONENT_POINT_INTERVAL_MS)
+            if (simulateOpponent && !battleProgress.isFinished) postDelayed(opponentTick, opponentPointIntervalMs)
         }
+    }
+
+    /** Tap mode hides audio bars while keeping the opponent's battle timer active. */
+    fun setTapOpponentInterval(intervalMs: Long) {
+        require(intervalMs > 0)
+        if (tapOpponentIntervalMs == intervalMs) return
+        tapOpponentIntervalMs = intervalMs
+        if (staticWaveform && running && isAttachedToWindow && isShown && !battleProgress.isFinished) {
+            removeCallbacks(opponentTick)
+            postDelayed(opponentTick, opponentPointIntervalMs)
+        }
+    }
+
+    fun showStaticWaveform() {
+        if (staticWaveform && running) return
+        staticWaveform = true
+        running = true
+        simulateOpponent = true
+        removeCallbacks(tick)
+        removeCallbacks(opponentTick)
+        latestLevel = 0f
+        smoothLevel = 0f
+        realBars.fill(0f)
+        fakeBars.fill(0f)
+        head = 0
+        count = 0
+        if (isAttachedToWindow && isShown && !battleProgress.isFinished) {
+            postDelayed(opponentTick, opponentPointIntervalMs)
+        }
+        invalidate()
     }
 
     fun stop() {
@@ -245,8 +293,8 @@ class DualWaveformView @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         if (running && isShown) {
-            post(tick)
-            if (!battleProgress.isFinished) postDelayed(opponentTick, OPPONENT_POINT_INTERVAL_MS)
+            if (!staticWaveform) post(tick)
+            if (simulateOpponent && !battleProgress.isFinished) postDelayed(opponentTick, opponentPointIntervalMs)
         }
     }
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
@@ -256,8 +304,8 @@ class DualWaveformView @JvmOverloads constructor(
             removeCallbacks(tick)
             removeCallbacks(opponentTick)
             if (running && isShown) {
-                post(tick)
-                if (!battleProgress.isFinished) postDelayed(opponentTick, OPPONENT_POINT_INTERVAL_MS)
+                if (!staticWaveform) post(tick)
+                if (simulateOpponent && !battleProgress.isFinished) postDelayed(opponentTick, opponentPointIntervalMs)
             }
         }
     }

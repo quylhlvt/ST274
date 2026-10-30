@@ -24,9 +24,11 @@ class BarkBurstScoreTracker(
         var lastMatchingWindowEndMs: Long = -1L,
     )
     data class ScoreUpdate(val newPoints: Int, val totalPoints: Int)
+    private data class ModelWindow(val score: Float, val startMs: Long, val endMs: Long)
 
     private val frameSamples = sampleRate / 50 // 20ms, requires sampleRate divisible by 50
     private val pending = ArrayDeque<Burst>()
+    private val recentPredictions = ArrayDeque<ModelWindow>()
 
     private var frameCount = 0
     private var framePower = 0.0
@@ -42,6 +44,9 @@ class BarkBurstScoreTracker(
     private var lastBurstEndMs = -10000L
     private var points = 0
     private var lastPredictionWindowEndMs = -1L
+    private var acceptedBursts = 0
+    private var rejectedDuration = 0
+    private var rejectedVolume = 0
 
     init {
         require(sampleRate > 0 && sampleRate % 50 == 0)
@@ -115,11 +120,40 @@ class BarkBurstScoreTracker(
 
     private fun enqueueBurst(endMs: Long) {
         val durationMs = endMs - burstStartMs
-        if (durationMs in MINIMUM_BURST_DURATION_MS..MAXIMUM_BURST_DURATION_MS &&
-            activePeakRms >= MINIMUM_PEAK_RMS) {
-            pending.addLast(Burst(burstStartMs, endMs))
-            while (pending.size > MAX_PENDING_BURSTS) pending.removeFirst()
+        if (durationMs !in MINIMUM_BURST_DURATION_MS..MAXIMUM_BURST_DURATION_MS) {
+            rejectedDuration++
+            return
         }
+        if (activePeakRms < MINIMUM_PEAK_RMS) {
+            rejectedVolume++
+            return
+        }
+        acceptedBursts++
+        val burst = Burst(burstStartMs, endMs)
+        // Inference can cover the entire bark before the quiet frames close its
+        // PCM burst. Preserve that evidence regardless of worker scheduling.
+        for (prediction in recentPredictions) {
+            if (confirm(burst, prediction)) {
+                points++
+                return
+            }
+        }
+        pending.addLast(burst)
+        while (pending.size > MAX_PENDING_BURSTS) pending.removeFirst()
+    }
+
+    private fun confirm(burst: Burst, prediction: ModelWindow): Boolean {
+        if (burst.startMs < prediction.startMs || burst.endMs > prediction.endMs) return false
+        if (prediction.score.isFinite() && prediction.score in minimumModelScore..1f) {
+            if (prediction.endMs - burst.lastMatchingWindowEndMs > MAXIMUM_CONFIRMATION_GAP_MS) {
+                burst.matches = 0
+            }
+            burst.lastMatchingWindowEndMs = prediction.endMs
+            burst.matches++
+            return burst.matches >= requiredModelMatches
+        }
+        burst.matches = 0
+        return false
     }
 
     /**
@@ -139,31 +173,24 @@ class BarkBurstScoreTracker(
         // Replaying an inference or delivering it out of order is not a second confirmation.
         if (windowEndMs <= lastPredictionWindowEndMs) return ScoreUpdate(0, points)
         lastPredictionWindowEndMs = windowEndMs
+        val prediction = ModelWindow(barkScore, windowStartMs, windowEndMs)
+        recentPredictions.addLast(prediction)
+        while (recentPredictions.size > MAX_RECENT_PREDICTIONS ||
+            recentPredictions.first.endMs < windowEndMs - PREDICTION_HISTORY_MS) {
+            recentPredictions.removeFirst()
+        }
         var added = 0
         val it = pending.iterator()
         while (it.hasNext()) {
             val burst = it.next()
             // Drop old unconfirmed events; do not award guesses.
-            if (burst.endMs < windowEndMs - 1800L) {
+            if (burst.endMs < windowEndMs - PREDICTION_HISTORY_MS) {
                 it.remove()
                 continue
             }
-            val covered = burst.startMs >= windowStartMs &&
-                burst.endMs <= windowEndMs
-            if (covered) {
-                if (barkScore.isFinite() && barkScore in minimumModelScore..1f) {
-                    if (windowEndMs - burst.lastMatchingWindowEndMs > MAXIMUM_CONFIRMATION_GAP_MS) {
-                        burst.matches = 0
-                    }
-                    burst.lastMatchingWindowEndMs = windowEndMs
-                    burst.matches++
-                    if (burst.matches >= requiredModelMatches) {
-                        it.remove()
-                        added++
-                    }
-                } else {
-                    burst.matches = 0
-                }
+            if (confirm(burst, prediction)) {
+                it.remove()
+                added++
             }
         }
         points += added
@@ -174,8 +201,15 @@ class BarkBurstScoreTracker(
     fun currentPoints(): Int = points
 
     @Synchronized
+    fun diagnosticSummary(): String =
+        "bursts=$acceptedBursts pending=${pending.size} " +
+            "hits=${pending.maxOfOrNull { it.matches } ?: 0}/$requiredModelMatches " +
+            "rejectedDuration=$rejectedDuration rejectedVolume=$rejectedVolume"
+
+    @Synchronized
     fun reset() {
         pending.clear()
+        recentPredictions.clear()
         frameCount = 0
         framePower = 0.0
         frameIndex = 0
@@ -189,6 +223,9 @@ class BarkBurstScoreTracker(
         lastBurstEndMs = -10000L
         points = 0
         lastPredictionWindowEndMs = -1L
+        acceptedBursts = 0
+        rejectedDuration = 0
+        rejectedVolume = 0
     }
 
     private companion object {
@@ -199,6 +236,8 @@ class BarkBurstScoreTracker(
         const val MINIMUM_BURST_DURATION_MS = 80L
         const val MAXIMUM_BURST_DURATION_MS = 600L
         const val MAX_PENDING_BURSTS = 32
+        const val MAX_RECENT_PREDICTIONS = 32
+        const val PREDICTION_HISTORY_MS = 1_800L
         const val MINIMUM_ONSET_RMS = 0.015f
         const val MINIMUM_PEAK_RMS = 0.025f
         const val MINIMUM_RELEASE_RMS = 0.006f

@@ -20,8 +20,9 @@ fun Activity.toProfileFromHome() {
     startActivity(Intent(this@toProfileFromHome, ProfileActivity::class.java))
 }
 
-fun Activity.toPlayFromHome() {
-    startActivity(Intent(this, PlayActivity::class.java))
+fun Activity.toPlayFromHome(useMicrophone: Boolean = false) {
+    startActivity(Intent(this, PlayActivity::class.java)
+        .putExtra(PlayActivity.EXTRA_USE_MICROPHONE, useMicrophone))
 }
 fun Activity.toTrainingFromHome(useMicrophone: Boolean = false) {
     startActivity(Intent(this, TrainingActivity::class.java).putExtra(TrainingActivity.EXTRA_USE_MICROPHONE, useMicrophone))

@@ -5,6 +5,52 @@ import org.junit.Test
 
 class BarkBurstScoreTrackerTest {
     @Test
+    fun predictionArrivingBeforeTheQuietGapIsNotLost() {
+        val tracker = BarkBurstScoreTracker()
+        tracker.offerPcm(signal {
+            add(800, 0.002f)
+            add(200, 0.08f)
+        })
+        // The model has already heard the whole bark, but the two quiet frames
+        // required to close the PCM burst have not arrived yet.
+        assertEquals(0, tracker.offerAiPrediction(0.95f, 0L, 1_000L).newPoints)
+        tracker.offerPcm(signal { add(40, 0.002f) })
+        assertEquals(1, tracker.offerAiPrediction(0.95f, 200L, 1_200L).newPoints)
+        assertEquals(0, tracker.offerAiPrediction(0.2f, 400L, 1_400L).newPoints)
+        assertEquals(1, tracker.currentPoints())
+    }
+
+    @Test
+    fun cachedConfidenceSpikeStillNeedsAnotherValidConfirmation() {
+        val tracker = BarkBurstScoreTracker()
+        tracker.offerPcm(signal {
+            add(800, 0.002f)
+            add(200, 0.08f)
+        })
+        tracker.offerAiPrediction(0.95f, 0L, 1_000L)
+        tracker.offerPcm(signal { add(40, 0.002f) })
+        assertEquals(0, tracker.offerAiPrediction(0.2f, 200L, 1_200L).newPoints)
+        assertEquals(0, tracker.offerAiPrediction(0.95f, 400L, 1_400L).newPoints)
+        assertEquals(0, tracker.currentPoints())
+    }
+
+    @Test
+    fun confirmationOnPcmArrivalCannotBeReplayedByAnotherPrediction() {
+        val tracker = BarkBurstScoreTracker()
+        tracker.offerPcm(signal {
+            add(200, 0.002f)
+            add(200, 0.08f)
+            add(20, 0.002f)
+        })
+        tracker.offerAiPrediction(0.95f, 0L, 420L)
+        tracker.offerAiPrediction(0.95f, 0L, 440L)
+        tracker.offerPcm(signal { add(40, 0.002f) })
+        assertEquals(1, tracker.currentPoints())
+        assertEquals(0, tracker.offerAiPrediction(0.95f, 0L, 600L).newPoints)
+        assertEquals(1, tracker.currentPoints())
+    }
+
+    @Test
     fun repeatedBarksSeparatedByAudibleValleysEachReceiveAPoint() {
         val tracker = BarkBurstScoreTracker()
         val pcm = signal {

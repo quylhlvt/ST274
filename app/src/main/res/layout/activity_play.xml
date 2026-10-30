@@ -1,335 +1,381 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.main.play.PlayActivity">
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:id="@+id/main"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   tools:context=".ui.main.play.PlayActivity">
 
     <FrameLayout
-        android:id="@+id/layoutActionBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/layoutActionBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
 
         <include
-            android:id="@+id/actionBar"
-            layout="@layout/layout_actionbar" />
+                android:id="@+id/actionBar"
+                layout="@layout/layout_actionbar"/>
     </FrameLayout>
-
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guide1"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.76" />
-
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:orientation="horizontal"
+            android:id="@+id/guide1"
+            app:layout_constraintGuide_percent="0.8"/>
     <ImageView
-        android:id="@+id/imgBgVoice"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_64"
-        android:layout_marginHorizontal="@dimen/dimension_16"
-        android:foreground="@drawable/img_bg_voice"
-        android:elevation="@dimen/dimension_1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar" />
+            android:id="@+id/imgBgVoice"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_64"
+            android:layout_marginHorizontal="@dimen/dimension_16"
+            android:foreground="@drawable/img_bg_voice"
+            android:elevation="@dimen/dimension_1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"/>
 
     <com.oc.catemoji.catoc.core.custom.DualWaveformView
-        android:id="@+id/dualWaveform"
-        android:elevation="@dimen/dimension_3"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        android:layout_marginHorizontal="@dimen/dimension_2_5"
-        android:layout_marginVertical="@dimen/dimension_2_5"
-        app:layout_constraintBottom_toBottomOf="@+id/imgBgVoice"
-        app:layout_constraintEnd_toEndOf="@+id/imgBgVoice"
-        app:layout_constraintStart_toStartOf="@+id/imgBgVoice"
-        app:layout_constraintTop_toTopOf="@+id/imgBgVoice" />
+            android:id="@+id/dualWaveform"
+            android:elevation="@dimen/dimension_3"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:layout_marginHorizontal="@dimen/dimension_2_5"
+            android:layout_marginVertical="@dimen/dimension_2_5"
+            app:layout_constraintBottom_toBottomOf="@+id/imgBgVoice"
+            app:layout_constraintEnd_toEndOf="@+id/imgBgVoice"
+            app:layout_constraintStart_toStartOf="@+id/imgBgVoice"
+            app:layout_constraintTop_toTopOf="@+id/imgBgVoice"/>
     <View
-        android:layout_width="@dimen/dimension_0_4"
-        android:layout_height="@dimen/dimension_0"
-        app:layout_constraintTop_toTopOf="@+id/dualWaveform"
-        app:layout_constraintBottom_toBottomOf="@+id/dualWaveform"
-        app:layout_constraintStart_toStartOf="@+id/dualWaveform"
-        app:layout_constraintEnd_toEndOf="@+id/dualWaveform"
-        android:id="@+id/changeVoice"/>
-    <View
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        android:background="@color/play_voice_player_background"
-        app:layout_constraintTop_toTopOf="@+id/dualWaveform"
-        app:layout_constraintBottom_toBottomOf="@+id/dualWaveform"
-        android:elevation="@dimen/dimension_2"
-        android:id="@+id/bgVoiceAvatar1"
-        app:layout_constraintStart_toStartOf="@+id/dualWaveform"
-        app:layout_constraintEnd_toEndOf="@+id/dualWaveform"/>
- <View
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-     android:elevation="@dimen/dimension_2"
-     android:id="@+id/bgVoiceAvatar2"
-     android:background="@color/play_voice_opponent_background"
-        app:layout_constraintTop_toTopOf="@+id/dualWaveform"
-        app:layout_constraintBottom_toBottomOf="@+id/dualWaveform"
-        app:layout_constraintEnd_toEndOf="@+id/dualWaveform"
-        app:layout_constraintStart_toStartOf="@+id/dualWaveform"/>
+            android:id="@+id/changeVoice"
+            android:layout_width="@dimen/dimension_0_4"
+            android:layout_height="@dimen/dimension_0"
+            app:layout_constraintBottom_toBottomOf="@+id/dualWaveform"
+            app:layout_constraintEnd_toEndOf="@+id/dualWaveform"
+            app:layout_constraintStart_toStartOf="@+id/dualWaveform"
+            app:layout_constraintTop_toTopOf="@+id/dualWaveform"/>
 
     <View
-        android:id="@+id/view8"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_125"
-        android:layout_marginHorizontal="@dimen/dimension_16"
-        app:layout_constraintBottom_toBottomOf="@+id/guide1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+            android:id="@+id/bgVoiceAvatar1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:background="@color/play_voice_player_background"
+            android:elevation="@dimen/dimension_2"
+            app:layout_constraintBottom_toBottomOf="@+id/dualWaveform"
+            app:layout_constraintEnd_toEndOf="@+id/dualWaveform"
+            app:layout_constraintStart_toStartOf="@+id/dualWaveform"
+            app:layout_constraintTop_toTopOf="@+id/dualWaveform"/>
+
+    <View
+            android:id="@+id/bgVoiceAvatar2"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_0"
+            android:background="@color/play_voice_opponent_background"
+            android:elevation="@dimen/dimension_2"
+            app:layout_constraintBottom_toBottomOf="@+id/dualWaveform"
+            app:layout_constraintEnd_toEndOf="@+id/dualWaveform"
+            app:layout_constraintStart_toStartOf="@+id/dualWaveform"
+            app:layout_constraintTop_toTopOf="@+id/dualWaveform"/>
+
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+            android:id="@+id/txtNameAvatar1"
+            style="@style/single_marquee"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimension_4"
+            android:layout_marginTop="@dimen/dimension_4"
+            android:ellipsize="marquee"
+            android:fontFamily="@font/illita_one_regular"
+            android:gravity="start|center_vertical"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:text="@string/name"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/changeVoice"
+            app:layout_constraintStart_toStartOf="@+id/imgBgVoice"
+            app:layout_constraintTop_toBottomOf="@+id/imgBgVoice"
+            app:outerStrokeColor="@color/app_color"
+            app:outerStrokeWidth="@dimen/dimension_1_6"/>
+
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+            android:id="@+id/txtNameAvatar2"
+            style="@style/single_marquee"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimension_4"
+            android:layout_marginEnd="@dimen/dimension_4"
+            android:ellipsize="marquee"
+            android:fontFamily="@font/illita_one_regular"
+            android:gravity="end|center_vertical"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:text="@string/play_opponent_name"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_16"
+            app:layout_constraintEnd_toEndOf="@+id/imgBgVoice"
+            app:layout_constraintStart_toEndOf="@+id/changeVoice"
+            app:layout_constraintTop_toBottomOf="@+id/imgBgVoice"
+            app:outerStrokeColor="@color/app_color"
+            app:outerStrokeWidth="@dimen/dimension_1_6"/>
+
+    <View
+            android:id="@+id/view8"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_125"
+            android:layout_marginHorizontal="@dimen/dimension_16"
+            app:layout_constraintBottom_toBottomOf="@+id/guide1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
     <ImageView
-        android:id="@+id/avatar1"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_125"
-        android:src="@drawable/image_avatar_infor"
-        app:layout_constraintBottom_toBottomOf="@+id/view8"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintStart_toStartOf="@+id/view8" />
+            android:id="@+id/avatar1"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_125"
+            android:contentDescription="@string/avatar"
+            android:src="@drawable/image_avatar_infor"
+            app:layout_constraintBottom_toBottomOf="@+id/view8"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintStart_toStartOf="@+id/view8"/>
 
     <ImageView
-        android:id="@+id/avatar2"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_125"
-        android:src="@drawable/image_avatar_infor"
-        app:layout_constraintBottom_toBottomOf="@+id/view8"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintEnd_toEndOf="@+id/view8" />
+            android:id="@+id/avatar2"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="@dimen/dimension_125"
+            android:contentDescription="@string/play_opponent_name"
+            android:src="@drawable/image_avatar_infor"
+            app:layout_constraintBottom_toBottomOf="@+id/view8"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintEnd_toEndOf="@+id/view8"/>
 
     <View
-        android:id="@+id/viewflash"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/img_play_flash"
-        android:visibility="gone" />
+            android:id="@+id/viewflash"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="@dimen/dimension_5"
+            android:background="@drawable/img_play_flash"
+            android:visibility="gone"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contrainFlash"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="@dimen/dimension_0"
-        android:layout_marginHorizontal="@dimen/dimension_20"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="3.1:1.56"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <View
-            android:id="@+id/view1"
+            android:id="@+id/contrainFlash"
             android:layout_width="@dimen/dimension_0"
             android:layout_height="@dimen/dimension_0"
+            android:layout_marginHorizontal="@dimen/dimension_20"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:elevation="@dimen/dimension_5"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="0.34:1.56"
+            app:layout_constraintDimensionRatio="3.1:1.56"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
         <View
-            android:id="@+id/viewparent3"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dimension_0"
-            app:layout_constraintDimensionRatio="3.1:0.46"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/view2"
-            android:layout_width="@dimen/dimension_0"
-            android:layout_height="@dimen/dimension_0"
-            app:layout_constraintDimensionRatio="1.38:1.07"
-            app:layout_constraintEnd_toStartOf="@+id/view1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/contrainPlay1"
-            android:layout_width="@dimen/dimension_0"
-            android:layout_height="@dimen/dimension_0"
-            app:layout_constraintBottom_toBottomOf="@+id/view2"
-            app:layout_constraintEnd_toEndOf="@+id/view2"
-            app:layout_constraintStart_toStartOf="@+id/view2"
-            app:layout_constraintTop_toTopOf="@+id/view2">
-
-            <View
-                android:id="@+id/viewparent1"
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintDimensionRatio="0.29:1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <FrameLayout
-                android:id="@+id/frameAvatar1"
+                android:id="@+id/view1"
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
-                android:elevation="@dimen/dimension_2"
-                app:layout_constraintBottom_toTopOf="@+id/stroker1"
-                app:layout_constraintDimensionRatio="1"
-                app:layout_constraintEnd_toStartOf="@+id/viewparent1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="0.34:1.56"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        <View
+                android:id="@+id/viewparent3"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.1:0.46"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        <View
+                android:id="@+id/view2"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="1.38:1.07"
+                app:layout_constraintEnd_toStartOf="@+id/view1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/contrainPlay1"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintBottom_toBottomOf="@+id/view2"
+                app:layout_constraintEnd_toEndOf="@+id/view2"
+                app:layout_constraintStart_toStartOf="@+id/view2"
+                app:layout_constraintTop_toTopOf="@+id/view2">
+
+            <View
+                    android:id="@+id/viewparent1"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="0.29:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+            <FrameLayout
+                    android:id="@+id/frameAvatar1"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    android:elevation="@dimen/dimension_2"
+                    app:layout_constraintBottom_toTopOf="@+id/stroker1"
+                    app:layout_constraintDimensionRatio="1"
+                    app:layout_constraintEnd_toStartOf="@+id/viewparent1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                 <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/dimension_2"
-                    android:elevation="@dimen/dimension_1"
-                    app:gslCornerRadius="@dimen/dimension_8"
-                    app:gslStrokeWidth="@dimen/dimension_0">
-
-                    <ImageView
-                        android:id="@+id/imgAvatar1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/image_avatar_infor" />
+                        android:layout_margin="@dimen/dimension_2"
+                        android:elevation="@dimen/dimension_1"
+                        app:gslCornerRadius="@dimen/dimension_8"
+                        app:gslStrokeWidth="@dimen/dimension_0">
+
+                    <ImageView
+                            android:id="@+id/imgAvatar1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/image_avatar_infor"/>
                 </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
 
                 <ImageView
-                    android:id="@+id/imgFrameAvatar1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:elevation="@dimen/dimension_2"
-                    android:src="@drawable/img_frame_avatar" />
+                        android:id="@+id/imgFrameAvatar1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:elevation="@dimen/dimension_2"
+                        android:src="@drawable/img_frame_avatar"/>
 
             </FrameLayout>
 
             <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
-                android:id="@+id/stroker1"
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="@dimen/dimension_0"
-                app:gslCenterColor="@color/_01A300"
-                app:gslCornerRadius="@dimen/dimension_8"
-                app:gslEndColor="@color/_01A300"
-                app:gslStartColor="@color/_01A300"
-                app:gslStrokeWidth="@dimen/dimension_3"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintDimensionRatio="1.38:0.6"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                    android:id="@+id/stroker1"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:gslCenterColor="@color/_01A300"
+                    app:gslCornerRadius="@dimen/dimension_8"
+                    app:gslEndColor="@color/_01A300"
+                    app:gslStartColor="@color/_01A300"
+                    app:gslStrokeWidth="@dimen/dimension_3"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1.38:0.6"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/app_color6">
-
-                    <View
-                        android:id="@+id/view4"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dimension_0"
-                        android:background="@color/white"
-                        app:layout_constraintDimensionRatio="1.32:0.28"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_height="match_parent"
+                        android:background="@color/app_color6">
 
                     <View
-                        android:id="@+id/view5"
-                        android:layout_width="@dimen/dimension_0"
-                        android:layout_height="@dimen/dimension_0"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintDimensionRatio="2.1:3"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                            android:id="@+id/view4"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dimension_0"
+                            android:background="@color/white"
+                            app:layout_constraintDimensionRatio="1.32:0.28"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                    <View
+                            android:id="@+id/view5"
+                            android:layout_width="@dimen/dimension_0"
+                            android:layout_height="@dimen/dimension_0"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintDimensionRatio="2.1:3"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
 
                     <ImageView
-                        android:id="@+id/imgRank1"
-                        android:layout_width="@dimen/dimension_0"
-                        android:layout_height="@dimen/dimension_0"
-                        android:src="@drawable/img_rank"
-                        app:layout_constraintBottom_toBottomOf="@+id/view4"
-                        app:layout_constraintDimensionRatio="2.3:2.4"
-                        app:layout_constraintEnd_toStartOf="@+id/view5"
-                        app:layout_constraintTop_toTopOf="parent" />
+                            android:id="@+id/imgRank1"
+                            android:layout_width="@dimen/dimension_0"
+                            android:layout_height="@dimen/dimension_0"
+                            android:src="@drawable/img_rank"
+                            app:layout_constraintBottom_toBottomOf="@+id/view4"
+                            app:layout_constraintDimensionRatio="2.3:2.4"
+                            app:layout_constraintEnd_toStartOf="@+id/view5"
+                            app:layout_constraintTop_toTopOf="parent"/>
 
 
                     <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
-                        android:id="@+id/stroker"
-                        android:layout_width="@dimen/dimension_0"
-                        android:layout_height="@dimen/dimension_0"
+                            android:id="@+id/stroker"
+                            android:layout_width="@dimen/dimension_0"
+                            android:layout_height="@dimen/dimension_0"
 
-                        android:layout_marginHorizontal="@dimen/dimension_6"
-                        android:layout_marginVertical="@dimen/dimension_4"
-                        app:gslCenterColor="@color/app_color4"
-                        app:gslCornerRadius="@dimen/dimension_4"
-                        app:gslEndColor="@color/app_color4"
-                        app:gslStartColor="@color/app_color4"
-                        app:gslStrokeWidth="@dimen/dimension_0_4"
-                        app:layout_constraintBottom_toBottomOf="@+id/view4"
-                        app:layout_constraintEnd_toStartOf="@+id/imgRank1"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                            android:layout_marginHorizontal="@dimen/dimension_6"
+                            android:layout_marginVertical="@dimen/dimension_4"
+                            app:gslCenterColor="@color/app_color4"
+                            app:gslCornerRadius="@dimen/dimension_4"
+                            app:gslEndColor="@color/app_color4"
+                            app:gslStartColor="@color/app_color4"
+                            app:gslStrokeWidth="@dimen/dimension_0_4"
+                            app:layout_constraintBottom_toBottomOf="@+id/view4"
+                            app:layout_constraintEnd_toStartOf="@+id/imgRank1"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@color/white">
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/white">
 
                             <ImageView
-                                android:id="@+id/img_star_coin_rank1"
-                                android:layout_width="@dimen/dimension_0"
-                                android:layout_height="@dimen/dimension_0"
-                                android:adjustViewBounds="true"
-                                android:src="@drawable/img_star_coin_rank2"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintDimensionRatio="1"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                    android:id="@+id/img_star_coin_rank1"
+                                    android:layout_width="@dimen/dimension_0"
+                                    android:layout_height="@dimen/dimension_0"
+                                    android:adjustViewBounds="true"
+                                    android:src="@drawable/img_star_coin_rank2"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintDimensionRatio="1"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"/>
 
                             <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
-                                android:id="@+id/txtCoinRank1"
-                                style="@style/Widget.Catoc.ExtrudedTitle"
-                                android:layout_width="@dimen/dimension_0"
-                                android:layout_height="match_parent"
-                                android:layout_marginStart="@dimen/dimension_minus_1"
-                                android:ellipsize="marquee"
-                                android:fontFamily="@font/illita_one_regular"
-                                android:includeFontPadding="false"
-                                android:marqueeRepeatLimit="marquee_forever"
-                                android:paddingHorizontal="@dimen/dimension_1"
-                                android:text="0"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/text_size_12"
-                                app:extrusionColor="@color/title_extrusion"
-                                app:extrusionDy="@dimen/dimension_0"
-                                app:gradientEndColor="@color/text_gradient_cream"
-                                app:gradientStartColor="@color/white"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/img_star_coin_rank1"
-                                app:outerStrokeColor="@color/black"
-                                app:outerStrokeJoinStyle="round"
-                                app:outerStrokeWidth="@dimen/dimension_0_5"
-                                app:useGradient="true"
-                                tools:text="9999" />
+                                    android:id="@+id/txtCoinRank1"
+                                    style="@style/Widget.Catoc.ExtrudedTitle"
+                                    android:layout_width="@dimen/dimension_0"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginStart="@dimen/dimension_minus_1"
+                                    android:ellipsize="marquee"
+                                    android:fontFamily="@font/illita_one_regular"
+                                    android:includeFontPadding="false"
+                                    android:marqueeRepeatLimit="marquee_forever"
+                                    android:paddingHorizontal="@dimen/dimension_1"
+                                    android:text="0"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/text_size_12"
+                                    app:extrusionColor="@color/title_extrusion"
+                                    app:extrusionDy="@dimen/dimension_0"
+                                    app:gradientEndColor="@color/text_gradient_cream"
+                                    app:gradientStartColor="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="@+id/img_star_coin_rank1"
+                                    app:outerStrokeColor="@color/black"
+                                    app:outerStrokeJoinStyle="round"
+                                    app:outerStrokeWidth="@dimen/dimension_0_5"
+                                    app:useGradient="true"
+                                    tools:text="9999"/>
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
 
                     <TextView
-                        android:id="@+id/namePlay1"
-                        android:layout_width="@dimen/dimension_0"
-                        android:layout_height="@dimen/dimension_0"
-                        android:ellipsize="marquee"
-                        android:fontFamily="@font/illita_one_regular"
-                        android:gravity="center"
-                        android:singleLine="true"
-                        android:text=""
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/text_size_12"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/view5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/view4"
-                        tools:text="Player" />
+                            android:id="@+id/namePlay1"
+                            android:layout_width="@dimen/dimension_0"
+                            android:layout_height="@dimen/dimension_0"
+                            android:ellipsize="marquee"
+                            android:fontFamily="@font/illita_one_regular"
+                            android:gravity="center"
+                            android:singleLine="true"
+                            android:text=""
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size_12"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/view5"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/view4"
+                            tools:text="Player"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
@@ -337,188 +383,188 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
-            android:id="@+id/view3"
-            android:layout_width="@dimen/dimension_0"
-            android:layout_height="@dimen/dimension_0"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1.38:1.07"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/view1" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/contrainPlay2"
-            android:layout_width="@dimen/dimension_0"
-            android:layout_height="@dimen/dimension_0"
-            app:layout_constraintBottom_toBottomOf="@+id/view3"
-            app:layout_constraintEnd_toEndOf="@+id/view3"
-            app:layout_constraintStart_toStartOf="@+id/view3"
-            app:layout_constraintTop_toTopOf="@+id/view3">
-
-            <View
-                android:id="@+id/viewparent2"
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintDimensionRatio="0.29:1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <FrameLayout
-                android:id="@+id/frameAvatar2"
+                android:id="@+id/view3"
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
-                android:elevation="@dimen/dimension_2"
-                app:layout_constraintBottom_toTopOf="@+id/stroker2"
-                app:layout_constraintDimensionRatio="1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1.38:1.07"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/viewparent2"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintStart_toEndOf="@+id/view1"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/contrainPlay2"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintBottom_toBottomOf="@+id/view3"
+                app:layout_constraintEnd_toEndOf="@+id/view3"
+                app:layout_constraintStart_toStartOf="@+id/view3"
+                app:layout_constraintTop_toTopOf="@+id/view3">
+
+            <View
+                    android:id="@+id/viewparent2"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="0.29:1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+            <FrameLayout
+                    android:id="@+id/frameAvatar2"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    android:elevation="@dimen/dimension_2"
+                    app:layout_constraintBottom_toTopOf="@+id/stroker2"
+                    app:layout_constraintDimensionRatio="1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/viewparent2"
+                    app:layout_constraintTop_toTopOf="parent">
 
                 <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/dimension_2"
-                    android:elevation="@dimen/dimension_1"
-                    app:gslCornerRadius="@dimen/dimension_8"
-                    app:gslStrokeWidth="@dimen/dimension_0">
-
-                    <ImageView
-                        android:id="@+id/imgAvatar2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/image_avatar_infor" />
+                        android:layout_margin="@dimen/dimension_2"
+                        android:elevation="@dimen/dimension_1"
+                        app:gslCornerRadius="@dimen/dimension_8"
+                        app:gslStrokeWidth="@dimen/dimension_0">
+
+                    <ImageView
+                            android:id="@+id/imgAvatar2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/image_avatar_infor"/>
                 </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
 
                 <ImageView
-                    android:id="@+id/imgFrameAvatar2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:elevation="@dimen/dimension_2"
-                    android:src="@drawable/img_frame_avatar" />
+                        android:id="@+id/imgFrameAvatar2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:elevation="@dimen/dimension_2"
+                        android:src="@drawable/img_frame_avatar"/>
 
             </FrameLayout>
 
             <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
-                android:id="@+id/stroker2"
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="@dimen/dimension_0"
-                app:gslCenterColor="@color/_FF9C00"
-                app:gslCornerRadius="@dimen/dimension_8"
-                app:gslEndColor="@color/_FF9C00"
-                app:gslStartColor="@color/_FF9C00"
-                app:gslStrokeWidth="@dimen/dimension_3"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintDimensionRatio="1.38:0.6"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                    android:id="@+id/stroker2"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:gslCenterColor="@color/_FF9C00"
+                    app:gslCornerRadius="@dimen/dimension_8"
+                    app:gslEndColor="@color/_FF9C00"
+                    app:gslStartColor="@color/_FF9C00"
+                    app:gslStrokeWidth="@dimen/dimension_3"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1.38:0.6"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/app_color6">
-
-                    <View
-                        android:id="@+id/view6"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dimension_0"
-                        android:background="@color/white"
-                        app:layout_constraintDimensionRatio="1.32:0.28"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_height="match_parent"
+                        android:background="@color/app_color6">
 
                     <View
-                        android:id="@+id/view7"
-                        android:layout_width="@dimen/dimension_0"
-                        android:layout_height="@dimen/dimension_0"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintDimensionRatio="2.1:3"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                            android:id="@+id/view6"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dimension_0"
+                            android:background="@color/white"
+                            app:layout_constraintDimensionRatio="1.32:0.28"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                    <View
+                            android:id="@+id/view7"
+                            android:layout_width="@dimen/dimension_0"
+                            android:layout_height="@dimen/dimension_0"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintDimensionRatio="2.1:3"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
 
                     <ImageView
-                        android:id="@+id/imgRank2"
-                        android:layout_width="@dimen/dimension_0"
-                        android:layout_height="@dimen/dimension_0"
-                        android:src="@drawable/img_rank"
-                        app:layout_constraintBottom_toBottomOf="@+id/view6"
-                        app:layout_constraintDimensionRatio="2.3:2.4"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                            android:id="@+id/imgRank2"
+                            android:layout_width="@dimen/dimension_0"
+                            android:layout_height="@dimen/dimension_0"
+                            android:src="@drawable/img_rank"
+                            app:layout_constraintBottom_toBottomOf="@+id/view6"
+                            app:layout_constraintDimensionRatio="2.3:2.4"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
 
                     <com.quylh.gradientstrokelayout.GradientStrokeFrameLayout
-                        android:id="@+id/strokerCoinRank2"
-                        android:layout_width="@dimen/dimension_0"
-                        android:layout_height="@dimen/dimension_0"
+                            android:id="@+id/strokerCoinRank2"
+                            android:layout_width="@dimen/dimension_0"
+                            android:layout_height="@dimen/dimension_0"
 
-                        android:layout_marginHorizontal="@dimen/dimension_6"
-                        android:layout_marginVertical="@dimen/dimension_4"
-                        app:gslCenterColor="@color/app_color4"
-                        app:gslCornerRadius="@dimen/dimension_4"
-                        app:gslEndColor="@color/app_color4"
-                        app:gslStartColor="@color/app_color4"
-                        app:gslStrokeWidth="@dimen/dimension_0_4"
-                        app:layout_constraintBottom_toBottomOf="@+id/view6"
-                        app:layout_constraintEnd_toStartOf="@+id/imgRank2"
-                        app:layout_constraintStart_toEndOf="@+id/view7"
-                        app:layout_constraintTop_toTopOf="parent">
+                            android:layout_marginHorizontal="@dimen/dimension_6"
+                            android:layout_marginVertical="@dimen/dimension_4"
+                            app:gslCenterColor="@color/app_color4"
+                            app:gslCornerRadius="@dimen/dimension_4"
+                            app:gslEndColor="@color/app_color4"
+                            app:gslStartColor="@color/app_color4"
+                            app:gslStrokeWidth="@dimen/dimension_0_4"
+                            app:layout_constraintBottom_toBottomOf="@+id/view6"
+                            app:layout_constraintEnd_toStartOf="@+id/imgRank2"
+                            app:layout_constraintStart_toEndOf="@+id/view7"
+                            app:layout_constraintTop_toTopOf="parent">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@color/white">
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/white">
 
                             <ImageView
-                                android:id="@+id/img_star_coin_rank2"
-                                android:layout_width="@dimen/dimension_0"
-                                android:layout_height="@dimen/dimension_0"
-                                android:adjustViewBounds="true"
-                                android:src="@drawable/img_star_coin_rank2"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintDimensionRatio="1"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                    android:id="@+id/img_star_coin_rank2"
+                                    android:layout_width="@dimen/dimension_0"
+                                    android:layout_height="@dimen/dimension_0"
+                                    android:adjustViewBounds="true"
+                                    android:src="@drawable/img_star_coin_rank2"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintDimensionRatio="1"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"/>
 
                             <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
-                                android:id="@+id/txtCoinRank2"
-                                style="@style/Widget.Catoc.ExtrudedTitle"
-                                android:layout_width="@dimen/dimension_0"
-                                android:layout_height="match_parent"
-                                android:layout_marginStart="@dimen/dimension_minus_1"
-                                android:ellipsize="marquee"
-                                android:fontFamily="@font/illita_one_regular"
-                                android:includeFontPadding="false"
-                                android:marqueeRepeatLimit="marquee_forever"
-                                android:paddingHorizontal="@dimen/dimension_1"
-                                android:text="0"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/text_size_12"
-                                app:extrusionColor="@color/title_extrusion"
-                                app:extrusionDy="@dimen/dimension_0"
-                                app:gradientEndColor="@color/text_gradient_cream"
-                                app:gradientStartColor="@color/white"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/img_star_coin_rank2"
-                                app:outerStrokeColor="@color/black"
-                                app:outerStrokeJoinStyle="round"
-                                app:outerStrokeWidth="@dimen/dimension_0_5"
-                                app:useGradient="true"
-                                tools:text="9999" />
+                                    android:id="@+id/txtCoinRank2"
+                                    style="@style/Widget.Catoc.ExtrudedTitle"
+                                    android:layout_width="@dimen/dimension_0"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginStart="@dimen/dimension_minus_1"
+                                    android:ellipsize="marquee"
+                                    android:fontFamily="@font/illita_one_regular"
+                                    android:includeFontPadding="false"
+                                    android:marqueeRepeatLimit="marquee_forever"
+                                    android:paddingHorizontal="@dimen/dimension_1"
+                                    android:text="0"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/text_size_12"
+                                    app:extrusionColor="@color/title_extrusion"
+                                    app:extrusionDy="@dimen/dimension_0"
+                                    app:gradientEndColor="@color/text_gradient_cream"
+                                    app:gradientStartColor="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="@+id/img_star_coin_rank2"
+                                    app:outerStrokeColor="@color/black"
+                                    app:outerStrokeJoinStyle="round"
+                                    app:outerStrokeWidth="@dimen/dimension_0_5"
+                                    app:useGradient="true"
+                                    tools:text="9999"/>
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
 
                     <TextView
-                        android:id="@+id/namePlay2"
-                        android:layout_width="@dimen/dimension_0"
-                        android:layout_height="@dimen/dimension_0"
-                        android:fontFamily="@font/illita_one_regular"
-                        android:gravity="center"
-                        android:text="@string/name"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/text_size_12"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/view7"
-                        app:layout_constraintTop_toBottomOf="@+id/view6" />
+                            android:id="@+id/namePlay2"
+                            android:layout_width="@dimen/dimension_0"
+                            android:layout_height="@dimen/dimension_0"
+                            android:fontFamily="@font/illita_one_regular"
+                            android:gravity="center"
+                            android:text="@string/name"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size_12"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/view7"
+                            app:layout_constraintTop_toBottomOf="@+id/view6"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
@@ -526,91 +572,518 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
-            android:id="@+id/txtVs"
-            android:layout_width="@dimen/dimension_0"
-            android:layout_height="@dimen/dimension_0"
-            android:src="@drawable/img_vs"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="0.8:1.1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/viewparent3" />
+                android:id="@+id/txtVs"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                android:src="@drawable/img_vs"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="0.8:1.1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/viewparent3"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/microphonePanel"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/dimension_24"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:layout_width="match_parent"
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+            android:id="@+id/txtStartNumber"
+            style="@style/single_marquee"
+            android:layout_width="@dimen/dimension_0"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimension_4"
+            android:layout_marginTop="@dimen/dimension_4"
+            android:ellipsize="marquee"
             android:fontFamily="@font/illita_one_regular"
             android:gravity="center"
-            android:text="@string/play_microphone_title"
-            android:textColor="@color/app_color"
-            android:textSize="@dimen/text_size_24" />
-
-        <TextView
-            android:id="@+id/txtMicrophoneStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimension_16"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:text="@string/play_countdown_initial"
+            android:visibility="invisible"
             android:accessibilityLiveRegion="polite"
-            android:gravity="center"
-            android:text="@string/play_microphone_ready"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_16" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/play_waveform_legend"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/txtSoundClass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimension_8"
-            android:gravity="center"
-            android:textColor="@color/black" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMicrophone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimension_16"
-            android:text="@string/play_microphone_start" />
-
-        <TextView
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_40"
+            app:layout_constraintEnd_toEndOf="@id/imgBgVoice"
+            app:layout_constraintStart_toStartOf="@id/imgBgVoice"
+            app:layout_constraintTop_toBottomOf="@id/txtNameAvatar1"
+            app:outerStrokeColor="@color/app_color"
+            app:outerStrokeWidth="@dimen/dimension_2"/>
+    <TextView
             android:id="@+id/txtBarkCount"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/dimension_0"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dimension_16"
             android:accessibilityLiveRegion="polite"
+            android:fontFamily="@font/illita_one_regular"
             android:gravity="center"
+            android:text="@string/play_bark_count_initial"
             android:textColor="@color/app_color"
-            android:textSize="@dimen/text_size_20"
-            tools:text="Barks: 3" />
-    </LinearLayout>
+            android:textSize="@dimen/text_size_24"
+            app:layout_constraintEnd_toEndOf="@id/imgBgVoice"
+            app:layout_constraintStart_toStartOf="@id/imgBgVoice"
+            app:layout_constraintTop_toBottomOf="@id/txtStartNumber"/>
+    <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+            android:id="@+id/txtOver"
+            style="@style/single_marquee"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ellipsize="marquee"
+            android:fontFamily="@font/illita_one_regular"
+            android:gravity="center"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:text="@string/game_over"
+            android:elevation="@dimen/dimension_8"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:background="@color/_80A9FFAC"
+            android:textSize="@dimen/text_size_40"
+            app:layout_constraintEnd_toEndOf="@id/imgBgVoice"
+            app:layout_constraintStart_toStartOf="@id/imgBgVoice"
+            app:layout_constraintTop_toBottomOf="@id/txtNameAvatar1"
+            app:outerStrokeColor="@color/app_color"
+            app:outerStrokeWidth="@dimen/dimension_2"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/contrainOver"
+
+            android:background="@color/_80A9FFAC"
+            android:elevation="@dimen/dimension_8"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <ImageView android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   android:id="@+id/bgEffectOver"
+                   android:background="@drawable/bgEffectOver"/>
+
+        <View
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.6:3.9"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/view9"/>
+        <View
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.6:3.3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/view15"/>
+        <View
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.6:5.02"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/view20"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/achiContrain"
+                android:visibility="gone"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                android:elevation="@dimen/dimension_10"
+                app:layout_constraintDimensionRatio="2.57:3.9"
+                app:layout_constraintTop_toTopOf="@+id/view9"
+                app:layout_constraintBottom_toBottomOf="@+id/view9"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.Catoc.ExtrudedTitle"
+                    android:id="@+id/txtTitleUnlock"
+                    android:elevation="@dimen/dimension_4"
+                    android:textColor="@color/app_color"
+                    android:textSize="@dimen/text_size_28"
+                    android:layout_marginTop="@dimen/dimension_3"
+                    android:text="@string/new_badge_unlocked"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:useGradient="true"
+                    app:gradientStartColor="@color/_FFEBA7"
+                    app:gradientEndColor="@color/_FFCB14"
+                    android:gravity="center"
+                    android:fontFamily="@font/illita_one_regular"
+                    app:outerStrokeColor="@color/black"
+                    app:outerStrokeWidth="@dimen/dimension_1"
+                    app:outerStrokeJoinStyle="round"
+                    app:extrusionColor="@color/white"
+                    app:extrusionDx="0dp"
+                    app:extrusionDy="@dimen/dimension_2"/>
+
+            <LinearLayout
+                    android:layout_height="@dimen/dimension_0"
+                    app:cardBackgroundColor="@color/transparent"
+                    app:cardCornerRadius="@dimen/dimension_0"
+                    android:gravity="center"
+                    app:layout_constrainedWidth="true"
+                    android:layout_marginVertical="@dimen/dimension_20"
+                    android:layout_marginHorizontal="@dimen/dimension_24"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtTitleUnlock"
+                    app:layout_constraintBottom_toTopOf="@+id/btnNext"
+                    android:layout_width="@dimen/dimension_0"
+                    app:strokeWidth="@dimen/dimension_0">
+                <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
+                    <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycleAchi"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:itemCount="15"
+                            tools:listitem="@layout/item_achi"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:clipToPadding="false"
+                            android:orientation="vertical"/>
+
+                </RelativeLayout>
+            </LinearLayout>
+
+            <FrameLayout
+                    android:id="@+id/btnNext"
+                    android:contentDescription="@string/save"
+                    android:focusable="true"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="1.56:0.44"
+                    app:layout_constraintStart_toEndOf="@+id/view11"
+                    app:layout_constraintEnd_toStartOf="@+id/view12"
+                    android:background="@drawable/bg_frame_permission_shadown"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/dimension_1_6"
+                        android:layout_marginEnd="@dimen/dimension_1"
+                        android:background="@drawable/bg_frame_create"
+                        android:layout_marginStart="@dimen/dimension_0_5"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_20"
+                        android:text="@string/next"
+                        android:fontFamily="@font/illita_one_regular"
+                        android:gravity="center"/>
+
+            </FrameLayout>
+            <View
+                    android:id="@+id/view11"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="0.5:3.9"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+            <View
+                    android:id="@+id/view12"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="0.5:3.9"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/rankContrain"
+                android:visibility="gone"
+                android:elevation="@dimen/dimension_10"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.25:3.3"
+                app:layout_constraintTop_toTopOf="@+id/view15"
+                app:layout_constraintBottom_toBottomOf="@+id/view15"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.Catoc.ExtrudedTitle"
+                    android:id="@+id/txtTitleUnlock2"
+                    android:elevation="@dimen/dimension_4"
+                    android:textColor="@color/app_color"
+                    android:textSize="@dimen/text_size_28"
+                    android:layout_marginTop="@dimen/dimension_3"
+                    android:text="@string/rank_up"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:useGradient="true"
+                    app:gradientStartColor="@color/_FFEBA7"
+                    app:gradientEndColor="@color/_FFCB14"
+                    android:gravity="center"
+                    android:fontFamily="@font/illita_one_regular"
+                    app:outerStrokeColor="@color/black"
+                    app:outerStrokeWidth="@dimen/dimension_1"
+                    app:outerStrokeJoinStyle="round"
+                    app:extrusionColor="@color/white"
+                    app:extrusionDx="0dp"
+                    app:extrusionDy="@dimen/dimension_2"/>
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+                    android:id="@+id/txtContent"
+                    style="@style/single_marquee"
+                    android:elevation="@dimen/dimension_5"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimension_10"
+                    android:ellipsize="marquee"
+                    app:layout_constraintTop_toBottomOf="@+id/txtTitleUnlock2"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:gravity="center"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:maxLines="1"
+                    android:text="@string/congratulations_you_ve_reached_a_new_rank"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_16"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:outerStrokeColor="@color/app_color"
+                    app:outerStrokeWidth="@dimen/dimension_1_6"/>
+            <View android:id="@+id/view16"
+                  android:layout_width="@dimen/dimension_0"
+                  android:layout_height="@dimen/dimension_0"
+                  app:layout_constraintDimensionRatio="3.2:1.21"
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
+                  app:layout_constraintTop_toBottomOf="@+id/txtContent"
+                  android:layout_marginTop="@dimen/dimension_10"
+                  app:layout_constraintVertical_bias="0"
+                  app:layout_constraintBottom_toTopOf="@+id/btnNext2"/>
+            <View android:id="@+id/view17"
+                  android:layout_width="@dimen/dimension_0"
+                  android:layout_height="@dimen/dimension_0"
+                  app:layout_constraintDimensionRatio="1.24:1.2"
+                  app:layout_constraintStart_toStartOf="@+id/view16"
+                  app:layout_constraintTop_toTopOf="@+id/view16"
+                  android:layout_marginTop="@dimen/dimension_10"
+                  app:layout_constraintVertical_bias="0"
+                  app:layout_constraintBottom_toBottomOf="@+id/view16"/>
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@+id/view17"
+                    app:layout_constraintEnd_toEndOf="@+id/view17"
+                    app:layout_constraintBottom_toBottomOf="@+id/view17"
+                    android:textSize="@dimen/text_size_18"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:textColor="@color/app_color"
+                    app:extrusionDy="@dimen/dimension_0"
+                    app:outerStrokeWidth="@dimen/dimension_1"
+                    app:outerStrokeColor="@color/white"
+                    android:text="@string/name"
+                    android:id="@+id/namneRankPre"
+                    android:gravity="center"/>
+            <ImageView
+                    android:id="@+id/imgRankPre"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="8:9.3"
+                    app:layout_constraintStart_toStartOf="@+id/view17"
+                    app:layout_constraintEnd_toEndOf="@+id/view17"
+                    app:layout_constraintTop_toTopOf="@+id/view17"
+                    android:src="@drawable/img_rank"
+                    app:layout_constraintBottom_toTopOf="@+id/namneRankPre"/>
+            <View android:id="@+id/view18"
+                  android:layout_width="@dimen/dimension_0"
+                  android:layout_height="@dimen/dimension_0"
+                  app:layout_constraintDimensionRatio="1.24:1.2"
+                  app:layout_constraintEnd_toEndOf="@+id/view16"
+                  app:layout_constraintTop_toTopOf="@+id/view16"
+                  android:layout_marginTop="@dimen/dimension_10"
+                  app:layout_constraintVertical_bias="0"
+                  app:layout_constraintBottom_toBottomOf="@+id/view16"/>
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@+id/view18"
+                    app:layout_constraintEnd_toEndOf="@+id/view18"
+                    app:layout_constraintBottom_toBottomOf="@+id/view18"
+                    android:textSize="@dimen/text_size_18"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:textColor="@color/app_color"
+                    app:extrusionDy="@dimen/dimension_0"
+                    app:outerStrokeWidth="@dimen/dimension_1"
+                    app:outerStrokeColor="@color/white"
+                    android:text="@string/name"
+                    android:id="@+id/namneRankNext"
+                    android:gravity="center"/>
+            <ImageView
+                    android:id="@+id/imgRankNext"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="8:9.3"
+                    app:layout_constraintStart_toStartOf="@+id/view18"
+                    app:layout_constraintEnd_toEndOf="@+id/view18"
+                    app:layout_constraintTop_toTopOf="@+id/view18"
+                    android:src="@drawable/img_rank"
+                    app:layout_constraintBottom_toTopOf="@+id/namneRankNext"/>
+            <ImageView
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="7:4.8"
+                    app:layout_constraintStart_toEndOf="@+id/view17"
+                    app:layout_constraintTop_toTopOf="@+id/view16"
+                    app:layout_constraintBottom_toBottomOf="@+id/view16"
+                    app:layout_constraintEnd_toStartOf="@+id/view18"
+                    android:src="@drawable/imgNextRank"/>
+
+
+            <FrameLayout
+                    android:id="@+id/btnNext2"
+                    android:contentDescription="@string/save"
+                    android:focusable="true"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="1.56:0.44"
+                    app:layout_constraintStart_toEndOf="@+id/view13"
+                    app:layout_constraintEnd_toStartOf="@+id/view14"
+                    android:background="@drawable/bg_frame_permission_shadown"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/dimension_1_6"
+                        android:layout_marginEnd="@dimen/dimension_1"
+                        android:background="@drawable/bg_frame_create"
+                        android:layout_marginStart="@dimen/dimension_0_5"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_20"
+                        android:text="@string/next"
+                        android:fontFamily="@font/illita_one_regular"
+                        android:gravity="center"/>
+
+            </FrameLayout>
+            <View
+                    android:id="@+id/view13"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="0.82:3.3"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+            <View
+                    android:id="@+id/view14"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="0.82:3.3"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/completeContrain"
+                android:elevation="@dimen/dimension_10"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                app:layout_constraintDimensionRatio="3.27:5.1"
+                app:layout_constraintTop_toTopOf="@+id/view20"
+                app:layout_constraintBottom_toBottomOf="@+id/view20"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+            <View
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="3.27:1.88"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:id="@+id/view21"/>
+            <View
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="3.27:2.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:id="@+id/view22"/>
+            <View
+                    android:id="@+id/view23"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintStart_toStartOf="@+id/bgTitleWin"
+                    app:layout_constraintTop_toTopOf="@+id/bgTitleWin"
+                    app:layout_constraintBottom_toBottomOf="@+id/bgTitleWin"
+                    app:layout_constraintDimensionRatio="7.7:9.1"/>
+            <View
+                    android:id="@+id/view24"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintEnd_toEndOf="@+id/bgTitleWin"
+                    app:layout_constraintTop_toTopOf="@+id/bgTitleWin"
+                    app:layout_constraintBottom_toBottomOf="@+id/bgTitleWin"
+                    app:layout_constraintDimensionRatio="7.7:9.1"/>
+            <View
+                    android:id="@+id/view25"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintEnd_toEndOf="@+id/bgTitleWin"
+                    app:layout_constraintStart_toStartOf="@+id/bgTitleWin"
+                    app:layout_constraintBottom_toBottomOf="@+id/bgTitleWin"
+                    app:layout_constraintDimensionRatio="3.27:0.32"/>
+            <ImageView
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@drawable/img_win_play"
+                    android:elevation="@dimen/dimension_1"
+                    app:layout_constraintBottom_toTopOf="@+id/view22"/>
+            <ImageView
+                    android:layout_width="@dimen/dimension_0"
+                    android:elevation="@dimen/dimension_4"
+                    android:layout_height="@dimen/dimension_0"
+                    app:layout_constraintDimensionRatio="3.27:0.91"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:id="@+id/bgTitleWin"
+                    app:layout_constraintTop_toBottomOf="@+id/view21"
+                    android:src="@drawable/bg_title_win"/>
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    style="@style/Widget.Catoc.ExtrudedTitle"
+                    android:elevation="@dimen/dimension_4"
+                    android:id="@+id/txtTraining"
+                    android:textColor="@color/app_color"
+                    android:textSize="@dimen/text_size_40"
+                    android:text="@string/victory"
+                    app:layout_constraintBottom_toTopOf="@+id/view25"
+                    app:layout_constraintStart_toEndOf="@+id/view23"
+                    app:layout_constraintEnd_toStartOf="@+id/view24"
+                    app:layout_constraintTop_toTopOf="@+id/bgTitleWin"
+                    android:gravity="center"
+                    android:fontFamily="@font/illita_one_regular"
+                    app:useGradient="true"
+                    app:gradientStartColor="@color/_FFEBA7"
+                    app:gradientEndColor="@color/_FFCB14"
+                    app:outerStrokeColor="@color/black"
+                    app:outerStrokeWidth="@dimen/dimension_1"
+                    app:outerStrokeJoinStyle="round"
+                    app:extrusionColor="@color/white"
+                    app:extrusionDx="0dp"
+                    app:extrusionDy="@dimen/dimension_2"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
-        android:id="@+id/progressPlay"
-        android:layout_width="@dimen/dimension_32"
-        android:layout_height="@dimen/dimension_32"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:id="@+id/progressPlay"
+            android:layout_width="@dimen/dimension_32"
+            android:layout_height="@dimen/dimension_32"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

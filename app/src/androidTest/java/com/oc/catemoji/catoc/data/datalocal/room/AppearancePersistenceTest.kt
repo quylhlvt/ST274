@@ -83,7 +83,7 @@ class AppearancePersistenceTest {
                     assertEquals("content://photos/custom.png", history.imageAvatar2)
                     assertEquals(1234L, history.date)
                     assertTrue(history.typePlay)
-                    assertEquals("file:///android_asset/Achievement/1. First Bark.webp",
+                    assertEquals("file:///android_asset/Achievement/1.webp",
                         database.profileDao().observeAchievements().first().single().image)
                     assertEquals(AppearanceStateEntity(AVATAR, "2", unlock = true),
                         database.appearanceDao().getState(AVATAR, "2"))

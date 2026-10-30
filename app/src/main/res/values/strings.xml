@@ -219,4 +219,20 @@
     <string name="play_waveform_legend">Orange: your microphone · Green: simulated opponent</string>
     <string name="play_bark_count">Barks: %1$d</string>
     <string name="play_bark_count_initial">Barks: 0</string>
+    <string name="play_mode_sound">Bark sounds</string>
+    <string name="play_mode_words">Say “gâu”</string>
+    <string name="play_speech_ready">Tap Start and say “gâu gâu” in Vietnamese.</string>
+    <string name="play_speech_starting">Preparing offline speech recognition…</string>
+    <string name="play_speech_error">Could not start speech recognition. Try again or select Bark sounds.</string>
+    <string name="play_speech_partial">Hearing: %1$s</string>
+    <string name="play_speech_result">Heard: %1$s</string>
+    <string name="play_speech_hint">Say “gâu gâu”. Each recognized bark adds a point while you speak.</string>
+    <string name="play_opponent_name">Opponent</string>
+    <string name="play_countdown_initial">3</string>
+    <string name="play_countdown_number">%1$d</string>
+    <string name="play_countdown_start">START</string>
+    <string name="game_over">Game Over</string>
+    <string name="new_badge_unlocked">New Badge Unlocked!</string>
+    <string name="rank_up">Rank Up!</string>
+    <string name="congratulations_you_ve_reached_a_new_rank">Congratulations! You’ve reached a new rank!</string>
 </resources>

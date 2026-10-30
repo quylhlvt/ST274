@@ -70,7 +70,16 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
                 toProfileFromHome()
             }
             imgBgBattle.onClick {
-                toPlayFromHome()
+                AlertDialog.Builder(this@HomeActivity)
+                    .setTitle(R.string.training_mode_title)
+                    .setItems(arrayOf(
+                        getString(R.string.training_mode_microphone),
+                        getString(R.string.training_mode_touch),
+                    )) { _, selection ->
+                        toPlayFromHome(useMicrophone = selection == 0)
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
             }
             txtTraining.onClick {
                 AlertDialog.Builder(this@HomeActivity)
