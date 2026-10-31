@@ -8,9 +8,13 @@
     <color name="white">#FFFFFFFF</color>
     <color name="white2">#80FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="black5">#66000000</color>
     <color name="_FAF3E3">#FAF3E3</color>
     <color name="_FFEBA7">#FFEBA7</color>
     <color name="_FFCB14">#FFCB14</color>
+    <color name="_57DDFF">#57DDFF</color>
+    <color name="_FFA101">#FFA101</color>
+    <color name="_FFFF06">#FFFF06</color>
     <color name="_4D1A1A1A">#4D1A1A1A</color>
     <color name="_4D3F3E3F">#4D3F3E3F</color>
     <color name="_E88D42">#E88D42</color>

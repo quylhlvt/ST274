@@ -13,7 +13,7 @@ class BarkWordMatcherTest {
     }
 
     @Test fun rejectsOtherWordsAndJoinedForms() {
-        listOf("mõ", "vàng", "giàng", "gấu", "gầu", "gạo", "gao", "gõ", "gỗ",
+        listOf("gau", "mõ", "vàng", "giàng", "gấu", "gầu", "gạo", "gao", "gõ", "gỗ",
             "gaugau", "gâugâu", "woof", "sủa", "sửa", "sữa", "[unk]",
             "google", "gaucho", "gâu123", "123gâu").forEach {
             assertEquals(it, 0, BarkWordMatcher.countBarks(it))

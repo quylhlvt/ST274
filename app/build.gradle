@@ -38,7 +38,6 @@ android {
         viewBinding true
         dataBinding true
     }
-    androidResources { noCompress += "tflite" }
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas")
     }
@@ -116,9 +115,6 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-config-ktx")
-
-    // LiteRT 1.4.1 keeps the Interpreter API and ships 16 KB-aligned native binaries.
-    implementation("com.google.ai.edge.litert:litert:1.4.1")
 
     implementation("com.alphacephei:vosk-android:0.3.75@aar")
     implementation("net.java.dev.jna:jna:5.18.1@aar")

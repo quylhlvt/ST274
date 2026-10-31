@@ -346,7 +346,7 @@
             app:outerStrokeColor="@color/white"
             app:outerStrokeWidth="@dimen/dimension_1"
             app:outerStrokeJoinStyle="round"
-            app:extrusionColor="@color/title_extrusion"
+            app:extrusionColor="@color/app_color2"
             app:extrusionDx="0dp"
             app:extrusionDy="@dimen/dimension_2"/>
     <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
@@ -367,7 +367,7 @@
             app:outerStrokeColor="@color/white"
             app:outerStrokeWidth="@dimen/dimension_1"
             app:outerStrokeJoinStyle="round"
-            app:extrusionColor="@color/title_extrusion"
+            app:extrusionColor="@color/app_color2"
             app:extrusionDx="0dp"
             app:extrusionDy="@dimen/dimension_2"/>
     <androidx.constraintlayout.widget.ConstraintLayout

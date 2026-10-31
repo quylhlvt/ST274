@@ -77,10 +77,11 @@
             app:layout_constraintStart_toStartOf="@+id/view2"
             app:layout_constraintBottom_toBottomOf="@+id/view2"/>
     <com.oc.catemoji.catoc.core.extention.OuterStrokeTextView
-            android:layout_width="@dimen/dimension_0"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/create_profile"
             android:gravity="center"
+            android:id="@+id/txtTitle"
             app:layout_constraintBottom_toTopOf="@id/view3"
             app:layout_constraintVertical_bias="0"
             android:textSize="@dimen/text_size_30"
@@ -162,6 +163,7 @@
             app:layout_constraintTop_toTopOf="@+id/view8">
 
         <TextView
+                android:id="@+id/txtContinue"
                 android:layout_width="match_parent"
                   android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/dimension_1_6"

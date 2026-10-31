@@ -22,9 +22,12 @@
             android:supportsRtl="true"
             android:theme="@style/Base.Theme.BaseActivity">
         <activity
-            android:screenOrientation="portrait"
-                android:name=".ui.main.training.TrainingActivity"
+                android:name=".ui.main.dogSkin.DogSkinActivity"
                 android:exported="false"/>
+        <activity
+                android:name=".ui.main.training.TrainingActivity"
+                android:exported="false"
+                android:screenOrientation="portrait"/>
         <activity
                 android:name=".ui.main.play.PlayActivity"
                 android:exported="false"
@@ -43,7 +46,8 @@
                 android:name=".ui.main.information.InformationActivity"
                 android:configChanges="orientation|screenSize|keyboardHidden"
                 android:exported="false"
-                android:screenOrientation="portrait"/>
+                android:screenOrientation="portrait"
+                android:windowSoftInputMode="adjustNothing"/>
 
         <meta-data
                 android:name="google_analytics_automatic_screen_reporting_enabled"

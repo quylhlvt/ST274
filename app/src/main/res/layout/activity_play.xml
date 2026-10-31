@@ -720,34 +720,33 @@
             app:layout_constraintTop_toTopOf="@+id/view9">
 
             <com.oc.catemoji.catoc.core.extention.OuterStrokeShadowTextView
-                android:singleLine="false"
-                android:scrollHorizontally="false"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:id="@+id/txtTitleUnlock"
-                style="@style/Widget.Catoc.ExtrudedTitle"
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimension_3"
-                android:elevation="@dimen/dimension_4"
-                android:fontFamily="@font/illita_one_regular"
-                android:gravity="center"
-                android:text="@string/new_badge_unlocked"
-                android:textColor="@color/app_color"
-                android:textSize="@dimen/text_size_28"
-                app:extrusionColor="@color/white"
-                app:extrusionDx="0dp"
-                app:extrusionDy="@dimen/dimension_2"
-                app:gradientEndColor="@color/_FFCB14"
-                app:gradientStartColor="@color/_FFEBA7"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:outerStrokeColor="@color/black"
-                app:outerStrokeJoinStyle="round"
-                app:outerStrokeWidth="@dimen/dimension_1"
-                app:useGradient="true" />
-
+                    android:id="@+id/txtTitleUnlock"
+                    style="@style/Widget.Catoc.ExtrudedTitle"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimension_3"
+                    android:elevation="@dimen/dimension_4"
+                    android:ellipsize="marquee"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:gravity="center"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:text="@string/new_badge_unlocked"
+                    android:textColor="@color/app_color"
+                    android:textSize="@dimen/text_size_28"
+                    app:extrusionColor="@color/white"
+                    app:extrusionDx="0dp"
+                    app:extrusionDy="@dimen/dimension_2"
+                    app:gradientEndColor="@color/_FFCB14"
+                    app:gradientStartColor="@color/_FFEBA7"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:outerStrokeColor="@color/black"
+                    app:outerStrokeJoinStyle="round"
+                    app:outerStrokeWidth="@dimen/dimension_1"
+                    app:useGradient="true" />
             <LinearLayout
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
@@ -796,6 +795,7 @@
                 app:layout_constraintStart_toEndOf="@+id/view11">
 
                 <TextView
+                        android:id="@+id/txtNextAchiUnlock"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/dimension_0_5"
@@ -805,6 +805,7 @@
                     android:fontFamily="@font/illita_one_regular"
                     android:gravity="center"
                     android:text="@string/next"
+                    style="@style/single_marquee"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_20" />
 
@@ -1041,7 +1042,6 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/completeContrain"
             android:visibility="gone"
-            tools:visibility="visible"
             android:layout_width="@dimen/dimension_0"
             android:layout_height="@dimen/dimension_0"
             android:elevation="@dimen/dimension_10"
@@ -1443,6 +1443,7 @@
                 app:layout_constraintTop_toTopOf="@+id/view32">
 
                 <TextView
+                        android:id="@+id/txtFindMatch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/dimension_0_5"

@@ -320,8 +320,8 @@ class PlayScreenTest {
         instrumentation.runOnMainSync { store.put("play", model) }
         suspend fun awaitPlayer(predicate: (UserEntity?) -> Boolean): UserEntity? =
             (withTimeout(5_000) {
-                model.player.first { it is RoomLoadState.Success && predicate(it.data) }
-            } as RoomLoadState.Success).data
+                model.player.first { it is RoomLoadState.Success && predicate(it.data?.profile) }
+            } as RoomLoadState.Success).data?.profile
         try {
             assertNull(awaitPlayer { it == null })
             val original = repository.createProfile("Player")

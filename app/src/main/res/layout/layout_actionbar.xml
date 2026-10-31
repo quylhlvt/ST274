@@ -58,7 +58,7 @@
         app:outerStrokeWidth="@dimen/dimension_1"
         android:textColor="@color/app_color"
         app:outerStrokeJoinStyle="round"
-        app:extrusionColor="@color/title_extrusion"
+        app:extrusionColor="@color/app_color2"
         app:extrusionDx="0dp"
         app:extrusionDy="@dimen/dimension_2"
     />
@@ -82,7 +82,7 @@
         app:outerStrokeJoinStyle="round"
         app:outerStrokeColor="@color/white"
         app:outerStrokeWidth="@dimen/dimension_1"
-        app:extrusionColor="@color/title_extrusion"
+        app:extrusionColor="@color/app_color2"
         app:extrusionDx="0dp"
         app:extrusionDy="@dimen/dimension_2"/>
 

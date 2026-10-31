@@ -89,6 +89,23 @@ class OuterStrokeShadowTextViewTest {
                 val second = IntArray(pixels.size)
                 bitmap.getPixels(second, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
                 assertTrue("Repeated draws must not change colors", pixels.contentEquals(second))
+
+                // A battle result can change colors without changing text or bounds.
+                // The cached shader must update immediately and still be restorable.
+                view.setGradientColors(Color.WHITE, Color.WHITE)
+                bitmap.eraseColor(Color.TRANSPARENT)
+                view.draw(Canvas(bitmap))
+                bitmap.getPixels(second, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+                assertTrue("Both white endpoints must produce a white fill", fill.all { second[it] == Color.WHITE })
+                assertTrue("Changing the fill must retain the black outline", second.any { it == Color.BLACK })
+                assertNull(view.paint.shader)
+                assertEquals(originalColors, view.textColors)
+
+                view.setGradientColors(Color.WHITE, context.getColor(R.color.text_gradient_cream))
+                bitmap.eraseColor(Color.TRANSPARENT)
+                view.draw(Canvas(bitmap))
+                bitmap.getPixels(second, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+                assertTrue("Restoring endpoints must restore the original gradient", pixels.contentEquals(second))
             } finally {
                 bitmap.recycle()
             }

@@ -7,9 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.oc.catemoji.catoc.RoomLoadState
 import com.oc.catemoji.catoc.R
-import com.oc.catemoji.catoc.data.audio.BarkDetection
-import com.oc.catemoji.catoc.data.audio.BarkDetectionPolicy
-import com.oc.catemoji.catoc.data.audio.DeviceSoundClassifier
 import com.oc.catemoji.catoc.data.audio.BarkSpeechCounter
 import com.oc.catemoji.catoc.data.audio.SpeechToTextManager
 import com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
@@ -20,10 +17,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -41,14 +40,30 @@ class PlayViewModel @Inject constructor(
     trainingAssets: TrainingAssetRepository,
     private val savedState: SavedStateHandle = SavedStateHandle(),
 ) : ViewModel() {
-    // Hilt injects the application Context; classifier is owned by this ViewModel.
-    // This avoids the unresolved DeviceSoundClassifier type in KAPT constructor stubs.
-    private val soundClassifier = DeviceSoundClassifier(appContext)
     private val speechToText = SpeechToTextManager(appContext)
+    private val appContextForOpponent = appContext.applicationContext
+    private var screenActive = false
+    private var playerReady = false
+    private var countdownVisible = false
+    private var countdownJob: Job? = null
+    private var resultAdvanceJob: Job? = null
+    private val _battleUiState = MutableStateFlow(PlayBattleUiState())
+    val battleUiState = _battleUiState.asStateFlow()
+    val useMicrophone get() = savedState.get<Boolean>(EXTRA_USE_MICROPHONE) ?: false
+    val introFinished get() = savedState.get<Boolean>(INTRO_FINISHED) == true
+    val battleStarted get() = savedState.get<Boolean>(BATTLE_STARTED) == true
+
     val player = repository.user
-        .map<UserEntity?, RoomLoadState<UserEntity?>> { RoomLoadState.Success(it) }
+        .map<UserEntity?, RoomLoadState<PlayPlayerUiState?>> { user ->
+            playerReady = user != null
+            refreshBattleUiState()
+            startCountdownIfReady()
+            RoomLoadState.Success(user?.let(::PlayPlayerUiState))
+        }
         .catch { error ->
             if (error is CancellationException) throw error
+            playerReady = false
+            refreshBattleUiState()
             emit(RoomLoadState.Error(error))
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RoomLoadState.Loading)
@@ -58,12 +73,6 @@ class PlayViewModel @Inject constructor(
 
     private val _barkCount = MutableStateFlow(savedState.get<Int>("barks") ?: 0)
     val barkCount = _barkCount.asStateFlow()
-
-    private val _previewBarkCount = MutableStateFlow(0)
-    val previewBarkCount = _previewBarkCount.asStateFlow()
-
-    private val _detectionMode = MutableStateFlow(BarkDetectionMode.WORDS)
-    val detectionMode = _detectionMode.asStateFlow()
 
     private val _background = MutableStateFlow<String?>(null)
     val background = _background.asStateFlow()
@@ -91,12 +100,102 @@ class PlayViewModel @Inject constructor(
     val saving = _saving.asStateFlow()
     private val _saveError = MutableStateFlow(false)
     val saveError = _saveError.asStateFlow()
+    private val rewardedAdBusy = MutableStateFlow(false)
+    val resultUiState = combine(phase, result, saving, saveError, rewardedAdBusy) { phase, result, saving, error, adBusy ->
+        PlayResultUiState(phase, result?.let(PlayRewardUiState::from), saving || adBusy, error)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, PlayResultUiState(phase.value))
     private var resultJob: Job? = null
     private var bonusJob: Job? = null
     val isFinished get() = savedState.contains("won")
+    val canLeaveResult get() = !_saving.value && !rewardedAdBusy.value && !_saveError.value
+    val canClaimBonus get() = canLeaveResult && _result.value?.bonusClaimed == false
+
+    fun onRewardedAdBusyChanged(busy: Boolean) {
+        rewardedAdBusy.value = busy
+    }
+
+    fun onIntroFinished() {
+        savedState[INTRO_FINISHED] = true
+        startCountdownIfReady()
+    }
+
+    fun onScreenStarted(permissionGranted: Boolean) {
+        screenActive = true
+        val permissionRecovered = permissionGranted &&
+            (savedState.get<Boolean>(MICROPHONE_BLOCKED) == true ||
+                _microphone.value.status == MicrophoneStatus.PERMISSION_REQUIRED)
+        if (permissionRecovered) {
+            savedState[MICROPHONE_BLOCKED] = false
+            stopListening()
+        }
+        val shouldRestart = savedState.get<Boolean>(MICROPHONE_WAS_ACTIVE) == true || permissionRecovered
+        savedState[MICROPHONE_WAS_ACTIVE] = false
+        if (useMicrophone && shouldRestart && battleStarted && !isFinished) {
+            if (permissionGranted) startListening() else requireMicrophonePermission()
+        }
+        refreshBattleUiState()
+        startCountdownIfReady()
+        scheduleResultAdvance()
+    }
+
+    fun onScreenStopped(isFinishing: Boolean) {
+        screenActive = false
+        countdownJob?.cancel()
+        countdownJob = null
+        countdownVisible = false
+        resultAdvanceJob?.cancel()
+        resultAdvanceJob = null
+        val status = _microphone.value.status
+        savedState[MICROPHONE_WAS_ACTIVE] = !isFinishing &&
+            (status == MicrophoneStatus.STARTING || status == MicrophoneStatus.LISTENING)
+        stopListening()
+        refreshBattleUiState()
+    }
+
+    private fun startCountdownIfReady() {
+        if (!screenActive || !introFinished || !playerReady || battleStarted || isFinished ||
+            countdownJob?.isActive == true) return
+        countdownVisible = true
+        refreshBattleUiState()
+        countdownJob = viewModelScope.launch {
+            while (countdownStep < 4) {
+                delay(if (countdownStep < 3) 1_000L else 600L)
+                savedState[COUNTDOWN_STEP] = countdownStep + 1
+                refreshBattleUiState()
+            }
+            markBattleStarted()
+        }
+    }
+
+    private val countdownStep get() = (savedState.get<Int>(COUNTDOWN_STEP) ?: 0).coerceIn(0, 4)
+
+    private fun refreshBattleUiState() {
+        val canPlay = screenActive && playerReady && battleStarted && !isFinished
+        _battleUiState.value = PlayBattleUiState(
+            countdownNumber = if (countdownVisible && countdownStep < 4) 3 - countdownStep else null,
+            canPlay = canPlay,
+            canTap = canPlay && !useMicrophone,
+            runTapOpponent = canPlay && !useMicrophone,
+        )
+    }
+
+    private fun scheduleResultAdvance() {
+        if (!screenActive || phase.value != BattlePhase.GAME_OVER || _result.value == null ||
+            resultAdvanceJob?.isActive == true) return
+        resultAdvanceJob = viewModelScope.launch {
+            delay(1_000)
+            if (screenActive && phase.value == BattlePhase.GAME_OVER) advanceResult()
+        }
+    }
 
     fun markBattleStarted() {
         if (!savedState.contains("startedAt")) savedState["startedAt"] = android.os.SystemClock.elapsedRealtime()
+        savedState[BATTLE_STARTED] = true
+        savedState[COUNTDOWN_STEP] = 4
+        countdownJob?.cancel()
+        countdownJob = null
+        countdownVisible = false
+        refreshBattleUiState()
     }
 
     fun finishBattle(won: Boolean) {
@@ -106,7 +205,12 @@ class PlayViewModel @Inject constructor(
             savedState["duration"] = (android.os.SystemClock.elapsedRealtime() - started).coerceAtLeast(1)
             savedState["phase"] = BattlePhase.GAME_OVER
         }
+        countdownJob?.cancel()
+        countdownJob = null
+        countdownVisible = false
+        savedState[MICROPHONE_WAS_ACTIVE] = false
         stopListening()
+        refreshBattleUiState()
         saveBattleResult()
     }
 
@@ -125,12 +229,17 @@ class PlayViewModel @Inject constructor(
             } catch (error: Exception) {
                 Log.e("PlayResult", "Could not save battle", error)
                 _saveError.value = true
-            } finally { _saving.value = false }
+            } finally {
+                _saving.value = false
+                scheduleResultAdvance()
+            }
         }
     }
 
     fun advanceResult() {
         val result = _result.value ?: return
+        resultAdvanceJob?.cancel()
+        resultAdvanceJob = null
         savedState["phase"] = when (phase.value) {
             BattlePhase.GAME_OVER -> if (result.badges().isNotEmpty()) BattlePhase.BADGES
                 else if (result.nextRank > result.previousRank) BattlePhase.RANK else BattlePhase.REWARD
@@ -163,12 +272,9 @@ class PlayViewModel @Inject constructor(
         if (savedState.get<Boolean>("bonusEarned") == true) claimEarnedBonus() else saveBattleResult()
     }
 
-    private val appContextForOpponent = appContext.applicationContext
-
     private val microphoneSession = Mutex()
     private var microphoneJob: Job? = null
     private var sessionId = 0
-    private var microphoneEnabled = true
 
     init {
         viewModelScope.launch {
@@ -185,55 +291,31 @@ class PlayViewModel @Inject constructor(
     }
 
     fun startListening() {
-        if (!microphoneEnabled || isFinished) return
+        if (!useMicrophone || !screenActive || !battleStarted || isFinished) return
         if (microphoneJob?.isActive == true) return
+        savedState[MICROPHONE_WAS_ACTIVE] = true
         val session = ++sessionId
-        val mode = _detectionMode.value
         _microphone.value = MicrophoneUiState(MicrophoneStatus.STARTING)
 
         microphoneJob = viewModelScope.launch {
             try {
                 // Prevent overlapping AudioRecord instances on Stop / Start.
                 microphoneSession.withLock {
-                    if (mode == BarkDetectionMode.WORDS) {
-                        val counter = BarkSpeechCounter()
-                        speechToText.listen().collect { update ->
-                            if (session != sessionId) return@collect
-                            val previousCount = counter.count
-                            counter.accept(update.text, update.isFinal, update.words, update.partialText)
-                            addPlayerPoints(counter.count - previousCount)
-                            if (counter.count != previousCount || update.isFinal) {
-                                Log.d("BarkSpeechScore", "${if (update.isFinal) "result" else "partial"} " +
-                                    "added=${counter.count - previousCount} total=${_barkCount.value}")
-                            }
-                            _microphone.value = MicrophoneUiState(
-                                status = MicrophoneStatus.LISTENING,
-                                detection = BarkDetection(null, counter.count > previousCount, update.level),
-                                transcript = update.partialText ?: update.text,
-                                isPartial = !update.isFinal,
-                            )
-                        }
-                        return@withLock
-                    }
-                    val policy = BarkDetectionPolicy(
-                        barkClassIndex = DeviceSoundClassifier.BARK_CLASS_INDEX,
-                        threshold = DeviceSoundClassifier.BARK_SCORE_THRESHOLD,
-                        requiredMatches = 2
-                    )
-                    var countedSoundPoints = 0
-                    soundClassifier.listenScored().collect { update ->
+                    val counter = BarkSpeechCounter()
+                    speechToText.listen().collect { update ->
                         if (session != sessionId) return@collect
-                        val detection = policy.evaluate(update.prediction)
-                        // Count comes from separate PCM bursts, not AI's TRUE state.
-                        // PCM levels and inference results arrive from two workers.
-                        // An older level snapshot must not lower/replay the count.
-                        if (update.totalPoints > countedSoundPoints) {
-                            addPlayerPoints(update.totalPoints - countedSoundPoints)
-                            countedSoundPoints = update.totalPoints
+                        val previousCount = counter.count
+                        counter.accept(update.text, update.isFinal, update.words, update.partialText)
+                        addPlayerPoints(counter.count - previousCount)
+                        if (counter.count != previousCount || update.isFinal) {
+                            Log.d("BarkSpeechScore", "${if (update.isFinal) "result" else "partial"} " +
+                                "added=${counter.count - previousCount} total=${_barkCount.value}")
                         }
                         _microphone.value = MicrophoneUiState(
-                            MicrophoneStatus.LISTENING,
-                            detection
+                            status = MicrophoneStatus.LISTENING,
+                            level = update.level,
+                            transcript = update.partialText ?: update.text,
+                            isPartial = !update.isFinal,
                         )
                     }
                 }
@@ -242,61 +324,78 @@ class PlayViewModel @Inject constructor(
             } catch (error: SecurityException) {
                 if (session == sessionId) requireMicrophonePermission()
             } catch (error: Exception) {
-                Log.e("PlayMicrophone", "Could not listen in $mode mode", error)
+                Log.e("PlayMicrophone", "Could not recognize barking", error)
                 if (session == sessionId) {
-                    _previewBarkCount.value = _barkCount.value
+                    savedState[MICROPHONE_WAS_ACTIVE] = false
                     _microphone.value = MicrophoneUiState(
                         MicrophoneStatus.ERROR,
-                        error = if (mode == BarkDetectionMode.WORDS) R.string.play_speech_error
-                            else R.string.play_microphone_error
+                        error = R.string.play_speech_error
                     )
                 }
             }
         }
     }
 
-    fun stopListening() {
+    private fun stopListening() {
         sessionId++
         microphoneJob?.cancel()
         microphoneJob = null
-        _previewBarkCount.value = _barkCount.value
         _microphone.value = MicrophoneUiState()
     }
 
-    fun addPlayerTap() = addPlayerPoints(1)
-
-    fun setMicrophoneEnabled(enabled: Boolean) {
-        microphoneEnabled = enabled
-        if (!enabled) stopListening()
+    fun addPlayerTap() {
+        if (_battleUiState.value.canTap) addPlayerPoints(1)
     }
 
     private fun addPlayerPoints(points: Int) {
         if (points <= 0 || isFinished) return
         _barkCount.value += points
         savedState["barks"] = _barkCount.value
-        _previewBarkCount.value = _barkCount.value
     }
 
-    fun selectDetectionMode(mode: BarkDetectionMode) {
-        if (_detectionMode.value == mode) return
-        val restart = microphoneJob?.isActive == true
-        stopListening()
-        _detectionMode.value = mode
-        if (restart) startListening()
+    /** Returns true only when the Activity needs to launch Android's permission dialog. */
+    fun requestMicrophone(permissionGranted: Boolean): Boolean {
+        if (!useMicrophone || !screenActive || !battleStarted || isFinished ||
+            savedState.get<Boolean>(MICROPHONE_AUTO_REQUESTED) == true) return false
+        savedState[MICROPHONE_AUTO_REQUESTED] = true
+        when {
+            permissionGranted -> startListening()
+            savedState.get<Boolean>(MICROPHONE_BLOCKED) == true -> requireMicrophonePermission()
+            else -> return true
+        }
+        return false
+    }
+
+    fun onMicrophonePermissionResult(granted: Boolean, blocked: Boolean) {
+        savedState[MICROPHONE_BLOCKED] = blocked
+        if (granted) startListening() else requireMicrophonePermission()
+    }
+
+    fun retryMicrophone() {
+        savedState[MICROPHONE_AUTO_REQUESTED] = false
     }
 
     fun requireMicrophonePermission() {
+        savedState[MICROPHONE_WAS_ACTIVE] = false
         stopListening()
         _microphone.value = MicrophoneUiState(
             MicrophoneStatus.PERMISSION_REQUIRED,
             error = R.string.play_microphone_permission
         )
     }
+
+    companion object {
+        const val EXTRA_USE_MICROPHONE = "play_use_microphone"
+        private const val INTRO_FINISHED = "play_intro_finished"
+        private const val BATTLE_STARTED = "play_battle_started"
+        private const val COUNTDOWN_STEP = "play_countdown_step"
+        private const val MICROPHONE_BLOCKED = "play_microphone_blocked"
+        private const val MICROPHONE_AUTO_REQUESTED = "play_microphone_auto_requested"
+        private const val MICROPHONE_WAS_ACTIVE = "play_microphone_was_active"
+    }
 }
 
 enum class BattlePhase { PLAYING, GAME_OVER, BADGES, RANK, REWARD }
-
-enum class BarkDetectionMode { SOUND, WORDS }
 
 enum class MicrophoneStatus {
     IDLE, STARTING, LISTENING, PERMISSION_REQUIRED, ERROR
@@ -304,7 +403,7 @@ enum class MicrophoneStatus {
 
 data class MicrophoneUiState(
     val status: MicrophoneStatus = MicrophoneStatus.IDLE,
-    val detection: BarkDetection? = null,
+    val level: Float = 0f,
     val error: Int? = null,
     val transcript: String = "",
     val isPartial: Boolean = false,

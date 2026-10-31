@@ -24,13 +24,15 @@ class InformationActivity : BaseActivity<ActivityInformationBinding, Information
     }
 
     override fun initView() {
+        binding.txtTitle.isSelected =true
+        binding.txtContinue.isSelected =true
         if (sharedPreferences.isInformationScreen()) {
             toHome()
             return
         }
         val bottomPadding = binding.root.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val systemBars = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, bottomPadding + systemBars.bottom)
             insets
         }

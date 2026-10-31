@@ -8,7 +8,7 @@ class BarkSpeechCounterTest {
         BarkSpeechWord(text, start, end, confidence)
 
     @Test fun firstGauAndGoScoreOnTheirFirstPartialWithoutConfidenceOrAlignment() {
-        listOf("gâu", "gau", "go", "gô").forEach { sound ->
+        listOf("gâu", "go", "gô").forEach { sound ->
             val counter = BarkSpeechCounter()
             counter.accept("", false, partialText = sound)
             assertEquals(sound, 1, counter.count)
@@ -62,7 +62,7 @@ class BarkSpeechCounterTest {
 
     @Test fun reportedNonBarkWordsRemainRejected() {
         val counter = BarkSpeechCounter()
-        listOf("mõ", "vàng", "giàng", "gấu", "gầu", "gạo", "gõ", "gỗ", "mộ", "ngõ", "[unk]").forEach { text ->
+        listOf("gau", "mõ", "vàng", "giàng", "gấu", "gầu", "gạo", "gõ", "gỗ", "mộ", "ngõ", "[unk]").forEach { text ->
             repeat(3) { counter.accept(text, false, listOf(word(text, 100, 300, 1f)), partialText = text) }
             counter.accept(text, true, listOf(word(text, 100, 300, 1f)))
             assertEquals(text, 0, counter.count)

@@ -6,7 +6,7 @@ import java.util.Locale
 /** Explicit playable sounds; keep tone marks so unrelated variants stay separate. */
 object BarkWordMatcher {
     private val separators = Regex("[^\\p{L}\\p{M}\\p{N}]+")
-    private val acceptedWords = setOf("gâu", "gau", "go", "gô")
+    private val acceptedWords = setOf("gâu", "go", "gô")
 
     fun normalize(text: String): String =
         Normalizer.normalize(text.lowercase(Locale.ROOT), Normalizer.Form.NFC)

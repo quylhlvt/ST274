@@ -38,8 +38,7 @@ class SpeechToTextManager(private val context: Context) {
             PackageManager.PERMISSION_GRANTED) throw SecurityException("RECORD_AUDIO permission not granted")
 
         VoskVietnameseModel.open(context).use { model ->
-            // Keep the playable sounds and the user's reported false positives.
-            // Extra phonetic competitors previously displaced valid gâu/go.
+            // Recognize only the three playable sounds used to imitate barking.
             Recognizer(model, SAMPLE_RATE.toFloat(), GRAMMAR).use { recognizer ->
                 recognizer.setWords(true)
                 recognizer.setPartialWords(true)
@@ -99,14 +98,9 @@ class SpeechToTextManager(private val context: Context) {
     companion object {
         internal fun readUpdate(recognizer: Recognizer, isFinal: Boolean, level: Float): SpeechRecognitionUpdate {
             if (isFinal) return parseResult(recognizer.result, true, level)
-            // Best-path text is available before the word-aligned lattice. Keep
-            // both; do not invent a confidence for the fast partial hypothesis.
-            recognizer.setPartialWords(false)
             val fast = JSONObject(recognizer.partialResult).optString("partial")
-            recognizer.setPartialWords(true)
-            return parseResult(recognizer.partialResult, false, level).copy(partialText = fast)
+            return SpeechRecognitionUpdate(fast, false, level, emptyList(), fast)
         }
-
         internal fun parseResult(result: String, isFinal: Boolean, level: Float): SpeechRecognitionUpdate {
             val json = JSONObject(result)
             val aligned = json.optJSONArray(if (isFinal) "result" else "partial_result")
@@ -125,9 +119,8 @@ class SpeechToTextManager(private val context: Context) {
         }
 
         const val SAMPLE_RATE = 16_000
-        // gâu/gô score; mõ/vàng/giàng and [unk] never score.
-        const val GRAMMAR = "[\"gâu\",\"gô\",\"mõ\",\"vàng\",\"giàng\",\"[unk]\"]"
-        private const val BLOCK_SAMPLES = 640 // 40ms; do not collect a phrase before decoding.
+        const val GRAMMAR = "[\"gâu\",\"go\",\"gô\"]"
+        private const val BLOCK_SAMPLES = 600 // 40ms; do not collect a phrase before decoding.
         private const val TAG = "BarkSpeech"
     }
 }

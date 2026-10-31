@@ -11,6 +11,7 @@ import android.text.TextPaint
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
+import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatTextView
 import com.oc.catemoji.catoc.R
 import kotlin.math.abs
@@ -38,8 +39,8 @@ class OuterStrokeShadowTextView @JvmOverloads constructor(
     private val outlineShader: Shader
     private val extrusionShader: Shader
     private val useGradient: Boolean
-    private val gradientStartColor: Int
-    private val gradientEndColor: Int
+    private var gradientStartColor: Int
+    private var gradientEndColor: Int
     private var fillGradient: LinearGradient? = null
     private var gradientTop = Float.NaN
     private var gradientBottom = Float.NaN
@@ -104,6 +105,15 @@ class OuterStrokeShadowTextView @JvmOverloads constructor(
         effectTop = ceil(extent + max(0f, -extrusionDy)).toInt()
         effectRight = ceil(extent + max(0f, extrusionDx)).toInt()
         effectBottom = ceil(extent + max(0f, extrusionDy)).toInt()
+    }
+
+    fun setGradientColors(@ColorInt startColor: Int, @ColorInt endColor: Int) {
+        if (gradientStartColor == startColor && gradientEndColor == endColor) return
+        gradientStartColor = startColor
+        gradientEndColor = endColor
+        fillGradient = null
+        gradientDirty = true
+        invalidate()
     }
 
     // Compound padding participates in both TextView measurement and text positioning.
