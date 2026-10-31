@@ -39,6 +39,30 @@ class PlayScreenTest {
     private val context = instrumentation.targetContext
 
     @Test
+    fun onlyAcceptedPlayerAndMachinePointsEmitVisualEvents() {
+        instrumentation.runOnMainSync {
+            val themed = ContextThemeWrapper(context, R.style.Base_Theme_BaseActivity)
+            val binding = ActivityPlayBinding.inflate(LayoutInflater.from(themed))
+            val events = mutableListOf<Boolean>()
+            binding.dualWaveform.setOnPointScoredListener { events.add(it) }
+            try {
+                binding.dualWaveform.addPlayerPoint()
+                binding.dualWaveform.addOpponentPoint()
+                assertEquals(listOf(true, false), events)
+                repeat(25) { binding.dualWaveform.addPlayerPoint() }
+                assertEquals(27, events.size)
+                binding.dualWaveform.addOpponentPoint()
+                binding.dualWaveform.addPlayerPoint()
+                assertEquals("A finished match must not produce extra effects", 27, events.size)
+                assertFalse(binding.effectLayer.isClickable)
+            } finally {
+                binding.dualWaveform.setOnPointScoredListener(null)
+                binding.dualWaveform.stop()
+            }
+        }
+    }
+
+    @Test
     fun savedPlayerCannotTapUntilFlashAndCountdownFinish() {
         ActivityScenario.launch<PlayActivity>(
             Intent(context, PlayActivity::class.java).putExtra(PlayActivity.EXTRA_USE_MICROPHONE, false),
@@ -61,6 +85,13 @@ class PlayScreenTest {
             while (!started && SystemClock.elapsedRealtime() < deadline) {
                 scenario.onActivity { activity ->
                     val avatar = activity.findViewById<View>(R.id.avatar1)
+                    val opponent = activity.findViewById<View>(R.id.avatar2)
+                    val track = activity.findViewById<com.oc.catemoji.catoc.core.custom.DualWaveformView>(R.id.dualWaveform)
+                    assertFalse("The machine opponent must never accept taps", opponent.isClickable)
+                    assertFalse(opponent.isEnabled)
+                    val progressBeforeOpponentTap = track.progress
+                    assertFalse(opponent.performClick())
+                    assertEquals("Tapping the opponent must not move the score", progressBeforeOpponentTap, track.progress, 0f)
                     val countdown = activity.findViewById<android.widget.TextView>(R.id.txtStartNumber)
                     if (!avatar.isEnabled) {
                         avatar.performClick()

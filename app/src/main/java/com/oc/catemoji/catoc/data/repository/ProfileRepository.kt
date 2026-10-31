@@ -25,7 +25,7 @@ class ProfileRepository @Inject constructor(private val database: AppDatabase) {
                 "Invincible Hound", "Speed Barker", "Call the Cops!")
             dao.insertAchievements(titles.mapIndexed { index, title ->
                 AchievementEntity(index + 1, title,
-                    "file:///android_asset/Achievement/${index + 1}. $title.webp")
+                    "file:///android_asset/Achievement/${index + 1}.webp")
             })
         }
         if (database.historyDao().count() == 0) {

@@ -13,6 +13,9 @@ import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity.Co
 import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity.Companion.FRAME
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.oc.catemoji.catoc.data.datalocal.room.entity.BattleResultEntity
+import com.oc.catemoji.catoc.data.model.BattleRules
+import kotlinx.coroutines.flow.first
 
 @Singleton
 class BattleRepository @Inject constructor(
@@ -25,6 +28,39 @@ class BattleRepository @Inject constructor(
     val user = userDao.observeUser()
     val dogs = dogDao.observeDogs()
     val history = historyDao.observeHistory()
+
+    suspend fun completeBattle(
+        matchId: String, won: Boolean, opponentName: String, opponentAvatar: String,
+        barks: Int, durationMs: Long,
+    ): BattleResultEntity = database.withTransaction {
+        database.battleResultDao().get(matchId)?.let { return@withTransaction it }
+        val user = checkNotNull(userDao.getUser()) { "User profile does not exist" }
+        val bones = minOf(BattleRules.bones(won), Int.MAX_VALUE - user.coinbone)
+        val points = minOf(BattleRules.rankPoints(won), Int.MAX_VALUE - user.rankbatter)
+        val nextRank = BattleRules.rank(user.rank, user.rankbatter + points)
+        userDao.upsert(user.copy(coinbone = user.coinbone + bones,
+            rankbatter = user.rankbatter + points, rank = nextRank))
+        val historyId = historyDao.insert(HistoryEntity(
+            nameBatter = opponentName, date = System.currentTimeMillis(),
+            imageAvatar1 = user.imageAvatar, imageAvatar2 = opponentAvatar, typePlay = won,
+        ))
+        val results = historyDao.observeHistory().first()
+        val existing = database.profileDao().getAchievements().map { it.id }.toSet()
+        val badges = BattleRules.earnedBadges(results.count { it.typePlay },
+            results.takeWhile { it.typePlay }.size, barks, durationMs).filter { it.id !in existing }
+        if (badges.isNotEmpty()) database.profileDao().insertAchievements(badges)
+        BattleResultEntity(matchId, historyId, won, bones, points, user.rank, nextRank,
+            badges.joinToString(",") { it.id.toString() }).also { database.battleResultDao().upsert(it) }
+    }
+
+    suspend fun claimBattleBonus(matchId: String): BattleResultEntity = database.withTransaction {
+        val result = checkNotNull(database.battleResultDao().get(matchId))
+        if (result.bonusClaimed) return@withTransaction result
+        val user = checkNotNull(userDao.getUser())
+        val bonus = minOf(result.bones, Int.MAX_VALUE - user.coinbone)
+        userDao.upsert(user.copy(coinbone = user.coinbone + bonus))
+        result.copy(bonusClaimed = true).also { database.battleResultDao().upsert(it) }
+    }
 
     suspend fun createProfile(name: String): UserEntity {
         val trimmedName = name.trim()

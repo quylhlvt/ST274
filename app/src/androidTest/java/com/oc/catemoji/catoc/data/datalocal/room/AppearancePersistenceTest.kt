@@ -68,7 +68,7 @@ class AppearancePersistenceTest {
                 legacy.version = 5
             }
             Room.databaseBuilder(context, AppDatabase::class.java, filename)
-                .addMigrations(AppDatabase.MIGRATION_5_6).build().useDatabase { database ->
+                .addMigrations(AppDatabase.MIGRATION_5_6, AppDatabase.MIGRATION_6_7).build().useDatabase { database ->
                     val user = checkNotNull(database.userDao().getUser())
                     assertEquals("file:///android_asset/9/avatar.webp", user.imageAvatar)
                     assertEquals("file:///android_asset/12/frame.webp", user.imageFrame)
@@ -172,7 +172,7 @@ class AppearancePersistenceTest {
                 legacy.version = 4
             }
             Room.databaseBuilder(context, AppDatabase::class.java, filename)
-                .addMigrations(AppDatabase.MIGRATION_4_5, AppDatabase.MIGRATION_5_6).build().useDatabase { database ->
+                .addMigrations(AppDatabase.MIGRATION_4_5, AppDatabase.MIGRATION_5_6, AppDatabase.MIGRATION_6_7).build().useDatabase { database ->
                     val user = checkNotNull(database.userDao().getUser())
                     assertEquals("Saved", user.name)
                     assertEquals(321, user.coinbone)

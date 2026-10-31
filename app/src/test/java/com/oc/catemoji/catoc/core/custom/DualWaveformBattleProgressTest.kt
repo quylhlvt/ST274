@@ -6,6 +6,16 @@ import org.junit.Test
 
 class DualWaveformBattleProgressTest {
     @Test
+    fun recreationRestoresProgressWithoutResettingOrReplayingPoints() {
+        val progress = DualWaveformBattleProgress()
+        progress.restore(0.72f)
+        assertEquals(0.74f, progress.addPlayerPoint(), 0.0001f)
+        progress.restore(0f)
+        assertTrue(progress.isFinished)
+        assertEquals(0f, progress.addPlayerPoint(), 0.0001f)
+    }
+
+    @Test
     fun startsInCenterAndEachSideMovesExactlyTwoPercent() {
         val progress = DualWaveformBattleProgress()
 

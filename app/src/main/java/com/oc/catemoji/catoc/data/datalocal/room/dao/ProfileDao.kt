@@ -11,6 +11,9 @@ interface ProfileDao {
     @Query("SELECT * FROM achievement ORDER BY id")
     fun observeAchievements(): Flow<List<AchievementEntity>>
 
+    @Query("SELECT * FROM achievement ORDER BY id")
+    suspend fun getAchievements(): List<AchievementEntity>
+
     @Query("SELECT COUNT(*) FROM achievement")
     suspend fun achievementCount(): Int
 

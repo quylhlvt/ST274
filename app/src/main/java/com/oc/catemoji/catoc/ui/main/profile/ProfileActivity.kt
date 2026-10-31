@@ -87,6 +87,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding, ProfileViewModel>(
                     binding.apply {
                         txtNameData.text = user.name
                         txtCoinRank.text = user.rankbatter.toString()
+                        imgRank.setImageResource(com.oc.catemoji.catoc.utils.DataLocal.rankList[(user.rank - 1).coerceIn(0, 7)])
                         Glide.with(this@ProfileActivity).clear(imgAvatar)
                         loadImage(this@ProfileActivity, user.imageAvatar, imgAvatar)
                         Glide.with(this@ProfileActivity).clear(imgFrameAvatar)

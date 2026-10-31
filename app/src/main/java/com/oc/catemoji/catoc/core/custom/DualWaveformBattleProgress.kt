@@ -38,4 +38,9 @@ internal class DualWaveformBattleProgress(
         currentStep = initialStep
         return value
     }
+
+    fun restore(value: Float): Float {
+        currentStep = (value.coerceIn(0f, 1f) / step).roundToInt().coerceIn(0, maximumStep)
+        return this.value
+    }
 }

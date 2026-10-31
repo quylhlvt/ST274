@@ -44,6 +44,7 @@ class DualWaveformView @JvmOverloads constructor(
     private var finishDispatched = false
     private var onBattleFinished: (() -> Unit)? = null
     private var onBattleProgressChanged: ((Float) -> Unit)? = null
+    private var onPointScored: ((Boolean) -> Unit)? = null
     private var realBars = FloatArray(1)
     private var fakeBars = FloatArray(1)
     private var head = 0
@@ -77,7 +78,7 @@ class DualWaveformView @JvmOverloads constructor(
     private val opponentTick = object : Runnable {
         override fun run() {
             if (!running || !simulateOpponent || !isAttachedToWindow || !isShown || battleProgress.isFinished) return
-            animateBattleProgress(battleProgress.addOpponentPoint())
+            addOpponentPoint()
             if (!battleProgress.isFinished) postDelayed(this, opponentPointIntervalMs)
         }
     }
@@ -201,14 +202,34 @@ class DualWaveformView @JvmOverloads constructor(
 
     /** One confirmed player bark occupies another 2% of the track. */
     fun addPlayerPoint() {
-        if (!battleProgress.isFinished) animateBattleProgress(battleProgress.addPlayerPoint())
+        if (!battleProgress.isFinished) {
+            animateBattleProgress(battleProgress.addPlayerPoint())
+            onPointScored?.invoke(true)
+        }
     }
 
     val isBattleFinished: Boolean
         get() = battleProgress.isFinished
 
+    val progress: Float get() = battleProgress.value
+
+    fun restoreBattleProgress(progress: Float) {
+        stop()
+        displayedBattleProgress = battleProgress.restore(progress)
+        finishDispatched = false
+        updateAvatarGeometry()
+    }
+
     fun addOpponentPoint() {
-        if (!battleProgress.isFinished) animateBattleProgress(battleProgress.addOpponentPoint())
+        if (!battleProgress.isFinished) {
+            animateBattleProgress(battleProgress.addOpponentPoint())
+            onPointScored?.invoke(false)
+        }
+    }
+
+    /** true is a player bark; false is a machine bark. Never changes scoring. */
+    fun setOnPointScoredListener(listener: ((Boolean) -> Unit)?) {
+        onPointScored = listener
     }
 
     fun setOnBattleFinishedListener(listener: (() -> Unit)?) {
@@ -278,6 +299,11 @@ class DualWaveformView @JvmOverloads constructor(
         displayedBattleProgress = battleProgress.value
         updateAvatarGeometry()
         latestLevel = 0f
+        // Stopping during the final animation must not lose the match result.
+        if (battleProgress.isFinished && !finishDispatched) {
+            finishDispatched = true
+            onBattleFinished?.invoke()
+        }
     }
 
     fun clear() {

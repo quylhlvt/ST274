@@ -14,10 +14,12 @@ import com.oc.catemoji.catoc.data.datalocal.room.entity.DogEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.HistoryEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity
+import com.oc.catemoji.catoc.data.datalocal.room.entity.BattleResultEntity
+import com.oc.catemoji.catoc.data.datalocal.room.dao.BattleResultDao
 
 @Database(
-    entities = [UserEntity::class, DogEntity::class, HistoryEntity::class, AchievementEntity::class, AppearanceStateEntity::class],
-    version = 6,
+    entities = [UserEntity::class, DogEntity::class, HistoryEntity::class, AchievementEntity::class, AppearanceStateEntity::class, BattleResultEntity::class],
+    version = 7,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -26,8 +28,26 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun historyDao(): HistoryDao
     abstract fun profileDao(): ProfileDao
     abstract fun appearanceDao(): AppearanceDao
+    abstract fun battleResultDao(): BattleResultDao
 
     companion object {
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS battle_result (
+                        matchId TEXT NOT NULL PRIMARY KEY, historyId INTEGER NOT NULL,
+                        won INTEGER NOT NULL, bones INTEGER NOT NULL, rankPoints INTEGER NOT NULL,
+                        previousRank INTEGER NOT NULL, nextRank INTEGER NOT NULL,
+                        badgeIds TEXT NOT NULL, bonusClaimed INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                for (id in 1..7) {
+                    db.execSQL("UPDATE achievement SET image = ? WHERE id = ?",
+                        arrayOf("file:///android_asset/Achievement/$id.webp", id))
+                }
+            }
+        }
+
         val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 // Assets were converted to WebP; repair only the bundled paths we own.

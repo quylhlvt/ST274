@@ -40,8 +40,10 @@ import com.bumptech.glide.request.transition.Transition
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.RoomLoadState
 import com.oc.catemoji.catoc.core.base.BaseActivity
+import com.oc.catemoji.catoc.core.helper.BarkEffectRenderer
 import com.oc.catemoji.catoc.core.custom.VoiceTrackDivider
 import com.oc.catemoji.catoc.core.custom.BattleAvatarGrowth
+import com.oc.catemoji.catoc.core.extention.toHome
 import com.oc.catemoji.catoc.core.extention.toInformation
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
@@ -50,6 +52,8 @@ import com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
 import com.oc.catemoji.catoc.databinding.ActivityPlayBinding
 import com.oc.catemoji.catoc.utils.DataLocal
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -80,6 +84,10 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     private var waveformAvatarTarget: CustomTarget<Drawable>? = null
     private var backgroundPath: String? = null
     private var backgroundTarget: CustomViewTarget<View, Drawable>? = null
+    private val badgeAdapter = BattleBadgeAdapter()
+    private lateinit var barkEffects: BarkEffectRenderer
+    private var rewardedAd: PlayRewardedAd? = null
+    private var resultErrorSnackbar: Snackbar? = null
     private var voiceTrackDivider: VoiceTrackDivider? = null
     private var battleAvatarGrowth: BattleAvatarGrowth? = null
     private val microphonePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -106,6 +114,17 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
             v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
             insets
         }
+        binding.contrainOver.isVisible = false
+        barkEffects = BarkEffectRenderer(binding.root, binding.effectLayer)
+        binding.dualWaveform.setOnPointScoredListener { player ->
+            barkEffects.show(if (player) binding.avatar1 else binding.avatar2, mirrored = !player)
+        }
+        binding.recycleAchi.adapter = badgeAdapter
+        binding.dualWaveform.restoreBattleProgress(viewModel.trackProgress)
+        rewardedAd = PlayRewardedAd(this, { renderResult() }, viewModel::claimEarnedBonus) {
+            showToast(R.string.play_reward_unavailable)
+        }
+        loadOpponent()
         viewModel.setMicrophoneEnabled(false)
         viewModel.selectDetectionMode(BarkDetectionMode.WORDS)
         binding.namePlay1.isSelected = true
@@ -120,7 +139,9 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         binding.avatar1.isEnabled = false
         binding.avatar2.isEnabled = false
         binding.dualWaveform.setOnBattleFinishedListener {
-            viewModel.stopListening()
+            binding.dualWaveform.stop()
+            barkEffects.clear()
+            viewModel.finishBattle(binding.dualWaveform.progress >= 1f)
             binding.avatar1.isEnabled = false
             binding.avatar2.isEnabled = false
         }
@@ -132,6 +153,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         val growth = BattleAvatarGrowth(binding.avatar1, binding.avatar2)
         battleAvatarGrowth = growth
         binding.dualWaveform.setOnBattleProgressChangedListener { progress ->
+            viewModel.trackProgress = binding.dualWaveform.progress
             divider.updateBattleProgress(progress)
             growth.updateBattleProgress(progress)
         }
@@ -141,6 +163,9 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         introFinished = savedInstanceState?.getBoolean(INTRO_FINISHED) == true
         battleStarted = savedInstanceState?.getBoolean(BATTLE_STARTED) == true
         countdownStep = savedInstanceState?.getInt(COUNTDOWN_STEP, 0)?.coerceIn(0, 4) ?: 0
+        if (binding.dualWaveform.isBattleFinished && !viewModel.isFinished) {
+            viewModel.finishBattle(binding.dualWaveform.progress >= 1f)
+        }
         binding.txtStartNumber.visibility = View.INVISIBLE
         if (battleStarted) enableBattleControls()
         microphonePermissionBlocked = savedInstanceState?.getBoolean(MICROPHONE_BLOCKED) == true
@@ -160,17 +185,30 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     override fun viewListener() {
-        // Every tap counts, including rapid alternating taps on the two sides.
+        // Only the player's avatar accepts taps; the opponent scores on its timer.
         binding.avatar1.setOnClickListener {
             if (!useMicrophone && battleStarted && !binding.dualWaveform.isBattleFinished) viewModel.addPlayerTap()
         }
-        binding.avatar2.setOnClickListener {
-            if (!useMicrophone && battleStarted && !binding.dualWaveform.isBattleFinished) binding.dualWaveform.addOpponentPoint()
-        }
         binding.avatar1.isClickable = !useMicrophone
-        binding.avatar2.isClickable = !useMicrophone
+        binding.avatar2.isClickable = false
+        binding.avatar2.isFocusable = false
         binding.actionBar.btnActionBarLeft.onClick {
             onBackPressedDispatcher.onBackPressed()
+        }
+        binding.btnNext.onClick { viewModel.advanceResult() }
+        binding.btnNext2.onClick { viewModel.advanceResult() }
+        binding.imgHomeParticipation.onClick {
+            if (canLeaveResult()) toHome()
+        }
+        binding.btnSave.onClick {
+            if (canLeaveResult()) {
+                startActivity(Intent(this, PlayActivity::class.java)
+                    .putExtra(EXTRA_USE_MICROPHONE, useMicrophone))
+                finish()
+            }
+        }
+        binding.btnAddBone.onClick {
+            if (viewModel.result.value?.bonusClaimed == false && !viewModel.saving.value) rewardedAd?.show()
         }
     }
 
@@ -178,35 +216,33 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.microphone.collect(::renderMicrophone) }
+                launch { viewModel.effects.collect(barkEffects::setEffects) }
                 launch {
                     viewModel.background.collect { path ->
                         if (path != null && path != backgroundPath) loadBackground(path)
                     }
                 }
                 launch {
-                    var displayedCount: Int? = null
                     viewModel.barkCount.collect { targetCount ->
-                        val current = displayedCount
-                        if (current == null || targetCount <= current) {
-                            displayedCount = targetCount
-                            binding.txtBarkCount.text = getString(R.string.play_bark_count, targetCount)
-                            return@collect
-                        }
-
-                        // One inference window may confirm several queued barks.
-                        // Present every point separately so battle movement can
-                        // consume exactly one left/right push per bark event.
-                        var nextCount = current
-                        while (nextCount < targetCount) {
+                        var nextCount = viewModel.consumedBarks
+                        binding.txtBarkCount.text = getString(R.string.play_bark_count, nextCount)
+                        while (nextCount < targetCount && !viewModel.isFinished) {
                             if (binding.dualWaveform.isBattleFinished) break
                             nextCount++
-                            displayedCount = nextCount
+                            viewModel.consumedBarks = nextCount
                             binding.txtBarkCount.text = getString(R.string.play_bark_count, nextCount)
                             binding.dualWaveform.addPlayerPoint()
-                            viewModelActivity.notifyBarkDetected()
-                            // Keep every number visible, including the boundary
-                            // between two consecutive recognition updates.
-                            delay(BARK_COUNT_STEP_DELAY_MS)
+                        }
+                    }
+                }
+                launch {
+                    combine(viewModel.result, viewModel.phase, viewModel.saving, viewModel.saveError) {
+                            _, _, _, _ -> Unit
+                    }.collectLatest {
+                        renderResult()
+                        if (viewModel.phase.value == BattlePhase.GAME_OVER && viewModel.result.value != null) {
+                            delay(1_000)
+                            viewModel.advanceResult()
                         }
                     }
                 }
@@ -230,6 +266,74 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         }
     }
 
+    private fun loadOpponent() {
+        listOf(binding.avatar2, binding.imgAvatar2).forEach { image ->
+            Glide.with(this).load(viewModel.opponentAvatar)
+                .placeholder(R.drawable.image_avatar_infor).error(R.drawable.image_avatar_infor).into(image)
+        }
+        Glide.with(this).load(viewModel.opponentFrame).error(R.drawable.img_frame_avatar).into(binding.imgFrameAvatar2)
+    }
+
+    private fun canLeaveResult() = !viewModel.saving.value && rewardedAd?.isBusy != true && !viewModel.saveError.value
+
+    private fun renderResult() = with(binding) {
+        val phase = viewModel.phase.value
+        val result = viewModel.result.value
+        val busy = viewModel.saving.value || rewardedAd?.isBusy == true
+        txtOver.isVisible = phase == BattlePhase.GAME_OVER
+        txtOver.isClickable = txtOver.isVisible
+        contrainOver.isVisible = phase == BattlePhase.BADGES || phase == BattlePhase.RANK || phase == BattlePhase.REWARD
+        achiContrain.isVisible = phase == BattlePhase.BADGES
+        rankContrain.isVisible = phase == BattlePhase.RANK
+        completeContrain.isVisible = phase == BattlePhase.REWARD
+        if (phase != BattlePhase.PLAYING) {
+            avatar1.isEnabled = false
+            avatar2.isEnabled = false
+            txtStartNumber.visibility = View.INVISIBLE
+        }
+        if (result != null) {
+            badgeAdapter.submitList(result.badges())
+            namneRankPre.text = getString(R.string.home_rank_description, result.previousRank)
+            namneRankNext.text = getString(R.string.home_rank_description, result.nextRank)
+            imgRankPre.setImageResource(DataLocal.rankList[(result.previousRank - 1).coerceIn(0, 7)])
+            imgRankNext.setImageResource(DataLocal.rankList[(result.nextRank - 1).coerceIn(0, 7)])
+            txtTraining.setText(if (result.won) R.string.victory else R.string.profile_defeat)
+            if (result.won) {
+                Glide.with(this@PlayActivity).clear(imgBattleResult)
+                imgBattleResult.setImageResource(R.drawable.img_win_play)
+            } else {
+                Glide.with(this@PlayActivity).load(viewModel.opponentAvatar)
+                    .error(R.drawable.image_avatar_infor).into(imgBattleResult)
+            }
+            txtCoinBone.text = getString(R.string.play_reward_amount, result.bones * if (result.bonusClaimed) 2 else 1)
+            plusCoinRank.text = getString(R.string.play_reward_amount, result.rankPoints)
+            btnAddBone.isEnabled = !busy && !result.bonusClaimed && !viewModel.saveError.value
+            txtRewardMultiplier.setText(if (result.bonusClaimed) R.string.play_reward_claimed else R.string.play_reward_double)
+            btnAddBone.alpha = if (btnAddBone.isEnabled) 1f else 0.5f
+        }
+        btnSave.isEnabled = !busy && !viewModel.saveError.value
+        imgHomeParticipation.isEnabled = !busy && !viewModel.saveError.value
+        progressPlay.isVisible = busy || (!imagesReady && phase == BattlePhase.PLAYING)
+        if (viewModel.saveError.value && resultErrorSnackbar == null) {
+            resultErrorSnackbar = Snackbar.make(root, R.string.play_result_save_failed, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.play_retry) { viewModel.retryResultSave() }.also {
+                    it.view.elevation = resources.getDimension(R.dimen.dimension_16)
+                    it.show()
+                }
+        } else if (!viewModel.saveError.value) {
+            resultErrorSnackbar?.dismiss()
+            resultErrorSnackbar = null
+        }
+    }
+
+    override fun onScreenBackPressed(): Boolean {
+        if (viewModel.isFinished) {
+            if (canLeaveResult()) toHome()
+            return true
+        }
+        return false
+    }
+
     private fun hasMicrophonePermission(): Boolean =
         ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
 
@@ -250,7 +354,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     private fun renderMicrophone(state: MicrophoneUiState) {
         if (!useMicrophone) return
         val active = state.status == MicrophoneStatus.STARTING || state.status == MicrophoneStatus.LISTENING
-        if (active && battleStarted) binding.dualWaveform.start() else binding.dualWaveform.stop()
+        if (active && battleStarted && !viewModel.isFinished) binding.dualWaveform.start() else binding.dualWaveform.stop()
         binding.dualWaveform.addRealAmplitude(((state.detection?.level ?: 0f) * 32767).roundToInt())
         if (state.status != lastMicrophoneStatus) {
             when (state.status) {
@@ -282,6 +386,8 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         binding.txtNameAvatar1.text = user.name
         binding.avatar1.contentDescription = user.name
         binding.txtCoinRank1.text = user.rankbatter.toString()
+        binding.txtCoinRank2.text = user.rankbatter.toString()
+        binding.imgRank2.setImageResource(DataLocal.rankList[(user.rank - 1).coerceIn(0, 7)])
         val rankIndex = (user.rank.coerceAtLeast(1) - 1).coerceAtMost(DataLocal.rankList.lastIndex)
         binding.imgRank1.setImageResource(DataLocal.rankList.getOrNull(rankIndex) ?: R.drawable.img_rank)
         binding.imgRank1.contentDescription = getString(R.string.home_rank_description, user.rank)
@@ -466,7 +572,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         ).setDuration(VS_DURATION_MS)
 
     private fun startTapBattleIfReady() {
-        if (!useMicrophone && playerReady && battleStarted && !isFinishing && !isDestroyed &&
+        if (!useMicrophone && playerReady && battleStarted && !viewModel.isFinished && !isFinishing && !isDestroyed &&
             lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             binding.dualWaveform.showStaticWaveform()
         }
@@ -481,7 +587,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     private fun startCountdownIfReady() {
-        if (!introFinished || !playerReady || battleStarted || countdownJob?.isActive == true ||
+        if (viewModel.isFinished || !introFinished || !playerReady || battleStarted || countdownJob?.isActive == true ||
             isFinishing || isDestroyed || !lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) return
         countdownJob = lifecycleScope.launch {
             binding.txtStartNumber.visibility = View.VISIBLE
@@ -496,6 +602,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
             }
             binding.txtStartNumber.visibility = View.INVISIBLE
             battleStarted = true
+            viewModel.markBattleStarted()
             enableBattleControls()
             startTapBattleIfReady()
             requestMicrophoneAfterIntro()
@@ -503,9 +610,9 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     private fun enableBattleControls() {
-        val canPlay = !binding.dualWaveform.isBattleFinished
+        val canPlay = !viewModel.isFinished && !binding.dualWaveform.isBattleFinished
         binding.avatar1.isEnabled = canPlay && !useMicrophone
-        binding.avatar2.isEnabled = canPlay && !useMicrophone
+        binding.avatar2.isEnabled = false
         viewModel.setMicrophoneEnabled(canPlay && useMicrophone)
     }
 
@@ -530,6 +637,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     override fun onScreenStop() {
+        barkEffects.clear()
         countdownJob?.cancel()
         countdownJob = null
         val microphoneStatus = viewModel.microphone.value.status
@@ -558,8 +666,15 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     override fun onScreenDestroyed() {
+        binding.dualWaveform.setOnPointScoredListener(null)
+        barkEffects.dispose()
+        rewardedAd?.dispose()
+        rewardedAd = null
+        resultErrorSnackbar?.dismiss()
+        resultErrorSnackbar = null
         countdownJob?.cancel()
         countdownJob = null
+        binding.dualWaveform.stop()
         binding.dualWaveform.setOnBattleFinishedListener(null)
         binding.dualWaveform.setOnBattleProgressChangedListener(null)
         voiceTrackDivider?.dispose()
@@ -584,7 +699,6 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
 
     companion object {
         const val EXTRA_USE_MICROPHONE = "play_use_microphone"
-        const val BARK_COUNT_STEP_DELAY_MS = 80L
         const val SLIDE_DURATION_MS = 500L
         const val VS_DURATION_MS = 280L
         const val VS_DELAY_MS = SLIDE_DURATION_MS - VS_DURATION_MS

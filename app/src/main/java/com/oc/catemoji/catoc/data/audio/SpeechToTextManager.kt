@@ -27,6 +27,7 @@ data class SpeechRecognitionUpdate(
     val isFinal: Boolean,
     val level: Float,
     val words: List<BarkSpeechWord> = emptyList(),
+    val partialText: String? = null,
 )
 
 /** Offline Vietnamese speech, with one PCM16 recorder and native decoding confined to IO. */
@@ -37,6 +38,8 @@ class SpeechToTextManager(private val context: Context) {
             PackageManager.PERMISSION_GRANTED) throw SecurityException("RECORD_AUDIO permission not granted")
 
         VoskVietnameseModel.open(context).use { model ->
+            // Keep the playable sounds and the user's reported false positives.
+            // Extra phonetic competitors previously displaced valid gâu/go.
             Recognizer(model, SAMPLE_RATE.toFloat(), GRAMMAR).use { recognizer ->
                 recognizer.setWords(true)
                 recognizer.setPartialWords(true)
@@ -68,26 +71,15 @@ class SpeechToTextManager(private val context: Context) {
                             power += sample * sample
                         }
                         val final = recognizer.acceptWaveForm(pcm, count)
-                        val result = if (final) recognizer.result else recognizer.partialResult
-                        val json = JSONObject(result)
-                        val text = json.optString(if (final) "text" else "partial")
-                        val aligned = json.optJSONArray(if (final) "result" else "partial_result")
-                        val words = if (aligned != null) (0 until aligned.length()).map { index ->
-                            val word = aligned.getJSONObject(index)
-                            val start = word.optDouble("start", Double.NaN)
-                            val end = word.optDouble("end", Double.NaN)
-                            BarkSpeechWord(
-                                word.optString("word"),
-                                if (start.isFinite() && start >= 0) (start * 1_000).roundToLong() else -1L,
-                                if (end.isFinite() && end >= 0) (end * 1_000).roundToLong() else -1L,
-                            )
-                        } else emptyList()
+                        val update = readUpdate(recognizer, final, sqrt(power / count).toFloat())
+                        val text = update.partialText ?: update.text
+                        val words = update.words
                         if (final || text != previousText || words != previousWords) {
                             Log.d(TAG, "${if (final) "result" else "partial"}: $text words=$words")
                             previousText = if (final) "" else text
                             previousWords = if (final) emptyList() else words
                         }
-                        emit(SpeechRecognitionUpdate(text, final, sqrt(power / count).toFloat(), words))
+                        emit(update)
                     }
                 } finally {
                     // Cancelling a session prevents further callbacks.
@@ -105,11 +97,37 @@ class SpeechToTextManager(private val context: Context) {
     }.flowOn(Dispatchers.IO)
 
     companion object {
+        internal fun readUpdate(recognizer: Recognizer, isFinal: Boolean, level: Float): SpeechRecognitionUpdate {
+            if (isFinal) return parseResult(recognizer.result, true, level)
+            // Best-path text is available before the word-aligned lattice. Keep
+            // both; do not invent a confidence for the fast partial hypothesis.
+            recognizer.setPartialWords(false)
+            val fast = JSONObject(recognizer.partialResult).optString("partial")
+            recognizer.setPartialWords(true)
+            return parseResult(recognizer.partialResult, false, level).copy(partialText = fast)
+        }
+
+        internal fun parseResult(result: String, isFinal: Boolean, level: Float): SpeechRecognitionUpdate {
+            val json = JSONObject(result)
+            val aligned = json.optJSONArray(if (isFinal) "result" else "partial_result")
+            val words = if (aligned != null) (0 until aligned.length()).map { index ->
+                val word = aligned.getJSONObject(index)
+                val start = word.optDouble("start", Double.NaN)
+                val end = word.optDouble("end", Double.NaN)
+                BarkSpeechWord(
+                    word.optString("word"),
+                    if (start.isFinite() && start >= 0) (start * 1_000).roundToLong() else -1L,
+                    if (end.isFinite() && end >= 0) (end * 1_000).roundToLong() else -1L,
+                    word.optDouble("conf", 0.0).toFloat(),
+                )
+            } else emptyList()
+            return SpeechRecognitionUpdate(json.optString(if (isFinal) "text" else "partial"), isFinal, level, words)
+        }
+
         const val SAMPLE_RATE = 16_000
-        // Restored bark grammar, excluding the aliases removed at the user's request.
-        const val GRAMMAR = "[\"gâu\",\"gâu gâu\",\"gầu\",\"gầu gầu\",\"gấu\",\"gấu gấu\"," +
-            "\"gao\",\"gao gao\",\"gô\",\"gô gô\",\"gõ\",\"gõ gõ\",\"[unk]\"]"
-        private const val BLOCK_SAMPLES = 1_600 // 100ms
+        // gâu/gô score; mõ/vàng/giàng and [unk] never score.
+        const val GRAMMAR = "[\"gâu\",\"gô\",\"mõ\",\"vàng\",\"giàng\",\"[unk]\"]"
+        private const val BLOCK_SAMPLES = 640 // 40ms; do not collect a phrase before decoding.
         private const val TAG = "BarkSpeech"
     }
 }

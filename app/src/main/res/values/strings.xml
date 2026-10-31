@@ -235,4 +235,14 @@
     <string name="new_badge_unlocked">New Badge Unlocked!</string>
     <string name="rank_up">Rank Up!</string>
     <string name="congratulations_you_ve_reached_a_new_rank">Congratulations! You’ve reached a new rank!</string>
+    <string name="participation_reward">Participation Reward</string>
+    <string name="find_match">Find Match</string>
+    <string name="play_reward_amount">+%1$d</string>
+    <string name="play_reward_initial">+0</string>
+    <string name="play_reward_double">2X</string>
+    <string name="play_reward_claimed">✓</string>
+    <string name="play_double_reward">Watch a video to double your bone reward</string>
+    <string name="play_result_save_failed">Could not save your reward. Tap Retry.</string>
+    <string name="play_reward_unavailable">Video unavailable. Please try again.</string>
+    <string name="play_retry">Retry</string>
 </resources>
