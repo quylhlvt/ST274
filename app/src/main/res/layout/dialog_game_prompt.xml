@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/promptContent"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dimension_16"
+        app:layout_constraintWidth_max="@dimen/play_mode_max_width"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/promptPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_play_mode_dialog"
+            android:paddingHorizontal="@dimen/dimension_20"
+            android:paddingVertical="@dimen/dimension_20"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/promptHeading"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimension_4"
+                android:orientation="horizontal"
+                android:gravity="center"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/txtPromptTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:text="@string/bonus_treats_title"
+                    android:textColor="@color/app_color"
+                    android:textSize="@dimen/text_size_24" />
+
+                <ImageView
+                    android:id="@+id/imgPromptBone"
+                    android:layout_width="@dimen/dimension_24"
+                    android:layout_height="@dimen/dimension_24"
+                    android:layout_marginStart="@dimen/dimension_8"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/img_bone" />
+            </LinearLayout>
+
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+                android:id="@+id/txtPromptDescription"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimension_32"
+                android:gravity="center"
+                android:fontFamily="@font/illita_one_regular"
+                android:text="@string/bonus_treats_description"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_16"
+                app:outerStrokeColor="@color/app_color"
+                app:outerStrokeWidth="@dimen/dimension_1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/promptHeading" />
+
+            <TextView
+                android:id="@+id/btnPromptCancel"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_48"
+                android:layout_marginTop="@dimen/dimension_32"
+                android:layout_marginEnd="@dimen/dimension_8"
+                android:background="@drawable/bg_prompt_negative"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:fontFamily="@font/illita_one_regular"
+                android:text="@string/cancel"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_20"
+                android:paddingHorizontal="@dimen/dimension_8"
+                android:focusable="true"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintWidth_percent="0.47"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnPromptConfirm"
+                app:layout_constraintTop_toBottomOf="@id/txtPromptDescription"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/btnPromptConfirm"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_48"
+                android:layout_marginTop="@dimen/dimension_32"
+                android:layout_marginStart="@dimen/dimension_8"
+                android:background="@drawable/bg_prompt_positive"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:fontFamily="@font/illita_one_regular"
+                android:text="@string/watch_ads"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_20"
+                android:paddingHorizontal="@dimen/dimension_8"
+                android:focusable="true"
+                app:layout_constraintWidth_percent="0.47"
+                app:layout_goneMarginStart="@dimen/dimension_0"
+                app:layout_constraintStart_toEndOf="@id/btnPromptCancel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtPromptDescription"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageButton
+            android:id="@+id/btnPromptClose"
+            android:layout_width="@dimen/dimension_48"
+            android:layout_height="@dimen/dimension_48"
+            android:layout_marginTop="@dimen/dimension_12"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/cancel"
+            android:padding="@dimen/dimension_8"
+            android:src="@drawable/ic_play_mode_close"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/promptPanel"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

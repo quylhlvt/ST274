@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import com.oc.catemoji.catoc.ui.language.LanguageActivity
 import com.oc.catemoji.catoc.ui.main.home.HomeActivity
+import com.oc.catemoji.catoc.ui.main.dogSkin.DogSkinActivity
 import com.oc.catemoji.catoc.ui.main.editProfile.EditProfileActivity
 import com.oc.catemoji.catoc.ui.main.information.InformationActivity
 import com.oc.catemoji.catoc.ui.main.play.PlayActivity
@@ -18,6 +19,10 @@ fun Activity.toSettingFromHome() {
 }
 fun Activity.toProfileFromHome() {
     startActivity(Intent(this@toProfileFromHome, ProfileActivity::class.java))
+}
+
+fun Activity.toDogSkinFromHome() {
+    startActivity(Intent(this, DogSkinActivity::class.java))
 }
 
 fun Activity.toPlayFromHome(useMicrophone: Boolean = false) {

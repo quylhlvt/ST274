@@ -6,8 +6,8 @@ import com.oc.catemoji.catoc.data.datalocal.room.entity.AchievementEntity
 object BattleRules {
     const val MAX_RANK = 8
     const val POINTS_PER_RANK = 100
-    fun bones(won: Boolean) = if (won) 100 else 25
-    fun rankPoints(won: Boolean) = if (won) 30 else 10
+    fun bones(won: Boolean) = if (won) 100 else 5
+    fun rankPoints(won: Boolean) = if (won) 30 else -10
     fun rank(current: Int, points: Int) = maxOf(current, points / POINTS_PER_RANK + 1).coerceIn(1, MAX_RANK)
 
     private val titles = listOf("First Bark", "Battle Pup", "Top Dog", "Bark King",

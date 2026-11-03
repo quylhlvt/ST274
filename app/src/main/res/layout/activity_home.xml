@@ -96,7 +96,6 @@
                     android:id="@+id/txtName"
                     style="@style/single_marquee"
                     android:maxLines="1"
-                    android:ellipsize="end"
                     android:enabled="false"
                     android:elevation="@dimen/dimension_5"
                     android:layout_width="@dimen/dimension_0"
@@ -416,12 +415,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_linear_color1">
+
                 <View
-                        android:id="@+id/view7"
-                        android:layout_width="@dimen/dimension_0"
-                        android:layout_height="match_parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintDimensionRatio="1.5:3.2"/>
+                    android:id="@+id/view7"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="match_parent"
+                    app:layout_constraintDimensionRatio="1.5:3.2"
+                    app:layout_constraintStart_toStartOf="parent" />
                 <ImageView
                         android:id="@+id/img_star_coin_rank"
                         android:layout_width="@dimen/dimension_0"

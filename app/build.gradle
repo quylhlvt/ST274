@@ -68,6 +68,7 @@ kapt {
 }
 
 dependencies {
+    debugImplementation("com.google.ai.edge.litert:litert:1.4.1")
     def roomVersion = "2.8.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")

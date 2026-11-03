@@ -15,6 +15,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import com.oc.catemoji.catoc.data.datalocal.room.entity.BattleResultEntity
 import com.oc.catemoji.catoc.data.model.BattleRules
+import com.oc.catemoji.catoc.data.model.DogSkinCatalogue
+import com.oc.catemoji.catoc.data.model.statistics.DogBattleStatistics
 import kotlinx.coroutines.flow.first
 
 @Singleton
@@ -31,15 +33,32 @@ class BattleRepository @Inject constructor(
 
     suspend fun completeBattle(
         matchId: String, won: Boolean, opponentName: String, opponentAvatar: String,
-        barks: Int, durationMs: Long,
+        barks: Int, durationMs: Long, dogId: Int? = null,
     ): BattleResultEntity = database.withTransaction {
         database.battleResultDao().get(matchId)?.let { return@withTransaction it }
         val user = checkNotNull(userDao.getUser()) { "User profile does not exist" }
+        dogDao.getDog(dogId ?: user.iddog)?.let { dog ->
+            val statistics = DogBattleStatistics(dog.matchesPlayed, dog.matchesWon).record(won)
+            val winTarget = DogSkinCatalogue.findById(dog.iddog)?.winsToMaxLevel
+                ?: DogSkinCatalogue.FIRST_SKIN_WIN_TARGET
+            dogDao.upsert(dog.copy(matchesPlayed = statistics.played, matchesWon = statistics.wins,
+                progress = statistics.progressTo(winTarget)))
+        }
         val bones = minOf(BattleRules.bones(won), Int.MAX_VALUE - user.coinbone)
-        val points = minOf(BattleRules.rankPoints(won), Int.MAX_VALUE - user.rankbatter)
+        val requestedPoints = BattleRules.rankPoints(won)
+        val points = if (requestedPoints >= 0) minOf(requestedPoints, Int.MAX_VALUE - user.rankbatter)
+            else maxOf(requestedPoints, -user.rankbatter.coerceAtLeast(0))
         val nextRank = BattleRules.rank(user.rank, user.rankbatter + points)
         userDao.upsert(user.copy(coinbone = user.coinbone + bones,
             rankbatter = user.rankbatter + points, rank = nextRank))
+        if (nextRank > user.rank) {
+            val appearances = database.appearanceDao()
+            for (id in (maxFrameIdForRank(user.rank) + 1)..maxFrameIdForRank(nextRank)) {
+                val frameId = id.toString()
+                appearances.insertIfMissing(AppearanceStateEntity(FRAME, frameId, unlock = true))
+                appearances.unlock(FRAME, frameId)
+            }
+        }
         val historyId = historyDao.insert(HistoryEntity(
             nameBatter = opponentName, date = System.currentTimeMillis(),
             imageAvatar1 = user.imageAvatar, imageAvatar2 = opponentAvatar, typePlay = won,

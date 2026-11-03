@@ -1,7 +1,6 @@
 package com.oc.catemoji.catoc.ui.main.home
 
 import android.widget.ImageView
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -11,9 +10,13 @@ import com.facebook.shimmer.ShimmerDrawable
 import com.oc.catemoji.catoc.RoomLoadState
 import com.oc.catemoji.catoc.SharedHomeData
 import com.oc.catemoji.catoc.core.base.BaseActivity
+import com.oc.catemoji.catoc.core.dialog.PlayModeDialog
+import com.oc.catemoji.catoc.core.dialog.GamePrompt
+import com.oc.catemoji.catoc.core.dialog.GamePromptDialog
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.toSettingFromHome
+import com.oc.catemoji.catoc.core.extention.toDogSkinFromHome
 import com.oc.catemoji.catoc.core.extention.toInformation
 import com.oc.catemoji.catoc.core.extention.toPlayFromHome
 import com.oc.catemoji.catoc.core.extention.toProfileFromHome
@@ -22,11 +25,11 @@ import com.oc.catemoji.catoc.core.helper.RateHelper.showRateDialog
 import com.oc.catemoji.catoc.databinding.ActivityHomeBinding
 import com.oc.catemoji.catoc.utils.DataLocal
 import com.oc.catemoji.catoc.utils.state.RateState
+import com.oc.catemoji.catoc.ui.onboarding.permission.MicrophonePermissionRequest
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.cancellation.CancellationException
 
 @AndroidEntryPoint
 class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
@@ -37,6 +40,14 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
     private var countRate = 0
     private var openingInformation = false
     private var loadErrorShown = false
+    private var playModeDialog: PlayModeDialog? = null
+    private var boneRewardDialog: GamePromptDialog? = null
+    private val microphonePermission = MicrophonePermissionRequest(this) { granted ->
+        viewModel.onMicrophonePermissionResult(granted)?.let { destination ->
+            dismissModeDialog()
+            openPlay(destination, useMicrophone = true)
+        }
+    }
 
     override fun initView() {
         binding.apply {
@@ -53,56 +64,95 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
     override fun viewListener() {
         binding.apply {
             btnEnd.onClick { toSettingFromHome() }
+            btnDogSkin.onClick { toDogSkinFromHome() }
             btnAddBone.onClick {
-                lifecycleScope.launch {
-                    try {
-                        viewModelActivity.addBones(100)
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: Exception) {
-                        showSnackbar(
-                            getString(R.string.home_add_bones_failed)
-                        )
-                    }
-                }
+                showBoneRewardDialog()
             }
             btnEditProfile.onClick {
                 toProfileFromHome()
             }
             imgBgBattle.onClick {
-                AlertDialog.Builder(this@HomeActivity)
-                    .setTitle(R.string.training_mode_title)
-                    .setItems(arrayOf(
-                        getString(R.string.training_mode_microphone),
-                        getString(R.string.training_mode_touch),
-                    )) { _, selection ->
-                        toPlayFromHome(useMicrophone = selection == 0)
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
+                viewModel.showModeSelection(HomePlayDestination.BATTLE)
+                showModeDialog()
             }
             txtTraining.onClick {
-                AlertDialog.Builder(this@HomeActivity)
-                    .setTitle(R.string.training_mode_title)
-                    .setItems(arrayOf(
-                        getString(R.string.training_mode_microphone),
-                        getString(R.string.training_mode_touch),
-                    )) { _, selection ->
-                        when (selection) {
-                            0 -> toTrainingFromHome(useMicrophone = true)
-                            1 -> toTrainingFromHome()
-                        }
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
+                viewModel.showModeSelection(HomePlayDestination.TRAINING)
+                showModeDialog()
             }
         }
+        if (viewModel.modeDestination != null) showModeDialog()
+    }
 
+    private fun showModeDialog() {
+        if (playModeDialog?.isShowing == true) return
+        playModeDialog = PlayModeDialog(this,
+            onTap = {
+                viewModel.selectMode()?.let { destination ->
+                    dismissModeDialog()
+                    openPlay(destination, useMicrophone = false)
+                }
+            },
+            onVoice = {
+                if (viewModel.requestVoiceMode()) microphonePermission.request()
+            },
+            onClose = {
+                viewModel.closeModeSelection()
+                dismissModeDialog()
+            },
+        ).also { it.show() }
+    }
+
+    private fun openPlay(destination: HomePlayDestination, useMicrophone: Boolean) {
+        when (destination) {
+            HomePlayDestination.BATTLE -> toPlayFromHome(useMicrophone)
+            HomePlayDestination.TRAINING -> toTrainingFromHome(useMicrophone)
+        }
+    }
+
+    private fun dismissModeDialog() {
+        playModeDialog?.dismiss()
+        playModeDialog = null
+    }
+
+    private fun showBoneRewardDialog() {
+        if (viewModel.boneRewardBusy.value || boneRewardDialog?.isShowing == true) return
+        boneRewardDialog = GamePromptDialog(this, GamePrompt.WATCH_ADS,
+            onConfirm = {
+                boneRewardDialog?.dismiss()
+                boneRewardDialog = null
+                viewModel.claimBoneReward(viewModelActivity::addBones)
+            },
+            onCancel = {
+                boneRewardDialog?.dismiss()
+                boneRewardDialog = null
+            },
+        ).also { it.show() }
+    }
+
+    override fun onScreenDestroyed() {
+        dismissModeDialog()
+        boneRewardDialog?.dismiss()
+        boneRewardDialog = null
+        microphonePermission.dispose()
     }
 
     override fun observeData() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.boneRewardBusy.collect { busy ->
+                        binding.btnAddBone.isEnabled = binding.txtName.isEnabled && !busy
+                        binding.btnAddBone.alpha = if (busy) 0.5f else 1f
+                    }
+                }
+                launch {
+                    viewModel.boneRewardSaveFailed.collect { failed ->
+                        if (failed) {
+                            showSnackbar(getString(R.string.home_add_bones_failed))
+                            viewModel.consumeBoneRewardError()
+                        }
+                    }
+                }
                 viewModelActivity.homeState.collect { state ->
                     when (state) {
                         RoomLoadState.Loading -> {
@@ -135,7 +185,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
         val user = state.user
 
         binding.txtName.isEnabled = user != null
-        binding.btnAddBone.isEnabled = user != null
+        binding.btnAddBone.isEnabled = user != null && !viewModel.boneRewardBusy.value
 
         if (user == null) {
             if (!openingInformation) {
@@ -187,7 +237,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
 
         loadOrClear(
             binding.imgAvatar,
-            state.dogPreview
+            state.dogHomeImage
         )
     }
     private fun loadOrClear(view: ImageView, model: Any?) {
@@ -200,6 +250,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
     }
 
     override fun onScreenBackPressed(): Boolean {
+        if (viewModel.boneRewardBusy.value) return true
         countRate = sharedPreferences.isBackRequest() + 1
         sharedPreferences.setBackRequest(countRate)
         if (!sharedPreferences.isRateRequest() && countRate % 2 == 0) {

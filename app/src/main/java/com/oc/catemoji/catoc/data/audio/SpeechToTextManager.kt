@@ -4,9 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.AudioFormat
 import android.media.AudioRecord
-import android.media.MediaRecorder
 import android.util.Log
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +17,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import org.json.JSONObject
 import org.vosk.Recognizer
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.math.roundToLong
-import kotlin.math.sqrt
 
 data class SpeechRecognitionUpdate(
     val text: String,
@@ -37,55 +36,57 @@ class SpeechToTextManager(private val context: Context) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) !=
             PackageManager.PERMISSION_GRANTED) throw SecurityException("RECORD_AUDIO permission not granted")
 
-        VoskVietnameseModel.open(context).use { model ->
-            // Recognize only the three playable sounds used to imitate barking.
-            Recognizer(model, SAMPLE_RATE.toFloat(), GRAMMAR).use { recognizer ->
-                recognizer.setWords(true)
-                recognizer.setPartialWords(true)
-                currentCoroutineContext().ensureActive()
-                val minimumBytes = AudioRecord.getMinBufferSize(
-                    SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
-                )
-                check(minimumBytes > 0) { "PCM16 recording is unavailable at $SAMPLE_RATE Hz" }
-                val recorder = AudioRecord(
-                    MediaRecorder.AudioSource.VOICE_RECOGNITION, SAMPLE_RATE,
-                    AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
-                    maxOf(minimumBytes, BLOCK_SAMPLES * Short.SIZE_BYTES * 2),
-                )
-                try {
-                    check(recorder.state == AudioRecord.STATE_INITIALIZED)
-                    recorder.startRecording()
-                    check(recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING)
-                    emit(SpeechRecognitionUpdate("", false, 0f))
-                    val pcm = ShortArray(BLOCK_SAMPLES)
-                    var previousText = ""
-                    var previousWords = emptyList<BarkSpeechWord>()
-                    while (currentCoroutineContext().isActive) {
-                        val count = recorder.read(pcm, 0, pcm.size, AudioRecord.READ_BLOCKING)
-                        check(count >= 0) { "Speech microphone read failed: $count" }
-                        if (count == 0) continue
-                        var power = 0.0
-                        for (index in 0 until count) {
-                            val sample = pcm[index] / 32768.0
-                            power += sample * sample
+        captureSession.withLock {
+            VoskVietnameseModel.open(context).use { model ->
+                // Unknown sounds compete with bark words instead of being forced into points.
+                Recognizer(model, SAMPLE_RATE.toFloat(), GRAMMAR).use { recognizer ->
+                    recognizer.setWords(true)
+                    recognizer.setPartialWords(true)
+                    currentCoroutineContext().ensureActive()
+                    DeviceMicrophone.open(context, SAMPLE_RATE, BLOCK_SAMPLES).use { microphone ->
+                        val recorder = microphone.recorder
+                        val processor = PcmSpeechProcessor(SAMPLE_RATE)
+                        emit(SpeechRecognitionUpdate("", false, 0f))
+                        val pcm = ShortArray(BLOCK_SAMPLES)
+                        var previousText = ""
+                        var previousWords = emptyList<BarkSpeechWord>()
+                        var windowSamples = 0
+                        var windowPeak = 0f
+                        var quietBlocks = 0
+                        while (currentCoroutineContext().isActive) {
+                            val count = recorder.read(pcm, 0, pcm.size, AudioRecord.READ_BLOCKING)
+                            check(count >= 0) { "Speech microphone read failed: $count" }
+                            if (count == 0) continue
+                            val level = processor.process(pcm, count)
+                            currentCoroutineContext().ensureActive()
+                            val final = recognizer.acceptWaveForm(pcm, count)
+                            val update = readUpdate(recognizer, final, level)
+                            val text = update.partialText ?: update.text
+                            val words = update.words
+                            if (final || text != previousText || words != previousWords) {
+                                Log.d(TAG, "${if (final) "result" else "partial"}: $text words=$words")
+                                previousText = if (final) "" else text
+                                previousWords = if (final) emptyList() else words
+                            }
+                            emit(update)
+                            windowSamples += count
+                            windowPeak = maxOf(windowPeak, level)
+                            quietBlocks = if (level < maxOf(0.012f, windowPeak * 0.18f))
+                                quietBlocks + 1 else 0
+                            if (windowSamples >= HARD_WINDOW_SAMPLES ||
+                                (windowSamples >= MIN_WINDOW_SAMPLES && quietBlocks >= 3)) {
+                                // Close between sounds when possible: cutting in the middle
+                                // can score one bark in both windows. The hard limit keeps
+                                // uninterrupted speech from stalling the counter forever.
+                                emit(parseResult(recognizer.finalResult, true, level))
+                                recognizer.reset()
+                                windowSamples = 0
+                                windowPeak = 0f
+                                quietBlocks = 0
+                                previousText = ""
+                                previousWords = emptyList()
+                            }
                         }
-                        val final = recognizer.acceptWaveForm(pcm, count)
-                        val update = readUpdate(recognizer, final, sqrt(power / count).toFloat())
-                        val text = update.partialText ?: update.text
-                        val words = update.words
-                        if (final || text != previousText || words != previousWords) {
-                            Log.d(TAG, "${if (final) "result" else "partial"}: $text words=$words")
-                            previousText = if (final) "" else text
-                            previousWords = if (final) emptyList() else words
-                        }
-                        emit(update)
-                    }
-                } finally {
-                    // Cancelling a session prevents further callbacks.
-                    try {
-                        if (recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) recorder.stop()
-                    } finally {
-                        recorder.release()
                     }
                 }
             }
@@ -98,8 +99,12 @@ class SpeechToTextManager(private val context: Context) {
     companion object {
         internal fun readUpdate(recognizer: Recognizer, isFinal: Boolean, level: Float): SpeechRecognitionUpdate {
             if (isFinal) return parseResult(recognizer.result, true, level)
+            // Vosk's aligned partial can lag all the way to the endpoint. Read the live
+            // best path separately, then retain delayed word spans for deduplication.
+            recognizer.setPartialWords(false)
             val fast = JSONObject(recognizer.partialResult).optString("partial")
-            return SpeechRecognitionUpdate(fast, false, level, emptyList(), fast)
+            recognizer.setPartialWords(true)
+            return parseResult(recognizer.partialResult, false, level).copy(partialText = fast)
         }
         internal fun parseResult(result: String, isFinal: Boolean, level: Float): SpeechRecognitionUpdate {
             val json = JSONObject(result)
@@ -119,8 +124,14 @@ class SpeechToTextManager(private val context: Context) {
         }
 
         const val SAMPLE_RATE = 16_000
-        const val GRAMMAR = "[\"gâu\",\"go\",\"gô\"]"
-        private const val BLOCK_SAMPLES = 600 // 40ms; do not collect a phrase before decoding.
+        // Include similar non-bark words as rejection paths; a tiny bark-only grammar
+        // otherwise turns words such as "mõ" into a high-confidence "go".
+        const val GRAMMAR = "[\"gâu\",\"go\",\"gô\",\"mõ\",\"vàng\",\"giàng\",\"[unk]\"]"
+        internal const val BLOCK_SAMPLES = 640 // 40ms; do not collect a phrase before decoding.
+        internal const val MIN_WINDOW_SAMPLES = SAMPLE_RATE * 4 / 5
+        internal const val HARD_WINDOW_SAMPLES = SAMPLE_RATE * 6 / 5
         private const val TAG = "BarkSpeech"
+        // Shared across Play and Training, including cancelled sessions still closing native resources.
+        private val captureSession = Mutex()
     }
 }

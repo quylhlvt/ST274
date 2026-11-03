@@ -2,6 +2,7 @@ package com.oc.catemoji.catoc.ui.onboarding.permission
 
 import android.content.pm.PackageManager
 import android.os.Build
+import com.oc.catemoji.catoc.MyApplication
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.extention.*
@@ -15,10 +16,17 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
     ActivityPermissionBinding::inflate,
     PermissionViewModel::class.java
 ) {
+    private val permissionViewModel by lazy {
+        (application as MyApplication).sharedPermissionViewModel(this)
+    }
+    private val microphonePermission = MicrophonePermissionRequest(this) { granted ->
+        updateMicrophoneUI(granted)
+    }
 
     override fun viewListener() {
         binding.swPermission.onClick(1500) { handlePermissionRequest(isStorage = true) }
         binding.swNotification.onClick(1500) { handlePermissionRequest(isStorage = false) }
+        binding.swMicrophone.onClick(1500) { microphonePermission.request() }
         binding.tvContinue.onClick(1000) {
             handleContinue()
         }
@@ -36,6 +44,7 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
         }
         updatePermissionUI(requireContext().checkPermissions(PermissionHelper.storagePermission), true)
         updatePermissionUI(requireContext().checkPermissions(PermissionHelper.notificationPermission), false)
+        updateMicrophoneUI(microphonePermission.isGranted())
     }
 
     private fun ActivityPermissionBinding.setupActionBar() {
@@ -52,7 +61,7 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
         when {
             requireContext().checkPermissions(perms) ->
                 showToast(if (isStorage) R.string.granted_storage else R.string.granted_notification)
-            viewModel.shouldGoToSettings(isStorage) -> goToSettings()
+            permissionViewModel.shouldGoToSettings(isStorage) -> goToSettings()
 
             else -> requestPermission(
                 perms,
@@ -72,6 +81,15 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
             requireContext().checkPermissions(PermissionHelper.notificationPermission),
             false
         )
+        updateMicrophoneUI(microphonePermission.isGranted())
+    }
+
+    private fun updateMicrophoneUI(granted: Boolean) {
+        binding.swMicrophone.setImageResource(if (granted) R.drawable.switch_on else R.drawable.switch_off)
+    }
+
+    override fun onScreenDestroyed() {
+        microphonePermission.dispose()
     }
 
     @Deprecated("Deprecated in Java")
@@ -85,18 +103,18 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
         when (requestCode) {
             RequestKey.STORAGE_PERMISSION_CODE -> {
                 if (granted) {
-                    viewModel.onStorageGranted()
+                    permissionViewModel.onStorageGranted()
                 } else {
-                    viewModel.onStorageDenied()
+                    permissionViewModel.onStorageDenied()
                 }
                 updatePermissionUI(granted, true)
             }
 
             RequestKey.NOTIFICATION_PERMISSION_CODE -> {
                 if (granted) {
-                    viewModel.onNotificationGranted()
+                    permissionViewModel.onNotificationGranted()
                 } else {
-                    viewModel.onNotificationDenied()
+                    permissionViewModel.onNotificationDenied()
                 }
                 updatePermissionUI(granted, false)
             }
@@ -115,9 +133,9 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding, PermissionVie
         binding.actionBar.tvCenter.select()
 
         val textRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            R.string.to_access_13
+            R.string.permission_access_notification_microphone
         } else {
-            R.string.to_access
+            R.string.permission_access_photos_microphone
         }
 
         binding.txtPermission.text = listOf(

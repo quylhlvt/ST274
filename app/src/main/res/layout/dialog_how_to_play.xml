@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/dimension_16">
+
+        <LinearLayout
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dimension_24"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="@dimen/play_mode_max_width">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_play_mode_dialog"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/dimension_20"
+                android:paddingVertical="@dimen/dimension_24">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:accessibilityHeading="true"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:gravity="center"
+                    android:text="@string/how_to_play_title"
+                    android:textColor="@color/app_color"
+                    android:textSize="@dimen/text_size_28" />
+
+                <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+                    android:id="@+id/txtGuideInstructions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimension_8"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:gravity="center"
+                    android:lineSpacingExtra="@dimen/dimension_4"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_16"
+                    app:outerStrokeColor="@color/app_color"
+                    app:outerStrokeWidth="@dimen/dimension_2" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnCloseGuide"
+                android:layout_width="@dimen/dimension_48"
+                android:layout_height="@dimen/dimension_48"
+                android:layout_marginTop="@dimen/dimension_20"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/how_to_play_close"
+                android:padding="@dimen/dimension_4"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_play_mode_close" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

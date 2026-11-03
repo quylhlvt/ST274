@@ -19,6 +19,12 @@ interface DogDao {
     @Query("SELECT * FROM dog WHERE iddog = :iddog")
     suspend fun getDog(iddog: Int): DogEntity?
 
+    @Query("SELECT iddog FROM dog WHERE unlock = 1")
+    suspend fun getUnlockedSkinIds(): List<Int>
+
+    @Query("UPDATE dog SET selected = 0 WHERE selected = 1")
+    suspend fun clearSelection()
+
     @Upsert
     suspend fun upsert(dog: DogEntity)
 

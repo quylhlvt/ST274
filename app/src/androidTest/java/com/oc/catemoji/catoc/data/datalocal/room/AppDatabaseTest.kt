@@ -8,6 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.oc.catemoji.catoc.data.datalocal.room.entity.DogEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.HistoryEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
+import com.oc.catemoji.catoc.data.model.DogSkinCatalogue
 import com.oc.catemoji.catoc.data.repository.BattleRepository
 import com.oc.catemoji.catoc.RoomLoadState
 import com.oc.catemoji.catoc.SharedHomeData
@@ -65,6 +66,7 @@ class AppDatabaseTest {
             assertEquals(80, initial.user?.rankbatter)
             assertEquals(user.iddog, initial.selectedDog?.iddog)
             assertEquals("file:///android_asset/1/state/puppy/1.webp", initial.dogPreview)
+            assertEquals("file:///android_asset/1/state/puppy/2.webp", initial.dogHomeImage)
 
             viewModel.renameUser("   Renamed   ")
             val updated = awaitHome { it.user?.name == "Renamed" }
@@ -93,21 +95,36 @@ class AppDatabaseTest {
     }
 
     @Test
-    fun homeResolvesDogPreviewForEveryBundledAvatar() = runBlocking {
+    fun homeResolvesDogPreviewForEveryEquippedDogIndependentlyOfProfileAvatar() = runBlocking {
         val repository = repository()
         val original = repository.createProfile("Player")
         val viewModel = ViewModelActivity(repository, context)
         val store = ViewModelStore().apply { put("home", viewModel) }
         try {
-            for (id in 1..15) {
-                val avatar = "file:///android_asset/$id/avatar.webp"
-                repository.saveUser(original.copy(imageAvatar = avatar))
+            for (folder in 1..15) {
+                val id = folder * 2
+                val puppy = checkNotNull(DogSkinCatalogue.findById(id - 1))
+                val wins = puppy.winsToMaxLevel - 1L
+                database.dogDao().clearSelection()
+                repository.saveDog(DogEntity(iddog = puppy.id, unlock = true, matchesPlayed = wins, matchesWon = wins))
+                repository.saveDog(DogEntity(iddog = id, stepRank = 1, unlock = true, selected = true))
+                repository.saveUser(original.copy(iddog = id))
                 val state = withTimeout(5_000) {
-                    viewModel.homeState.first { it is RoomLoadState.Success && it.data.user?.imageAvatar == avatar }
+                    viewModel.homeState.first { it is RoomLoadState.Success && it.data.user?.iddog == id && it.data.selectedDog?.iddog == id }
                 } as RoomLoadState.Success
-                val stage = if (id <= 2) "puppy" else "1. puppy"
-                assertEquals("file:///android_asset/$id/state/$stage/1.webp", state.data.dogPreview)
-                context.assets.open(checkNotNull(state.data.dogPreview).removePrefix("file:///android_asset/")).close()
+                assertEquals(puppy.statePreview, state.data.dogPreview)
+                assertEquals(puppy.statePlaying, state.data.dogHomeImage)
+                context.assets.open(checkNotNull(state.data.dogHomeImage).removePrefix("file:///android_asset/")).close()
+
+                repository.completeBattle("grow-$id", true, "Opponent", "", 1, 1)
+                val grown = withTimeout(5_000) {
+                    viewModel.homeState.first { it is RoomLoadState.Success &&
+                        it.data.user?.iddog == id && it.data.selectedDog?.matchesWon == 1L }
+                } as RoomLoadState.Success
+                val adultStage = if (folder <= 2) "adult" else "2. adult"
+                assertEquals("file:///android_asset/$folder/state/$adultStage/1.webp", grown.data.dogPreview)
+                assertEquals("file:///android_asset/$folder/state/$adultStage/2.webp", grown.data.dogHomeImage)
+                context.assets.open(checkNotNull(grown.data.dogHomeImage).removePrefix("file:///android_asset/")).close()
             }
         } finally {
             InstrumentationRegistry.getInstrumentation().runOnMainSync { store.clear() }
@@ -216,7 +233,7 @@ class AppDatabaseTest {
             }
             val migrated = Room.databaseBuilder(context, AppDatabase::class.java, filename)
                 .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3,
-                    AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5, AppDatabase.MIGRATION_5_6, AppDatabase.MIGRATION_6_7).build()
+                    AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5, AppDatabase.MIGRATION_5_6, AppDatabase.MIGRATION_6_7, AppDatabase.MIGRATION_7_8).build()
             try {
                 assertEquals(25, migrated.userDao().getUser()?.coinbone)
                 assertEquals(50, migrated.userDao().getUser()?.iddog)

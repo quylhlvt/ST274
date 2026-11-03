@@ -54,5 +54,23 @@ val stepRankList = arrayListOf(
         R.drawable.step_rank2,
         R.drawable.step_rank3,
     )
+    val listName = arrayListOf(
+        "Shiba Inu",
+        "Alaska",
+        "Samoyed",
+        "Corgi",
+        "Pug",
+        "Beagle",
+        "Golden Retriever",
+        "German Shepherd",
+        "Doberman",
+        "Rottweiler",
+        "Pomeranian",
+        "Dachshund",
+        "French Bulldog",
+        "Chow Chow",
+        "Great Dane"
+    )
+
 
 }

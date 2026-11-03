@@ -9,8 +9,11 @@
     <color name="white2">#80FFFFFF</color>
     <color name="black">#000000</color>
     <color name="black5">#66000000</color>
+    <color name="black6">#99242424</color>
     <color name="_FAF3E3">#FAF3E3</color>
+    <color name="_868686">#868686</color>
     <color name="_FFEBA7">#FFEBA7</color>
+    <color name="_D9D9D9">#D9D9D9</color>
     <color name="_FFCB14">#FFCB14</color>
     <color name="_57DDFF">#57DDFF</color>
     <color name="_FFA101">#FFA101</color>
@@ -19,6 +22,7 @@
     <color name="_4D3F3E3F">#4D3F3E3F</color>
     <color name="_E88D42">#E88D42</color>
     <color name="_22C55E">#22C55E</color>
+    <color name="_EF4444">#EF4444</color>
     <color name="_80A9FFAC">#80A9FFAC</color>
     <color name="_80FFB6A9">#80FFB6A9</color>
     <color name="_01A300">#01A300</color>
@@ -26,6 +30,7 @@
     <color name="_BF6023">#BF6023</color>
     <color name="_692901">#692901</color>
     <color name="_FFDEAC">#FFDEAC</color>
+    <color name="_FFD491">#FFD491</color>
     <color name="_D05F5A">#D05F5A</color>
     <color name="_3F3E3F">#3F3E3F</color>
     <color name="black2">#CC000000</color>
@@ -42,7 +47,7 @@
     <color name="app_color4">#351102</color>
     <color name="app_color5">#F8CB8E</color>
     <color name="app_color6">#FFF6D9</color>
-    <color name="app_color7">#935229</color>
+    <color name="app_color7">#592300</color>
     <color name="app_color8">#EEBD5A</color>
     <color name="app_color9">#FEFBE3</color>
     <color name="app_color10">#C6363E</color>
@@ -93,4 +98,11 @@
     <color name="origin2">#FF9900</color>
     <color name="shawdown2">#33000000</color>
     <color name="shadown_black2">#4D000000</color>
+    <color name="play_mode_background">#FFD591</color>
+    <color name="play_mode_voice_blue">#399BD9</color>
+    <color name="play_mode_voice_highlight">#68BAED</color>
+    <color name="play_mode_shadow">#99692901</color>
+    <color name="play_mode_paw">#FFD374</color>
+    <color name="play_mode_mic">#4D5358</color>
+    <color name="play_mode_mic_highlight">#929792</color>
 </resources>

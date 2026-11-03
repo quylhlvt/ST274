@@ -41,6 +41,9 @@ import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.RoomLoadState
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.core.helper.BarkEffectRenderer
+import com.oc.catemoji.catoc.core.dialog.GamePrompt
+import com.oc.catemoji.catoc.core.dialog.GamePromptDialog
+import com.oc.catemoji.catoc.core.dialog.HowToPlayDialog
 import com.oc.catemoji.catoc.core.custom.VoiceTrackDivider
 import com.oc.catemoji.catoc.core.custom.BattleAvatarGrowth
 import com.oc.catemoji.catoc.core.extention.toHome
@@ -51,6 +54,7 @@ import com.oc.catemoji.catoc.core.extention.setTextActionBar
 import com.oc.catemoji.catoc.databinding.ActivityPlayBinding
 import com.oc.catemoji.catoc.utils.DataLocal
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -63,7 +67,8 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     private var lastMicrophoneStatus: MicrophoneStatus? = null
     private var entrancePreDraw: OneShotPreDrawListener? = null
     private var entrancePending = false
-    private var renderedAppearance: Pair<String, String>? = null
+    private var renderedAppearance: Triple<String, String, String>? = null
+    private var renderedOpponentCharacter: String? = null
     private var appearanceGeneration = 0
     private var imagesReady = false
     private var playAnimation: AnimatorSet? = null
@@ -73,7 +78,9 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     private var backgroundTarget: CustomViewTarget<View, Drawable>? = null
     private val badgeAdapter = BattleBadgeAdapter()
     private lateinit var barkEffects: BarkEffectRenderer
-    private var rewardedAd: PlayRewardedAd? = null
+    private var exitDialog: GamePromptDialog? = null
+    private var guideDialog: HowToPlayDialog? = null
+    private var boneRewardDialog: GamePromptDialog? = null
     private var resultErrorSnackbar: Snackbar? = null
     private var voiceTrackDivider: VoiceTrackDivider? = null
     private var battleAvatarGrowth: BattleAvatarGrowth? = null
@@ -106,9 +113,6 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         }
         binding.recycleAchi.adapter = badgeAdapter
         binding.dualWaveform.restoreBattleProgress(viewModel.trackProgress)
-        rewardedAd = PlayRewardedAd(this, viewModel::onRewardedAdBusyChanged, viewModel::claimEarnedBonus) {
-            showToast(R.string.play_reward_unavailable)
-        }
         loadOpponent()
         binding.namePlay1.isSelected = true
         binding.txtCoinRank1.isSelected = true
@@ -175,6 +179,9 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         binding.actionBar.btnActionBarLeft.onClick {
             onBackPressedDispatcher.onBackPressed()
         }
+        binding.imgGuide.onClick {
+            if (viewModel.requestGuide()) pauseBattlePresentation()
+        }
         binding.btnNext.onClick { viewModel.advanceResult() }
         binding.btnNext2.onClick { viewModel.advanceResult() }
         binding.imgHomeParticipation.onClick {
@@ -188,13 +195,23 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
             }
         }
         binding.btnAddBone.onClick {
-            if (viewModel.canClaimBonus) rewardedAd?.show()
+            if (viewModel.canClaimBonus) showBoneRewardDialog()
         }
     }
 
     override fun observeData() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.exitConfirmationVisible.collect { visible ->
+                        if (visible) showExitDialog()
+                    }
+                }
+                launch {
+                    viewModel.guideVisible.collect { visible ->
+                        if (visible) showGuideDialog()
+                    }
+                }
                 launch { viewModel.microphone.collect(::renderMicrophone) }
                 launch { viewModel.battleUiState.collect(::renderBattle) }
                 launch { viewModel.resultUiState.collect(::renderResult) }
@@ -205,14 +222,15 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
                     }
                 }
                 launch {
-                    viewModel.barkCount.collect { targetCount ->
+                    viewModel.barkCount.combine(viewModel.guideVisible) { count, guideVisible ->
+                        count.takeUnless { guideVisible }
+                    }.collect { targetCount ->
+                        if (targetCount == null || viewModel.guideVisible.value) return@collect
                         var nextCount = viewModel.consumedBarks
-                        binding.txtBarkCount.text = getString(R.string.play_bark_count, nextCount)
                         while (nextCount < targetCount && !viewModel.isFinished) {
                             if (binding.dualWaveform.isBattleFinished) break
                             nextCount++
                             viewModel.consumedBarks = nextCount
-                            binding.txtBarkCount.text = getString(R.string.play_bark_count, nextCount)
                             binding.dualWaveform.addPlayerPoint()
                         }
                     }
@@ -238,14 +256,23 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     private fun loadOpponent() {
-        listOf(binding.avatar2, binding.imgAvatar2).forEach { image ->
-            Glide.with(this).load(viewModel.opponentAvatar)
-                .placeholder(R.drawable.image_avatar_infor).error(R.drawable.image_avatar_infor).into(image)
-        }
+        Glide.with(this).load(viewModel.opponentAvatar)
+            .placeholder(R.drawable.image_avatar_infor).error(R.drawable.image_avatar_infor).into(binding.imgAvatar2)
         Glide.with(this).load(viewModel.opponentFrame).error(R.drawable.img_frame_avatar).into(binding.imgFrameAvatar2)
+        loadOpponentCharacter(viewModel.battleUiState.value.useActiveCharacter)
+    }
+
+    private fun loadOpponentCharacter(useActiveCharacter: Boolean) {
+        val path = viewModel.opponentCharacterImage(useActiveCharacter)
+        if (renderedOpponentCharacter == path) return
+        renderedOpponentCharacter = path
+        Glide.with(this).load(path)
+            .transform(FlipOpponentCharacter)
+            .placeholder(R.drawable.image_avatar_infor).error(R.drawable.image_avatar_infor).into(binding.avatar2)
     }
 
     private fun renderBattle(state: PlayBattleUiState) = with(binding) {
+        loadOpponentCharacter(state.useActiveCharacter)
         val number = state.countdownNumber
         txtStartNumber.visibility = if (number == null) View.INVISIBLE else View.VISIBLE
         if (number != null) {
@@ -286,7 +313,13 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
             imgBattleResult.setImageResource(reward.image)
             bgTitleWin.setImageResource(reward.imageBgTitel)
             txtCoinBone.text = getString(R.string.play_reward_amount, reward.bones)
-            plusCoinRank.text = getString(R.string.play_reward_amount, reward.rankPoints)
+            plusCoinRank.text = when {
+                reward.rankPoints < 0 -> getString(R.string.play_rank_penalty, -reward.rankPoints)
+                reward.rankPoints > 0 -> getString(R.string.play_reward_amount, reward.rankPoints)
+                else -> getString(R.string.play_rank_zero)
+            }
+            plusCoinRank.setTextColor(ContextCompat.getColor(this@PlayActivity,
+                if (reward.won) R.color._22C55E else R.color._EF4444))
             txtRewardMultiplier.setText(reward.bonusLabel)
         }
         btnAddBone.isEnabled = state.canClaimBonus
@@ -307,11 +340,57 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     override fun onScreenBackPressed(): Boolean {
-        if (viewModel.isFinished) {
-            if (viewModel.canLeaveResult) toHome()
-            return true
+        if (viewModel.requestExitConfirmation()) pauseBattlePresentation()
+        return true
+    }
+
+    private fun showGuideDialog() {
+        if (guideDialog?.isShowing == true || isFinishing || isDestroyed) return
+        guideDialog = HowToPlayDialog(this, useMicrophone).apply {
+            setOnDismissListener {
+                guideDialog = null
+                viewModel.dismissGuide()
+                if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) && !isFinishing && !isDestroyed) {
+                    onScreenStart()
+                }
+            }
+            show()
         }
-        return false
+    }
+
+    private fun showExitDialog() {
+        if (exitDialog?.isShowing == true) return
+        exitDialog = GamePromptDialog(this, GamePrompt.EXIT,
+            onConfirm = {
+                if (viewModel.canLeaveResult) {
+                    exitDialog?.dismiss()
+                    exitDialog = null
+                    viewModel.dismissExitConfirmation()
+                    toHome()
+                }
+            },
+            onCancel = {
+                exitDialog?.dismiss()
+                exitDialog = null
+                viewModel.dismissExitConfirmation()
+                if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) onScreenStart()
+            },
+        ).also { it.show() }
+    }
+
+    private fun showBoneRewardDialog() {
+        if (boneRewardDialog?.isShowing == true) return
+        boneRewardDialog = GamePromptDialog(this, GamePrompt.WATCH_ADS,
+            onConfirm = {
+                boneRewardDialog?.dismiss()
+                boneRewardDialog = null
+                if (viewModel.canClaimBonus) viewModel.claimEarnedBonus()
+            },
+            onCancel = {
+                boneRewardDialog?.dismiss()
+                boneRewardDialog = null
+            },
+        ).also { it.show() }
     }
 
     private fun hasMicrophonePermission(): Boolean =
@@ -352,7 +431,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
 
     private fun renderPlayer(state: PlayPlayerUiState) {
         val user = state.profile
-        binding.dualWaveform.setTapOpponentInterval(state.opponentIntervalMs)
+        binding.dualWaveform.setOpponentIntervals(state.tapOpponentIntervalMs, state.microphoneOpponentIntervalMs)
         binding.namePlay1.text = user.name
         binding.txtNameAvatar1.text = user.name
         binding.avatar1.contentDescription = user.name
@@ -363,7 +442,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         binding.imgRank1.contentDescription = getString(R.string.home_rank_description, user.rank)
         binding.frameAvatar1.contentDescription = getString(R.string.home_name_description, user.name)
 
-        val appearance = user.imageAvatar to user.imageFrame
+        val appearance = Triple(state.characterImage, user.imageAvatar, user.imageFrame)
         if (renderedAppearance == appearance) {
             if (imagesReady) {
                 renderResult(viewModel.resultUiState.value)
@@ -386,7 +465,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
                 }
             }
         }
-        loadAppearance(binding.avatar1, user.imageAvatar, R.drawable.image_avatar_infor, onImageReady)
+        loadAppearance(binding.avatar1, state.characterImage, R.drawable.image_avatar_infor, onImageReady)
         if (entrancePending) {
             loadAppearance(binding.imgAvatar1, user.imageAvatar, R.drawable.image_avatar_infor, onImageReady)
             loadAppearance(binding.imgFrameAvatar1, user.imageFrame, R.drawable.img_frame_avatar, onImageReady)
@@ -462,12 +541,12 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     }
 
     private fun scheduleEntrance() {
-        if (!entrancePending || !imagesReady || entrancePreDraw != null || isFinishing || isDestroyed ||
+        if (viewModel.isBattlePausedByDialog || !entrancePending || !imagesReady || entrancePreDraw != null || isFinishing || isDestroyed ||
             !lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) return
         // Glide listeners run before the drawable reaches the ImageView.
         entrancePreDraw = binding.root.doOnPreDraw {
             entrancePreDraw = null
-            if (entrancePending && !isFinishing && !isDestroyed &&
+            if (!viewModel.isBattlePausedByDialog && entrancePending && !isFinishing && !isDestroyed &&
                 lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
                 entrancePending = false
                 playEntranceAnimation()
@@ -549,26 +628,34 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
 
     override fun onScreenStart() {
         viewModel.onScreenStarted(hasMicrophonePermission())
-        playAnimation?.resume()
+        if (!viewModel.isBattlePausedByDialog) playAnimation?.resume()
         scheduleEntrance()
         binding.root.post { requestMicrophoneAfterIntro() }
     }
 
     override fun onScreenStop() {
-        barkEffects.clear()
         viewModel.onScreenStopped(isFinishing)
+        pauseBattlePresentation()
+    }
+
+    private fun pauseBattlePresentation() {
         binding.dualWaveform.stop()
+        barkEffects.clear()
         entrancePreDraw?.removeListener()
         entrancePreDraw = null
         playAnimation?.pause()
     }
 
     override fun onScreenDestroyed() {
+        guideDialog?.setOnDismissListener(null)
+        guideDialog?.dismiss()
+        guideDialog = null
+        exitDialog?.dismiss()
+        exitDialog = null
+        boneRewardDialog?.dismiss()
+        boneRewardDialog = null
         binding.dualWaveform.setOnPointScoredListener(null)
         barkEffects.dispose()
-        rewardedAd?.dispose()
-        rewardedAd = null
-        viewModel.onRewardedAdBusyChanged(false)
         resultErrorSnackbar?.dismiss()
         resultErrorSnackbar = null
         binding.dualWaveform.stop()

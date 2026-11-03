@@ -1,0 +1,7 @@
+<resources>
+    <string name="debug_bark_quiet">ĐO MIC — IM LẶNG\nCòn %1$d giây</string>
+    <string name="debug_bark_speech">NÓI TỪ THƯỜNG\nXin chào, một hai ba, hôm nay trời đẹp, gõ, gỗ, gấu.\nCòn %1$d giây</string>
+    <string name="debug_bark_barks">GIẢ TIẾNG SỦA\nNói “gâu gâu” từng tiếng, khoảng 6–10 tiếng.\nCòn %1$d giây</string>
+    <string name="debug_bark_done">Đã thu xong. Mic đã dừng.\nĐang chờ phân tích.</string>
+    <string name="debug_bark_error">Đo mic thất bại: %1$s</string>
+</resources>

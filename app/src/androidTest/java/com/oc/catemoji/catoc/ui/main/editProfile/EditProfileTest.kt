@@ -15,6 +15,7 @@ import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity.Co
 import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity.Companion.FRAME
 import com.oc.catemoji.catoc.data.repository.BattleRepository
 import com.oc.catemoji.catoc.data.repository.ProfileAppearanceRepository
+import com.oc.catemoji.catoc.data.repository.DogSkinRepository
 import com.oc.catemoji.catoc.databinding.ActivityEditProfileBinding
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -122,6 +123,41 @@ class EditProfileTest {
             database.appearanceDao().getStates(AVATAR))
         assertEquals(listOf(AppearanceStateEntity(FRAME, "1", selected = true, unlock = true)),
             database.appearanceDao().getStates(FRAME))
+    }
+
+    @Test
+    fun purchasedSkinAndRankPromotionUnlockChoicesWhileEditorIsOpen() = runBlocking {
+        val user = repository.createProfile("Player")
+        repository.saveUser(user.copy(coinbone = 500, rankbatter = 90))
+        val model = model()
+        val loaded = await(model) { it.ready }
+        assertEquals(setOf(loaded.avatars[0]), loaded.unlockedAvatars)
+        assertEquals(setOf(loaded.frames[0]), loaded.unlockedFrames)
+
+        DogSkinRepository(context, database).purchase(3)
+        repository.completeBattle("rank-up", true, "Opponent", "", 1, 1_000)
+        await(model) { loaded.avatars[1] in it.unlockedAvatars &&
+            loaded.frames[1] in it.unlockedFrames && loaded.frames[2] in it.unlockedFrames }
+        onMain {
+            model.selectAvatar(loaded.avatars[1])
+            model.selectFrame(loaded.frames[2])
+            model.save()
+        }
+        await(model) { it.saved }
+        assertEquals(loaded.avatars[1], database.userDao().getUser()?.imageAvatar)
+        assertEquals(loaded.frames[2], database.userDao().getUser()?.imageFrame)
+    }
+
+    @Test
+    fun editorBackfillsOldSkinPurchasesAndRanksWithoutChangingSelection() = runBlocking {
+        val user = repository.createProfile("Player")
+        database.dogDao().upsert(com.oc.catemoji.catoc.data.datalocal.room.entity.DogEntity(5, unlock = true))
+        repository.saveUser(user.copy(rank = 3))
+        val loaded = await(model()) { it.ready }
+        assertEquals(setOf(loaded.avatars[0], loaded.avatars[2]), loaded.unlockedAvatars)
+        assertEquals(loaded.frames.take(5).toSet(), loaded.unlockedFrames)
+        assertEquals(loaded.avatars[0], loaded.avatar)
+        assertEquals(loaded.frames[0], loaded.frame)
     }
 
     @Test

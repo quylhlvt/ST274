@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="dog_skin_price_step">100</integer>
+    <string name="dog_skin_item_title">Dog %1$d</string>
+    <string name="dog_skin_unlocked">Unlocked</string>
+    <string name="dog_skin_equipped">Equipped</string>
+    <string name="dog_skin_win_count">Wins %1$d/%2$d</string>
+    <string name="dog_skin_load_failed">Could not load dog skins. Please reopen this screen.</string>
+    <string name="dog_skin_select_failed">Could not equip this skin. Please try again.</string>
+    <string name="dog_skin_purchase_failed">Could not buy this skin. Check your CoinBone and try again.</string>
+</resources>

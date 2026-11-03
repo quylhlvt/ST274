@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import com.oc.catemoji.catoc.ui.onboarding.permission.PermissionViewModel
 import com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
 import com.oc.catemoji.catoc.core.helper.LanguageHelper
 import com.oc.catemoji.catoc.core.helper.SharedPreferencesManager
@@ -22,6 +23,12 @@ class MyApplication : Application() {
         owner.defaultViewModelProviderFactory,
         owner.defaultViewModelCreationExtras
     )[ViewModelActivity::class.java]
+
+    fun sharedPermissionViewModel(owner: AppCompatActivity): PermissionViewModel = ViewModelProvider(
+        screenViewModelStore,
+        owner.defaultViewModelProviderFactory,
+        owner.defaultViewModelCreationExtras
+    )[PermissionViewModel::class.java]
 
     override fun onCreate() {
         super.onCreate()

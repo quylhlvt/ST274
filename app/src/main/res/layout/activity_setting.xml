@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img_bg_lang"
+    android:background="@drawable/img_bg_lang2"
     tools:context=".ui.main.setting.SettingActivity">
-
 
 
     <FrameLayout
@@ -23,9 +22,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:elevation="@dimen/dimension_1"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dimension_16"
+        android:elevation="@dimen/dimension_1"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/layoutActionBar">
 
@@ -38,23 +37,23 @@
             android:orientation="horizontal"
             android:weightSum="10"
             app:layout_constraintTop_toTopOf="parent">
+
             <ImageView
 
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/dimension_3"
-                android:layout_marginTop="@dimen/dimension_3"
                 android:scaleType="fitXY"
                 android:src="@drawable/bg_frame_permission_shadown" />
 
             <ImageView
-                    android:id="@+id/lang"
+                android:id="@+id/lang"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/dimension_3"
-                android:layout_marginBottom="@dimen/dimension_3"
+                android:layout_marginStart="@dimen/dimension_1"
+                android:layout_marginEnd="@dimen/dimension_2"
+                android:layout_marginBottom="@dimen/dimension_2"
                 android:scaleType="fitXY"
-                android:src="@drawable/frame_unselect_language" />
+                android:src="@drawable/frame_select_language" />
 
 
             <ImageView
@@ -62,14 +61,12 @@
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/dimension_20"
-                android:layout_marginTop="@dimen/dimension_13"
-                android:layout_marginBottom="@dimen/dimension_11"
+                android:layout_margin="@dimen/dimension_15"
                 android:src="@drawable/ic_lang_set"
                 app:layout_constraintBottom_toBottomOf="@id/lang"
-                app:layout_constraintTop_toTopOf="@id/lang"
                 app:layout_constraintDimensionRatio="1"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/lang" />
 
             <TextView
                 android:id="@+id/txt1"
@@ -77,47 +74,47 @@
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
                 android:layout_marginHorizontal="@dimen/dimension_12"
-                android:fontFamily="@font/baloo2_bold"
-                android:textColor="@color/app_color"
+                android:fontFamily="@font/illita_one_regular"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_22"
                 android:gravity="center_vertical"
                 android:text="@string/language"
-                android:textSize="@dimen/text_size_18"
-                android:layout_marginTop="@dimen/dimension_13"
-                android:layout_marginBottom="@dimen/dimension_11"
+
                 app:layout_constraintBottom_toBottomOf="@id/lang"
-                app:layout_constraintTop_toTopOf="@id/lang"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ic_lang"
+                app:layout_constraintTop_toTopOf="@id/lang"
                 app:outerStrokeColor="@color/app_color"
                 app:outerStrokeWidth="@dimen/dimension_1_3" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btnRate"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimension_56"
-            android:gravity="center_vertical"
             android:layout_marginTop="@dimen/dimension_8"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:weightSum="10"
-            app:layout_constraintTop_toBottomOf="@+id/btnLang"
-           >
+            app:layout_constraintTop_toBottomOf="@+id/btnLang">
+
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/dimension_3"
-                android:layout_marginTop="@dimen/dimension_3"
+
                 android:scaleType="fitXY"
                 android:src="@drawable/bg_frame_permission_shadown" />
 
             <ImageView
-                    android:id="@+id/rate"
+                android:id="@+id/rate"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/dimension_3"
-                android:layout_marginBottom="@dimen/dimension_3"
+                android:layout_marginStart="@dimen/dimension_1"
+                android:layout_marginEnd="@dimen/dimension_2"
+                android:layout_marginBottom="@dimen/dimension_2"
                 android:scaleType="fitXY"
-                android:src="@drawable/frame_unselect_language" />
+                android:src="@drawable/frame_select_language" />
 
 
             <ImageView
@@ -125,14 +122,12 @@
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/dimension_20"
-                android:layout_marginTop="@dimen/dimension_13"
-                android:layout_marginBottom="@dimen/dimension_11"
-                app:layout_constraintBottom_toBottomOf="@id/rate"
-                app:layout_constraintTop_toTopOf="@id/rate"
+                android:layout_margin="@dimen/dimension_15"
                 android:src="@drawable/ic_rate_set"
+                app:layout_constraintBottom_toBottomOf="@id/rate"
                 app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/rate" />
 
             <TextView
                 android:id="@+id/txt2"
@@ -140,46 +135,45 @@
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
                 android:layout_marginHorizontal="@dimen/dimension_12"
-                android:fontFamily="@font/baloo2_bold"
-                android:textColor="@color/app_color"                android:gravity="center_vertical"
+                android:fontFamily="@font/illita_one_regular"
+                android:gravity="center_vertical"
                 android:text="@string/rate_us"
-                android:textSize="@dimen/text_size_18"
-                android:layout_marginTop="@dimen/dimension_13"
-                android:layout_marginBottom="@dimen/dimension_11"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_22"
                 app:layout_constraintBottom_toBottomOf="@id/rate"
-                app:layout_constraintTop_toTopOf="@id/rate"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ic_rate"
+                app:layout_constraintTop_toTopOf="@id/rate"
                 app:outerStrokeColor="@color/app_color"
                 app:outerStrokeWidth="@dimen/dimension_1_3" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btnShare"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimension_56"
-            android:gravity="center_vertical"
             android:layout_marginTop="@dimen/dimension_8"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:weightSum="10"
-            app:layout_constraintTop_toBottomOf="@+id/btnRate"
-           >
+            app:layout_constraintTop_toBottomOf="@+id/btnRate">
+
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/dimension_3"
-                android:layout_marginTop="@dimen/dimension_3"
                 android:scaleType="fitXY"
                 android:src="@drawable/bg_frame_permission_shadown" />
 
             <ImageView
-                    android:id="@+id/share"
+                android:id="@+id/share"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/dimension_3"
-                android:layout_marginBottom="@dimen/dimension_3"
+                android:layout_marginStart="@dimen/dimension_1"
+                android:layout_marginEnd="@dimen/dimension_2"
+                android:layout_marginBottom="@dimen/dimension_2"
                 android:scaleType="fitXY"
-                android:src="@drawable/frame_unselect_language" />
+                android:src="@drawable/frame_select_language" />
 
 
             <ImageView
@@ -187,61 +181,59 @@
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/dimension_20"
-                android:layout_marginTop="@dimen/dimension_13"
-                android:layout_marginBottom="@dimen/dimension_11"
-                app:layout_constraintBottom_toBottomOf="@id/share"
-                app:layout_constraintTop_toTopOf="@id/share"
+                android:layout_margin="@dimen/dimension_15"
                 android:src="@drawable/ic_share_set"
+                app:layout_constraintBottom_toBottomOf="@id/share"
                 app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/share" />
 
             <TextView
                 android:id="@+id/txt3"
                 style="@style/single_marquee"
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
-                android:layout_marginTop="@dimen/dimension_13"
-                android:layout_marginBottom="@dimen/dimension_11"
-                app:layout_constraintBottom_toBottomOf="@id/share"
-                app:layout_constraintTop_toTopOf="@id/share"
                 android:layout_marginHorizontal="@dimen/dimension_12"
-                android:fontFamily="@font/baloo2_bold"
-                android:textColor="@color/app_color"                android:gravity="center_vertical"
+                android:fontFamily="@font/illita_one_regular"
+                android:gravity="center_vertical"
                 android:text="@string/share_app"
-                android:textSize="@dimen/text_size_18"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_22"
+                app:layout_constraintBottom_toBottomOf="@id/share"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ic_share"
+                app:layout_constraintTop_toTopOf="@id/share"
                 app:outerStrokeColor="@color/app_color"
                 app:outerStrokeWidth="@dimen/dimension_1_3" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btnPolicy"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimension_56"
-            android:gravity="center_vertical"
             android:layout_marginTop="@dimen/dimension_8"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:weightSum="10"
-            app:layout_constraintTop_toBottomOf="@+id/btnShare"
-           >
+            app:layout_constraintTop_toBottomOf="@+id/btnShare">
+
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/dimension_3"
-                android:layout_marginTop="@dimen/dimension_3"
+
                 android:scaleType="fitXY"
                 android:src="@drawable/bg_frame_permission_shadown" />
 
             <ImageView
-                    android:id="@+id/poli"
+                android:id="@+id/poli"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/dimension_3"
-                android:layout_marginBottom="@dimen/dimension_3"
+                android:layout_marginStart="@dimen/dimension_1"
+                android:layout_marginEnd="@dimen/dimension_2"
+                android:layout_marginBottom="@dimen/dimension_2"
                 android:scaleType="fitXY"
-                android:src="@drawable/frame_unselect_language" />
+                android:src="@drawable/frame_select_language" />
 
 
             <ImageView
@@ -249,37 +241,32 @@
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/dimension_20"
-                android:layout_marginTop="@dimen/dimension_13"
-                android:layout_marginBottom="@dimen/dimension_11"
-                app:layout_constraintBottom_toBottomOf="@id/poli"
-                app:layout_constraintTop_toTopOf="@id/poli"
+                android:layout_margin="@dimen/dimension_15"
                 android:src="@drawable/ic_policy_set"
+                app:layout_constraintBottom_toBottomOf="@id/poli"
                 app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/poli" />
 
             <TextView
                 android:id="@+id/txt4"
                 style="@style/single_marquee"
                 android:layout_width="@dimen/dimension_0"
                 android:layout_height="@dimen/dimension_0"
-                android:layout_marginTop="@dimen/dimension_13"
-                android:layout_marginBottom="@dimen/dimension_11"
-                app:layout_constraintBottom_toBottomOf="@id/poli"
-                app:layout_constraintTop_toTopOf="@id/poli"
                 android:layout_marginHorizontal="@dimen/dimension_12"
-                android:fontFamily="@font/baloo2_bold"
-                android:textColor="@color/app_color"
+                android:fontFamily="@font/illita_one_regular"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_22"
                 android:gravity="center_vertical"
                 android:text="@string/privacy_policy"
-                android:textSize="@dimen/text_size_18"
+                app:layout_constraintBottom_toBottomOf="@id/poli"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ic_policy"
+                app:layout_constraintTop_toTopOf="@id/poli"
                 app:outerStrokeColor="@color/app_color"
                 app:outerStrokeWidth="@dimen/dimension_1_3" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

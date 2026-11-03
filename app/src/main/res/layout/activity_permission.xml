@@ -167,6 +167,55 @@
                     android:src="@drawable/switch_off" />
             </RelativeLayout>
 
+            <!-- btnMicrophone-->
+            <RelativeLayout
+                android:id="@+id/btnMicrophone"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimension_56"
+                android:layout_marginTop="@dimen/dimension_16">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/bg_frame_permission_shadown" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/dimension_2"
+                    android:layout_marginBottom="@dimen/dimension_2"
+                    android:layout_marginStart="@dimen/dimension_1"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/bg_frame_permission" />
+
+                <TextView
+                    style="@style/single_marquee"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/swMicrophone"
+                    android:layout_marginStart="@dimen/dimension_16"
+                    android:layout_marginTop="@dimen/dimension_7"
+                    android:layout_marginBottom="@dimen/dimension_10"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:gravity="center_vertical"
+                    android:text="@string/microphone"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_22" />
+
+                <ImageView
+                    android:id="@+id/swMicrophone"
+                    android:layout_width="@dimen/dimension_56"
+                    android:layout_height="@dimen/dimension_32"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginTop="@dimen/dimension_8_5"
+                    android:layout_marginEnd="@dimen/dimension_16"
+                    android:layout_marginBottom="@dimen/dimension_11_5"
+                    android:src="@drawable/switch_off" />
+            </RelativeLayout>
+
         </LinearLayout>
 
     </ScrollView>

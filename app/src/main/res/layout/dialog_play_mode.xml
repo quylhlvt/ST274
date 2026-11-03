@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/modeContent"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dimension_16"
+        app:layout_constraintWidth_max="@dimen/play_mode_max_width"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/modePanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_play_mode_dialog"
+            android:padding="@dimen/dimension_20"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/txtModeTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimension_4"
+                android:fontFamily="@font/illita_one_regular"
+                android:gravity="center"
+                android:text="@string/play_mode_title"
+                android:textColor="@color/app_color"
+                android:textSize="@dimen/text_size_24"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
+                android:id="@+id/txtModeDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimension_20"
+                android:fontFamily="@font/illita_one_regular"
+                android:gravity="center"
+                android:text="@string/play_mode_description"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_16"
+                app:outerStrokeColor="@color/app_color"
+                app:outerStrokeWidth="@dimen/dimension_1"
+                app:layout_constraintTop_toBottomOf="@id/txtModeTitle" />
+
+            <FrameLayout
+                android:id="@+id/btnTapMode"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                android:layout_marginTop="@dimen/dimension_20"
+                android:layout_marginEnd="@dimen/dimension_8"
+                android:contentDescription="@string/play_mode_tap"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnVoiceMode"
+                app:layout_constraintTop_toBottomOf="@id/txtModeDescription"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_play_mode_tap" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="@dimen/dimension_16"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:gravity="center"
+                    android:importantForAccessibility="no"
+                    android:text="@string/play_mode_tap"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_20" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/btnVoiceMode"
+                android:layout_width="@dimen/dimension_0"
+                android:layout_height="@dimen/dimension_0"
+                android:layout_marginStart="@dimen/dimension_8"
+                android:layout_marginTop="@dimen/dimension_20"
+                android:contentDescription="@string/play_mode_voice"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@id/btnTapMode"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtModeDescription"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:importantForAccessibility="no"
+
+                    android:src="@drawable/ic_play_mode_voice" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="@dimen/dimension_16"
+                    android:fontFamily="@font/illita_one_regular"
+                    android:gravity="center"
+                    android:importantForAccessibility="no"
+                    android:text="@string/play_mode_voice"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_20" />
+            </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageButton
+            android:id="@+id/btnClose"
+            android:layout_width="@dimen/dimension_40"
+            android:layout_height="@dimen/dimension_40"
+            android:layout_marginTop="@dimen/dimension_20"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/play_mode_close"
+            android:src="@drawable/ic_play_mode_close"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/modePanel"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

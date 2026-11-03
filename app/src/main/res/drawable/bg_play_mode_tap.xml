@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <solid android:color="@color/play_mode_shadow" />
+            <corners android:radius="@dimen/dimension_8" />
+        </shape>
+    </item>
+    <item android:bottom="@dimen/dimension_3">
+        <shape>
+            <solid android:color="@color/_FF9C00" />
+            <stroke android:width="@dimen/dimension_2" android:color="@color/app_color" />
+            <corners android:radius="@dimen/dimension_8" />
+        </shape>
+    </item>
+</layer-list>

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.SystemClock
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -15,6 +16,8 @@ import androidx.test.core.app.ActivityScenario
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.BitmapResource
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.RoomLoadState
 import com.oc.catemoji.catoc.core.custom.VoiceTrackDivider
@@ -37,6 +40,37 @@ import org.junit.runner.RunWith
 class PlayScreenTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
+
+    @Test
+    fun opponentBattleArtworkFacesLeftWithoutMirroringThePortraitView() {
+        val pool = Glide.get(context).bitmapPool
+        val source = Bitmap.createBitmap(2, 1, Bitmap.Config.ARGB_8888).apply {
+            setPixel(0, 0, Color.RED)
+            setPixel(1, 0, Color.BLUE)
+        }
+        val input = checkNotNull(BitmapResource.obtain(source, pool))
+        val mirrored = FlipOpponentCharacter.transform(context, input, 2, 1)
+        try {
+            assertEquals(Color.BLUE, mirrored.get().getPixel(0, 0))
+            assertEquals(Color.RED, mirrored.get().getPixel(1, 0))
+            assertEquals(Color.RED, source.getPixel(0, 0))
+        } finally {
+            mirrored.recycle()
+            input.recycle()
+        }
+    }
+
+    @Test
+    fun everyOpponentHasBothBattleStatesInBundledAssets() {
+        (2..15).forEach { folderId ->
+            val opponent = PlayOpponentUiState(folderId)
+            listOf(opponent.characterImage(false), opponent.characterImage(true)).forEach { path ->
+                context.assets.open(path.removePrefix("file:///android_asset/")).use { image ->
+                    assertTrue("Missing battle image: $path", image.read() >= 0)
+                }
+            }
+        }
+    }
 
     @Test
     fun onlyAcceptedPlayerAndMachinePointsEmitVisualEvents() {
@@ -140,6 +174,30 @@ class PlayScreenTest {
                 waveform.stop()
                 bitmap.recycle()
             }
+        }
+    }
+
+    @Test
+    fun bothModesUseConfiguredCadencesWithoutChangingTheScore() {
+        instrumentation.runOnMainSync {
+            val themed = ContextThemeWrapper(context, R.style.Base_Theme_BaseActivity)
+            val waveform = ActivityPlayBinding.inflate(LayoutInflater.from(themed)).dualWaveform
+            try {
+                val initial = PlayPlayerUiState(UserEntity(iddog = 1), skinProgressPercent = 0)
+                val advanced = PlayPlayerUiState(UserEntity(iddog = 30), skinProgressPercent = 100)
+                waveform.setOpponentIntervals(initial.tapOpponentIntervalMs, initial.microphoneOpponentIntervalMs)
+                waveform.start(simulateOpponent = false)
+                assertEquals(initial.microphoneOpponentIntervalMs, waveform.opponentPointIntervalMs)
+                waveform.showStaticWaveform()
+                assertEquals(initial.tapOpponentIntervalMs, waveform.opponentPointIntervalMs)
+                waveform.addPlayerPoint()
+                val progress = waveform.progress
+                waveform.setOpponentIntervals(advanced.tapOpponentIntervalMs, advanced.microphoneOpponentIntervalMs)
+                assertEquals(advanced.tapOpponentIntervalMs, waveform.opponentPointIntervalMs)
+                waveform.start(simulateOpponent = false)
+                assertEquals(advanced.microphoneOpponentIntervalMs, waveform.opponentPointIntervalMs)
+                assertEquals(progress, waveform.progress, 0f)
+            } finally { waveform.stop() }
         }
     }
 
@@ -283,7 +341,7 @@ class PlayScreenTest {
     }
 
     @Test
-    fun scoreStaysVisibleBelowTheVoiceTrackWithoutMicrophoneControls() {
+    fun guideStaysVisibleBelowTheOpponentNameOnPhoneAndTablet() {
         instrumentation.runOnMainSync {
             listOf(360 to 740, 800 to 1100).forEach { (widthDp, heightDp) ->
                 val configuration = Configuration(context.resources.configuration).apply {
@@ -304,9 +362,10 @@ class PlayScreenTest {
 
                 assertTrue(binding.txtNameAvatar1.width > 0)
                 assertTrue(binding.txtNameAvatar2.width > 0)
-                assertEquals(View.VISIBLE, binding.txtBarkCount.visibility)
-                assertTrue(binding.txtBarkCount.top >= binding.txtNameAvatar1.bottom)
-                assertTrue(binding.txtBarkCount.bottom <= minOf(binding.avatar1.top, binding.avatar2.top))
+                assertEquals(View.VISIBLE, binding.imgGuide.visibility)
+                assertTrue(binding.imgGuide.width > 0 && binding.imgGuide.height > 0)
+                assertTrue(binding.imgGuide.top >= binding.txtNameAvatar2.bottom)
+                assertTrue(binding.imgGuide.bottom <= binding.root.height)
             }
         }
     }

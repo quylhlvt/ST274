@@ -6,6 +6,7 @@ import com.oc.catemoji.catoc.data.datalocal.room.AppDatabase
 import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity.Companion.AVATAR
 import com.oc.catemoji.catoc.data.datalocal.room.entity.AppearanceStateEntity.Companion.FRAME
+import com.oc.catemoji.catoc.data.model.DogSkinCatalogue
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
@@ -48,6 +49,25 @@ class ProfileAppearanceRepository @Inject constructor(
         database.withTransaction {
             initializeType(AVATAR, options.avatars, appliedAvatar)
             initializeType(FRAME, options.frames, appliedFrame)
+            // Backfill purchases and ranks earned before appearance rewards were wired up.
+            val purchasedFolders = database.dogDao().getUnlockedSkinIds()
+                .mapNotNull(DogSkinCatalogue::findById).map { it.folderId }.toSet()
+            val appearances = database.appearanceDao()
+            options.avatars.forEach { image ->
+                val id = appearanceAssetId(AVATAR, image)?.toIntOrNull()
+                if (id != null && id in purchasedFolders) {
+                    appearances.insertIfMissing(AppearanceStateEntity(AVATAR, id.toString(), unlock = true))
+                    appearances.unlock(AVATAR, id.toString())
+                }
+            }
+            val maxFrameId = maxFrameIdForRank(database.userDao().getUser()?.rank ?: 1)
+            options.frames.forEach { image ->
+                val id = appearanceAssetId(FRAME, image)?.toIntOrNull()
+                if (id != null && id in 1..maxFrameId) {
+                    appearances.insertIfMissing(AppearanceStateEntity(FRAME, id.toString(), unlock = true))
+                    appearances.unlock(FRAME, id.toString())
+                }
+            }
         }
 
     private suspend fun initializeType(type: String, images: List<String>, appliedImage: String) {

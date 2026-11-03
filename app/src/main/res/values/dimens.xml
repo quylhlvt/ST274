@@ -171,4 +171,5 @@
     <dimen name="text_size_6">6sp</dimen>
     <dimen name="text_size_17">17sp</dimen>
     <dimen name="text_size_36">36sp</dimen>
+    <dimen name="play_mode_max_width">520dp</dimen>
 </resources>

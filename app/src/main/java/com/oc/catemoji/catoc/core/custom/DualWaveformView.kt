@@ -57,8 +57,9 @@ class DualWaveformView @JvmOverloads constructor(
     private var simulateOpponent = true
     private var staticWaveform = false
     private var tapOpponentIntervalMs = 300L
-    private val opponentPointIntervalMs: Long
-        get() = if (staticWaveform) tapOpponentIntervalMs else OPPONENT_POINT_INTERVAL_MS
+    private var microphoneOpponentIntervalMs = 1_500L
+    internal val opponentPointIntervalMs: Long
+        get() = if (staticWaveform) tapOpponentIntervalMs else microphoneOpponentIntervalMs
     private val tick = object : Runnable {
         override fun run() {
             if (!running || staticWaveform || !isAttachedToWindow || !isShown) return
@@ -260,17 +261,18 @@ class DualWaveformView @JvmOverloads constructor(
         }
     }
 
-    /** Tap mode hides audio bars while keeping the opponent's battle timer active. */
-    fun setTapOpponentInterval(intervalMs: Long) {
-        require(intervalMs > 0)
-        if (tapOpponentIntervalMs == intervalMs) return
-        tapOpponentIntervalMs = intervalMs
-        if (staticWaveform && running && isAttachedToWindow && isShown && !battleProgress.isFinished) {
+    fun setOpponentIntervals(tapIntervalMs: Long, microphoneIntervalMs: Long) {
+        require(tapIntervalMs > 0 && microphoneIntervalMs > 0)
+        val previousInterval = opponentPointIntervalMs
+        tapOpponentIntervalMs = tapIntervalMs
+        microphoneOpponentIntervalMs = microphoneIntervalMs
+        if (previousInterval != opponentPointIntervalMs && running && isAttachedToWindow && isShown && !battleProgress.isFinished) {
             removeCallbacks(opponentTick)
             postDelayed(opponentTick, opponentPointIntervalMs)
         }
     }
 
+    /** Tap mode hides audio bars while keeping the opponent's battle timer active. */
     fun showStaticWaveform() {
         if (staticWaveform && running) return
         staticWaveform = true
@@ -344,7 +346,6 @@ class DualWaveformView @JvmOverloads constructor(
     }
 
     private companion object {
-        const val OPPONENT_POINT_INTERVAL_MS = 1_500L
         const val BALANCE_ANIMATION_DURATION_MS = 180L
     }
 }

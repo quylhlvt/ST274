@@ -60,6 +60,17 @@ class BarkSpeechCounterTest {
         assertEquals(3, counter.count)
     }
 
+    @Test fun forcedWindowEndLetsTheSameNextBarkScoreWithoutReplayingThePreviousOne() {
+        val counter = BarkSpeechCounter()
+        counter.accept("", false, partialText = "gô")
+        counter.accept("gô", true)
+        assertEquals(1, counter.count)
+        counter.accept("", false, partialText = "gô")
+        assertEquals(2, counter.count)
+        counter.accept("gô", true)
+        assertEquals(2, counter.count)
+    }
+
     @Test fun reportedNonBarkWordsRemainRejected() {
         val counter = BarkSpeechCounter()
         listOf("gau", "mõ", "vàng", "giàng", "gấu", "gầu", "gạo", "gõ", "gỗ", "mộ", "ngõ", "[unk]").forEach { text ->

@@ -19,7 +19,7 @@ import com.oc.catemoji.catoc.data.datalocal.room.dao.BattleResultDao
 
 @Database(
     entities = [UserEntity::class, DogEntity::class, HistoryEntity::class, AchievementEntity::class, AppearanceStateEntity::class, BattleResultEntity::class],
-    version = 7,
+    version = 8,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -31,6 +31,13 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun battleResultDao(): BattleResultDao
 
     companion object {
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE dog ADD COLUMN matchesPlayed INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE dog ADD COLUMN matchesWon INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         val MIGRATION_6_7 = object : Migration(6, 7) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("""

@@ -77,7 +77,7 @@ class TrainingScreenTest {
                 repeat(6) { avatar.performClick() }
             }
             awaitCondition(scenario) {
-                it.findViewById<TextView>(R.id.txtBarkCount).text == it.getString(R.string.play_bark_count, 7) &&
+                ViewModelProvider(it)[TrainingViewModel::class.java].consumedBarks == 7 &&
                     it.findViewById<FrameLayout>(R.id.effectLayer).childCount > 0
             }
             scenario.moveToState(Lifecycle.State.CREATED)
@@ -117,10 +117,7 @@ class TrainingScreenTest {
                 model.acceptRecognition(SpeechRecognitionUpdate("gâu gâu", true, 0.5f, listOf(first, second)))
                 assertEquals(2, model.barkCount.value)
             }
-            awaitCondition(scenario) {
-                effectCount.get() == 2 &&
-                    it.findViewById<TextView>(R.id.txtBarkCount).text == it.getString(R.string.play_bark_count, 2)
-            }
+            awaitCondition(scenario) { effectCount.get() == 2 }
             awaitCondition(scenario) { it.findViewById<FrameLayout>(R.id.effectLayer).childCount == 0 }
             assertEquals(2, effectCount.get())
             scenario.recreate()

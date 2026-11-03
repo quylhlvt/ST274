@@ -13,6 +13,7 @@
           app:layout_constraintTop_toTopOf="parent"/>
     <ImageView
             android:id="@+id/btnActionBarLeft"
+            android:contentDescription="@string/navigate_back"
             android:layout_width="@dimen/dimension_40"
             android:layout_height="@dimen/dimension_40"
             android:layout_marginStart="@dimen/dimension_16"
@@ -125,15 +126,16 @@
         </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
     </com.quylh.gradientstrokelayout.GradientStrokeFrameLayout>
     <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="@dimen/dimension_0"
-                                               android:layout_height="@dimen/dimension_0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view1"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="2"
-            android:layout_margin="@dimen/dimension_8"
-            tools:itemCount="10"
-            tools:listitem="@layout/item_dog_skin"
+        android:id="@+id/recycleDogSkin"
+        android:layout_width="@dimen/dimension_0"
+        android:layout_height="@dimen/dimension_0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view1"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        android:layout_margin="@dimen/dimension_8"
+        tools:itemCount="10"
+        tools:listitem="@layout/item_dog_skin"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

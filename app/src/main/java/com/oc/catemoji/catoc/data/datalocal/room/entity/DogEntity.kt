@@ -1,6 +1,7 @@
 package com.oc.catemoji.catoc.data.datalocal.room.entity
 
 import androidx.room.Entity
+import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "dog")
@@ -10,4 +11,6 @@ data class DogEntity(
     val progress: Int = 0,
     val unlock: Boolean = false,
     val selected: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val matchesPlayed: Long = 0,
+    @ColumnInfo(defaultValue = "0") val matchesWon: Long = 0,
 )

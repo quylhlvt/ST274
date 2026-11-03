@@ -1,6 +1,7 @@
 package com.oc.catemoji.catoc.ui.main.play
 
 import android.content.Context
+import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.SavedStateHandle
@@ -10,7 +11,11 @@ import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.data.audio.BarkSpeechCounter
 import com.oc.catemoji.catoc.data.audio.SpeechToTextManager
 import com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
+import com.oc.catemoji.catoc.data.datalocal.room.entity.DogEntity
+import com.oc.catemoji.catoc.data.model.DogSkinCatalogue
+import com.oc.catemoji.catoc.data.model.statistics.DogBattleStatistics
 import com.oc.catemoji.catoc.data.repository.BattleRepository
+import com.oc.catemoji.catoc.data.repository.DogSkinRoster
 import com.oc.catemoji.catoc.data.repository.TrainingAssetRepository
 import com.oc.catemoji.catoc.data.repository.TrainingEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +29,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -52,13 +56,70 @@ class PlayViewModel @Inject constructor(
     val useMicrophone get() = savedState.get<Boolean>(EXTRA_USE_MICROPHONE) ?: false
     val introFinished get() = savedState.get<Boolean>(INTRO_FINISHED) == true
     val battleStarted get() = savedState.get<Boolean>(BATTLE_STARTED) == true
+    val exitConfirmationVisible = savedState.getStateFlow("exitConfirmationVisible", false)
+    val guideVisible = savedState.getStateFlow(GUIDE_VISIBLE, false)
+    val isBattlePausedByDialog get() = exitConfirmationVisible.value || guideVisible.value
 
-    val player = repository.user
-        .map<UserEntity?, RoomLoadState<PlayPlayerUiState?>> { user ->
-            playerReady = user != null
-            refreshBattleUiState()
-            startCountdownIfReady()
-            RoomLoadState.Success(user?.let(::PlayPlayerUiState))
+    fun requestExitConfirmation(): Boolean {
+        if (!canLeaveResult || isBattlePausedByDialog) return false
+        savedState["exitConfirmationVisible"] = true
+        onScreenStopped(isFinishing = false)
+        return true
+    }
+
+    fun dismissExitConfirmation() {
+        savedState["exitConfirmationVisible"] = false
+    }
+
+    fun requestGuide(): Boolean {
+        if (isFinished || isBattlePausedByDialog) return false
+        if (battleStarted) savedState[GUIDE_PAUSED_AT] = SystemClock.elapsedRealtime()
+        savedState[GUIDE_VISIBLE] = true
+        onScreenStopped(isFinishing = false)
+        return true
+    }
+
+    fun dismissGuide() {
+        val pausedAt = savedState.remove<Long>(GUIDE_PAUSED_AT)
+        val startedAt = savedState.get<Long>("startedAt")
+        if (pausedAt != null && startedAt != null && !isFinished) {
+            savedState["startedAt"] = startedAt + (SystemClock.elapsedRealtime() - pausedAt).coerceAtLeast(0)
+        }
+        savedState[GUIDE_VISIBLE] = false
+    }
+
+    val player = combine<UserEntity?, List<DogEntity>, RoomLoadState<PlayPlayerUiState?>>(
+        repository.user, repository.dogs,
+    ) { user, dogs ->
+        playerReady = user != null
+        if (user != null) {
+            val canUpdateMatch = !battleStarted && !isFinished
+            if (canUpdateMatch || !savedState.contains(MATCH_DOG_ID)) savedState[MATCH_DOG_ID] = user.iddog
+            val skinId = savedState.get<Int>(MATCH_DOG_ID) ?: user.iddog
+            if (canUpdateMatch || !savedState.contains(MATCH_SKIN_PROGRESS)) {
+                val dog = dogs.firstOrNull { it.iddog == skinId }
+                val target = DogSkinCatalogue.findById(skinId)?.winsToMaxLevel
+                    ?: DogSkinCatalogue.FIRST_SKIN_WIN_TARGET
+                savedState[MATCH_SKIN_PROGRESS] = DogBattleStatistics(wins = dog?.matchesWon ?: 0).progressTo(target)
+            }
+            if (canUpdateMatch || !savedState.contains(MATCH_CHARACTER_SKIN_ID)) {
+                savedState[MATCH_CHARACTER_SKIN_ID] = DogSkinRoster(user, dogs).appearanceFor(skinId)?.id
+            }
+        }
+        refreshBattleUiState()
+        startCountdownIfReady()
+        RoomLoadState.Success(user?.let {
+            PlayPlayerUiState(
+                it, savedState.get<Int>(MATCH_DOG_ID) ?: it.iddog,
+                skinProgressPercent = savedState.get<Int>(MATCH_SKIN_PROGRESS) ?: 0,
+                characterSkinId = savedState.get<Int>(MATCH_CHARACTER_SKIN_ID),
+            )
+        })
+    }
+        .combine(battleUiState) { state, battle ->
+            if (state is RoomLoadState.Success) {
+                RoomLoadState.Success(state.data?.copy(useActiveCharacter = battle.useActiveCharacter))
+            } else state
         }
         .catch { error ->
             if (error is CancellationException) throw error
@@ -85,7 +146,10 @@ class PlayViewModel @Inject constructor(
     val opponentId = savedState.get<Int>("opponentId") ?: (2..15).random().also {
         savedState["opponentId"] = it
     }
-    val opponentAvatar get() = "file:///android_asset/$opponentId/avatar.webp"
+    private val opponentAppearance get() = PlayOpponentUiState(opponentId)
+    val opponentAvatar get() = opponentAppearance.portraitImage
+    fun opponentCharacterImage(useActiveCharacter: Boolean): String =
+        opponentAppearance.characterImage(useActiveCharacter)
     val opponentFrame get() = "file:///android_asset/$opponentId/frame.webp"
     var consumedBarks: Int
         get() = savedState["consumedBarks"] ?: 0
@@ -100,19 +164,14 @@ class PlayViewModel @Inject constructor(
     val saving = _saving.asStateFlow()
     private val _saveError = MutableStateFlow(false)
     val saveError = _saveError.asStateFlow()
-    private val rewardedAdBusy = MutableStateFlow(false)
-    val resultUiState = combine(phase, result, saving, saveError, rewardedAdBusy) { phase, result, saving, error, adBusy ->
-        PlayResultUiState(phase, result?.let(PlayRewardUiState::from), saving || adBusy, error)
+    val resultUiState = combine(phase, result, saving, saveError) { phase, result, saving, error ->
+        PlayResultUiState(phase, result?.let(PlayRewardUiState::from), saving, error)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, PlayResultUiState(phase.value))
     private var resultJob: Job? = null
     private var bonusJob: Job? = null
     val isFinished get() = savedState.contains("won")
-    val canLeaveResult get() = !_saving.value && !rewardedAdBusy.value && !_saveError.value
+    val canLeaveResult get() = !_saving.value && !_saveError.value
     val canClaimBonus get() = canLeaveResult && _result.value?.bonusClaimed == false
-
-    fun onRewardedAdBusyChanged(busy: Boolean) {
-        rewardedAdBusy.value = busy
-    }
 
     fun onIntroFinished() {
         savedState[INTRO_FINISHED] = true
@@ -120,6 +179,11 @@ class PlayViewModel @Inject constructor(
     }
 
     fun onScreenStarted(permissionGranted: Boolean) {
+        if (isBattlePausedByDialog) {
+            screenActive = false
+            refreshBattleUiState()
+            return
+        }
         screenActive = true
         val permissionRecovered = permissionGranted &&
             (savedState.get<Boolean>(MICROPHONE_BLOCKED) == true ||
@@ -130,10 +194,10 @@ class PlayViewModel @Inject constructor(
         }
         val shouldRestart = savedState.get<Boolean>(MICROPHONE_WAS_ACTIVE) == true || permissionRecovered
         savedState[MICROPHONE_WAS_ACTIVE] = false
+        refreshBattleUiState()
         if (useMicrophone && shouldRestart && battleStarted && !isFinished) {
             if (permissionGranted) startListening() else requireMicrophonePermission()
         }
-        refreshBattleUiState()
         startCountdownIfReady()
         scheduleResultAdvance()
     }
@@ -147,7 +211,8 @@ class PlayViewModel @Inject constructor(
         resultAdvanceJob = null
         val status = _microphone.value.status
         savedState[MICROPHONE_WAS_ACTIVE] = !isFinishing &&
-            (status == MicrophoneStatus.STARTING || status == MicrophoneStatus.LISTENING)
+            (status == MicrophoneStatus.STARTING || status == MicrophoneStatus.LISTENING ||
+                (isBattlePausedByDialog && savedState.get<Boolean>(MICROPHONE_WAS_ACTIVE) == true))
         stopListening()
         refreshBattleUiState()
     }
@@ -176,6 +241,8 @@ class PlayViewModel @Inject constructor(
             canPlay = canPlay,
             canTap = canPlay && !useMicrophone,
             runTapOpponent = canPlay && !useMicrophone,
+            // START is shown at step 3, before gameplay is enabled at step 4.
+            useActiveCharacter = countdownStep >= 3 || battleStarted,
         )
     }
 
@@ -189,7 +256,7 @@ class PlayViewModel @Inject constructor(
     }
 
     fun markBattleStarted() {
-        if (!savedState.contains("startedAt")) savedState["startedAt"] = android.os.SystemClock.elapsedRealtime()
+        if (!savedState.contains("startedAt")) savedState["startedAt"] = SystemClock.elapsedRealtime()
         savedState[BATTLE_STARTED] = true
         savedState[COUNTDOWN_STEP] = 4
         countdownJob?.cancel()
@@ -201,8 +268,9 @@ class PlayViewModel @Inject constructor(
     fun finishBattle(won: Boolean) {
         if (!isFinished) {
             savedState["won"] = won
-            val started = savedState.get<Long>("startedAt") ?: android.os.SystemClock.elapsedRealtime()
-            savedState["duration"] = (android.os.SystemClock.elapsedRealtime() - started).coerceAtLeast(1)
+            val finishedAt = savedState.get<Long>(GUIDE_PAUSED_AT) ?: SystemClock.elapsedRealtime()
+            val started = savedState.get<Long>("startedAt") ?: finishedAt
+            savedState["duration"] = (finishedAt - started).coerceAtLeast(1)
             savedState["phase"] = BattlePhase.GAME_OVER
         }
         countdownJob?.cancel()
@@ -223,7 +291,7 @@ class PlayViewModel @Inject constructor(
             try {
                 _result.value = repository.completeBattle(matchId, won,
                     appContextForOpponent.getString(R.string.play_opponent_name), opponentAvatar,
-                    _barkCount.value, savedState["duration"] ?: 1L)
+                    _barkCount.value, savedState["duration"] ?: 1L, savedState[MATCH_DOG_ID])
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {
@@ -249,7 +317,7 @@ class PlayViewModel @Inject constructor(
         }
     }
 
-    /** Called only from the rewarded ad's earned callback. */
+    /** This version grants the bonus directly when Watch Ads is confirmed. */
     fun claimEarnedBonus() {
         if (_result.value?.bonusClaimed != false || bonusJob?.isActive == true) return
         savedState["bonusEarned"] = true
@@ -388,6 +456,11 @@ class PlayViewModel @Inject constructor(
         const val EXTRA_USE_MICROPHONE = "play_use_microphone"
         private const val INTRO_FINISHED = "play_intro_finished"
         private const val BATTLE_STARTED = "play_battle_started"
+        private const val GUIDE_VISIBLE = "play_guide_visible"
+        private const val GUIDE_PAUSED_AT = "play_guide_paused_at"
+        private const val MATCH_DOG_ID = "play_match_dog_id"
+        private const val MATCH_CHARACTER_SKIN_ID = "play_match_character_skin_id"
+        private const val MATCH_SKIN_PROGRESS = "play_match_skin_progress"
         private const val COUNTDOWN_STEP = "play_countdown_step"
         private const val MICROPHONE_BLOCKED = "play_microphone_blocked"
         private const val MICROPHONE_AUTO_REQUESTED = "play_microphone_auto_requested"

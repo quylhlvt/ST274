@@ -18,6 +18,7 @@ import com.oc.catemoji.catoc.core.helper.BarkEffectRenderer
 import com.oc.catemoji.catoc.core.base.BaseActivity
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.RoomLoadState
+import com.oc.catemoji.catoc.core.dialog.HowToPlayDialog
 import com.oc.catemoji.catoc.core.extention.onClick
 import com.oc.catemoji.catoc.core.extention.setImageActionBar
 import com.oc.catemoji.catoc.core.extention.setTextActionBar
@@ -31,6 +32,7 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
 ) {
     override val retainScreenViewState = false
     private lateinit var barkEffects: BarkEffectRenderer
+    private var guideDialog: HowToPlayDialog? = null
     private var backgroundPath: String? = null
     private var backgroundTarget: CustomViewTarget<View, Drawable>? = null
     private var microphonePermissionPending = false
@@ -54,8 +56,10 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
         barkEffects = BarkEffectRenderer(binding.root, binding.effectLayer)
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
+            setImageActionBar(btnActionBarRight, R.drawable.img_guide)
             setTextActionBar(tvCenter, getString(R.string.training))
             btnActionBarLeft.contentDescription = getString(R.string.navigate_back)
+            btnActionBarRight.contentDescription = getString(R.string.how_to_play_title)
         }
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -81,6 +85,9 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
         binding.actionBar.btnActionBarLeft.onClick {
             onBackPressedDispatcher.onBackPressed()
         }
+        binding.actionBar.btnActionBarRight.onClick {
+            guideDialog = HowToPlayDialog(this, useMicrophone).also { it.show() }
+        }
         // Each training tap can produce an effect, including rapid consecutive taps.
         binding.imgAvatar.setOnClickListener { if (!useMicrophone) viewModel.addPlayerTap() }
         binding.imgAvatar.isClickable = !useMicrophone
@@ -102,11 +109,9 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
                 launch {
                     viewModel.barkCount.collect { target ->
                         var count = viewModel.consumedBarks
-                        binding.txtBarkCount.text = getString(R.string.play_bark_count, count)
                         while (count < target) {
                             count++
                             viewModel.consumedBarks = count
-                            binding.txtBarkCount.text = getString(R.string.play_bark_count, count)
                             barkEffects.show(binding.imgAvatar)
                         }
                     }
@@ -180,6 +185,8 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
     }
 
     override fun onScreenDestroyed() {
+        guideDialog?.dismiss()
+        guideDialog = null
         viewModel.stopListening()
         barkEffects.dispose()
         backgroundTarget?.let { Glide.with(applicationContext).clear(it) }

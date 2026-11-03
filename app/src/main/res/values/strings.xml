@@ -34,8 +34,8 @@
     <string name="reset">Reset</string>
     <string name="exit">Exit</string>
     <string name="navigate_back">Back</string>
-    <string name="rate_us">Rate Us</string>
-    <string name="share_app">Share App</string>
+    <string name="rate_us">Rate us</string>
+    <string name="share_app">Share app</string>
     <string name="image_has_been_saved_successfully">Image has been saved successfully!</string>
     <string name="download">Download</string>
     <string name="my_avatar">My Cat</string>
@@ -58,7 +58,7 @@
     <string name="errorcontent">This item is no longer available.</string>
     <string name="edit">Edit</string>
     <string name="rate">Rate</string>
-    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy">Privacy policy</string>
 
     <string name="zero_star_title">Do you like the app?</string>
     <string name="zero_star">Let us know your experience</string>
@@ -235,6 +235,8 @@
     <string name="participation_reward">Participation Reward</string>
     <string name="find_match">Find Match</string>
     <string name="play_reward_amount">+%1$d</string>
+    <string name="play_rank_penalty">-%1$d</string>
+    <string name="play_rank_zero">0</string>
     <string name="play_reward_initial">+0</string>
     <string name="play_reward_double">2X</string>
     <string name="play_reward_claimed">✓</string>
@@ -242,4 +244,24 @@
     <string name="play_result_save_failed">Could not save your reward. Tap Retry.</string>
     <string name="play_reward_unavailable">Video unavailable. Please try again.</string>
     <string name="play_retry">Retry</string>
+    <string name="max_level_reached">Max Level Reached!</string>
+    <string name="locked">Locked</string>
+    <string name="microphone">Microphone</string>
+    <string name="permission_access_notification_microphone">to access notifications and your microphone</string>
+    <string name="permission_access_photos_microphone">to access photos and your microphone</string>
+    <string name="play_mode_title">How Will You Bark?</string>
+    <string name="play_mode_description">Bark with your voice or tap to attack.</string>
+    <string name="play_mode_tap">Tap Mode</string>
+    <string name="play_mode_voice">Voice Mode</string>
+    <string name="play_mode_close">Close mode selection</string>
+    <string name="how_to_play_title">How to Play</string>
+    <string name="how_to_play_close">Close how to play</string>
+    <string name="how_to_play_voice">🐶 Pretend to be a dog and bark\n“Woof! Woof!”\n🔊 Bark as loud and as fast as you can!\nThe louder and faster you bark, the more points you earn.\n⚔️ Battle your opponent and try to score higher!\n🏆 Bark your way to victory!</string>
+    <string name="how_to_play_tap">🐶 Tap your dog to make it bark!\n👆 Tap as fast as you can!\nThe faster you tap, the more points you earn.\n⚔️ Battle your opponent and try to score higher!\n🏆 Bark your way to victory!</string>
+    <string name="bonus_treats_title">Bonus Treats!</string>
+    <string name="bonus_treats_description">Watch a short ad to claim extra rewards.</string>
+    <string name="watch_ads">Watch Ads</string>
+    <string name="exit_screen_title">Exit this screen?</string>
+    <string name="exit_screen_description">Any unsaved changes will be lost.</string>
+    <string name="one_star">Please give us some feedback</string>
 </resources>

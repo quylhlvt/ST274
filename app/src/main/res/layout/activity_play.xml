@@ -598,6 +598,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/viewparent3" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/imgGuide"
+        android:layout_width="@dimen/dimension_40"
+        android:layout_height="@dimen/dimension_40"
+        android:layout_marginTop="@dimen/dimension_8"
+        android:contentDescription="@string/how_to_play_title"
+        android:elevation="@dimen/dimension_3"
+        android:src="@drawable/img_guide"
+        app:layout_constraintEnd_toEndOf="@id/txtNameAvatar2"
+        app:layout_constraintTop_toBottomOf="@id/txtNameAvatar2" />
 
     <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
         android:id="@+id/txtStartNumber"
@@ -622,20 +632,6 @@
         app:outerStrokeColor="@color/app_color"
         app:outerStrokeWidth="@dimen/dimension_2" />
 
-    <TextView
-        android:id="@+id/txtBarkCount"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimension_16"
-        android:accessibilityLiveRegion="polite"
-        android:fontFamily="@font/illita_one_regular"
-        android:gravity="center"
-        android:text="@string/play_bark_count_initial"
-        android:textColor="@color/app_color"
-        android:textSize="@dimen/text_size_24"
-        app:layout_constraintEnd_toEndOf="@id/imgBgVoice"
-        app:layout_constraintStart_toStartOf="@id/imgBgVoice"
-        app:layout_constraintTop_toBottomOf="@id/txtStartNumber" />
 
     <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
         android:id="@+id/txtOver"
@@ -661,11 +657,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/contrainOver"
-        android:visibility="gone"
         android:clickable="true"
+        android:visibility="gone"
         android:focusable="true"
-        tools:visibility="visible"
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/_80A9FFAC"
@@ -846,7 +840,6 @@
                 android:singleLine="false"
                 android:scrollHorizontally="false"
                 android:maxLines="1"
-                android:ellipsize="end"
                 android:id="@+id/txtTitleUnlock2"
                 style="@style/Widget.Catoc.ExtrudedTitle"
                 android:layout_width="@dimen/dimension_0"
@@ -880,7 +873,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimension_10"
                 android:elevation="@dimen/dimension_5"
-                android:ellipsize="end"
                 android:fontFamily="@font/illita_one_regular"
                 android:gravity="center"
                 android:marqueeRepeatLimit="marquee_forever"
@@ -1123,7 +1115,6 @@
                 android:singleLine="false"
                 android:scrollHorizontally="false"
                 android:maxLines="1"
-                android:ellipsize="end"
                 android:id="@+id/txtTraining"
                 style="@style/Widget.Catoc.ExtrudedTitle"
                 android:layout_width="@dimen/dimension_0"
@@ -1237,7 +1228,6 @@
                 android:singleLine="false"
                 android:scrollHorizontally="false"
                 android:maxLines="1"
-                android:ellipsize="end"
                 android:id="@+id/txtNameTitleParticipation"
                 style="@style/Widget.Catoc.ExtrudedTitle"
                 android:layout_width="@dimen/dimension_0"
@@ -1346,7 +1336,6 @@
                             android:singleLine="false"
                             android:scrollHorizontally="false"
                             android:maxLines="1"
-                            android:ellipsize="end"
                             android:id="@+id/txtRewardMultiplier"
                             android:text="@string/play_reward_double"
                             android:fontFamily="@font/illita_one_regular"
@@ -1358,7 +1347,6 @@
                             android:singleLine="false"
                             android:scrollHorizontally="false"
                             android:maxLines="1"
-                            android:ellipsize="end"
                             android:id="@+id/txtCoinBone"
                             android:layout_width="@dimen/dimension_0"
                             android:layout_height="match_parent"
