@@ -57,7 +57,6 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
             setImageActionBar(btnActionBarRight, R.drawable.img_guide)
-            setTextActionBar(tvCenter, getString(R.string.training))
             btnActionBarLeft.contentDescription = getString(R.string.navigate_back)
             btnActionBarRight.contentDescription = getString(R.string.how_to_play_title)
         }
