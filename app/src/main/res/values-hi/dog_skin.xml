@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dog_skin_item_title">कुत्ता %1$d</string>
+    <string name="dog_skin_unlocked">अनलॉक है</string>
+    <string name="dog_skin_equipped">चुना गया</string>
+    <string name="dog_skin_win_count">जीत %1$d/%2$d</string>
+    <string name="dog_skin_load_failed">कुत्तों की स्किन लोड नहीं हो सकीं। यह स्क्रीन फिर से खोलें।</string>
+    <string name="dog_skin_select_failed">यह स्किन नहीं चुनी जा सकी। फिर कोशिश करें।</string>
+    <string name="dog_skin_purchase_failed">यह स्किन नहीं खरीदी जा सकी। अपना CoinBone जाँचें और फिर कोशिश करें।</string>
+</resources>

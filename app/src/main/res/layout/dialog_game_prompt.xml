@@ -65,7 +65,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_16"
                 app:outerStrokeColor="@color/app_color"
-                app:outerStrokeWidth="@dimen/dimension_1"
+                app:outerStrokeWidth="@dimen/dimension_1_6"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/promptHeading" />
@@ -115,14 +115,13 @@
                 app:layout_constraintBottom_toBottomOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ImageButton
+        <ImageView
             android:id="@+id/btnPromptClose"
             android:layout_width="@dimen/dimension_48"
             android:layout_height="@dimen/dimension_48"
             android:layout_marginTop="@dimen/dimension_12"
             android:background="@android:color/transparent"
             android:contentDescription="@string/cancel"
-            android:padding="@dimen/dimension_8"
             android:src="@drawable/ic_play_mode_close"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

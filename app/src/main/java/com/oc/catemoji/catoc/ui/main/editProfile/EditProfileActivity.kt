@@ -78,8 +78,8 @@ class EditProfileActivity : BaseActivity<ActivityEditProfileBinding, EditProfile
                     frameAdapter.render(state.frames, state.frame, editable, state.unlockedFrames)
                     if (state.ready && !revealedSelection) {
                         revealedSelection = true
-                        binding.recycleAvatar.scrollToPosition(state.avatars.indexOf(state.avatar))
-                        binding.recycleBorderFrame.scrollToPosition(state.frames.indexOf(state.frame))
+                        binding.recycleAvatar.revealProfileSelection(state.avatars.indexOf(state.avatar))
+                        binding.recycleBorderFrame.revealProfileSelection(state.frames.indexOf(state.frame))
                     }
                     if (binding.editName.text.toString() != state.name) {
                         binding.editName.setText(state.name)

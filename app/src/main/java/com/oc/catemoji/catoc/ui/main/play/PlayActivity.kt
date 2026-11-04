@@ -95,7 +95,6 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
     override fun initView() {
         binding.actionBar.apply {
             setImageActionBar(btnActionBarLeft, R.drawable.back_app)
-            setTextActionBar(tvCenter, getString(R.string.play))
             btnActionBarLeft.contentDescription = getString(R.string.navigate_back)
         }
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -312,12 +311,14 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
             Glide.with(this@PlayActivity).clear(imgBattleResult)
             imgBattleResult.setImageResource(reward.image)
             bgTitleWin.setImageResource(reward.imageBgTitel)
+            contrainOver.setBackgroundColor(ContextCompat.getColor(this@PlayActivity, reward.contrainOverBg))
             txtCoinBone.text = getString(R.string.play_reward_amount, reward.bones)
             plusCoinRank.text = when {
                 reward.rankPoints < 0 -> getString(R.string.play_rank_penalty, -reward.rankPoints)
                 reward.rankPoints > 0 -> getString(R.string.play_reward_amount, reward.rankPoints)
                 else -> getString(R.string.play_rank_zero)
             }
+            txtNameTitleParticipation.setText( if (reward.won)  R.string.participation_reward else R.string.keep_trying)
             plusCoinRank.setTextColor(ContextCompat.getColor(this@PlayActivity,
                 if (reward.won) R.color._22C55E else R.color._EF4444))
             txtRewardMultiplier.setText(reward.bonusLabel)

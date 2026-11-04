@@ -1,7 +1,9 @@
 package com.oc.catemoji.catoc.data.audio
 
 import android.content.Intent
+import android.content.Context
 import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.media.AudioRecord
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -27,6 +29,13 @@ class DeviceMicrophoneTest {
         ).use {
             DeviceMicrophone.open(context, 16_000, 640).use { mic ->
                 assertEquals(AudioDeviceInfo.TYPE_BUILTIN_MIC, mic.recorder.preferredDevice?.type)
+                val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                val primaryMicrophone = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+                    .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_MIC && it.address == "bottom" }
+                if (primaryMicrophone != null) {
+                    // Realme exposes a rear input before its primary microphone.
+                    assertEquals(primaryMicrophone.id, mic.recorder.preferredDevice?.id)
+                }
                 assertEquals(AudioRecord.RECORDSTATE_RECORDING, mic.recorder.recordingState)
                 val pcm = ShortArray(640)
                 assertTrue(mic.recorder.read(pcm, 0, pcm.size) > 0)

@@ -373,7 +373,7 @@ class PlayViewModel @Inject constructor(
                     speechToText.listen().collect { update ->
                         if (session != sessionId) return@collect
                         val previousCount = counter.count
-                        counter.accept(update.text, update.isFinal, update.words, update.partialText)
+                        counter.accept(update.text, update.isFinal, update.words, update.partialText, update.audioTimeMs)
                         addPlayerPoints(counter.count - previousCount)
                         if (counter.count != previousCount || update.isFinal) {
                             Log.d("BarkSpeechScore", "${if (update.isFinal) "result" else "partial"} " +

@@ -46,7 +46,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_16"
                 app:outerStrokeColor="@color/app_color"
-                app:outerStrokeWidth="@dimen/dimension_1"
+                app:outerStrokeWidth="@dimen/dimension_1_6"
                 app:layout_constraintTop_toBottomOf="@id/txtModeTitle" />
 
             <FrameLayout
@@ -119,10 +119,10 @@
             </FrameLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ImageButton
+        <ImageView
             android:id="@+id/btnClose"
-            android:layout_width="@dimen/dimension_40"
-            android:layout_height="@dimen/dimension_40"
+            android:layout_width="@dimen/dimension_48"
+            android:layout_height="@dimen/dimension_48"
             android:layout_marginTop="@dimen/dimension_20"
             android:background="@android:color/transparent"
             android:contentDescription="@string/play_mode_close"

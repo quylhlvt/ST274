@@ -57,8 +57,12 @@ internal class DeviceMicrophone private constructor(val recorder: AudioRecord) :
                 val recorder = microphone.recorder
                 check(recorder.state == AudioRecord.STATE_INITIALIZED) { "Cannot initialize microphone" }
                 val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                val builtIn = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
-                    .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_MIC }
+                val builtInMicrophones = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+                    .filter { it.type == AudioDeviceInfo.TYPE_BUILTIN_MIC }
+                // Both the primary and rear microphones have TYPE_BUILTIN_MIC. OEM
+                // ordering is not a preference: Realme can list a silent rear input first.
+                val builtIn = builtInMicrophones.firstOrNull { it.address.equals("bottom", ignoreCase = true) }
+                    ?: builtInMicrophones.firstOrNull { !it.address.equals("back", ignoreCase = true) }
                 // Keep capture on the handset even when headphones/Bluetooth are connected.
                 if (builtIn != null) check(recorder.setPreferredDevice(builtIn)) { "Cannot select device microphone" }
                 if (NoiseSuppressor.isAvailable()) {
@@ -69,7 +73,8 @@ internal class DeviceMicrophone private constructor(val recorder: AudioRecord) :
                 }
                 recorder.startRecording()
                 check(recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) { "Cannot start microphone" }
-                Log.d(TAG, "Live input type=${recorder.routedDevice?.type}, rate=${recorder.sampleRate}")
+                Log.d(TAG, "Live input type=${recorder.routedDevice?.type}, " +
+                    "address=${recorder.routedDevice?.address}, rate=${recorder.sampleRate}")
                 return microphone
             } catch (error: Throwable) {
                 microphone.close()

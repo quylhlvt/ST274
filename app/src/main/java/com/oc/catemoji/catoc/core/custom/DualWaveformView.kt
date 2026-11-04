@@ -14,6 +14,8 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import com.oc.catemoji.catoc.R
+import kotlin.math.min
 import kotlin.math.abs
 import kotlin.math.log10
 import kotlin.math.sin
@@ -23,20 +25,28 @@ import kotlin.random.Random
 class DualWaveformView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : View(context, attrs, defStyleAttr) {
-    private val density = resources.displayMetrics.density
-    private fun dp(value: Float) = value * density
-    private val barWidth = dp(3f)
-    private val barStep = dp(5f)
-    private val avatarRadius = dp(20f)
-    private val avatarGap = dp(5f)
-    private val trackEdgePadding = dp(3f)
-    private val minimumBar = dp(4f)
+    // Use the same phone/tablet dimensions as the surrounding play track.
+    private val barWidth = resources.getDimension(R.dimen.dimension_3)
+    private val barStep = resources.getDimension(R.dimen.dimension_5)
+    private val preferredAvatarRadius = resources.getDimension(R.dimen.dimension_28)
+    private var avatarRadius = preferredAvatarRadius
+    private val avatarGap = resources.getDimension(R.dimen.dimension_5)
+    private val trackEdgePadding = resources.getDimension(R.dimen.dimension_3)
+    private val minimumBar = resources.getDimension(R.dimen.dimension_4)
+    private val verticalBarPadding = resources.getDimension(R.dimen.dimension_8)
+    private val avatarImageInset = resources.getDimension(R.dimen.dimension_1)
+    private val avatarFrame = ContextCompat.getDrawable(context, R.drawable.bg_waveform_avatar_frame)?.mutate()
+    private val historyPadding = resources.getDimension(R.dimen.dimension_12)
+    private val preferredWidth = resources.getDimensionPixelSize(R.dimen.dimension_320)
+    private val preferredHeight = resources.getDimensionPixelSize(R.dimen.dimension_64)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val playerBarColor = Color.rgb(255, 137, 28)
     private val opponentBarColor = Color.rgb(8, 184, 50)
     private val rect = RectF()
     private val avatarClip = Path()
-    private val battleProgress = DualWaveformBattleProgress()
+    private val battleProgress = DualWaveformBattleProgress(
+        playerStepMultiplier = 2,
+    )
     private var avatar: Drawable? = null
     private var avatarTranslationX = 0f
     private var displayedBattleProgress = battleProgress.value
@@ -84,14 +94,19 @@ class DualWaveformView @JvmOverloads constructor(
         }
     }
 
-    init { minimumHeight = dp(56f).toInt() }
+    init { minimumHeight = resources.getDimensionPixelSize(R.dimen.dimension_56) }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(resolveSize(dp(320f).toInt(), widthMeasureSpec), resolveSize(dp(64f).toInt(), heightMeasureSpec))
+        setMeasuredDimension(
+            resolveSize(maxOf(preferredWidth, suggestedMinimumWidth), widthMeasureSpec),
+            resolveSize(maxOf(preferredHeight, suggestedMinimumHeight), heightMeasureSpec),
+        )
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        val capacity = ((w - avatarRadius - avatarGap - dp(12f)) / barStep)
+        avatarRadius = min(preferredAvatarRadius,
+            min(w / 2f - trackEdgePadding, h / 2f).coerceAtLeast(0f))
+        val capacity = ((w - avatarRadius - avatarGap - historyPadding) / barStep)
             .toInt().coerceAtLeast(1)
         realBars = FloatArray(capacity)
         fakeBars = FloatArray(capacity)
@@ -107,29 +122,31 @@ class DualWaveformView @JvmOverloads constructor(
             drawBars(canvas, realBars, cx, cy, true, playerBarColor)
             drawBars(canvas, fakeBars, cx, cy, false, opponentBarColor)
         }
-        paint.color = Color.WHITE
-        canvas.drawCircle(cx, cy, avatarRadius, paint)
+        val save = canvas.save()
+        canvas.clipPath(avatarClip)
         val image = avatar
         if (image != null) {
-            val save = canvas.save()
-            canvas.clipPath(avatarClip)
             image.draw(canvas)
-            canvas.restoreToCount(save)
         } else {
             paint.color = Color.LTGRAY
-            canvas.drawCircle(cx, cy - dp(5f), dp(7f), paint)
-            rect.set(cx - dp(12f), cy + dp(3f), cx + dp(12f), cy + dp(17f))
+            canvas.drawCircle(cx, cy, avatarRadius, paint)
+            paint.color = Color.GRAY
+            canvas.drawCircle(cx, cy - avatarRadius * 0.25f, avatarRadius * 0.35f, paint)
+            rect.set(cx - avatarRadius * 0.6f, cy + avatarRadius * 0.15f,
+                cx + avatarRadius * 0.6f, cy + avatarRadius * 0.85f)
             canvas.drawOval(rect, paint)
         }
+        canvas.restoreToCount(save)
+        avatarFrame?.draw(canvas)
     }
 
     private fun drawBars(canvas: Canvas, values: FloatArray, cx: Float, cy: Float, leftSide: Boolean, color: Int) {
         paint.color = color
-        val maxHeight = (height - dp(8f)).coerceAtLeast(minimumBar)
+        val maxHeight = (height - verticalBarPadding).coerceAtLeast(minimumBar)
         for (index in 0 until count) {
             val distance = avatarRadius + avatarGap + index * barStep
             val x = if (leftSide) cx - distance - barWidth else cx + distance
-            if (x < dp(3f) || x + barWidth > width - dp(3f)) continue
+            if (x < trackEdgePadding || x + barWidth > width - trackEdgePadding) continue
             val barHeight = minimumBar + values[(head + index) % values.size] * (maxHeight - minimumBar)
             rect.set(x, cy - barHeight / 2f, x + barWidth, cy + barHeight / 2f)
             canvas.drawRoundRect(rect, barWidth / 2f, barWidth / 2f, paint)
@@ -156,6 +173,8 @@ class DualWaveformView @JvmOverloads constructor(
         val cx = width / 2f + avatarTranslationX
         avatar?.setBounds((cx - avatarRadius).toInt(), (height / 2f - avatarRadius).toInt(),
             (cx + avatarRadius).toInt(), (height / 2f + avatarRadius).toInt())
+        avatarFrame?.setBounds((cx - avatarRadius).toInt(), (height / 2f - avatarRadius).toInt(),
+            (cx + avatarRadius).toInt(), (height / 2f + avatarRadius).toInt())
     }
 
     private fun updateAvatarGeometry() {
@@ -163,7 +182,7 @@ class DualWaveformView @JvmOverloads constructor(
         avatarTranslationX = (displayedBattleProgress - 0.5f) * 2f * maximumTranslation
         val cx = width / 2f + avatarTranslationX
         avatarClip.reset()
-        avatarClip.addCircle(cx, height / 2f, avatarRadius - dp(2f), Path.Direction.CW)
+        avatarClip.addCircle(cx, height / 2f, (avatarRadius - avatarImageInset).coerceAtLeast(0f), Path.Direction.CW)
         updateAvatarBounds()
         // The avatar must remain fully inside the waveform, while the external
         // divider and color split are allowed to reach both absolute edges.
@@ -201,7 +220,7 @@ class DualWaveformView @JvmOverloads constructor(
         animator.start()
     }
 
-    /** One confirmed player bark occupies another 2% of the track. */
+    /** Each accepted tap or bark pushes 4% of the track on phones and tablets. */
     fun addPlayerPoint() {
         if (!battleProgress.isFinished) {
             animateBattleProgress(battleProgress.addPlayerPoint())

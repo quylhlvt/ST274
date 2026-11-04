@@ -59,7 +59,7 @@ class DogSkinScreenTest {
                 jobs += checkNotNull(model.viewModelScope.coroutineContext[Job])
             }
             val initial = withTimeout(5_000) { model.state.first { !it.loading && it.hasUser } }
-            assertEquals(100, initial.coinbone)
+            assertEquals(0, initial.coinbone)
             assertFalse(initial.items.first { it.skin.id == 3 }.canAfford)
             instrumentation.runOnMainSync {
                 model.claimBoneReward()

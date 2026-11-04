@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dog_skin_item_title">Cachorro %1$d</string>
+    <string name="dog_skin_unlocked">Desbloqueado</string>
+    <string name="dog_skin_equipped">Equipado</string>
+    <string name="dog_skin_win_count">Vitórias %1$d/%2$d</string>
+    <string name="dog_skin_load_failed">Não foi possível carregar os visuais de cachorro. Reabra esta tela.</string>
+    <string name="dog_skin_select_failed">Não foi possível equipar este visual. Tente novamente.</string>
+    <string name="dog_skin_purchase_failed">Não foi possível comprar este visual. Verifique seu CoinBone e tente novamente.</string>
+</resources>

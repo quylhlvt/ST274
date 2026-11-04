@@ -111,7 +111,7 @@
                                     android:id="@+id/txtCoinRank"
                                     android:layout_width="@dimen/dimension_0"
                                     android:layout_height="match_parent"
-                                android:layout_marginStart="@dimen/dimension_minus_3"
+                                    android:layout_marginStart="@dimen/dimension_minus_3"
                                     app:layout_constraintStart_toEndOf="@+id/img_star_coin_rank2"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     style="@style/Widget.Catoc.ExtrudedTitle"
@@ -314,7 +314,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/view8"
                     android:layout_marginTop="@dimen/dimension_4"/>
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycleStatis"
+                    android:id="@+id/recycleStatis"
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"
                     android:layout_marginHorizontal="@dimen/dimension_4"
@@ -404,7 +404,7 @@
                     android:id="@+id/view13"
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"
-                app:layout_constraintDimensionRatio="3.28:1.94"
+                    app:layout_constraintDimensionRatio="3.28:1.94"
                     app:layout_constraintStart_toStartOf="@+id/view9"
                     android:background="@color/white2"
                     app:layout_constraintEnd_toEndOf="@+id/view9"
@@ -419,12 +419,12 @@
                     app:layout_constraintBottom_toBottomOf="@+id/view13"
                     app:layout_constraintTop_toTopOf="@+id/view13"
                     android:layout_width="@dimen/dimension_0"
-                      android:layout_height="@dimen/dimension_0"
-                      android:gravity="center"
-                      android:textSize="@dimen/text_size_12"
-                      android:text="@string/no_match_history_yet"
-                      android:textColor="@color/app_color"
-                      android:fontFamily="@font/illita_one_regular"/>
+                    android:layout_height="@dimen/dimension_0"
+                    android:gravity="center"
+                    android:textSize="@dimen/text_size_12"
+                    android:text="@string/no_match_history_yet"
+                    android:textColor="@color/app_color"
+                    android:fontFamily="@font/illita_one_regular"/>
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="@dimen/dimension_0"
                     android:layout_height="@dimen/dimension_0"
@@ -511,15 +511,15 @@
                        android:src="@drawable/img_crossbar"
                        android:scaleType="fitXY"/>
             <View
-                android:id="@+id/view19"
-                android:layout_width="@dimen/dimension_0"
-                android:layout_height="@dimen/dimension_0"
-                android:background="@color/white2"
-                android:layout_marginTop="@dimen/dimension_8"
-                app:layout_constraintStart_toStartOf="@+id/view14"
-                app:layout_constraintEnd_toEndOf="@+id/view14"
-                app:layout_constraintDimensionRatio="3.28:0.98"
-                app:layout_constraintTop_toBottomOf="@+id/view14"/>
+                    android:id="@+id/view19"
+                    android:layout_width="@dimen/dimension_0"
+                    android:layout_height="@dimen/dimension_0"
+                    android:background="@color/white2"
+                    android:layout_marginTop="@dimen/dimension_8"
+                    app:layout_constraintStart_toStartOf="@+id/view14"
+                    app:layout_constraintEnd_toEndOf="@+id/view14"
+                    app:layout_constraintDimensionRatio="3.28:0.98"
+                    app:layout_constraintTop_toBottomOf="@+id/view14"/>
             <TextView
                     android:id="@+id/noAchievement"
                     android:visibility="gone"
@@ -542,11 +542,13 @@
                     app:layout_constraintStart_toStartOf="@+id/view14"
                     app:layout_constraintEnd_toEndOf="@+id/view14"
                     app:spanCount="1"
-                android:id="@+id/recycleAchi"
+                    android:id="@+id/recycleAchi"
                     tools:itemCount="6"
                     tools:listitem="@layout/item_achieverment"
-                app:layout_constraintDimensionRatio="3.28:0.98"
+                    app:layout_constraintDimensionRatio="3.28:0.98"
                     app:layout_constraintTop_toTopOf="@+id/view19"/>
+            <View android:layout_width="match_parent" android:layout_height="@dimen/dimension_10"
+                  app:layout_constraintTop_toBottomOf="@+id/recycleAchi"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

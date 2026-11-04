@@ -98,7 +98,7 @@ class BattleRepository @Inject constructor(
                 name = trimmedName,
                 imageAvatar = "file:///android_asset/1/avatar.webp",
                 imageFrame = "file:///android_asset/1/frame.webp",
-                coinbone = 100,
+                coinbone = 0,
                 rank = 1,
                 rankbatter = 0,
                 iddog = dogId,

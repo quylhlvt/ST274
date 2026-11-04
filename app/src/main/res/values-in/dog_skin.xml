@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dog_skin_item_title">Anjing %1$d</string>
+    <string name="dog_skin_unlocked">Terbuka</string>
+    <string name="dog_skin_equipped">Digunakan</string>
+    <string name="dog_skin_win_count">Kemenangan %1$d/%2$d</string>
+    <string name="dog_skin_load_failed">Tidak dapat memuat skin anjing. Buka kembali layar ini.</string>
+    <string name="dog_skin_select_failed">Tidak dapat menggunakan skin ini. Silakan coba lagi.</string>
+    <string name="dog_skin_purchase_failed">Tidak dapat membeli skin ini. Periksa CoinBone Anda dan coba lagi.</string>
+</resources>

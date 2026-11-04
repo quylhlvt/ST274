@@ -211,11 +211,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(
 
             txtCoinBone.text = user.coinbone.toString()
 
-            txtBattleRank.text = getString(
-                R.string.home_battle_rank_title,
-                user.rank
-            )
-
             txtCoinRank.text = user.rankbatter.toString()
             imgRank.setImageResource(DataLocal.rankList[(user.rank - 1).coerceIn(0, DataLocal.rankList.lastIndex)])
 

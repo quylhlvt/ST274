@@ -36,6 +36,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutActionBar" />
 
+
     <com.oc.catemoji.catoc.core.custom.DualWaveformView
         android:id="@+id/dualWaveform"
         android:layout_width="@dimen/dimension_0"
@@ -610,27 +611,28 @@
         app:layout_constraintTop_toBottomOf="@id/txtNameAvatar2" />
 
     <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView
-        android:id="@+id/txtStartNumber"
-        style="@style/single_marquee"
-        android:layout_width="@dimen/dimension_0"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dimension_4"
-        android:layout_marginTop="@dimen/dimension_4"
-        android:accessibilityLiveRegion="polite"
-        android:ellipsize="marquee"
-        android:fontFamily="@font/illita_one_regular"
-        android:gravity="center"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:maxLines="1"
-        android:text="@string/play_countdown_initial"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_40"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="@id/imgBgVoice"
-        app:layout_constraintStart_toStartOf="@id/imgBgVoice"
-        app:layout_constraintTop_toBottomOf="@id/txtNameAvatar1"
-        app:outerStrokeColor="@color/app_color"
-        app:outerStrokeWidth="@dimen/dimension_2" />
+            android:id="@+id/txtStartNumber"
+            style="@style/single_marquee"
+            android:layout_width="@dimen/dimension_0"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimension_4"
+            android:layout_marginTop="@dimen/dimension_80"
+            app:layout_constraintVertical_bias="0"
+            android:accessibilityLiveRegion="polite"
+            android:ellipsize="marquee"
+            android:fontFamily="@font/illita_one_regular"
+            android:gravity="center"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:text="@string/play_countdown_initial"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_40"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="@id/imgBgVoice"
+            app:layout_constraintStart_toStartOf="@id/imgBgVoice"
+            app:layout_constraintTop_toBottomOf="@id/txtNameAvatar1"
+            app:outerStrokeColor="@color/app_color"
+            app:outerStrokeWidth="@dimen/dimension_2" app:layout_constraintBottom_toTopOf="@+id/view8"/>
 
 
     <com.oc.catemoji.catoc.core.extention.OuterStrokeShadownTextView

@@ -5,6 +5,8 @@ import android.view.View
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModelStore
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.OrientationHelper
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -224,6 +226,66 @@ class EditProfileTest {
             fail("Editing must not create a missing profile")
         } catch (expected: IllegalStateException) {
             assertNull(database.userDao().getUser())
+        }
+    }
+
+    @Test
+    fun initialAvatarAndFrameSelectionsAreCenteredAndClampedOnPhoneAndTablet() = runBlocking {
+        val options = appearances.loadOptions()
+        onMain {
+            listOf(360 to 740, 800 to 1100).forEach { (widthDp, heightDp) ->
+                val configuration = Configuration(context.resources.configuration).apply {
+                    screenWidthDp = widthDp
+                    screenHeightDp = heightDp
+                    smallestScreenWidthDp = widthDp
+                }
+                val themed = ContextThemeWrapper(context.createConfigurationContext(configuration), R.style.Base_Theme_BaseActivity)
+                listOf(0, 7, options.avatars.lastIndex).forEach { selected ->
+                    val binding = ActivityEditProfileBinding.inflate(android.view.LayoutInflater.from(themed))
+                    binding.recycleAvatar.adapter = ProfileAvatarAdapter {}.apply {
+                        render(options.avatars, options.avatars[selected], true, options.avatars.toSet())
+                    }
+                    binding.recycleBorderFrame.adapter = ProfileFrameAdapter {}.apply {
+                        render(options.frames, options.frames[selected], true, options.frames.toSet())
+                    }
+                    val lists = listOf(binding.recycleAvatar, binding.recycleBorderFrame)
+                    // Schedule before the first layout, as the Activity does when data loads.
+                    lists.forEach { it.revealProfileSelection(selected) }
+                    val density = themed.resources.displayMetrics.density
+                    binding.root.measure(
+                        View.MeasureSpec.makeMeasureSpec((widthDp * density).toInt(), View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec((heightDp * density).toInt(), View.MeasureSpec.EXACTLY),
+                    )
+                    binding.root.layout(0, 0, binding.root.measuredWidth, binding.root.measuredHeight)
+                    lists.forEach { list ->
+                        // This hierarchy is unattached: drive the row's requested layout explicitly.
+                        list.forceLayout()
+                        list.measure(
+                            View.MeasureSpec.makeMeasureSpec(list.width, View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(list.height, View.MeasureSpec.EXACTLY),
+                        )
+                        list.layout(list.left, list.top, list.right, list.bottom)
+                        val manager = list.layoutManager as LinearLayoutManager
+                        val horizontal = OrientationHelper.createHorizontalHelper(manager)
+                        val item = checkNotNull(manager.findViewByPosition(selected)) {
+                            "Selection $selected missing at ${widthDp}dp: width=${list.width}, visible=${manager.findFirstVisibleItemPosition()}..${manager.findLastVisibleItemPosition()}"
+                        }
+                        val start = horizontal.getDecoratedStart(item)
+                        val end = horizontal.getDecoratedEnd(item)
+                        assertTrue(item.isSelected)
+                        assertTrue(start >= horizontal.startAfterPadding)
+                        assertTrue(end <= horizontal.endAfterPadding)
+                        when (selected) {
+                            0 -> assertEquals(horizontal.startAfterPadding, start)
+                            options.avatars.lastIndex -> assertEquals(horizontal.endAfterPadding, end)
+                            else -> assertEquals(
+                                (horizontal.startAfterPadding + horizontal.endAfterPadding) / 2f,
+                                (start + end) / 2f, 1f,
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 

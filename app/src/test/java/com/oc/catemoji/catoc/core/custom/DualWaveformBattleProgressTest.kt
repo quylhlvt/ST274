@@ -6,6 +6,30 @@ import org.junit.Test
 
 class DualWaveformBattleProgressTest {
     @Test
+    fun tabletPlayerPushesTwiceAsFarWhileOpponentKeepsTheSameStrength() {
+        val progress = DualWaveformBattleProgress(playerStepMultiplier = 2)
+        assertEquals(0.54f, progress.addPlayerPoint(), 0.0001f)
+        assertEquals(0.52f, progress.addOpponentPoint(), 0.0001f)
+        progress.restore(0.72f)
+        assertEquals(0.76f, progress.addPlayerPoint(), 0.0001f)
+    }
+
+    @Test
+    fun tabletBoostClampsAtVictoryAndCannotReviveAFinishedBattle() {
+        val progress = DualWaveformBattleProgress(playerStepMultiplier = 2)
+        repeat(12) { progress.addPlayerPoint() }
+        assertEquals(0.98f, progress.value, 0.0001f)
+        assertEquals(1f, progress.addPlayerPoint(), 0.0001f)
+        assertTrue(progress.isFinished)
+        assertEquals(1f, progress.addOpponentPoint(), 0.0001f)
+        progress.reset()
+        repeat(25) { progress.addOpponentPoint() }
+        assertEquals(0f, progress.value, 0.0001f)
+        assertTrue(progress.isFinished)
+        assertEquals(0f, progress.addPlayerPoint(), 0.0001f)
+    }
+
+    @Test
     fun recreationRestoresProgressWithoutResettingOrReplayingPoints() {
         val progress = DualWaveformBattleProgress()
         progress.restore(0.72f)

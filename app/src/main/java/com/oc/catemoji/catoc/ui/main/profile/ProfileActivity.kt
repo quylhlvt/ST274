@@ -1,6 +1,7 @@
 package com.oc.catemoji.catoc.ui.main.profile
 
 import android.widget.Toast
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerDrawable
 import androidx.lifecycle.Lifecycle
@@ -68,11 +69,15 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding, ProfileViewModel>(
                 launch {
                     viewModel.history.collect { items ->
                         if (historyAdapter.items != items) historyAdapter.submitList(items)
+                        binding.noHistory.isVisible = items.isEmpty()
+                        binding.recycleHistory.isVisible = items.isNotEmpty()
                     }
                 }
                 launch {
                     viewModel.achievements.collect { items ->
                         if (achievementAdapter.items != items) achievementAdapter.submitList(items)
+                        binding.noAchievement.isVisible = items.isEmpty()
+                        binding.recycleAchi.isVisible = items.isNotEmpty()
                     }
                 }
                 launch {

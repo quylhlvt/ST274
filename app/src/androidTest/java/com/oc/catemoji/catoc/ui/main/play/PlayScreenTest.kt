@@ -42,6 +42,33 @@ class PlayScreenTest {
     private val context = instrumentation.targetContext
 
     @Test
+    fun phonesAndTabletsUseTheSameBoostInTapAndMicrophoneModes() {
+        instrumentation.runOnMainSync {
+            listOf(599, 600, 800).forEach { smallestWidth ->
+                val configuration = Configuration(context.resources.configuration).apply {
+                    smallestScreenWidthDp = smallestWidth
+                }
+                val themed = ContextThemeWrapper(context.createConfigurationContext(configuration),
+                    R.style.Base_Theme_BaseActivity)
+                listOf(false, true).forEach { microphone ->
+                    val waveform = com.oc.catemoji.catoc.core.custom.DualWaveformView(themed)
+                    var playerEvents = 0
+                    waveform.setOnPointScoredListener { if (it) playerEvents++ }
+                    try {
+                        if (microphone) waveform.start(simulateOpponent = false)
+                        else waveform.showStaticWaveform()
+                        waveform.addPlayerPoint()
+                        assertEquals(0.54f, waveform.progress, 0.0001f)
+                        assertEquals(1, playerEvents)
+                        waveform.addOpponentPoint()
+                        assertEquals(0.52f, waveform.progress, 0.0001f)
+                    } finally { waveform.stop() }
+                }
+            }
+        }
+    }
+
+    @Test
     fun opponentBattleArtworkFacesLeftWithoutMirroringThePortraitView() {
         val pool = Glide.get(context).bitmapPool
         val source = Bitmap.createBitmap(2, 1, Bitmap.Config.ARGB_8888).apply {

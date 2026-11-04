@@ -12,6 +12,8 @@ internal class PcmSpeechProcessor(private val sampleRate: Int) {
     private var previousOutput = 0.0
     private var gain = 1.0
     private var noiseFloor: Double? = null
+    var signalLevel: Float = 0f
+        private set
 
     /** Modifies only the samples actually returned by AudioRecord; returns the real input RMS. */
     fun process(pcm: ShortArray, count: Int): Float {
@@ -41,11 +43,14 @@ internal class PcmSpeechProcessor(private val sampleRate: Int) {
             (0.10 / rms).coerceIn(1.0, 3.0) else 1.0
         val smoothing = 1.0 - exp(-count.toDouble() / (sampleRate * 0.12))
         val nextGain = gain + (target - gain) * smoothing
+        var conditionedPower = 0.0
         for (index in 0 until count) {
             val sampleGain = gain + (nextGain - gain) * (index + 1) / count
             pcm[index] = (pcm[index] * sampleGain).toInt()
                 .coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
+            conditionedPower += pcm[index].toDouble() * pcm[index]
         }
+        signalLevel = (sqrt(conditionedPower / count) / 32768.0).toFloat()
         gain = nextGain
         return inputRms.toFloat()
     }

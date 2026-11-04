@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dog_skin_item_title">Chien %1$d</string>
+    <string name="dog_skin_unlocked">Débloqué</string>
+    <string name="dog_skin_equipped">Équipé</string>
+    <string name="dog_skin_win_count">Victoires %1$d/%2$d</string>
+    <string name="dog_skin_load_failed">Impossible de charger les apparences de chien. Rouvrez cet écran.</string>
+    <string name="dog_skin_select_failed">Impossible d’équiper cette apparence. Veuillez réessayer.</string>
+    <string name="dog_skin_purchase_failed">Impossible d’acheter cette apparence. Vérifiez votre CoinBone et réessayez.</string>
+</resources>

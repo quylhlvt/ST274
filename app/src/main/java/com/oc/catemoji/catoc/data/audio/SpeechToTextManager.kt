@@ -27,6 +27,7 @@ data class SpeechRecognitionUpdate(
     val level: Float,
     val words: List<BarkSpeechWord> = emptyList(),
     val partialText: String? = null,
+    val audioTimeMs: Long = -1L,
 )
 
 /** Offline Vietnamese speech, with one PCM16 recorder and native decoding confined to IO. */
@@ -46,21 +47,30 @@ class SpeechToTextManager(private val context: Context) {
                     DeviceMicrophone.open(context, SAMPLE_RATE, BLOCK_SAMPLES).use { microphone ->
                         val recorder = microphone.recorder
                         val processor = PcmSpeechProcessor(SAMPLE_RATE)
+                        val window = SpeechWindowPolicy(SAMPLE_RATE)
+                        val gate = PcmSpeechGate(SAMPLE_RATE, BLOCK_SAMPLES)
                         emit(SpeechRecognitionUpdate("", false, 0f))
                         val pcm = ShortArray(BLOCK_SAMPLES)
                         var previousText = ""
                         var previousWords = emptyList<BarkSpeechWord>()
-                        var windowSamples = 0
-                        var windowPeak = 0f
-                        var quietBlocks = 0
+                        var capturedSamples = 0L
                         while (currentCoroutineContext().isActive) {
                             val count = recorder.read(pcm, 0, pcm.size, AudioRecord.READ_BLOCKING)
                             check(count >= 0) { "Speech microphone read failed: $count" }
                             if (count == 0) continue
                             val level = processor.process(pcm, count)
+                            capturedSamples += count
+                            val audioTimeMs = capturedSamples * 1_000 / SAMPLE_RATE
                             currentCoroutineContext().ensureActive()
-                            val final = recognizer.acceptWaveForm(pcm, count)
-                            val update = readUpdate(recognizer, final, level)
+                            val gateWasOpen = gate.isOpen
+                            val decoderCount = gate.process(pcm, count)
+                            if (decoderCount == 0) {
+                                emit(SpeechRecognitionUpdate("", false, level, audioTimeMs = audioTimeMs))
+                                continue
+                            }
+                            if (!gateWasOpen) window.onVoicedOnset()
+                            val final = recognizer.acceptWaveForm(gate.buffer, decoderCount)
+                            val update = readUpdate(recognizer, final, level).copy(audioTimeMs = audioTimeMs)
                             val text = update.partialText ?: update.text
                             val words = update.words
                             if (final || text != previousText || words != previousWords) {
@@ -69,20 +79,15 @@ class SpeechToTextManager(private val context: Context) {
                                 previousWords = if (final) emptyList() else words
                             }
                             emit(update)
-                            windowSamples += count
-                            windowPeak = maxOf(windowPeak, level)
-                            quietBlocks = if (level < maxOf(0.012f, windowPeak * 0.18f))
-                                quietBlocks + 1 else 0
-                            if (windowSamples >= HARD_WINDOW_SAMPLES ||
-                                (windowSamples >= MIN_WINDOW_SAMPLES && quietBlocks >= 3)) {
-                                // Close between sounds when possible: cutting in the middle
-                                // can score one bark in both windows. The hard limit keeps
-                                // uninterrupted speech from stalling the counter forever.
-                                emit(parseResult(recognizer.finalResult, true, level))
+                            if (final) {
+                                window.reset()
+                                gate.reset()
+                            } else if (window.accept(processor.signalLevel, count)) {
+                                // Flush after the sound, not at an arbitrary wall-clock boundary.
+                                // This gives short barks aligned words before Vosk's long endpoint.
+                                emit(parseResult(recognizer.finalResult, true, level).copy(audioTimeMs = audioTimeMs))
                                 recognizer.reset()
-                                windowSamples = 0
-                                windowPeak = 0f
-                                quietBlocks = 0
+                                gate.reset()
                                 previousText = ""
                                 previousWords = emptyList()
                             }
@@ -124,12 +129,11 @@ class SpeechToTextManager(private val context: Context) {
         }
 
         const val SAMPLE_RATE = 16_000
-        // Include similar non-bark words as rejection paths; a tiny bark-only grammar
-        // otherwise turns words such as "mõ" into a high-confidence "go".
-        const val GRAMMAR = "[\"gâu\",\"go\",\"gô\",\"mõ\",\"vàng\",\"giàng\",\"[unk]\"]"
+        // Tone-marked neighbours must compete acoustically instead of being forced
+        // into go/gô. They remain rejection paths, never playable aliases.
+        const val GRAMMAR = "[\"gâu\",\"go\",\"gô\",\"mõ\",\"vàng\",\"giàng\",\"gạo\"," +
+            "\"gõ\",\"gỗ\",\"gụ\",\"gà\",\"hôm\",\"nay\",\"[unk]\"]"
         internal const val BLOCK_SAMPLES = 640 // 40ms; do not collect a phrase before decoding.
-        internal const val MIN_WINDOW_SAMPLES = SAMPLE_RATE * 4 / 5
-        internal const val HARD_WINDOW_SAMPLES = SAMPLE_RATE * 6 / 5
         private const val TAG = "BarkSpeech"
         // Shared across Play and Training, including cancelled sessions still closing native resources.
         private val captureSession = Mutex()

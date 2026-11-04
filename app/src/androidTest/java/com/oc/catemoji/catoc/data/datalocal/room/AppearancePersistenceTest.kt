@@ -124,7 +124,7 @@ class AppearancePersistenceTest {
                 assertEquals("Buddy", user.name)
                 assertEquals("file:///android_asset/2/avatar.webp", user.imageAvatar)
                 assertEquals("file:///android_asset/3/frame.webp", user.imageFrame)
-                assertEquals(100, user.coinbone)
+                assertEquals(0, user.coinbone)
                 val appearances = ProfileAppearanceRepository(context, database)
                 val options = appearances.loadOptions()
                 appearances.initializeOptions(options, user.imageAvatar, user.imageFrame)

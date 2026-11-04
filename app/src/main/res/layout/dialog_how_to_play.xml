@@ -62,7 +62,6 @@
                 android:layout_marginTop="@dimen/dimension_20"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/how_to_play_close"
-                android:padding="@dimen/dimension_4"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_play_mode_close" />
         </LinearLayout>

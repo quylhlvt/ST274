@@ -5,10 +5,29 @@
             <solid android:color="@color/app_color" />
         </shape>
     </item>
-    <item android:left="@dimen/dimension_2" android:top="@dimen/dimension_2" android:right="@dimen/dimension_2" android:bottom="@dimen/dimension_4">
+
+    <!-- Viền gradient -->
+    <item
+            android:left="@dimen/dimension_2"
+            android:top="@dimen/dimension_2"
+            android:right="@dimen/dimension_2"
+            android:bottom="@dimen/dimension_4">
+        <shape>
+            <gradient
+                    android:angle="270"
+                    android:startColor="#E88D42"
+                    android:endColor="#692901" />
+        </shape>
+    </item>
+
+    <!-- Nền, thụt vào bằng độ dày viền (2dp) -->
+    <item
+            android:left="@dimen/dimension_4"
+            android:top="@dimen/dimension_4"
+            android:right="@dimen/dimension_4"
+            android:bottom="@dimen/dimension_6">
         <shape>
             <solid android:color="@color/play_mode_background" />
-            <stroke android:width="@dimen/dimension_2" android:color="@color/_E88D42" />
         </shape>
     </item>
 </layer-list>

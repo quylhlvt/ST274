@@ -6,6 +6,7 @@ import kotlin.math.roundToInt
 /** Pure progress state for the tug-of-war marker rendered by [DualWaveformView]. */
 internal class DualWaveformBattleProgress(
     val step: Float = 0.02f,
+    private val playerStepMultiplier: Int = 1,
 ) {
     private val maximumStep = (1f / step).roundToInt()
     private val initialStep = maximumStep / 2
@@ -18,6 +19,7 @@ internal class DualWaveformBattleProgress(
         get() = currentStep == 0 || currentStep == maximumStep
 
     init {
+        require(playerStepMultiplier > 0)
         require(step > 0f && maximumStep > 0 && maximumStep % 2 == 0)
         require(abs(maximumStep * step - 1f) < 0.0001f) {
             "Step must divide the full progress range exactly"
@@ -25,7 +27,7 @@ internal class DualWaveformBattleProgress(
     }
 
     fun addPlayerPoint(): Float {
-        if (!isFinished) currentStep = (currentStep + 1).coerceAtMost(maximumStep)
+        if (!isFinished) currentStep = (currentStep + playerStepMultiplier).coerceAtMost(maximumStep)
         return value
     }
 

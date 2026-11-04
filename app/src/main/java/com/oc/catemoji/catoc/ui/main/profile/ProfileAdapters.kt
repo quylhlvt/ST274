@@ -10,8 +10,8 @@ import com.oc.catemoji.catoc.data.model.statistics.Statistics
 import com.oc.catemoji.catoc.databinding.ItemAchievermentBinding
 import com.oc.catemoji.catoc.databinding.ItemHistoryBinding
 import com.oc.catemoji.catoc.databinding.ItemStatisBinding
-import java.text.DateFormat
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.Date
 
 class ProfileStatisticAdapter : BaseAdapter<Statistics, ItemStatisBinding>(
@@ -45,7 +45,9 @@ class ProfileHistoryAdapter : BaseAdapter<HistoryEntity, ItemHistoryBinding>(Ite
 
     override fun onBind(binding: ItemHistoryBinding, item: HistoryEntity, position: Int) {
         binding.txtBattleName.text = item.nameBatter
-        binding.txtBattleDate.text = DateFormat.getDateInstance(DateFormat.SHORT).format(Date(item.date))
+        val locale = binding.root.resources.configuration.locales[0]
+        val datePattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "yyyyMMdd")
+        binding.txtBattleDate.text = SimpleDateFormat(datePattern, locale).format(Date(item.date))
         val lost = !item.typePlay
         binding.txtTypeWar.setText(if (item.typePlay) R.string.victory else R.string.profile_defeat)
         binding.root.setBackgroundColor(ContextCompat.getColor(

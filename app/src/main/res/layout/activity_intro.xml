@@ -22,20 +22,20 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
-        android:id="@+id/dotsIndicator"
-        android:layout_width="wrap_content"
-        android:layout_marginBottom="@dimen/dimension_5"
-        android:layout_height="wrap_content"
-        app:dotsColor="@color/white"
-        app:dotsCornerRadius="@dimen/dimension_8"
-        app:dotsSize="@dimen/dimension_8"
-        app:dotsSpacing="@dimen/dimension_3"
-        app:dotsWidthFactor="2.5"
-        app:progressMode="false"
-        app:layout_constraintTop_toTopOf="@+id/frame_layout_continue"
-        app:layout_constraintBottom_toBottomOf="@+id/frame_layout_continue"
-        app:layout_constraintStart_toStartOf="parent"
-        app:selectedDotColor="@color/app_color3" />
+            android:id="@+id/dotsIndicator"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="@dimen/dimension_5"
+            android:layout_height="wrap_content"
+            app:dotsColor="@color/white"
+            app:dotsCornerRadius="@dimen/dimension_8"
+            app:dotsSize="@dimen/dimension_8"
+            app:dotsSpacing="@dimen/dimension_3"
+            app:dotsWidthFactor="2.5"
+            app:progressMode="false"
+            app:layout_constraintTop_toTopOf="@+id/frame_layout_continue"
+            app:layout_constraintBottom_toBottomOf="@+id/frame_layout_continue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:selectedDotColor="@color/app_color3" app:layout_constraintEnd_toEndOf="parent"/>
 <!--    <ImageView-->
 <!--        android:id="@+id/btnNextPager"-->
 <!--        android:layout_width="40dp"-->

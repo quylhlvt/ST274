@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dog_skin_item_title">Hund %1$d</string>
+    <string name="dog_skin_unlocked">Freigeschaltet</string>
+    <string name="dog_skin_equipped">Ausgerüstet</string>
+    <string name="dog_skin_win_count">Siege %1$d/%2$d</string>
+    <string name="dog_skin_load_failed">Hunde-Skins konnten nicht geladen werden. Öffne diesen Bildschirm erneut.</string>
+    <string name="dog_skin_select_failed">Dieser Skin konnte nicht ausgerüstet werden. Bitte versuche es erneut.</string>
+    <string name="dog_skin_purchase_failed">Dieser Skin konnte nicht gekauft werden. Prüfe dein CoinBone-Guthaben und versuche es erneut.</string>
+</resources>

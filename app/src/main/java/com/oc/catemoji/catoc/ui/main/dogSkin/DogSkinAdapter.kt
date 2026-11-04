@@ -28,9 +28,14 @@ class DogSkinAdapter(
                 2 -> R.color._FFA101
                 else -> R.color._57DDFF
             })
+            val bgSkinColor = ContextCompat.getDrawable(context, when (item.skin.type) {
+                3 -> R.drawable.bg_title_dog_skin3
+                2 -> R.drawable.bg_title_dog_skin2
+                else -> R.drawable.bg_title_dog_skin1
+            })
             stroker4.setGradientColors(skinColor, skinColor, skinColor)
             bgItemPogress.setBackgroundColor(skinColor)
-            view10.setBackgroundColor(skinColor)
+            view10.background = bgSkinColor
             txtAvatarSkinDog.text = DataLocal.listName.getOrNull(item.skin.folderId - 1)
                 ?: context.getString(R.string.dog_skin_item_title, item.skin.folderId)
             txtAvatarSkinDog.isSelected = true

@@ -57,7 +57,7 @@ class TrainingViewModel @Inject constructor(
     /** Both screens use BarkSpeechCounter to avoid replaying partial/final words. */
     fun acceptRecognition(update: SpeechRecognitionUpdate) {
         val before = speechCounter.count
-        speechCounter.accept(update.text, update.isFinal, update.words, update.partialText)
+        speechCounter.accept(update.text, update.isFinal, update.words, update.partialText, update.audioTimeMs)
         addBarks(speechCounter.count - before)
     }
 
