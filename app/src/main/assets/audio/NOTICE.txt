@@ -1,0 +1,27 @@
+Bark acoustic model
+
+bark-embedding.tflite exposes YAMNet's 1024-dimensional pooled embedding.
+YAMNet: Copyright Google LLC, Apache License 2.0 (LICENSE-2.0.txt).
+https://github.com/tensorflow/models/tree/master/research/audioset/yamnet
+
+bark-head.bin is an ST274 binary RBF head trained on acoustic events, not words.
+Training sources (CC BY 4.0):
+- Vocal Imitation Set v1.0, Bongjun Kim and Bryan Pardo, Northwestern University.
+  https://doi.org/10.5281/zenodo.1249724
+- VocalSketch v1.0.4, Mark Cartwright and Bryan Pardo, Northwestern University.
+  https://doi.org/10.5281/zenodo.13862
+- Speech Commands v0.02 test files, Pete Warden / Google.
+  https://storage.googleapis.com/download.tensorflow.org/data/speech_commands_test_set_v0.02.tar.gz
+
+CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+CC0 desk-knock training sources on Freesound:
+- testing_player: https://freesound.org/people/testing_player/sounds/243033/
+- Hephaestus: https://freesound.org/people/Hephaestus/sounds/250139/
+- Mrguff: https://freesound.org/people/Mrguff/sounds/369710/
+- Rvgerxini: https://freesound.org/people/Rvgerxini/sounds/462317/
+- Yoshicakes77: https://freesound.org/people/Yoshicakes77/sounds/645927/
+
+Source audio has been segmented, resampled and used to fit the classifier.
+No user microphone recordings were used to train this head or bundled here.
+See docs/bark-detection.md and tools/audio/train_bark_head.py for validation
+limits, the held-out speaker split, and export format.

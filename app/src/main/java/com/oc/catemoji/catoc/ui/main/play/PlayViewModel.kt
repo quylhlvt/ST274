@@ -8,8 +8,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.oc.catemoji.catoc.RoomLoadState
 import com.oc.catemoji.catoc.R
-import com.oc.catemoji.catoc.data.audio.BarkSpeechCounter
-import com.oc.catemoji.catoc.data.audio.SpeechToTextManager
+import com.oc.catemoji.catoc.data.audio.BarkDetectionManager
+import com.oc.catemoji.catoc.data.audio.BarkDetectionUpdate
 import com.oc.catemoji.catoc.data.datalocal.room.entity.UserEntity
 import com.oc.catemoji.catoc.data.datalocal.room.entity.DogEntity
 import com.oc.catemoji.catoc.data.model.DogSkinCatalogue
@@ -44,7 +44,7 @@ class PlayViewModel @Inject constructor(
     trainingAssets: TrainingAssetRepository,
     private val savedState: SavedStateHandle = SavedStateHandle(),
 ) : ViewModel() {
-    private val speechToText = SpeechToTextManager(appContext)
+    private val barkDetection = BarkDetectionManager(appContext)
     private val appContextForOpponent = appContext.applicationContext
     private var screenActive = false
     private var playerReady = false
@@ -369,21 +369,12 @@ class PlayViewModel @Inject constructor(
             try {
                 // Prevent overlapping AudioRecord instances on Stop / Start.
                 microphoneSession.withLock {
-                    val counter = BarkSpeechCounter()
-                    speechToText.listen().collect { update ->
+                    barkDetection.listen().collect { update ->
                         if (session != sessionId) return@collect
-                        val previousCount = counter.count
-                        counter.accept(update.text, update.isFinal, update.words, update.partialText, update.audioTimeMs)
-                        addPlayerPoints(counter.count - previousCount)
-                        if (counter.count != previousCount || update.isFinal) {
-                            Log.d("BarkSpeechScore", "${if (update.isFinal) "result" else "partial"} " +
-                                "added=${counter.count - previousCount} total=${_barkCount.value}")
-                        }
+                        acceptDetection(update)
                         _microphone.value = MicrophoneUiState(
                             status = MicrophoneStatus.LISTENING,
                             level = update.level,
-                            transcript = update.partialText ?: update.text,
-                            isPartial = !update.isFinal,
                         )
                     }
                 }
@@ -397,7 +388,7 @@ class PlayViewModel @Inject constructor(
                     savedState[MICROPHONE_WAS_ACTIVE] = false
                     _microphone.value = MicrophoneUiState(
                         MicrophoneStatus.ERROR,
-                        error = R.string.play_speech_error
+                        error = R.string.play_bark_detection_error
                     )
                 }
             }
@@ -409,6 +400,11 @@ class PlayViewModel @Inject constructor(
         microphoneJob?.cancel()
         microphoneJob = null
         _microphone.value = MicrophoneUiState()
+    }
+
+    internal fun acceptDetection(update: BarkDetectionUpdate) {
+        if (!useMicrophone || !_battleUiState.value.canPlay) return
+        if (update.detected) addPlayerPoints(1)
     }
 
     fun addPlayerTap() {
@@ -478,6 +474,4 @@ data class MicrophoneUiState(
     val status: MicrophoneStatus = MicrophoneStatus.IDLE,
     val level: Float = 0f,
     val error: Int? = null,
-    val transcript: String = "",
-    val isPartial: Boolean = false,
 )

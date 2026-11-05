@@ -42,7 +42,8 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
     ) { granted ->
         microphonePermissionPending = false
         if (granted) {
-            if (useMicrophone && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) &&
+            if (useMicrophone && guideDialog?.isShowing != true &&
+                lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) &&
                 !isFinishing && !isDestroyed
             ) {
                 viewModel.startListening()
@@ -85,7 +86,16 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
             onBackPressedDispatcher.onBackPressed()
         }
         binding.actionBar.btnActionBarRight.onClick {
-            guideDialog = HowToPlayDialog(this, useMicrophone).also { it.show() }
+            if (guideDialog?.isShowing == true) return@onClick
+            viewModel.stopListening()
+            barkEffects.clear()
+            guideDialog = HowToPlayDialog(this, useMicrophone).also { dialog ->
+                dialog.setOnDismissListener {
+                    guideDialog = null
+                    startMicrophoneIfAllowed()
+                }
+                dialog.show()
+            }
         }
         // Each training tap can produce an effect, including rapid consecutive taps.
         binding.imgAvatar.setOnClickListener { if (!useMicrophone) viewModel.addPlayerTap() }
@@ -128,7 +138,7 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
     }
 
     private fun startMicrophoneIfAllowed() {
-        if (!useMicrophone || microphonePermissionPending ||
+        if (!useMicrophone || guideDialog?.isShowing == true || microphonePermissionPending ||
             !lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) || isFinishing || isDestroyed
         ) return
         val granted = ContextCompat.checkSelfPermission(
@@ -184,6 +194,7 @@ class TrainingActivity : BaseActivity<ActivityTrainingBinding, TrainingViewModel
     }
 
     override fun onScreenDestroyed() {
+        guideDialog?.setOnDismissListener(null)
         guideDialog?.dismiss()
         guideDialog = null
         viewModel.stopListening()

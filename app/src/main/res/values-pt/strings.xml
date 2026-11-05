@@ -210,12 +210,6 @@
     <string name="play_waveform_legend">Laranja: seu microfone · Verde: oponente simulado</string>
     <string name="play_bark_count">Latidos: %1$d</string>
     <string name="play_bark_count_initial">Latidos: 0</string>
-    <string name="play_speech_ready">Toque em Iniciar e diga “gâu gâu” em vietnamita.</string>
-    <string name="play_speech_starting">Preparando reconhecimento de voz offline…</string>
-    <string name="play_speech_error">Não foi possível iniciar o reconhecimento de voz. Tente novamente.</string>
-    <string name="play_speech_partial">Ouvindo: %1$s</string>
-    <string name="play_speech_result">Ouvido: %1$s</string>
-    <string name="play_speech_hint">Diga “gâu gâu”. Cada latido reconhecido adiciona um ponto enquanto você fala.</string>
     <string name="play_opponent_name">Oponente</string>
     <string name="play_countdown_initial">3</string>
     <string name="play_countdown_number">%1$d</string>
@@ -248,7 +242,6 @@
     <string name="play_mode_close">Fechar seleção de modo</string>
     <string name="how_to_play_title">Como jogar</string>
     <string name="how_to_play_close">Fechar instruções</string>
-    <string name="how_to_play_voice">🐶 Imite um cachorro e lata\n“Au! Au!”\n🔊 Lata o mais alto e rápido que puder!\nQuanto mais alto e rápido você latir, mais pontos ganha.\n⚔️ Enfrente seu oponente e tente marcar mais pontos!\n🏆 Lata até a vitória!</string>
     <string name="how_to_play_tap">🐶 Toque no seu cachorro para fazê-lo latir!\n👆 Toque o mais rápido que puder!\nQuanto mais rápido você tocar, mais pontos ganha.\n⚔️ Enfrente seu oponente e tente marcar mais pontos!\n🏆 Lata até a vitória!</string>
     <string name="bonus_treats_title">Petiscos extras!</string>
     <string name="bonus_treats_description">Assista a um anúncio curto para receber recompensas extras.</string>

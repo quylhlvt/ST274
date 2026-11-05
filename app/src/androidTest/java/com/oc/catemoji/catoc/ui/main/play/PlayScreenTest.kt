@@ -8,6 +8,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.lifecycle.ViewModelStore
@@ -20,6 +22,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.BitmapResource
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.RoomLoadState
+import com.oc.catemoji.catoc.data.audio.BarkDetectionUpdate
 import com.oc.catemoji.catoc.core.custom.VoiceTrackDivider
 import com.oc.catemoji.catoc.core.custom.BattleAvatarGrowth
 import com.oc.catemoji.catoc.data.datalocal.room.AppDatabase
@@ -32,14 +35,83 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.Assume.assumeNotNull
 import org.junit.runner.RunWith
+import java.util.concurrent.atomic.AtomicInteger
 
 @RunWith(AndroidJUnit4::class)
 class PlayScreenTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
+
+    @Before fun seedExplicitlyIsolatedAudioQaProfile() = runBlocking {
+        if (InstrumentationRegistry.getArguments().getString("acousticQaSeed") != "true") return@runBlocking
+        check(context.packageName == "com.oc.catemoji.catoc.acousticqa")
+        val database = Room.databaseBuilder(context, AppDatabase::class.java, "bow_wow_battle.db").build()
+        try {
+            if (database.userDao().getUser() == null) {
+                BattleRepository(database, database.userDao(), database.dogDao(), database.historyDao())
+                    .createProfile("Audio QA")
+            }
+        } finally { database.close() }
+    }
+
+    @Test
+    fun voiceBarksMoveTheTrackAndShowOneEffectEachWhileStartupDoesNotRunTheOpponent() {
+        ActivityScenario.launch<PlayActivity>(
+            Intent(context, PlayActivity::class.java).putExtra(PlayActivity.EXTRA_USE_MICROPHONE, true),
+        ).use { scenario ->
+            lateinit var model: PlayViewModel
+            scenario.onActivity { model = ViewModelProvider(it)[PlayViewModel::class.java] }
+            val player = runBlocking {
+                withTimeout(5_000) { model.player.first { it is RoomLoadState.Success } }
+            } as RoomLoadState.Success
+            assumeNotNull(player.data)
+            runBlocking { withTimeout(5_000) { model.effects.first { it.isNotEmpty() } } }
+            val effects = AtomicInteger()
+            scenario.onActivity { activity ->
+                // Inject at the acoustic-classifier boundary; this UI regression
+                // does not need to record the room or open a permission dialog.
+                model.onMicrophonePermissionResult(granted = false, blocked = true)
+                model.onIntroFinished()
+                model.markBattleStarted()
+                model.requestMicrophone(permissionGranted = false)
+                model.requireMicrophonePermission()
+                activity.findViewById<FrameLayout>(R.id.effectLayer).setOnHierarchyChangeListener(
+                    object : ViewGroup.OnHierarchyChangeListener {
+                        override fun onChildViewAdded(parent: View?, child: View?) { effects.incrementAndGet() }
+                        override fun onChildViewRemoved(parent: View?, child: View?) = Unit
+                    },
+                )
+                activity.renderMicrophone(MicrophoneUiState(MicrophoneStatus.STARTING))
+            }
+            // Longer than one opponent interval: no point may be awarded during model loading.
+            SystemClock.sleep(2_000)
+            scenario.onActivity { activity ->
+                val track = activity.findViewById<com.oc.catemoji.catoc.core.custom.DualWaveformView>(R.id.dualWaveform)
+                assertEquals(0.5f, track.progress, 0.0001f)
+                assertEquals(0, effects.get())
+                repeat(20) { model.acceptDetection(BarkDetectionUpdate(level = 0.8f)) }
+                assertEquals(0, model.barkCount.value)
+                repeat(6) { model.acceptDetection(BarkDetectionUpdate(level = 0.1f, detected = true)) }
+                assertEquals(6, model.barkCount.value)
+            }
+            val deadline = SystemClock.uptimeMillis() + 5_000
+            while (effects.get() < 6 && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
+            scenario.onActivity { activity ->
+                val track = activity.findViewById<com.oc.catemoji.catoc.core.custom.DualWaveformView>(R.id.dualWaveform)
+                assertEquals(6, model.consumedBarks)
+                assertEquals(6, effects.get())
+                assertEquals(0.74f, track.progress, 0.0001f)
+                assertFalse(activity.findViewById<View>(R.id.avatar1).isEnabled)
+                model.requestGuide()
+                model.acceptDetection(BarkDetectionUpdate(level = 0.1f, detected = true))
+                assertEquals(6, model.barkCount.value)
+            }
+        }
+    }
 
     @Test
     fun phonesAndTabletsUseTheSameBoostInTapAndMicrophoneModes() {

@@ -210,12 +210,6 @@
     <string name="play_waveform_legend">Orange: dein Mikrofon · Grün: simulierter Gegner</string>
     <string name="play_bark_count">Beller: %1$d</string>
     <string name="play_bark_count_initial">Beller: 0</string>
-    <string name="play_speech_ready">Tippe auf Start und sage „gâu gâu“ auf Vietnamesisch.</string>
-    <string name="play_speech_starting">Offline-Spracherkennung wird vorbereitet…</string>
-    <string name="play_speech_error">Spracherkennung konnte nicht gestartet werden. Bitte versuche es erneut.</string>
-    <string name="play_speech_partial">Höre: %1$s</string>
-    <string name="play_speech_result">Gehört: %1$s</string>
-    <string name="play_speech_hint">Sage „gâu gâu“. Jedes erkannte Bellen gibt dir beim Sprechen einen Punkt.</string>
     <string name="play_opponent_name">Gegner</string>
     <string name="play_countdown_initial">3</string>
     <string name="play_countdown_number">%1$d</string>
@@ -248,7 +242,6 @@
     <string name="play_mode_close">Modusauswahl schließen</string>
     <string name="how_to_play_title">Spielanleitung</string>
     <string name="how_to_play_close">Spielanleitung schließen</string>
-    <string name="how_to_play_voice">🐶 Spiele einen Hund und belle\n„Wuff! Wuff!“\n🔊 Belle so laut und schnell wie möglich!\nJe lauter und schneller du bellst, desto mehr Punkte erhältst du.\n⚔️ Kämpfe gegen deinen Gegner und erziele mehr Punkte!\n🏆 Belle dich zum Sieg!</string>
     <string name="how_to_play_tap">🐶 Tippe auf deinen Hund, damit er bellt!\n👆 Tippe so schnell wie möglich!\nJe schneller du tippst, desto mehr Punkte erhältst du.\n⚔️ Kämpfe gegen deinen Gegner und erziele mehr Punkte!\n🏆 Belle dich zum Sieg!</string>
     <string name="bonus_treats_title">Bonus-Leckerlis!</string>
     <string name="bonus_treats_description">Sieh dir eine kurze Werbung an, um zusätzliche Belohnungen zu erhalten.</string>

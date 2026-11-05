@@ -24,8 +24,8 @@ class DeviceMicrophoneTest {
         val context = instrumentation.targetContext
         instrumentation.uiAutomation.executeShellCommand("pm grant ${context.packageName} android.permission.RECORD_AUDIO")
             .use { descriptor -> FileInputStream(descriptor.fileDescriptor).use { it.readBytes() } }
-        ActivityScenario.launch<BarkMicrophoneDiagnosticsActivity>(
-            Intent(context, BarkMicrophoneDiagnosticsActivity::class.java),
+        ActivityScenario.launch<AudioTestActivity>(
+            Intent(context, AudioTestActivity::class.java),
         ).use {
             DeviceMicrophone.open(context, 16_000, 640).use { mic ->
                 assertEquals(AudioDeviceInfo.TYPE_BUILTIN_MIC, mic.recorder.preferredDevice?.type)
@@ -44,7 +44,7 @@ class DeviceMicrophoneTest {
             }
             // take cancels the live flow. A second session must acquire and release the same mic.
             repeat(2) {
-                val updates = withTimeout(30_000) { SpeechToTextManager(context).listen().take(8).toList() }
+                val updates = withTimeout(30_000) { BarkDetectionManager(context).listen().take(8).toList() }
                 assertEquals(8, updates.size)
                 assertTrue(updates.all { it.level.isFinite() && it.level in 0f..1f })
             }

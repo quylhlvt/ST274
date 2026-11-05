@@ -210,12 +210,6 @@
     <string name="play_waveform_legend">नारंगी: आपका माइक्रोफ़ोन · हरा: सिम्युलेटेड प्रतिद्वंद्वी</string>
     <string name="play_bark_count">भौंकने की संख्या: %1$d</string>
     <string name="play_bark_count_initial">भौंकने की संख्या: 0</string>
-    <string name="play_speech_ready">शुरू करें पर टैप करें और वियतनामी में “gâu gâu” कहें।</string>
-    <string name="play_speech_starting">ऑफ़लाइन आवाज़ पहचान तैयार हो रही है…</string>
-    <string name="play_speech_error">आवाज़ पहचान शुरू नहीं हो सकी। फिर कोशिश करें।</string>
-    <string name="play_speech_partial">सुन रहा है: %1$s</string>
-    <string name="play_speech_result">सुना: %1$s</string>
-    <string name="play_speech_hint">“gâu gâu” कहें। बोलते समय हर पहचाने गए भौंकने पर एक अंक मिलता है।</string>
     <string name="play_opponent_name">प्रतिद्वंद्वी</string>
     <string name="play_countdown_initial">3</string>
     <string name="play_countdown_number">%1$d</string>
@@ -248,7 +242,6 @@
     <string name="play_mode_close">मोड चयन बंद करें</string>
     <string name="how_to_play_title">कैसे खेलें</string>
     <string name="how_to_play_close">खेलने के निर्देश बंद करें</string>
-    <string name="how_to_play_voice">🐶 कुत्ता बनकर भौंकें\n“भौं! भौं!”\n🔊 जितना हो सके तेज़ और ज़ोर से भौंकें!\nजितना तेज़ और ज़ोर से भौंकेंगे, उतने ज़्यादा अंक मिलेंगे।\n⚔️ प्रतिद्वंद्वी से मुकाबला करें और ज़्यादा अंक पाएँ!\n🏆 भौंकते हुए जीत हासिल करें!</string>
     <string name="how_to_play_tap">🐶 अपने कुत्ते को भौंकाने के लिए उस पर टैप करें!\n👆 जितना हो सके तेज़ टैप करें!\nजितना तेज़ टैप करेंगे, उतने ज़्यादा अंक मिलेंगे।\n⚔️ प्रतिद्वंद्वी से मुकाबला करें और ज़्यादा अंक पाएँ!\n🏆 भौंकते हुए जीत हासिल करें!</string>
     <string name="bonus_treats_title">बोनस ट्रीट्स!</string>
     <string name="bonus_treats_description">अतिरिक्त इनाम पाने के लिए छोटा विज्ञापन देखें।</string>

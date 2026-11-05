@@ -210,12 +210,6 @@
     <string name="play_waveform_legend">Naranja: tu micrófono · Verde: oponente simulado</string>
     <string name="play_bark_count">Ladridos: %1$d</string>
     <string name="play_bark_count_initial">Ladridos: 0</string>
-    <string name="play_speech_ready">Toca Iniciar y di «gâu gâu» en vietnamita.</string>
-    <string name="play_speech_starting">Preparando reconocimiento de voz sin conexión…</string>
-    <string name="play_speech_error">No se pudo iniciar el reconocimiento de voz. Inténtalo de nuevo.</string>
-    <string name="play_speech_partial">Escuchando: %1$s</string>
-    <string name="play_speech_result">Se escuchó: %1$s</string>
-    <string name="play_speech_hint">Di «gâu gâu». Cada ladrido reconocido suma un punto mientras hablas.</string>
     <string name="play_opponent_name">Oponente</string>
     <string name="play_countdown_initial">3</string>
     <string name="play_countdown_number">%1$d</string>
@@ -248,7 +242,6 @@
     <string name="play_mode_close">Cerrar selección de modo</string>
     <string name="how_to_play_title">Cómo jugar</string>
     <string name="how_to_play_close">Cerrar instrucciones</string>
-    <string name="how_to_play_voice">🐶 Imita a un perro y ladra\n«¡Guau! ¡Guau!»\n🔊 ¡Ladra tan fuerte y rápido como puedas!\nCuanto más fuerte y rápido ladres, más puntos ganarás.\n⚔️ ¡Enfréntate a tu oponente e intenta conseguir más puntos!\n🏆 ¡Ladra hasta la victoria!</string>
     <string name="how_to_play_tap">🐶 ¡Toca a tu perro para que ladre!\n👆 ¡Toca tan rápido como puedas!\nCuanto más rápido toques, más puntos ganarás.\n⚔️ ¡Enfréntate a tu oponente e intenta conseguir más puntos!\n🏆 ¡Ladra hasta la victoria!</string>
     <string name="bonus_treats_title">¡Premios extra!</string>
     <string name="bonus_treats_description">Mira un anuncio corto para obtener recompensas extra.</string>

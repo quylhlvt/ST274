@@ -311,6 +311,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
             Glide.with(this@PlayActivity).clear(imgBattleResult)
             imgBattleResult.setImageResource(reward.image)
             bgTitleWin.setImageResource(reward.imageBgTitel)
+            txtOver.setBackgroundColor(ContextCompat.getColor(this@PlayActivity, reward.contrainOverBg))
             contrainOver.setBackgroundColor(ContextCompat.getColor(this@PlayActivity, reward.contrainOverBg))
             txtCoinBone.text = getString(R.string.play_reward_amount, reward.bones)
             plusCoinRank.text = when {
@@ -406,9 +407,11 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
         }
     }
 
-    private fun renderMicrophone(state: MicrophoneUiState) {
+    internal fun renderMicrophone(state: MicrophoneUiState) {
         if (!useMicrophone) return
-        val active = state.status == MicrophoneStatus.STARTING || state.status == MicrophoneStatus.LISTENING
+        // Model installation/loading can take seconds. The opponent must wait until
+        // the recorder is actually open, just as the player's scoring does.
+        val active = state.status == MicrophoneStatus.LISTENING
         if (active && viewModel.battleUiState.value.canPlay) binding.dualWaveform.start() else binding.dualWaveform.stop()
         binding.dualWaveform.addRealAmplitude((state.level * 32767).roundToInt())
         if (state.status != lastMicrophoneStatus) {
@@ -419,7 +422,7 @@ class PlayActivity : BaseActivity<ActivityPlayBinding, PlayViewModel>(
                     startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
                 }.show()
                 MicrophoneStatus.ERROR -> Snackbar.make(
-                    binding.root, state.error ?: R.string.play_speech_error, Snackbar.LENGTH_INDEFINITE,
+                    binding.root, state.error ?: R.string.play_bark_detection_error, Snackbar.LENGTH_INDEFINITE,
                 ).setAction(R.string.play_microphone_start) {
                     viewModel.retryMicrophone()
                     requestMicrophoneAfterIntro()

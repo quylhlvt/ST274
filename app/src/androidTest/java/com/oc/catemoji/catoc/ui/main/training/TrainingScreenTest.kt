@@ -13,8 +13,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.oc.catemoji.catoc.R
 import com.oc.catemoji.catoc.data.repository.TrainingAssetRepository
-import com.oc.catemoji.catoc.data.audio.BarkSpeechWord
-import com.oc.catemoji.catoc.data.audio.SpeechRecognitionUpdate
+import com.oc.catemoji.catoc.data.audio.BarkDetectionUpdate
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
@@ -92,7 +91,7 @@ class TrainingScreenTest {
     }
 
     @Test
-    fun recognizedBarksShowEffectsWithoutCountingTheSamePartialAndFinalTwice() {
+    fun onlyConfirmedBarksShowEffectsAndUpdateTheCount() {
         ActivityScenario.launch(TrainingActivity::class.java).use { scenario ->
             awaitCondition(scenario) { it.findViewById<View>(R.id.main).background != null }
             val effectCount = AtomicInteger()
@@ -104,25 +103,17 @@ class TrainingScreenTest {
                     },
                 )
                 val model = ViewModelProvider(activity)[TrainingViewModel::class.java]
-                val first = BarkSpeechWord("gâu", 100, 300, 0.95f)
-                val second = BarkSpeechWord("gâu", 300, 500, 0.95f)
-                model.acceptRecognition(SpeechRecognitionUpdate("mõ vàng giàng", true, 0.5f, listOf(
-                    BarkSpeechWord("mõ", 0, 100, 1f), BarkSpeechWord("vàng", 100, 200, 1f),
-                    BarkSpeechWord("giàng", 200, 300, 1f),
-                )))
-                assertEquals(0, model.barkCount.value)
-                model.acceptRecognition(SpeechRecognitionUpdate("gâu", false, 0.5f, listOf(first)))
-                assertEquals("The first word scores immediately", 1, model.barkCount.value)
-                model.acceptRecognition(SpeechRecognitionUpdate("gâu gâu", false, 0.5f, listOf(first, second)))
-                model.acceptRecognition(SpeechRecognitionUpdate("gâu gâu", true, 0.5f, listOf(first, second)))
-                assertEquals(2, model.barkCount.value)
+                repeat(30) { model.acceptDetection(BarkDetectionUpdate(level = 0.8f)) }
+                assertEquals("Loud speech without an accepted bark never scores", 0, model.barkCount.value)
+                repeat(6) { model.acceptDetection(BarkDetectionUpdate(level = 0.1f, detected = true)) }
+                assertEquals(6, model.barkCount.value)
             }
-            awaitCondition(scenario) { effectCount.get() == 2 }
+            awaitCondition(scenario) { effectCount.get() == 6 }
             awaitCondition(scenario) { it.findViewById<FrameLayout>(R.id.effectLayer).childCount == 0 }
-            assertEquals(2, effectCount.get())
+            assertEquals(6, effectCount.get())
             scenario.recreate()
             scenario.onActivity { activity ->
-                assertEquals(2, ViewModelProvider(activity)[TrainingViewModel::class.java].barkCount.value)
+                assertEquals(6, ViewModelProvider(activity)[TrainingViewModel::class.java].barkCount.value)
                 assertEquals(0, activity.findViewById<FrameLayout>(R.id.effectLayer).childCount)
             }
         }

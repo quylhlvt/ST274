@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.oc.catemoji.catoc.RoomLoadState
+import com.oc.catemoji.catoc.data.audio.BarkDetectionUpdate
 import com.oc.catemoji.catoc.data.datalocal.room.AppDatabase
 import com.oc.catemoji.catoc.data.datalocal.room.entity.DogEntity
 import com.oc.catemoji.catoc.data.repository.BattleRepository
@@ -257,5 +258,37 @@ class PlayViewModelTest {
             model.retryMicrophone()
             assertFalse(model.requestMicrophone(false))
         }
+    }
+
+    @Test fun confirmedVoiceBarksScoreOnlyDuringActiveGameplay() = runBlocking {
+        val model = model(SavedStateHandle(mapOf(PlayViewModel.EXTRA_USE_MICROPHONE to true)))
+        val bark = BarkDetectionUpdate(level = 0.1f, detected = true)
+        instrumentation.runOnMainSync {
+            model.acceptDetection(bark)
+            model.onScreenStarted(false)
+            model.acceptDetection(bark)
+            assertEquals("Voice cannot score before START", 0, model.barkCount.value)
+            model.markBattleStarted()
+            repeat(30) { model.acceptDetection(BarkDetectionUpdate(level = 0.8f)) }
+            assertEquals("Loud non-barks never score", 0, model.barkCount.value)
+            repeat(6) { model.acceptDetection(bark) }
+            assertEquals(6, model.barkCount.value)
+
+            model.requestGuide()
+            model.acceptDetection(bark)
+            assertEquals("A dialog pauses voice scoring", 6, model.barkCount.value)
+            model.dismissGuide()
+            model.onScreenStarted(false)
+            model.acceptDetection(bark)
+            assertEquals(7, model.barkCount.value)
+            model.onScreenStopped(false)
+            model.acceptDetection(bark)
+            assertEquals("Late results cannot score on a stopped screen", 7, model.barkCount.value)
+            model.onScreenStarted(false)
+            model.finishBattle(false)
+            model.acceptDetection(bark)
+            assertEquals("Game over rejects further barks", 7, model.barkCount.value)
+        }
+        withTimeout(5_000) { model.result.first { it != null } }
     }
 }

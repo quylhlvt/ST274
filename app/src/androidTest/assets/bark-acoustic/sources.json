@@ -1,0 +1,34 @@
+[
+  {
+    "fixture": "bark-1.pcm",
+    "source": "vocal",
+    "original": "004Animal_Domestic animals_ pets_Dog_Bark-5949241595789312.wav",
+    "speaker": "5097550000000000.0",
+    "score": 0.9901385051200666,
+    "samples": 2240
+  },
+  {
+    "fixture": "bark-2.pcm",
+    "source": "vocal",
+    "original": "004Animal_Domestic animals_ pets_Dog_Bark-5979344484696064.wav",
+    "speaker": "5119110000000000.0",
+    "score": 0.9872415951935939,
+    "samples": 2880
+  },
+  {
+    "fixture": "bark-3.pcm",
+    "source": "sketch",
+    "original": "5757487680585728_dog barking - 6458721622294528.wav",
+    "speaker": "5757487680585728",
+    "score": 0.9911783180163649,
+    "samples": 2880
+  },
+  {
+    "fixture": "bark-4.pcm",
+    "source": "sketch",
+    "original": "5440829808181248_dog barking - 5996074590273536.wav",
+    "speaker": "5440829808181248",
+    "score": 0.9422297239238695,
+    "samples": 3200
+  }
+]

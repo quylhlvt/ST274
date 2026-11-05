@@ -6,9 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oc.catemoji.catoc.R
-import com.oc.catemoji.catoc.data.audio.BarkSpeechCounter
-import com.oc.catemoji.catoc.data.audio.SpeechRecognitionUpdate
-import com.oc.catemoji.catoc.data.audio.SpeechToTextManager
+import com.oc.catemoji.catoc.data.audio.BarkDetectionManager
+import com.oc.catemoji.catoc.data.audio.BarkDetectionUpdate
 import com.oc.catemoji.catoc.data.repository.TrainingAssetRepository
 import com.oc.catemoji.catoc.data.repository.TrainingEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,11 +27,10 @@ class TrainingViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val savedState: SavedStateHandle,
 ) : ViewModel() {
-    private val speechToText = SpeechToTextManager(context)
+    private val barkDetection = BarkDetectionManager(context)
     private val sessionMutex = Mutex()
     private var microphoneJob: Job? = null
     private var sessionId = 0
-    private var speechCounter = BarkSpeechCounter()
     private val _effects = MutableStateFlow<List<TrainingEffect>>(emptyList())
     val effects = _effects.asStateFlow()
     private val _background = MutableStateFlow<String?>(null)
@@ -54,11 +52,9 @@ class TrainingViewModel @Inject constructor(
 
     fun addPlayerTap() = addBarks(1)
 
-    /** Both screens use BarkSpeechCounter to avoid replaying partial/final words. */
-    fun acceptRecognition(update: SpeechRecognitionUpdate) {
-        val before = speechCounter.count
-        speechCounter.accept(update.text, update.isFinal, update.words, update.partialText, update.audioTimeMs)
-        addBarks(speechCounter.count - before)
+    /** One confirmed acoustic event owns one point and one visual effect. */
+    internal fun acceptDetection(update: BarkDetectionUpdate) {
+        if (update.detected) addBarks(1)
     }
 
     private fun addBarks(count: Int) {
@@ -74,9 +70,8 @@ class TrainingViewModel @Inject constructor(
         microphoneJob = viewModelScope.launch {
             try {
                 sessionMutex.withLock {
-                    speechCounter = BarkSpeechCounter()
-                    speechToText.listen().collect { update ->
-                        if (session == sessionId) acceptRecognition(update)
+                    barkDetection.listen().collect { update ->
+                        if (session == sessionId) acceptDetection(update)
                     }
                 }
             } catch (cancelled: CancellationException) {
@@ -84,7 +79,7 @@ class TrainingViewModel @Inject constructor(
             } catch (error: Exception) {
                 Log.e("TrainingAudio", "Could not recognize barking", error)
                 if (session == sessionId) _microphoneError.value = if (error is SecurityException)
-                    R.string.play_microphone_permission else R.string.play_speech_error
+                    R.string.play_microphone_permission else R.string.play_bark_detection_error
             }
         }
     }

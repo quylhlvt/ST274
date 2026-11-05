@@ -1,0 +1,27 @@
+{
+  "format": "BKH1 little endian",
+  "sampleRate": 16000,
+  "embeddingDimensions": 1024,
+  "supportVectors": 1751,
+  "threshold": 0.85,
+  "seed": 274,
+  "trainingEvents": 4606,
+  "trainingKnockEvents": 234,
+  "trainingImitationVariants": 1745,
+  "validationEvents": 641,
+  "validationPositiveEvents": 84,
+  "validationAcceptedPositiveEvents": 41,
+  "validationNegativeEvents": 557,
+  "validationAcceptedNegativeEvents": 16,
+  "validationAUC": 0.8732367273659913,
+  "validationKnockEvents": 41,
+  "validationAcceptedKnockEvents": 0,
+  "validationImitationVariants": 381,
+  "validationAcceptedImitationVariants": 200,
+  "featureCacheSHA256": "828501a77b9e8e72ad92e91ad11d947443aca9dacc620c3f03d6394e61dad737",
+  "assets": {
+    "bark-embedding.tflite": "d394b7be229404fdd2569bddee1164312e8f018aa2d57d229799c2be329d82c4",
+    "bark-head.bin": "f0a30540124dc93b7c901ddcd5a438219b4c54a115622107bb04731172217da5"
+  },
+  "limits": "Event labels inherit source-clip labels; breathing/clicks in positive clips are not manually aligned. Validation guided model selection and is not a blind population test. No user microphone recordings used for fitting."
+}

@@ -14,7 +14,10 @@ import android.util.Log
 import java.io.Closeable
 
 /** One live device microphone. All resources, including optional effects, share its lifetime. */
-internal class DeviceMicrophone private constructor(val recorder: AudioRecord) : Closeable {
+internal class DeviceMicrophone private constructor(
+    val recorder: AudioRecord,
+    val usesVoiceRecognition: Boolean,
+) : Closeable {
     private val effects = mutableListOf<AudioEffect>()
 
     private fun enableEffect(create: () -> AudioEffect?) {
@@ -45,14 +48,28 @@ internal class DeviceMicrophone private constructor(val recorder: AudioRecord) :
 
         @SuppressLint("MissingPermission")
         fun open(context: Context, sampleRate: Int, blockSamples: Int): DeviceMicrophone {
+            return try {
+                open(context, sampleRate, blockSamples, MediaRecorder.AudioSource.VOICE_RECOGNITION)
+            } catch (error: RuntimeException) {
+                if (error !is IllegalStateException && error !is IllegalArgumentException) throw error
+                Log.w(TAG, "Voice recognition input unavailable, using MIC", error)
+                open(context, sampleRate, blockSamples, MediaRecorder.AudioSource.MIC)
+            }
+        }
+
+        @SuppressLint("MissingPermission")
+        private fun open(context: Context, sampleRate: Int, blockSamples: Int, source: Int): DeviceMicrophone {
             val minimumBytes = AudioRecord.getMinBufferSize(
                 sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
             )
             check(minimumBytes > 0) { "PCM16 microphone unavailable at $sampleRate Hz" }
             val microphone = DeviceMicrophone(AudioRecord(
-                MediaRecorder.AudioSource.MIC, sampleRate, AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, maxOf(minimumBytes, blockSamples * Short.SIZE_BYTES * 4),
-            ))
+                source, sampleRate, AudioFormat.CHANNEL_IN_MONO,
+                // Native capture continues during classification. Keep enough headroom
+                // for inference on slower phones without dropping the next short bark.
+                AudioFormat.ENCODING_PCM_16BIT, maxOf(minimumBytes, sampleRate * Short.SIZE_BYTES / 2,
+                    blockSamples * Short.SIZE_BYTES * 4),
+            ), source == MediaRecorder.AudioSource.VOICE_RECOGNITION)
             try {
                 val recorder = microphone.recorder
                 check(recorder.state == AudioRecord.STATE_INITIALIZED) { "Cannot initialize microphone" }
@@ -65,15 +82,19 @@ internal class DeviceMicrophone private constructor(val recorder: AudioRecord) :
                     ?: builtInMicrophones.firstOrNull { !it.address.equals("back", ignoreCase = true) }
                 // Keep capture on the handset even when headphones/Bluetooth are connected.
                 if (builtIn != null) check(recorder.setPreferredDevice(builtIn)) { "Cannot select device microphone" }
-                if (NoiseSuppressor.isAvailable()) {
-                    microphone.enableEffect { NoiseSuppressor.create(recorder.audioSessionId) }
-                }
-                if (AcousticEchoCanceler.isAvailable()) {
-                    microphone.enableEffect { AcousticEchoCanceler.create(recorder.audioSessionId) }
+                // Preserve short syllables on the voice-recognition input. The legacy
+                // MIC fallback still uses its original noise and echo suppression.
+                if (!microphone.usesVoiceRecognition) {
+                    if (NoiseSuppressor.isAvailable()) {
+                        microphone.enableEffect { NoiseSuppressor.create(recorder.audioSessionId) }
+                    }
+                    if (AcousticEchoCanceler.isAvailable()) {
+                        microphone.enableEffect { AcousticEchoCanceler.create(recorder.audioSessionId) }
+                    }
                 }
                 recorder.startRecording()
                 check(recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) { "Cannot start microphone" }
-                Log.d(TAG, "Live input type=${recorder.routedDevice?.type}, " +
+                Log.d(TAG, "Live input source=$source, type=${recorder.routedDevice?.type}, " +
                     "address=${recorder.routedDevice?.address}, rate=${recorder.sampleRate}")
                 return microphone
             } catch (error: Throwable) {

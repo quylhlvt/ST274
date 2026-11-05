@@ -210,12 +210,6 @@
     <string name="play_waveform_legend">Orange : votre microphone · Vert : adversaire simulé</string>
     <string name="play_bark_count">Aboiements : %1$d</string>
     <string name="play_bark_count_initial">Aboiements : 0</string>
-    <string name="play_speech_ready">Touchez Démarrer et dites « gâu gâu » en vietnamien.</string>
-    <string name="play_speech_starting">Préparation de la reconnaissance vocale hors ligne…</string>
-    <string name="play_speech_error">Impossible de démarrer la reconnaissance vocale. Veuillez réessayer.</string>
-    <string name="play_speech_partial">À l’écoute : %1$s</string>
-    <string name="play_speech_result">Entendu : %1$s</string>
-    <string name="play_speech_hint">Dites « gâu gâu ». Chaque aboiement reconnu ajoute un point pendant que vous parlez.</string>
     <string name="play_opponent_name">Adversaire</string>
     <string name="play_countdown_initial">3</string>
     <string name="play_countdown_number">%1$d</string>
@@ -248,7 +242,6 @@
     <string name="play_mode_close">Fermer le choix du mode</string>
     <string name="how_to_play_title">Comment jouer</string>
     <string name="how_to_play_close">Fermer les instructions</string>
-    <string name="how_to_play_voice">🐶 Imitez un chien et aboyez\n« Ouaf ! Ouaf ! »\n🔊 Aboyez aussi fort et aussi vite que possible !\nPlus vous aboyez fort et vite, plus vous gagnez de points.\n⚔️ Affrontez votre adversaire et essayez de marquer plus de points !\n🏆 Aboyez jusqu’à la victoire !</string>
     <string name="how_to_play_tap">🐶 Touchez votre chien pour le faire aboyer !\n👆 Touchez aussi vite que possible !\nPlus vous touchez vite, plus vous gagnez de points.\n⚔️ Affrontez votre adversaire et essayez de marquer plus de points !\n🏆 Aboyez jusqu’à la victoire !</string>
     <string name="bonus_treats_title">Friandises bonus !</string>
     <string name="bonus_treats_description">Regardez une courte publicité pour obtenir des récompenses supplémentaires.</string>

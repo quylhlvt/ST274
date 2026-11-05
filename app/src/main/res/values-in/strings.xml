@@ -210,12 +210,6 @@
     <string name="play_waveform_legend">Oranye: mikrofon Anda · Hijau: lawan simulasi</string>
     <string name="play_bark_count">Gonggongan: %1$d</string>
     <string name="play_bark_count_initial">Gonggongan: 0</string>
-    <string name="play_speech_ready">Ketuk Mulai dan ucapkan “gâu gâu” dalam bahasa Vietnam.</string>
-    <string name="play_speech_starting">Menyiapkan pengenalan suara offline…</string>
-    <string name="play_speech_error">Tidak dapat memulai pengenalan suara. Silakan coba lagi.</string>
-    <string name="play_speech_partial">Mendengar: %1$s</string>
-    <string name="play_speech_result">Terdengar: %1$s</string>
-    <string name="play_speech_hint">Ucapkan “gâu gâu”. Setiap gonggongan yang dikenali menambah satu poin saat Anda berbicara.</string>
     <string name="play_opponent_name">Lawan</string>
     <string name="play_countdown_initial">3</string>
     <string name="play_countdown_number">%1$d</string>
@@ -248,7 +242,6 @@
     <string name="play_mode_close">Tutup pilihan mode</string>
     <string name="how_to_play_title">Cara Bermain</string>
     <string name="how_to_play_close">Tutup cara bermain</string>
-    <string name="how_to_play_voice">🐶 Berpura-puralah menjadi anjing dan menggonggong\n“Guk! Guk!”\n🔊 Menggonggonglah sekeras dan secepat mungkin!\nSemakin keras dan cepat Anda menggonggong, semakin banyak poin yang diperoleh.\n⚔️ Lawan musuh Anda dan coba raih skor lebih tinggi!\n🏆 Menggonggonglah menuju kemenangan!</string>
     <string name="how_to_play_tap">🐶 Ketuk anjing Anda agar menggonggong!\n👆 Ketuk secepat mungkin!\nSemakin cepat Anda mengetuk, semakin banyak poin yang diperoleh.\n⚔️ Lawan musuh Anda dan coba raih skor lebih tinggi!\n🏆 Menggonggonglah menuju kemenangan!</string>
     <string name="bonus_treats_title">Camilan Bonus!</string>
     <string name="bonus_treats_description">Tonton iklan singkat untuk mendapatkan hadiah tambahan.</string>

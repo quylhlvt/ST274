@@ -209,6 +209,7 @@
     <string name="play_microphone_stop">Stop microphone</string>
     <string name="play_microphone_starting">Starting microphone…</string>
     <string name="play_microphone_listening">Listening…</string>
+    <string name="play_bark_detection_error">Could not start bark detection. Please try again.</string>
     <string name="play_bark_detected">Bark detected!</string>
     <string name="play_bark_not_detected">No bark detected. Try again.</string>
     <string name="play_microphone_permission">Allow microphone access to check your barking sound.</string>
@@ -218,12 +219,6 @@
     <string name="play_waveform_legend">Orange: your microphone · Green: simulated opponent</string>
     <string name="play_bark_count">Barks: %1$d</string>
     <string name="play_bark_count_initial">Barks: 0</string>
-    <string name="play_speech_ready">Tap Start and say “gâu gâu” in Vietnamese.</string>
-    <string name="play_speech_starting">Preparing offline speech recognition…</string>
-    <string name="play_speech_error">Could not start speech recognition. Please try again.</string>
-    <string name="play_speech_partial">Hearing: %1$s</string>
-    <string name="play_speech_result">Heard: %1$s</string>
-    <string name="play_speech_hint">Say “gâu gâu”. Each recognized bark adds a point while you speak.</string>
     <string name="play_opponent_name">Opponent</string>
     <string name="play_countdown_initial">3</string>
     <string name="play_countdown_number">%1$d</string>
@@ -256,7 +251,7 @@
     <string name="play_mode_close">Close mode selection</string>
     <string name="how_to_play_title">How to Play</string>
     <string name="how_to_play_close">Close how to play</string>
-    <string name="how_to_play_voice">🐶 Pretend to be a dog and bark\n“Woof! Woof!”\n🔊 Bark as loud and as fast as you can!\nThe louder and faster you bark, the more points you earn.\n⚔️ Battle your opponent and try to score higher!\n🏆 Bark your way to victory!</string>
+    <string name="how_to_play_voice">🐶 Pretend to be a dog and make short barking sounds!\n🎤 Leave a brief gap between barks.\nEach detected bark earns one point and shows an effect.\n⚔️ Battle your opponent and try to score higher!\n🏆 Bark your way to victory!</string>
     <string name="how_to_play_tap">🐶 Tap your dog to make it bark!\n👆 Tap as fast as you can!\nThe faster you tap, the more points you earn.\n⚔️ Battle your opponent and try to score higher!\n🏆 Bark your way to victory!</string>
     <string name="bonus_treats_title">Bonus Treats!</string>
     <string name="bonus_treats_description">Watch a short ad to claim extra rewards.</string>
